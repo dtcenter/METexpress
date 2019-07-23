@@ -231,13 +231,14 @@ const doCurveParams = function () {
     var forecastValueOptionsMap = {};
     var levelOptionsMap = {};
     var variableOptionsMap = {};
+    var thresholdOptionsMap = {};
 
     var rows;
     var thisGroup;
     var dbs;
     var dbArr;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "select * from upperair_database_groups order by db_group;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "select * from airquality_database_groups order by db_group;");
         for (var i = 0; i < rows.length; i++) {
             thisGroup = rows[i].db_group.trim();
             dbs = rows[i].dbs;
@@ -253,7 +254,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "SELECT DISTINCT db FROM upperair_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "SELECT DISTINCT db FROM airquality_mats_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -271,9 +272,9 @@ const doCurveParams = function () {
             forecastValueOptionsMap[thisDB] = {};
             levelOptionsMap[thisDB] = {};
             variableOptionsMap[thisDB] = {};
+            thresholdOptionsMap[thisDB] = {};
             regionModelOptionsMap[thisDB] = {};
-
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "select model,display_text,regions,levels,fcst_lens,fcst_orig,variables,mindate,maxdate from upperair_mats_metadata where db = '" + thisDB + "' group by model,display_text,regions,levels,fcst_lens,fcst_orig,variables,mindate,maxdate order by model;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(metadataPool, "select model,display_text,regions,levels,fcst_lens,fcst_orig,variables,trshs,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,regions,levels,fcst_lens,fcst_orig,variables,trshs,mindate,maxdate order by model;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -311,6 +312,13 @@ const doCurveParams = function () {
                     variableArr[j] = variableArr[j].replace(/'|\[|\]/g, "");
                 }
                 variableOptionsMap[thisDB][model] = variableArr;
+
+                var trshs = rows[i].trshs;
+                var trshArr = trshs.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < trshArr.length; j++) {
+                    trshArr[j] = trshArr[j].replace(/'|\[|\]/g, "");
+                }
+                thresholdOptionsMap[thisDB][model] = trshArr;
 
                 var regions = rows[i].regions;
                 var regionsArr = regions.split(',').map(Function.prototype.call, String.prototype.trim);
@@ -444,7 +452,7 @@ const doCurveParams = function () {
                 options: Object.keys(modelOptionsMap[defaultDB]),   // convenience
                 levelsMap: levelOptionsMap, // need to know what levels the metadata allows for each model.
                 superiorNames: ["database"],
-                dependentNames: ["region", "variable", "forecast-length", "pres-level", "dates", "curve-dates"],
+                dependentNames: ["region", "variable", "threshold", "forecast-length", "pres-level", "dates", "curve-dates"],
                 controlButtonCovered: true,
                 default: Object.keys(modelOptionsMap[defaultDB])[0],
                 unique: false,
@@ -686,6 +694,38 @@ const doCurveParams = function () {
             });
     }
 
+    if (matsCollections.CurveParams.findOne({name: 'threshold'}) == undefined) {
+        matsCollections.CurveParams.insert(
+            {
+                name: 'threshold',
+                type: matsTypes.InputTypes.select,
+                optionsMap: thresholdOptionsMap,
+                options: thresholdOptionsMap[defaultDB][Object.keys(thresholdOptionsMap[defaultDB])[0]],   // convenience
+                superiorNames: ['database','data-source'],
+                selected: '',
+                controlButtonCovered: true,
+                unique: false,
+                default: thresholdOptionsMap[defaultDB][Object.keys(thresholdOptionsMap[defaultDB])[0]][0],  // always use the first region for the first model
+                controlButtonVisibility: 'block',
+                displayOrder: 4,
+                displayPriority: 1,
+                displayGroup: 4
+            });
+    } else {
+        // it is defined but check for necessary updates to forecastLengthOptionsMap
+        var currentParam = matsCollections.CurveParams.findOne({name: 'threshold'});
+        if (!matsDataUtils.areObjectsEqual(thresholdOptionsMap, currentParam.optionsMap)) {
+            // have to reload model data
+            matsCollections.CurveParams.update({name: 'variable'}, {
+                $set: {
+                    optionsMap: thresholdOptionsMap,
+                    options: thresholdOptionsMap[defaultDB][Object.keys(thresholdOptionsMap[defaultDB])[0]],
+                    default: thresholdOptionsMap[defaultDB][Object.keys(thresholdOptionsMap[defaultDB])[0]][0]
+                }
+            });
+        }
+    }
+
     if (matsCollections.CurveParams.findOne({name: 'average'}) == undefined) {
         optionsMap = {
             'None': ['unix_timestamp(ld.fcst_valid_beg)'],
@@ -727,7 +767,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
-                controlButtonText: "Pressure Level",
+                controlButtonText: "Ground Level",
                 displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 5,
@@ -751,7 +791,6 @@ const doCurveParams = function () {
 
         const optionsMap = {
             'Fcst lead time': "select ld.fcst_lead as xVal, ",
-            'Pressure level': "select h.fcst_lev as xVal, ",
             'Valid UTC hour': "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
             'Init UTC hour': "select unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as xVal, ",
             'Valid Date': "select unix_timestamp(ld.fcst_valid_beg) as xVal, ",
@@ -772,7 +811,7 @@ const doCurveParams = function () {
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: Object.keys(optionsMap)[0],
+                default: Object.keys(optionsMap)[1],
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
@@ -784,7 +823,6 @@ const doCurveParams = function () {
 
         const optionsMap = {
             'Fcst lead time': "ld.fcst_lead as yVal, ",
-            'Pressure level': "h.fcst_lev as yVal, ",
             'Valid UTC hour': "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
             'Init UTC hour': "unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as yVal, ",
             'Valid Date': "unix_timestamp(ld.fcst_valid_beg) as yVal, ",
@@ -805,7 +843,7 @@ const doCurveParams = function () {
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: Object.keys(optionsMap)[1],
+                default: Object.keys(optionsMap)[0],
                 controlButtonVisibility: 'block',
                 displayOrder: 2,
                 displayPriority: 1,
@@ -888,6 +926,7 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'threshold', ' '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'pres-level', ', '],
@@ -896,26 +935,7 @@ const doCurveTextPatterns = function () {
                 ['avg: ', 'average', ' ']
             ],
             displayParams: [
-                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable","valid-time", "average", "forecast-length", "pres-level"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.profile,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ' '],
-                ['', 'statistic', ', '],
-                ['level: ', 'pres-level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['', 'curve-dates', '']
-            ],
-            displayParams: [
-                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "forecast-length", "curve-dates"
+                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "average", "forecast-length", "pres-level"
             ],
             groupSize: 6
         });
@@ -926,6 +946,7 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'threshold', ' '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'pres-level', ', '],
@@ -935,7 +956,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "dieoff-type", "valid-time", "utc-cycle-start", "pres-level", "curve-dates"
+                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "dieoff-type", "valid-time", "utc-cycle-start", "pres-level", "curve-dates"
             ],
             groupSize: 6
         });
@@ -946,6 +967,7 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'threshold', ' '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'pres-level', ', '],
@@ -953,7 +975,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "yaxes", "database", "data-source", "region", "statistic", "variable", "forecast-length", "pres-level", "curve-dates"
+                "label", "yaxes", "database", "data-source", "region", "statistic", "variable", "threshold", "forecast-length", "pres-level", "curve-dates"
             ],
             groupSize: 6
         });
@@ -964,6 +986,7 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'threshold', ' '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'pres-level', ', '],
@@ -972,7 +995,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "forecast-length", "pres-level", "curve-dates"
+                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "forecast-length", "pres-level", "curve-dates"
             ],
             groupSize: 6
         });
@@ -983,6 +1006,7 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'threshold', ' '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'pres-level', ', '],
@@ -993,7 +1017,7 @@ const doCurveTextPatterns = function () {
 
             ],
             displayParams: [
-                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "forecast-length", "pres-level", "x-axis-parameter", "y-axis-parameter"
+                "label", "yaxes", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "forecast-length", "pres-level", "x-axis-parameter", "y-axis-parameter"
             ],
             groupSize: 6
 
@@ -1021,13 +1045,6 @@ const doPlotGraph = function () {
             dataFunction: "dataSeries",
             plotSpecFunction: "plotSpecDataSeries",
             checked: true
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.profile,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataProfile",
-            plotSpecFunction: "plotSpecProfile",
-            checked: false
         });
         matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.dieoff,
@@ -1098,8 +1115,8 @@ Meteor.startup(function () {
     });
     // the pool is intended to be global
     metadataPool = mysql.createPool(metadataSettings);
-    const mdr = new matsTypes.MetaDataDBRecord("metadataPool", "mats_metadata", ['upperair_mats_metadata', 'upperair_database_groups']);
-    matsMethods.resetApp({appMdr:mdr, appType:matsTypes.AppTypes.metexpress, app:'met-upperair'});
+    const mdr = new matsTypes.MetaDataDBRecord("metadataPool", "mats_metadata", ['airquality_mats_metadata', 'airquality_database_groups']);
+    matsMethods.resetApp({appMdr:mdr, appType:matsTypes.AppTypes.metexpress, app:'met-airquality'});
 });
 
 // this object is global so that the reset code can get to it
