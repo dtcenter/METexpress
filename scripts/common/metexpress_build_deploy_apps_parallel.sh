@@ -1,9 +1,31 @@
 #!/usr/bin/env bash
-# This script builds and deploys an app, optionally takes the bundle that was already built and adds a dockerfile
+# This script builds one or more METexpress apps, optionally takes the bundle that is built and adds a dockerfile
 # and then builds the image from an appropriate node image that corresponds to the node verwsion of the app.
 #
+usage="USAGE $0 [-a][-r appReferences (if more than one put them in \"\")] [-i] [-l (local images only - do not push)] \n\
+	where -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
+	appReference is build only requested appReferences (like \"met-airquality\" \"met-anomalycor\"), \n\
+	and i is build images - images will be pushed to the repo in your credentials file"
+
+isGitRepo=$( git config --get remote.origin.url)
+rootOfRepo=$(git rev-parse --show-toplevel)
+cur=$(pwd)
+if [[ ${isGitRepo} !=  "https://github.com/dtcenter/METexpress.git" ]]; then
+  echo "you are not in a local repo cloned from https://github.com/dtcenter/METexpress.git"
+  echo "I cannot go on.... exiting"
+  echo $usage
+  exit 1
+fi
+
+if [[ $cur != $rootOfRepo ]]; then
+  echo "you do appear to be in the top of the repo"
+  echo "I cannot go on.... exiting"
+  echo $usage
+  exit 1
+  fi
+
 # source the build environment and mongo utilities
-. /builds/buildArea/MATS_for_EMB/scripts/common/app_production_utilities.source
+. scripts/common/app_production_utilities.source
 
 # source the credentials for the matsapps account
 if [ ! -f ~/.matsapps_credentials ]; then
@@ -23,11 +45,6 @@ touch $logname
 exec > >( tee -i $logname )
 exec 2>&1
 
-usage="USAGE $0 -e dev|int|prod|exp [-a][-r appReferences (if more than one put them in \"\")][-t tag] [-i] [-l (local images only - do not push)]  [-b branch] [-s(static versions - do not roll versions)] \n\
-	where -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
-	appReference is build only requested appReferences (like upperair ceiling), \n\
-	default is build changed apps, e is build environment (dev, int, prod, or exp), and i is build images also, \n\
-	environment exp is for experimental builds - which will be pushed to the experipental repository."
 requestedApp=""
 requestedTag=""
 requestedBranch=""

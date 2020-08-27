@@ -42,8 +42,9 @@ Be sure to set the environment varaiables listed in the dependencies section abo
 or if you have previously cloned the build directory...
 - cd [yourMETexpressDir]; git pull
 #### next
+- cd to [yourMetexpressDir] **(if you are not in the top level of the git repo the build will fail**)
 ##### to build them all
-[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -a 
+- [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -a 
 ##### or to build a single app
 [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -r met-some_app_name 
 ##### or to get build options
@@ -54,17 +55,21 @@ This will build one or all of the apps, and issue errors if the apps fail to bui
 METexpress can only be installed from Docker images. There are always the most recent images, maintained by the developers, at this [repository](https://github.com/dtcenter/METexpress).
 These instructions are to allow you to create your own private repository and to build the app images from scratch, and to push those apps to your own private repository.
 ### You cannot push to the standard repository without authorization.
-#### To push the images to your docker repository you need to have an account on the repository and you must set the credentials for that account into a credentials file that is named ~builduser/.metexpress-repo-credentials.
+#### To push the images to your repository you need to have an account on the repository and you must set the credentials for that account into a credentials file that is named ~builduser/.metexpress-repo-credentials.
 The ~builduser/.metexpress-repo-credentials refers to a file named ~builduser/.metexpress-repo-credentials that is placed into the build user's home directory.
 The ~builduser/.metexpress-repo-credentials file has the following contents.
 
-`export matsapps_user='my_build_user'`
+`export docker_user='repo_user'`
  
-`export matsapps_password='my_build_user_dockerhub_password'`
+`export docker_password='repo_password'`
 
-`export matsapps_repo='repo_url'`
+`export repo='repo_url'`
 
-### Once you have demonstrated to yourself that the code builds without pushing, and once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
+### Once you have demonstrated to yourself that the code builds without pushing, 
+- once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
+- alternatively you can use [-l] which will build the images locally and leave them on your build system.
+**Building local images can be very disk expensive. You must clean up local images periodically if you leave them on your system**
+This command will remove local images. `docker system prune -af`
 
 ## Installation
 For installation and configuration refer to the [README.md](https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md) in the `container_deployment` directory.
