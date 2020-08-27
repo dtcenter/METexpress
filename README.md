@@ -44,18 +44,18 @@ or if you have previously cloned the build directory...
 #### next
 - cd to [yourMetexpressDir] **(if you are not in the top level of the git repo the build will fail**)
 ##### to build them all
-- [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -a 
+- [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -a 
 ##### or to build a single app
-[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -r met-some_app_name 
+[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -r met-some_app_name 
 ##### or to get build options
-[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -h
+[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -h
 
 This will build one or all of the apps, and issue errors if the apps fail to build.
 ### You must use a repository to install METexpress
 METexpress can only be installed from Docker images. There are always the most recent images, maintained by the developers, at this [repository](https://github.com/dtcenter/METexpress).
 These instructions are to allow you to create your own private repository and to build the app images from scratch, and to push those apps to your own private repository.
-### You cannot push to the standard repository without authorization.
-#### To push the images to your repository you need to have an account on the repository and you must set the credentials for that account into a credentials file that is named ~builduser/.metexpress-repo-credentials.
+### You cannot push to the standard docker repository without authorization.
+#### To push the images to your repository you need to have an account on [dockerhub](https://hub.docker.com/), a repository there, and you must set the credentials for that account into a credentials file that is named ~builduser/.metexpress-repo-credentials.
 The ~builduser/.metexpress-repo-credentials refers to a file named ~builduser/.metexpress-repo-credentials that is placed into the build user's home directory.
 The ~builduser/.metexpress-repo-credentials file has the following contents.
 
@@ -63,8 +63,10 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
  
 `export docker_password='repo_password'`
 
-`export repo='repo_url'`
+`export repo='repository'`
 
+### Versions
+- All built apps will automatiacally get a version based on the build date and time. The version will be formatted like "custom-YYYYMMDD-HHMM".
 ### Once you have demonstrated to yourself that the code builds without pushing, 
 - once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 - alternatively you can use [-l] which will build the images locally and leave them on your build system.
