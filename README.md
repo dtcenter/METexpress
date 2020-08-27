@@ -12,7 +12,7 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher.
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
-- #### [MATScommon](https://dtcenter/MATScommon): You must have cloned the dtcenter/MATScommon project into a local directory accessible by the build user.
+- #### [MATScommon](https://github.com/dtcenter/MATScommon): You must have cloned the dtcenter/MATScommon project into a local directory accessible by the build user.
 
 - You must have set the environment variable METEOR_PACKAGE_DIRS to the [local directory where you cloned MATScommon]/meteor_packages
  
@@ -20,23 +20,25 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 
 
 ## Build
-### These apps are always built and deployed as Docker images. There are always the most recent standard docker images in the public docker repository [repository](https://dtcenter/repo/METexpress). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
+### These apps are always built and deployed as Docker images. There are always the most recent standard docker images in the public docker repository [repository](https://github.com/dtcenter/METexpress). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
 To build these apps you use the included build script.
 Be sure to set the environment varaiables listed in the dependencies section above.
 ### steps:
 #### first either ....
-- git clone dtcenter/METexpress [yourMETexpressDir] 
+- git clone https://github.com/dtcenter/METexpress [yourMETexpressDir] 
 or if you have previously cloned the build directory...
 - cd [yourMETexpressDir]; git pull
 #### next
 ##### to build them all
-[yourMetexpressDir]/scripts/common/buildMETexpress.sh -a 
+[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -a 
 ##### or to build a single app
-[yourMetexpressDir]/scripts/common/buildMETexpress.sh -r met-some_app_name 
+[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -r met-some_app_name 
+##### or to get build options
+[yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps_parallel.sh -h
 
 This will build one or all of the apps, and issue errors if the apps fail to build.
 ### You must use a repository to install METexpress
-METexpress can only be installed from Docker images. There are always the most recent images, maintained by the developers, at this [repository](https://dtcenter/repo/METexpress).
+METexpress can only be installed from Docker images. There are always the most recent images, maintained by the developers, at this [repository](https://github.com/dtcenter/METexpress).
 These instructions are to allow you to create your own private repository and to build the app images from scratch, and to push those apps to your own private repository.
 ### You cannot push to the standard repository without authorization.
 #### To push the images to your docker repository you need to have an account on the repository and you must set the credentials for that account into a credentials file that is named ~builduser/.metexpress-repo-credentials.
