@@ -73,7 +73,8 @@ requestedTag=""
 requestedBranch=""
 pushImage="yes"
 build_images="no"
-while getopts "ailr:" o; do
+parallel="no"
+while getopts "ailr:p" o; do
     case "${o}" in
         a)
         #all apps
@@ -89,6 +90,10 @@ while getopts "ailr:" o; do
         r)
             requestedApp=(${OPTARG})
             echo -e "requsted apps ${requestedApp[@]}"
+        ;;
+        p)
+        # secret parallel build mode
+        parallel="yes"
         ;;
         *)
             echo -e "${RED} bad option? ${NC} \n$usage"
@@ -274,10 +279,14 @@ LABEL version="${buildVer}" code.branch="${buildCodeBranch}" code.commit="${newC
 # build all the apps
 i=0
 for app in ${apps[*]}; do
+  if [[ ${parallel} = "yes" ]]; then
     (buildApp ${app})&
     pids[${i}]=$!
     i=$((i+1))
     sleep 10
+  else
+    (buildApp ${app})
+  fi
 done
 
 # wait for all pids
