@@ -32,7 +32,7 @@ in the METexpress setup and configuration.
  The metadata scripts are kept in the scripts/matsMetaDataForApps/createMetaData/mysql/metexpress directory in this code tree.
 
 ## Build
-### These apps are always built and deployed as Docker images. The most recent, standard, production ready docker images are in the public docker  [repository](https://hub.docker.com/repository/docker/dtcenter/metexpress-production). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
+### These apps are always built into and deployed as Docker images. The most recent, standard, production ready docker images are in the public docker  [repository](https://hub.docker.com/repository/docker/dtcenter/metexpress-production). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
 To build these apps you use the included build script.
 Be sure to set the environment varaiables listed in the dependencies section above.
 ### steps:
