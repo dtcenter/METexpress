@@ -1,7 +1,7 @@
 # METexpress apps
 This directory contains [METexpress](https://metexpress.nws.noaa.gov/) app source code. A METexpress app is a [Meteor](https://www.meteor.com/) app that is based on the [MATS](https://www.esrl.noaa.gov/gsd/mats/) Model Analysis Tool Suite application framework.
 
-These apps are specifically designed to be used to visualize [MET](https://dtcenter.org/community-code/model-evaluation-tools-met) data that has been loaded into a [METviewer](https://dtcenter.org/metplus-practical-session-guide-feb-2019/session-5-trkintfeature-relative/metviewer) database.
+These apps are specifically designed to be used to visualize [MET](https://dtcenter.org/community-code/model-evaluation-tools-met) data that has been loaded into a [METviewer](https://dtcenter.org/metplus-practical-session-guide-feb-2019/session-5-trkintfeature-relative/metviewer) database. 
 
 ## Dependencies:
 - It is expected that you are building and deploying these apps on a linux based system.
