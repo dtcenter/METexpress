@@ -10,14 +10,14 @@ usage="USAGE $0 [-a][-r appReferences (if more than one put them in \"\")] [-i] 
 isGitRepo=$( git config --get remote.origin.url)
 rootOfRepo=$(git rev-parse --show-toplevel)
 BUILD_DIRECTORY=$(pwd)
-if [[ ${isGitRepo} !=  "https://github.com/dtcenter/METexpress.git" ]]; then
+if [[ ${isGitRepo} != "https://github.com/dtcenter/METexpress.git" ]]; then
   echo "you are not in a local repo cloned from https://github.com/dtcenter/METexpress.git"
   echo "I cannot go on.... exiting"
   echo $usage
   exit 1
 fi
 
-if [[ BUILD_DIRECTORY != $rootOfRepo ]]; then
+if [[ ${BUILD_DIRECTORY} != ${rootOfRepo} ]]; then
   echo "you do not appear to be in the top of the repo"
   echo "I cannot go on.... exiting"
   echo $usage
