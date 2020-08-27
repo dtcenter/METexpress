@@ -7,6 +7,7 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - It is expected that you are building and deploying these apps on a linux based system.
 - It is expected that you do not build these tools as a priviledged user.
 - The build user should have standard linux development tools installed - gcc make etc.
+ - It is expected that you have a recent NPM and node.js installed.
 - [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) (apache-utils) - the build user must have apache [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) installed.
 - [jq](https://stedolan.github.io/jq/) - the build user must have [jq](https://stedolan.github.io/jq/) version jq-1.6 or higher.
 - [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher.
@@ -36,10 +37,6 @@ in the METexpress setup and configuration.
 To build these apps you use the included build script.
 Be sure to set the environment varaiables listed in the dependencies section above.
 ### steps:
-#### Build dependecies
- - It is expected that you have a standard linux build environment, i.e. make C C++ compiler etc
- - It is expected that you have a recent NPM and node.js installed.
- - You must have a github repository that you can push images into.
 #### first either ....
 - git clone https://github.com/dtcenter/METexpress [yourMETexpressDir] 
 or if you have previously cloned the build directory...
