@@ -70,7 +70,7 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
 ### Once you have demonstrated to yourself that the code builds without pushing, and once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 
 ## Installation
-For installation and configuration refer to the README.md in the `container_deployment` directory.
+For installation and configuration refer to the [README.md](https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md) in the `container_deployment` directory.
 
 
  
