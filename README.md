@@ -17,13 +17,29 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - You must have set the environment variable METEOR_PACKAGE_DIRS to the [local directory where you cloned MATScommon]/meteor_packages
  
  `export METEOR_PACKAGE_DIRS=[MATScommon-dir]/meteor_packages`
+- #### [METviewer](https://github.com/dtcenter/METviewer) DATABASE 
+ - METexpress depends upon a [METviewer](https://github.com/dtcenter/METviewer) database. 
+This database has a specific schema and specific load tools. 
+It is required that you have an installed METviewer and that you 
+have write credentials to the METviewer database which you can provide 
+in the METexpress setup and configuration. 
 
+- #### [METADATA](https://docs.google.com/document/d/17PuhXsFGpPwzPdQo-jCurg5t68SVsmkvF1WTPw64UV4/edit?ts=5f3f01c0) 
+- METexpress depends upon metadata that is derived from a 
+ [METviewer](https://github.com/dtcenter/METviewer) database. 
+ Before using METexpress you must create this metadata. 
+ Please refer to this [document](https://docs.google.com/document/d/17PuhXsFGpPwzPdQo-jCurg5t68SVsmkvF1WTPw64UV4/edit?ts=5f3f01c0).
+ The metadata scripts are kept in the scripts/matsMetaDataForApps/createMetaData/mysql/metexpress directory in this code tree.
 
 ## Build
-### These apps are always built and deployed as Docker images. There are always the most recent standard docker images in the public docker repository [repository](https://github.com/dtcenter/METexpress). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
+### These apps are always built and deployed as Docker images. The most recent, standard, production ready docker images are in the public docker  [repository](https://hub.docker.com/repository/docker/dtcenter/metexpress-production). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
 To build these apps you use the included build script.
 Be sure to set the environment varaiables listed in the dependencies section above.
 ### steps:
+#### Build dependecies
+ - It is expected that you have a standard linux build environment, i.e. make C C++ compiler etc
+ - It is expected that you have a recent NPM and node.js installed.
+ - You must have a github repository that you can push images into.
 #### first either ....
 - git clone https://github.com/dtcenter/METexpress [yourMETexpressDir] 
 or if you have previously cloned the build directory...
