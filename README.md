@@ -24,11 +24,11 @@ It is required that you have an installed METviewer and that you
 have write credentials to the METviewer database which you can provide 
 in the METexpress setup and configuration. 
 
-- #### [METADATA](https://docs.google.com/document/d/17PuhXsFGpPwzPdQo-jCurg5t68SVsmkvF1WTPw64UV4/edit?ts=5f3f01c0) 
+- #### [METADATA](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md) 
 - METexpress depends upon metadata that is derived from a 
  [METviewer](https://github.com/dtcenter/METviewer) database. 
  Before using METexpress you must create this metadata. 
- Please refer to this [document](https://docs.google.com/document/d/17PuhXsFGpPwzPdQo-jCurg5t68SVsmkvF1WTPw64UV4/edit?ts=5f3f01c0).
+ Please refer to this [document](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md).
  The metadata scripts are kept in the scripts/matsMetaDataForApps/createMetaData/mysql/metexpress directory in this code tree.
 
 ## Build
