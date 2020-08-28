@@ -276,8 +276,10 @@ LABEL version="${buildVer}"
             fi
             if [ $ret -eq 0 ]; then
               # remove the docker image - conserve space for build
-              echo "${RED} Failed to push the image! ${NC}"
+              echo "${GRN} pushed the image! ${NC}"
               docker rmi ${repo}:${TAG}
+            else
+              echo "${RED} Failed to push the image! ${NC}"
             fi
         else
             echo "$0:${myApp}: NOT pushing image ${repo}:${TAG}"
