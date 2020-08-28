@@ -206,7 +206,7 @@ buildApp() {
 
     if [[ "${build_images}" == "yes" ]]; then
         echo -e "$0:${myApp}: Building image for ${myApp}"
-        buildVer="custom-${customVersion}"
+        buildVer="${customVersion}"
         # build container....
         export METEORD_DIR=/opt/meteord
         export MONGO_URL="mongodb://mongo"

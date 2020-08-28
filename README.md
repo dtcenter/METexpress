@@ -68,7 +68,7 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
 
 ### Versions
 - All built apps will get the version specified in the -v parameter. 
-If you do not specify a version they will automatically get a version based on the build date. The version will be formatted like "custom-YYYYMMDD".
+If you do not specify a version they will automatically get a version based on the build date. The version will be formatted like "YYYYMMDD".
 ### Once you have demonstrated to yourself that the code builds without pushing, 
 - once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 - alternatively you can use [-l] which will build the images locally and leave them on your build system.
