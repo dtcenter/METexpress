@@ -35,17 +35,17 @@ if [ ! -f ~/.metexpress-repo-credentials ]; then
 fi
 . ~/.metexpress-repo-credentials
 if [ -z ${repo_user+x} ]; then
-  echo "${RED} your repo_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
 if [ -z ${repo_password+x} ]; then
-  echo "${RED} your repo_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
 if [ -z ${repo+x} ]; then
-  echo "${RED} your repo is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
@@ -130,7 +130,7 @@ if [ "X${requestedApp}" != "X" ]; then
         done
     fi
 else
-  echo "${RED} you did not request any buildable apps - exiting ${NC}"
+  echo -e "${RED} you did not request any buildable apps - exiting ${NC}"
   exit 1
 fi
 echo -e "${GRN}Resolved apps to build - building these apps ${apps[*]}${NC}"
@@ -206,7 +206,7 @@ buildApp() {
 
     if [[ "${build_images}" == "yes" ]]; then
         echo -e "$0:${myApp}: Building image for ${myApp}"
-        buildVer="custom-$(customVersion)"
+        buildVer="custom-${customVersion}"
         # build container....
         export METEORD_DIR=/opt/meteord
         export MONGO_URL="mongodb://mongo"

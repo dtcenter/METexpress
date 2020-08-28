@@ -3,10 +3,6 @@ RED='\033[0;31m'
 GRN='\033[0;32m'
 ORNG='\033[0;33m'
 NC='\033[0m' # No Color
-#tmpfile=$(mktemp /tmp/setp.XXXXXX)
-#tmpSettingsFile=$(mktemp /tmp/settings.XXXXXX)
-#tmpDockerFile=$(mktemp /tmp/docker.XXXXXX)
-#tmpAppList=$(mktemp /tmp/applist.XXXXXX)
 function finish {
     echo -e ${NC}
 #    rm -rf $tmpfile
@@ -16,7 +12,7 @@ function finish {
 }
 trap finish EXIT
 
-# are we in an install area (where the tar was unbundled)
+# are we in an install area
 if [[ ! -d "./web"  ]]; then
     echo -e "${RED}I don't see a ./web directory - I cannot set up anything, try cd'ing to the container deployment directory - exiting ${NC}"
     exit 1
@@ -43,21 +39,29 @@ DEPLOYDIR=$(pwd)
 cat <<%END > ./README
 This program will help you configure your METexpress tool suite environment.
 To do this you must have access to the internet.
-This program will deploy the latest METexpress apps from a given repository. Then it will ask a series of questions in this order...
-1) It will ask you for the repository name of a dockerhub repo where there are METexpress images.
-2) The program will ask you to verify the domainName of your deployment server. It uses this to configure its own proxy service that fronts the apps.
-3) The program will ask you to provide the
-3) It will prompt you for the fully qualified proxy hostName, defaulting to the domainName. If your public URL is the same as your domainName just accept the default. Your
-deployment might be behind a redirection proxy with redirection to a different path than what is actually on the host - for example, at GSL our METexpress server might
-be deployed on a server with an internal URL "https://something.subnet.esrl.noaa.gov" with the landing page location "/", while the public URL is a proxy redirect
-"https://www.esrl.noaa.gov/gsd/mats". In this case the fully qualified proxy hostName is www.esrl.noaa.gov and the proxy_prefix_path needs to be set to "/gsd/mats".
-4) Next you will be prompted for a proxy redirection path. This allows you to serve a different path than "/".
-5) Finally you will be prompted you for database credentials for each role required by each app.
+This program will deploy the apps specified in the file stableDeployment.json from the given repository with
+the versions specified in the stableDeployment.json file. You should edit this file ahead of time if you have a custom repository.
+Then it will ask a series of questions in this order...
+1) The program will ask you to verify the domainName of your deployment server.
+It uses this to configure its own proxy service that fronts the apps.
+2) It will prompt you for the fully qualified proxy hostName, defaulting to the domainName.
+If your public URL is the same as your domainName just accept the default. Your
+deployment might be behind a redirection proxy with redirection to a different path
+than what is actually on the host - for example, at GSL our METexpress server might
+be deployed on a server with an internal URL "https://something.subnet.esrl.noaa.gov"
+with the landing page location "/", while the public URL is a proxy redirect
+"https://www.esrl.noaa.gov/gsd/mats". In this case the fully qualified proxy hostName
+is www.esrl.noaa.gov and the proxy_prefix_path needs to be set to "/gsd/mats".
+3) Next you will be prompted for a proxy redirection path.
+This allows you to serve a different path than "/".
+4) Finally you will be prompted you for database credentials for each role required by each app.
 Database roles are usually some combination of meta_data - the database that contains app metadata,
 sums_data - the database that contains an apps statistical partial sum data, model_data - a database that
 contains metadata about data sources, and possibly sites_data - which contains non standard domain data.
-The credentials that you provide are stored in a ${DEPLOYDIR}/settings directory with the structure ${DEPLOYDIR}/settings/appreference/settings.json. This directory will NOT
-be publicly accessible. If you are familiar with this directory and the settings.json files you can make changes with an editor and the setup program
+The credentials that you provide are stored in a ${DEPLOYDIR}/settings directory with the structure
+${DEPLOYDIR}/settings/appreference/settings.json. This directory will NOT
+be publicly accessible. If you are familiar with this directory and the settings.json
+files you can make changes with an editor and the setup program
 will use the existing values as defaults.
 The settings files also hold the proxy_prefix_path from 4).
 The program configures this deployment directory, creating a ${DEPLOYDIR}/docker-compose.yml configuration file,
@@ -147,45 +151,25 @@ if [[ ! $? -eq 0  ]]; then
 fi 
 echo -e ${NC}
 domain=$(hostname)
-#serverUrl="https://www.esrl.noaa.gov/gsd/mats/appProductionStatus"
-#if [[ "$(hostname)" =~ ".gsd.esrl.noaa.gov" ]]; then
-#    # we might be in the dmz and have to use the local url
-#    serverUrl="https://mats.gsd.esrl.noaa.gov/appProductionStatus"
-#fi
-#get deployment environments - only happens one time
-#depenvs=$(curl -k ${serverUrl}/getDeploymentEnvironments 2>/dev/null | jq -r '.[]')
-##get applist
-#echo -e "${ORNG}You must choose an environment to deploy (number [ENTER]) ${NC}"
-#select depenv in ${depenvs}; do
-#    echo -e "${GRN}You picked $depenv ($REPLY) deploying for $depenv${NC}"
-#    break
-#done
 depenv=metexpress
 runenv="production"
-# record a repository name...
-# everything that isn't development or integration is production
-#repository="matsapps/production"
-#prodRepository="matsapps/production"
-#if [[ ${depenv} == "integration" ]]; then
-#    repository="matsapps/integration"
-#    runenv="integration"
-#else if [[ ${depenv} == "development" ]]; then
-#        repository="matsapps/development"
-#        runenv="development"
-#    fi
-#fi
-
-
-# get the applist just to check if the environment is valid
-#curl -k ${serverUrl}/getStableDeploymentAppList/${depenv} 2>/dev/null > $tmpAppList
+repository="dtcenter/metexpress-production"
+read -p "Are you using a custom docker repository for this deployment? y|n" -n 1 -r
+echo -e ${NC}
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+    echo -e "${GRN}setting up for ${repository}${NC}"
+else
+    echo -e ${RED}
+    read -p "Enter the custom repository name:" repository
+    echo -e ${NC}
+    echo -e "${GRN}setting up for ${repository}${NC}"
+fi
 tmpAppList=applist.json
 checkapps=($(cat ${tmpAppList} | jq -r '.[].app'))
 if [[ ${#checkapps[@]} < 1 ]]; then
     echo -e "${RED}There are no apps to configure. exiting.${NC}"
         exit 1
 else 
-    #get the stable deployment and save it to tmpfile
-    #curl -k ${serverUrl}/getStableDeployment/${depenv} 2>/dev/null > $tmpfile
     tmpfile=stableDeployment.json
     # load the apps from the stable deployment -
     # order is preserved in the array from the tempfile

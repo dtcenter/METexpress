@@ -21,13 +21,18 @@ For questions or bugs you can use the "contact" link in the header at the top of
 if you have NOAA credentials you can use the "bugs/issues" link at the top of each application.
 Failing that contact Randy Pierce at randy.pierce@noaa.gov 
 #### setup program
-The setup program will help you configure your tool suite environment based on one of the standard environments.
+The setup program will help you configure your tool suite.
 To do this you must have access to the internet.
 
-This setup program will query the [GSD server](https://www.esrl.noaa.gov/gsd/mats/appProductionStatus) which deployment environments are currently
-supported for assisted deployment. It will ask you to choose which environment you wish to deploy. The setup will ask the GSD appProductionStatus
-server what apps and versions of the apps for your selected deployment are currently up to date and then prompt you for the database credentials for each
-database role required by each app. These credentials are to your own database. For METexpress this is the METviewer database and the credentials will likely be the same for each app.
+This setup program will ask for the repository name of a dockerhub repository. 
+It will also ask for the version of the apps that you wish to deploy. **The program will use the version
+numbers in the file stableDeployment.json as defaults**. The stableDeployment.json that is provided here already has the correct version 
+for each app that is the latest in the standard pre-built METexpress repository. If you
+have a custom repository then the versions will be different. 
+Editing this file ahead of time may make things easier. **The file
+stableDeployment.json also specifies which apps will be deployed**. If custom apps have been built you will need to add them to this file.
+It will then prompt you for the database credentials for each
+database role required by each app. For METexpress this is the METviewer database and the credentials will likely be the same for each app.
 #### Database Roles
 Database roles are usually some combination of 
 * meta_data - the database that contains app metadata,
@@ -84,10 +89,7 @@ This is an example of a settings.json file with dummy credentials.
 #### Running the setup program
 To run the program: cd into this directory (the top of the directory where you copied this bundle) and run
 `bash bin/configure`
-
-The program will download the latest setup program from the GSD server and run it from a temporary location. The installer script is not persisted, it will
-be retrieved new each time.
-
+The configure script will run the setup program.
 #### Setup artifacts
 The setup program configures this deployment directory, creating a `./docker-compose.yml` configuration file,
 and a `./traefik.toml` file, a suitable `./web/index.html` as a homepage, each configured depending on the deployment environment you chose.
