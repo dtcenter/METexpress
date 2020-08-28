@@ -9,8 +9,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     },
     {
@@ -19,8 +18,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     },
     {
@@ -29,8 +27,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     },
     {
@@ -39,8 +36,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     },
     {
@@ -49,8 +45,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     },
     {
@@ -59,8 +54,7 @@
       "version": "2.6.1",
       "group": "METexpress",
       "dbroles": [
-        "sums_data",
-        "meta_data"
+        "sums_data"
       ]
     }
   ]

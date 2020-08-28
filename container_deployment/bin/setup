@@ -3,12 +3,12 @@ RED='\033[0;31m'
 GRN='\033[0;32m'
 ORNG='\033[0;33m'
 NC='\033[0m' # No Color
+tmpSettingsFile=$(mktemp /tmp/settings.XXXXXX)
+tmpDockerFile=$(mktemp /tmp/docker.XXXXXX)
 function finish {
     echo -e ${NC}
-#    rm -rf $tmpfile
-#    rm -rf $tmpSettingsFile
-#    rm -rf tmpDockerFile
-#    rm -rf $tmpAppList
+    rm -rf $tmpSettingsFile
+    rm -rf $tmpDockerFile
 }
 trap finish EXIT
 
@@ -91,11 +91,11 @@ and uncomment this line in the entrypoints.https section..
 and uncomment these lines...
 #[acme]
 #  caServer = "https://acme-v02.api.letsencrypt.org/directory"
-#  email = "mats.gsd@noaa.gov"
+#  email = ""
 #  storage = "acme.json"
 #  entryPoint = "https"
 #  [acme.tlsChallenge]
-#[[acme.domains]]
+#  [[acme.domains]]
 #  main = "${domain}"
 
 If you want to use externally acquired certs then you need to acquire an SSL cert for your domain and put the certificate in /etc/ssl/certs directory of this host. If you have authority over the DNS entry for
@@ -445,7 +445,7 @@ networks:
 services:
 
  traefik:
-  image: traefik
+  image: traefik:1.7.16-alpine
   deploy:
     restart_policy:
       condition: on-failure
@@ -461,7 +461,6 @@ services:
    - /var/run/docker.sock:/var/run/docker.sock
    - ${DEPLOYDIR}/traefik.toml:/traefik.toml
    - ${DEPLOYDIR}/logs:/logs
-   - ${DEPLOYDIR}/acme.json:/acme.json
 # comment out the - /etc/ssl/certs:/etc/ssl/certs line if using lets-encrypt tls challenge instead of an externally acquired cert
 # if using an externally acquired cert, put it in the following directory
    - /etc/ssl/certs:/etc/ssl/certs
@@ -470,7 +469,7 @@ services:
    - traefik.port=8090
 
  mats-http:
-  image: ${prodRepository}:mats-http
+  image: matsapps/production:mats-http
   deploy:
     restart_policy:
       condition: on-failure
@@ -488,7 +487,7 @@ services:
    - web
 
  mongo:
-  image: mongo
+  image: mongo:4.2.0
   deploy:
     restart_policy:
       condition: on-failure
