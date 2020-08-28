@@ -95,6 +95,7 @@ while getopts "ailr:p" o; do
         ;;
         v)
           customVersion=(${OPTARG})
+          ;;
         p)
         # secret parallel build mode
         parallel="yes"
