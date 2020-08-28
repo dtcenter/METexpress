@@ -41,15 +41,14 @@ fi
 DEPLOYDIR=$(pwd)
 
 cat <<%END > ./README
-This program will help you configure your MATS tool suite environment based on one of the standard environments.
+This program will help you configure your METexpress tool suite environment.
 To do this you must have access to the internet.
-This program will query the GSD appProduction service which deployment environments are currently
-supported for assisted deployment. Then it will ask a series of questions in this order...
-1) It will ask you which environment you wish to deploy. Choose an environment by number. The setup will ask the GSD server which versions
-of the apps for your selected deployment are currently up to date.
+This program will deploy the latest METexpress apps from a given repository. Then it will ask a series of questions in this order...
+1) It will ask you for the repository name of a dockerhub repo where there are METexpress images.
 2) The program will ask you to verify the domainName of your deployment server. It uses this to configure its own proxy service that fronts the apps.
+3) The program will ask you to provide the
 3) It will prompt you for the fully qualified proxy hostName, defaulting to the domainName. If your public URL is the same as your domainName just accept the default. Your
-deployment might be behind a redirection proxy with redirection to a different path than what is actually on the host - for example, at GSD our mats server might
+deployment might be behind a redirection proxy with redirection to a different path than what is actually on the host - for example, at GSL our METexpress server might
 be deployed on a server with an internal URL "https://something.subnet.esrl.noaa.gov" with the landing page location "/", while the public URL is a proxy redirect
 "https://www.esrl.noaa.gov/gsd/mats". In this case the fully qualified proxy hostName is www.esrl.noaa.gov and the proxy_prefix_path needs to be set to "/gsd/mats".
 4) Next you will be prompted for a proxy redirection path. This allows you to serve a different path than "/".

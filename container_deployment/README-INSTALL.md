@@ -1,6 +1,8 @@
 # Dependencies:
 
 You must have docker, docker-compose, httpaswd, and jq installed. You should have a certificate installed in /etc/ssl/certs.
+#### Certificate
+You can run the apps without a certificate but it will require modifying the deployed traefik.yaml file.
 
 Configuration steps:
 1. install Docker, docker-compose, htpasswd (apache-utils), and jq.

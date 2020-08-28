@@ -2,8 +2,8 @@
 # This script builds one or more METexpress apps, optionally takes the bundle that is built and adds a dockerfile
 # and then builds the image from an appropriate node image that corresponds to the node verwsion of the app.
 #
-usage="USAGE $0 [-a][-r appReferences (if more than one put them in \"\")] [-i] [-l (local images only - do not push)] \n\
-	where -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
+usage="USAGE $0 -v version [-a][-r appReferences (if more than one put them in \"\")] [-i] [-l (local images only - do not push)] \n\
+	where -v version is a version string or number that will be given to each image. -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
 	appReference is build only requested appReferences (like \"met-airquality\" \"met-anomalycor\"), \n\
 	and i is build images - images will be pushed to the repo in your credentials file"
 
@@ -74,6 +74,7 @@ requestedBranch=""
 pushImage="yes"
 build_images="no"
 parallel="no"
+customVersion=""
 while getopts "ailr:p" o; do
     case "${o}" in
         a)
@@ -92,6 +93,9 @@ while getopts "ailr:p" o; do
             requestedApp=(${OPTARG})
             echo -e "requsted apps ${requestedApp[@]}"
         ;;
+        v)
+          customVersion=(${OPTARG})
+          echo -e "using version ${customVersion}"
         p)
         # secret parallel build mode
         parallel="yes"
@@ -201,7 +205,7 @@ buildApp() {
 
     if [[ "${build_images}" == "yes" ]]; then
         echo -e "$0:${myApp}: Building image for ${myApp}"
-        buildVer="custom-$(date +%Y%m%d-%H%m)"
+        buildVer="custom-$(customVersion)"
         # build container....
         export METEORD_DIR=/opt/meteord
         export MONGO_URL="mongodb://mongo"
