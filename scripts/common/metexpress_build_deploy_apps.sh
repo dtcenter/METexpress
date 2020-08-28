@@ -75,7 +75,7 @@ pushImage="yes"
 build_images="no"
 parallel="no"
 customVersion="$(date +%Y%M%d)"
-while getopts "ailr:p" o; do
+while getopts "ailr:v:p" o; do
     case "${o}" in
         a)
         #all apps
