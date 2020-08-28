@@ -85,6 +85,7 @@ while getopts "ailr:p" o; do
             build_images="yes"
             ;;
         l)
+            build_images="yes"
             pushImage="no"
         ;;
         r)
@@ -169,6 +170,10 @@ cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"
 BUNDLE_DIRECTORY=${BUILD_DIRECTORY}/bundles
 buildApp() {
+  echo "repo is $repo"
+  echo "repo user is $repo_user"
+  echo "repo password is is $repo_password"
+
     local myApp=$1
     cd ${APP_DIRECTORY}/${myApp}
     echo -e "$0:${myApp}: - building app ${GRN}${myApp}${NC}"
@@ -181,7 +186,7 @@ buildApp() {
         rm -rf ${BUNDLE_DIRECTORY}/*
     fi
     # do not know why I have to do these explicitly, but I do.
-#    /usr/local/bin/meteor npm install --save @babel/runtime
+    /usr/local/bin/meteor npm install --save @babel/runtime
 #    /usr/local/bin/meteor npm install --save bootstrap
 #    /usr/local/bin/meteor npm audit fix
 
@@ -212,7 +217,7 @@ buildApp() {
         # save and export the meteor node version for the build_app script
         export METEOR_NODE_VERSION=$(meteor node -v | tr -d 'v')
         export METEOR_NPM_VERSION=$(meteor npm -v)
-        cp ${METEOR_PACKAGE_DIRS}/../scripts/common/docker_scripts/run_app.sh  .
+        cp ../../scripts/common/docker_scripts/run_app.sh  .
         chmod +x run_app.sh
         # remove the node_modules to force rebuild in container
         rm -rf bundle/programs/server/node_modules
@@ -248,9 +253,9 @@ ENV MONGO_URL=mongodb://mongo:27017/${APPNAME}
 ENV ROOT_URL=http://localhost:80/
 EXPOSE 80
 ENTRYPOINT ["/usr/app/run_app.sh"]
-LABEL version="${buildVer}" code.branch="${buildCodeBranch}" code.commit="${newCodecommit}"
+LABEL version="${buildVer}"
     # build container
-        #docker build --no-cache --rm -t ${repo}:${APPNAME}-${buildVer} .
+        #docker build --no-cache --rm -t ${TAG} .
         #docker tag ${repo}:${TAG} ${repo}:${TAG}
         #docker push ${repo}:${TAG}
 %EOFdockerfile
@@ -259,16 +264,21 @@ LABEL version="${buildVer}" code.branch="${buildCodeBranch}" code.commit="${newC
         echo "$0:${myApp}: docker tag ${repo}:${TAG} ${repo}:${TAG}"
         docker tag ${repo}:${TAG} ${repo}:${TAG}
         if [ "${pushImage}" == "yes" ]; then
-            echo ${repo_password} | docker login -u ${repo_user} --password-stdin
+            echo ${docker_password} | docker login -u ${docker_user} --password-stdin
             echo "$0:${myApp}: pushing image ${repo}:${TAG}"
             docker push ${repo}:${TAG}
-            if [ $? -ne 0 ]; then
+            ret=$?
+            if [ $ret -ne 0 ]; then
                 # retry
                 echo -e "${RED} Error pushing image - need to retry${NC}"
                 docker push ${repo}:${TAG}
+                ret=$?
             fi
-            # remove the docker image - conserve space for build
-            docker rmi ${repo}:${TAG}
+            if [ $ret -eq 0 ]; then
+              # remove the docker image - conserve space for build
+              echo "${RED} Failed to push the image! ${NC}"
+              docker rmi ${repo}:${TAG}
+            fi
         else
             echo "$0:${myApp}: NOT pushing image ${repo}:${TAG}"
         fi

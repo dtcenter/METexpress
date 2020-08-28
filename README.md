@@ -10,7 +10,7 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
  - It is expected that you have a recent NPM and node.js installed.
 - [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) (apache-utils) - the build user must have apache [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) installed.
 - [jq](https://stedolan.github.io/jq/) - the build user must have [jq](https://stedolan.github.io/jq/) version jq-1.6 or higher.
-- [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher.
+- [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher. Docker also needs to be running.
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
 - #### [MATScommon](https://github.com/dtcenter/MATScommon): You must have cloned the dtcenter/MATScommon project into a local directory accessible by the build user.
