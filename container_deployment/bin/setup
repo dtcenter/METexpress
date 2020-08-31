@@ -568,7 +568,36 @@ services:
         #NOTE: the {id:[0-9]?} at the end of each app frontend.rule below is a workaround
         # for short paths. For some as yet not understood reason short reference names like vil
         # do not match the PathPrefix unless I append the unused regex qualifier. We need to fix this - or at least understand it.
-        cat <<- %COMPOSEAPPEND >> $tmpDockerFile
+        if [[ ${simple} == "true" ]]; then
+          cat <<- %COMPOSESIMPLEAPPEND >> $tmpDockerFile
+ ${appref}:
+  # app ${appref} version is ${appversion}
+  image: ${repository}:${apptag}
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 60s
+  environment:
+   - DELAY=6
+   - ROOT_URL=http://${proxyHost}${proxyPath}/${appref}
+  volumes:
+   - ${DEPLOYDIR}/settings:/usr/app/settings
+  depends_on:
+   - mongo
+  labels:
+   - traefik.backend=${appref}
+   - traefik.frontend.rule=Host:${domain};PathPrefix:${proxyPath}/${appref}{id:[0-9]?}
+   - traefik.docker.network=web
+   - traefik.port=80
+  networks:
+   - web
+   - backend
+
+%COMPOSESIMPLEAPPEND
+        else
+          cat <<- %COMPOSEAPPEND >> $tmpDockerFile
  ${appref}:
   # app ${appref} version is ${appversion}
   image: ${repository}:${apptag}
@@ -593,8 +622,8 @@ services:
   networks:
    - web
    - backend
-
 %COMPOSEAPPEND
+      fi
     done
     mv $tmpDockerFile docker-compose.yml
 fi
