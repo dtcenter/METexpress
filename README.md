@@ -7,10 +7,11 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - It is expected that you are building and deploying these apps on a linux based system.
 - It is expected that you do not build these tools as a priviledged user.
 - The build user should have standard linux development tools installed - gcc make etc.
- - It is expected that you have a recent NPM and node.js installed.
+- You must have installed [Meteor.js](https://www.meteor.com/install).
+- It is expected that you have a recent NPM and node.js installed.
 - [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) (apache-utils) - the build user must have apache [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) installed.
 - [jq](https://stedolan.github.io/jq/) - the build user must have [jq](https://stedolan.github.io/jq/) version jq-1.6 or higher.
-- [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher.
+- [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher. Docker also needs to be running.
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
 - #### [MATScommon](https://github.com/dtcenter/MATScommon): You must have cloned the dtcenter/MATScommon project into a local directory accessible by the build user.
@@ -66,7 +67,8 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
 `export repo='repository'`
 
 ### Versions
-- All built apps will automatiacally get a version based on the build date and time. The version will be formatted like "custom-YYYYMMDD-HHMM".
+- All built apps will get the version specified in the -v parameter. 
+If you do not specify a version they will automatically get a version based on the build date. The version will be formatted like "YYYYMMDD".
 ### Once you have demonstrated to yourself that the code builds without pushing, 
 - once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 - alternatively you can use [-l] which will build the images locally and leave them on your build system.

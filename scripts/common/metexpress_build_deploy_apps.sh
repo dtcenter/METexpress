@@ -2,22 +2,22 @@
 # This script builds one or more METexpress apps, optionally takes the bundle that is built and adds a dockerfile
 # and then builds the image from an appropriate node image that corresponds to the node verwsion of the app.
 #
-usage="USAGE $0 [-a][-r appReferences (if more than one put them in \"\")] [-i] [-l (local images only - do not push)] \n\
-	where -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
+usage="USAGE $0 -a | -r appReferences (if more than one put them in \"\") [-v version] [-i] [-l (local images only - do not push)] \n\
+	where -v version is a version string or number that will be given to each image. -a is force build all apps, -b branch lets you override the assigned branch (feature build)\n\
 	appReference is build only requested appReferences (like \"met-airquality\" \"met-anomalycor\"), \n\
 	and i is build images - images will be pushed to the repo in your credentials file"
 
 isGitRepo=$( git config --get remote.origin.url)
 rootOfRepo=$(git rev-parse --show-toplevel)
 BUILD_DIRECTORY=$(pwd)
-if [[ ${isGitRepo} !=  "https://github.com/dtcenter/METexpress.git" ]]; then
+if [[ ${isGitRepo} != "https://github.com/dtcenter/METexpress.git" ]]; then
   echo "you are not in a local repo cloned from https://github.com/dtcenter/METexpress.git"
   echo "I cannot go on.... exiting"
   echo $usage
   exit 1
 fi
 
-if [[ BUILD_DIRECTORY != $rootOfRepo ]]; then
+if [[ ${BUILD_DIRECTORY} != ${rootOfRepo} ]]; then
   echo "you do not appear to be in the top of the repo"
   echo "I cannot go on.... exiting"
   echo $usage
@@ -35,17 +35,17 @@ if [ ! -f ~/.metexpress-repo-credentials ]; then
 fi
 . ~/.metexpress-repo-credentials
 if [ -z ${repo_user+x} ]; then
-  echo "${RED} your repo_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
 if [ -z ${repo_password+x} ]; then
-  echo "${RED} your repo_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
 if [ -z ${repo+x} ]; then
-  echo "${RED} your repo is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+  echo -e "${RED} your repo is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
   echo exit 1
 fi
@@ -74,7 +74,8 @@ requestedBranch=""
 pushImage="yes"
 build_images="no"
 parallel="no"
-while getopts "ailr:p" o; do
+customVersion="$(date +%Y%M%d)"
+while getopts "ailr:v:p" o; do
     case "${o}" in
         a)
         #all apps
@@ -85,12 +86,16 @@ while getopts "ailr:p" o; do
             build_images="yes"
             ;;
         l)
+            build_images="yes"
             pushImage="no"
         ;;
         r)
             requestedApp=(${OPTARG})
             echo -e "requsted apps ${requestedApp[@]}"
         ;;
+        v)
+          customVersion=(${OPTARG})
+          ;;
         p)
         # secret parallel build mode
         parallel="yes"
@@ -103,6 +108,7 @@ while getopts "ailr:p" o; do
 done
 shift $((OPTIND - 1))
 echo "Building METexpress apps - requestedApps: ${requestedApp[@]}  date: $(/bin/date +%F_%T)"
+echo -e "using version ${customVersion}"
 
 # find buildable apps from apps directory
 buildableApps=( $(find apps -depth 1 -exec basename {} \;) )
@@ -124,7 +130,7 @@ if [ "X${requestedApp}" != "X" ]; then
         done
     fi
 else
-  echo "${RED} you did not request any buildable apps - exiting ${NC}"
+  echo -e "${RED} you did not request any buildable apps - exiting ${NC}"
   exit 1
 fi
 echo -e "${GRN}Resolved apps to build - building these apps ${apps[*]}${NC}"
@@ -169,6 +175,10 @@ cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"
 BUNDLE_DIRECTORY=${BUILD_DIRECTORY}/bundles
 buildApp() {
+  echo "repo is $repo"
+  echo "repo user is $repo_user"
+  echo "repo password is is $repo_password"
+
     local myApp=$1
     cd ${APP_DIRECTORY}/${myApp}
     echo -e "$0:${myApp}: - building app ${GRN}${myApp}${NC}"
@@ -181,7 +191,7 @@ buildApp() {
         rm -rf ${BUNDLE_DIRECTORY}/*
     fi
     # do not know why I have to do these explicitly, but I do.
-#    /usr/local/bin/meteor npm install --save @babel/runtime
+    /usr/local/bin/meteor npm install --save @babel/runtime
 #    /usr/local/bin/meteor npm install --save bootstrap
 #    /usr/local/bin/meteor npm audit fix
 
@@ -196,7 +206,7 @@ buildApp() {
 
     if [[ "${build_images}" == "yes" ]]; then
         echo -e "$0:${myApp}: Building image for ${myApp}"
-        buildVer="custom-$(date +%Y%m%d-%H%m)"
+        buildVer="${customVersion}"
         # build container....
         export METEORD_DIR=/opt/meteord
         export MONGO_URL="mongodb://mongo"
@@ -212,7 +222,7 @@ buildApp() {
         # save and export the meteor node version for the build_app script
         export METEOR_NODE_VERSION=$(meteor node -v | tr -d 'v')
         export METEOR_NPM_VERSION=$(meteor npm -v)
-        cp ${METEOR_PACKAGE_DIRS}/../scripts/common/docker_scripts/run_app.sh  .
+        cp ../../scripts/common/docker_scripts/run_app.sh  .
         chmod +x run_app.sh
         # remove the node_modules to force rebuild in container
         rm -rf bundle/programs/server/node_modules
@@ -248,9 +258,9 @@ ENV MONGO_URL=mongodb://mongo:27017/${APPNAME}
 ENV ROOT_URL=http://localhost:80/
 EXPOSE 80
 ENTRYPOINT ["/usr/app/run_app.sh"]
-LABEL version="${buildVer}" code.branch="${buildCodeBranch}" code.commit="${newCodecommit}"
+LABEL version="${buildVer}"
     # build container
-        #docker build --no-cache --rm -t ${repo}:${APPNAME}-${buildVer} .
+        #docker build --no-cache --rm -t ${TAG} .
         #docker tag ${repo}:${TAG} ${repo}:${TAG}
         #docker push ${repo}:${TAG}
 %EOFdockerfile
@@ -259,16 +269,23 @@ LABEL version="${buildVer}" code.branch="${buildCodeBranch}" code.commit="${newC
         echo "$0:${myApp}: docker tag ${repo}:${TAG} ${repo}:${TAG}"
         docker tag ${repo}:${TAG} ${repo}:${TAG}
         if [ "${pushImage}" == "yes" ]; then
-            echo ${repo_password} | docker login -u ${repo_user} --password-stdin
+            echo ${docker_password} | docker login -u ${docker_user} --password-stdin
             echo "$0:${myApp}: pushing image ${repo}:${TAG}"
             docker push ${repo}:${TAG}
-            if [ $? -ne 0 ]; then
+            ret=$?
+            if [ $ret -ne 0 ]; then
                 # retry
                 echo -e "${RED} Error pushing image - need to retry${NC}"
                 docker push ${repo}:${TAG}
+                ret=$?
             fi
-            # remove the docker image - conserve space for build
-            docker rmi ${repo}:${TAG}
+            if [ $ret -eq 0 ]; then
+              # remove the docker image - conserve space for build
+              echo "${GRN} pushed the image! ${NC}"
+              docker rmi ${repo}:${TAG}
+            else
+              echo "${RED} Failed to push the image! ${NC}"
+            fi
         else
             echo "$0:${myApp}: NOT pushing image ${repo}:${TAG}"
         fi

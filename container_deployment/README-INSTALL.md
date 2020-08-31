@@ -1,6 +1,8 @@
 # Dependencies:
 
 You must have docker, docker-compose, httpaswd, and jq installed. You should have a certificate installed in /etc/ssl/certs.
+#### Certificate
+You can run the apps without a certificate but it will require modifying the deployed traefik.yaml file.
 
 Configuration steps:
 1. install Docker, docker-compose, htpasswd (apache-utils), and jq.
@@ -19,13 +21,18 @@ For questions or bugs you can use the "contact" link in the header at the top of
 if you have NOAA credentials you can use the "bugs/issues" link at the top of each application.
 Failing that contact Randy Pierce at randy.pierce@noaa.gov 
 #### setup program
-The setup program will help you configure your tool suite environment based on one of the standard environments.
+The setup program will help you configure your tool suite.
 To do this you must have access to the internet.
 
-This setup program will query the [GSD server](https://www.esrl.noaa.gov/gsd/mats/appProductionStatus) which deployment environments are currently
-supported for assisted deployment. It will ask you to choose which environment you wish to deploy. The setup will ask the GSD appProductionStatus
-server what apps and versions of the apps for your selected deployment are currently up to date and then prompt you for the database credentials for each
-database role required by each app. These credentials are to your own database. For METexpress this is the METviewer database and the credentials will likely be the same for each app.
+This setup program will ask for the repository name of a dockerhub repository. 
+It will also ask for the version of the apps that you wish to deploy. **The program will use the version
+numbers in the file stableDeployment.json as defaults**. The stableDeployment.json that is provided here already has the correct version 
+for each app that is the latest in the standard pre-built METexpress repository. If you
+have a custom repository then the versions will be different. 
+Editing this file ahead of time may make things easier. **The file
+stableDeployment.json also specifies which apps will be deployed**. If custom apps have been built you will need to add them to this file.
+It will then prompt you for the database credentials for each
+database role required by each app. For METexpress this is the METviewer database and the credentials will likely be the same for each app.
 #### Database Roles
 Database roles are usually some combination of 
 * meta_data - the database that contains app metadata,
@@ -82,13 +89,10 @@ This is an example of a settings.json file with dummy credentials.
 #### Running the setup program
 To run the program: cd into this directory (the top of the directory where you copied this bundle) and run
 `bash bin/configure`
-
-The program will download the latest setup program from the GSD server and run it from a temporary location. The installer script is not persisted, it will
-be retrieved new each time.
-
+The configure script will run the setup program.
 #### Setup artifacts
 The setup program configures this deployment directory, creating a `./docker-compose.yml` configuration file,
-and a `./traefik.toml` file, a suitable `./web/index.html` as a homepage, each configured depending on the deployment environment you chose.
+and a `./traefik.toml` file.
 
 #### Setup Dependencies
 You must have docker, docker-compose and jq installed, and you must be running this script from the top of your deployment directory (where you
@@ -111,18 +115,77 @@ will map the cert directory to the proxy app.
 If you have authority over the DNS entry for
 your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://docs.traefik.io/configuration/acme/.
 
-#### Entrypoints
+### Reverse proxy interface
+traefik has a reverse proxy interface that can give you statistics, configuration information etc.
+- The reverse proxy interface has a user/password pre-set to user "**admin**" and password "**adminpassword**", you should change this by following the instructions in the traefik.toml file.
+
+### Using HTTP with no cert for testing
+It is possible to get traefik to work if you do not have a cert.
+There is an option in the configuration that allows you to specify a 
+"**simple test environment**". This will require your server to resolve localhost, but it will not require
+SSL or certificates. If you specify "**simple test environment**" the
+tool suite entrypoints are
+* https://localhost/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
+* https://localhost  for the top level landing page
+* https://localhost/appref   for an individual app (replace appref with the actual app reference.)
+
+Many of the remaining configurations are not applicable for the simple test environment and the configuration program will not ask about them.
+
+##CERTS and SSL - IMPORTANT
+There are two ways to handle ssl. You can let traefik use lets-encrypt automatically to generate and store certs.
+These are requirements for traefik/lets-encrypt certs
+1) You cannot have a firewall blocking outbound traffic  from your server and https://acme-v02.api.letsencrypt.org/directory
+2) You have to follow the comments in the traefik.toml file and properly comment out the externally acquired cert sections
+and uncomment the traefik/lets-encrypt sections.
+Specifically - comment out these lines...
+- [entryPoints.https.tls]
+- [[entryPoints.https.tls.certificates]]
+- certFile = "/etc/ssl/certs/${unqualifiedHostName}.crt"
+- keyFile = "/etc/ssl/certs/${unqualifiedHostName}.key"
+
+and uncomment this line in the entrypoints.https section..
+- [entryPoints.https.tls]
+
+and uncomment these lines...
+- [acme]
+- caServer = "https://acme-v02.api.letsencrypt.org/directory"
+- email = ""
+- storage = "acme.json"
+- entryPoint = "https"
+- [acme.tlsChallenge]
+- [[acme.domains]]
+-  main = "${domain}"
+
+If you want to use externally acquired certs then you need to acquire an SSL cert for your domain and put the certificate in /etc/ssl/certs directory of this host. If you have authority over the DNS entry for
+your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://docs.traefik.io/configuration/acme/.
+If you cannot acquire a certificate you can enable the apps temporarily by commenting out
+- [[entryPoints.https.tls.certificates]]
+- certFile = "/etc/ssl/certs/mats-meteor.crt"
+- keyFile = "/etc/ssl/certs/mats-meteor.key"
+in the traefik.toml file.
+Follow the comments in the traefik.toml file to make sure you have commented or uncommented the appropriate sections.
+
+#### Normal SSL Entrypoints
 The tool suite entrypoints are
 * https://yourfullyqualifieddomain/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
 * https://yourfullyqualifieddomain  for the top level landing page
 * https://yourfullyqualifieddomain/appref   for an individual app (replace appref with the actual app reference.)
 
 #### starting the service
-After configuration you can start your tool suite with....
-./bin/up
-and you can stop your tool suite with..
+- After configuration you can start your tool suite with....
+    `./bin/up metexpress`    
+    
+NOTE: if you get the error message 
+    `Error response from daemon: This node is already part of a swarm. Use "docker swarm leave" to leave this swarm and join another one.`
+It may mean that for some reason you already have your docker system running in a swarm.
+You must leave that swarm with
+`docker swarm leave` 
+and then try again.
 
-	./bin/down
+- You can stop your tool suite with..
+
+	./bin/down metexpress
+#### The "metexpress" as a parameter on bin/up or bin/down is defining a docker stack name. You must use this same stack name consistently with the commands in bin.
 
 #### Uninstall
 You can uninstall the docker images with bin/uninstall. This leaves the docker configuration in place so that a subsequent bin/up
@@ -151,13 +214,16 @@ can tell the version of a running app by looking at the comments in the docker-c
 you run the setup, with the current version for each app.
 
 #### Debugging
+You can increase the log level of traefik logging by editing the traefik.toml file
+and uncommenting logLevel = "DEBUG" and commenting logLevel = "INFO". Other
+logLevels are available. See traefik [documentation](https://docs.traefik.io/).
 Debugging startup problems:
 You can list services with 
-	
-	bin/listNames
-and you can view a service log with
 
-	bin/showLog NAME 
+	`bin/listNames`
+and you can view a service log with
+	
+	`bin/showLog NAME` 
 where NAME is from the "docker service ls" output.
 You can inspect a single service with 
 	
