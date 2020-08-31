@@ -15,11 +15,11 @@ The metadata scripts are written in python3, and require a number of python modu
 ## To run the metadata scripts for the first time:
 
 
-- The scripts are located in the METexpress repo [here](https://github.com/dtcenter/METexpress/tree/master/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress). After cloning this repo, copy or link the contents of that directory to your preferred run directory.
+- The scripts are located in the METexpress repo [here](https://github.com/dtcenter/METexpress/tree/master/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress). After cloning this repo, link the contents of the `scripts/matsMetaDataForApps/createMetaData/mysql` directory to your preferred run directory (e.g. something like `/home/metexpress/scripts`).
 - You will need a .my.cnf file with the login credentials for your mysql database. Remember, the credentials must be for a user with write permissions.
-- cd to your run directory (e.g.    `cd /home/metexpress/scripts`).
+- cd to your run directory (e.g. `cd /home/metexpress/scripts`). Remember, the contents of this run directory should be identical to the contents of `scripts/matsMetaDataForApps/createMetaData/mysql`.
 - Set the python path to your run directory (e.g.    `export PYTHONPATH="/home/metexpress/scripts"`).
-- Run the scripts from the command line. You will need to pass in the path to your .my.cnf file and the URL where METexpress will be available as arguments. The URL <metexpress_url> is the actual access url of your metexpress installation, e.g. `https://yourdomain/metexpress`. The url is necessary so that the metadata scripts can inform METexpress that new metadata is available. (e.g.    `/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>`)
+- Run the scripts from the command line. You will need to pass in the path to your .my.cnf file and the URL where METexpress will be available as arguments. (e.g. `/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>`) The URL <metexpress_url> is the actual access url of your metexpress installation, e.g. `https://yourdomain/metexpress`. The url is necessary so that the metadata scripts can inform METexpress that new metadata is available.
 - The scripts should generate the necessary metadata and store it in the database. Ignore any errors that you get at the end of the workflow about not being able to curl the URL that was passed in. These are to be expected, as METexpress will not yet be running there.
 - You should now be able to run a METexpress instance that looks at this database.
 
@@ -29,11 +29,9 @@ Once the apps are up, any new MET data loaded into the database will not appear 
 ## To run the metadata scripts subsequent times (such as from the crontab):
 
 
-Set the python path to your run directory
-(e.g.    `export PYTHONPATH="/home/metexpress/scripts"`).
-Run the scripts from the command line. You will need to pass in the path to your .my.cnf file and the URL where METexpress will be available as arguments.
-(e.g.    `/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>`).
-The scripts should generate the necessary metadata and store it in the database. This time, you should not receive any errors at the end of the workflow about not being able to `curl` the URL that was passed in. The script should be able to `curl` each app at that URL, triggering a metadata update and causing the selectors to display the latest information.
+- Set the python path to your run directory (e.g. `export PYTHONPATH="/home/metexpress/scripts"`).
+- Run the scripts from the command line. You will need to pass in the path to your .my.cnf file and the URL where METexpress is available as arguments. (e.g. `/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>`).
+- The scripts should generate the necessary metadata and store it in the database. This time, you should not receive any errors at the end of the workflow about not being able to `curl` the URL that was passed in. The script should be able to `curl` each app at that URL, triggering a metadata update and causing the selectors to display the latest information.
 
 ## Having mv_load or METdbload trigger a metadata update.
 
