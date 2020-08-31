@@ -339,17 +339,17 @@ defaultEntryPoints = ["http", "https"]
 %ENDTRAEFIK
 fi
     mapbox_key=""
-    read -p "Is there a mapbox key required for this deployment? (answer no for METexpress) y|n" -n 1 -r
+    read -p "Is there a mapbox key required for this deployment? (answer no for METexpress) y|n [n]" -n 1 -r
     echo -e ${NC}
     mapbox_key="undefined"
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
-        echo -e "${GRN}Leaving mapbox_key undefined ${NC}"
-    else
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e ${RED}
         read -p "Enter the mapbox key:" mapbox_key
 	      mapbox_key=${mapbox_key%/}  # remove any trailing slash
         echo -e ${NC}
         echo -e "${GRN}setting mapbox_key to ${mapbox_key}${NC}"
+    else
+        echo -e "${GRN}Leaving mapbox_key undefined ${NC}"
     fi
 
     echo -e ${GRN}configuring applist...  ${apps[@]}${NC}
