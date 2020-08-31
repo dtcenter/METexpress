@@ -42,9 +42,19 @@ To do this you must have access to the internet.
 This program will deploy the apps specified in the file stableDeployment.json from the given repository with
 the versions specified in the stableDeployment.json file. You should edit this file ahead of time if you have a custom repository.
 Then it will ask a series of questions in this order...
-1) The program will ask you to verify the domainName of your deployment server.
+1) It will ask if you want to set up a "test environment". If you answer yes, the following questions 2)
+through 4) will not be asked and the router will be configured for a simple http only "localhost" environment.
+You will still need to answer question 5 to configure your daabase credentials.
+Your server should understand "localhost" if you use this option.
+The toolsuite entrypoints for a simple test environment are ...
+https://localhost/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
+https://localhost  for the top level landing page
+https://localhost/appref   for an individual app (replace appref with the actual app reference.)
+You can ignore the instructions for SSL as they will not be applicable.
+
+2) The program will ask you to verify the domainName of your deployment server.
 It uses this to configure its own proxy service that fronts the apps.
-2) It will prompt you for the fully qualified proxy hostName, defaulting to the domainName.
+3) It will prompt you for the fully qualified proxy hostName, defaulting to the domainName.
 If your public URL is the same as your domainName just accept the default. Your
 deployment might be behind a redirection proxy with redirection to a different path
 than what is actually on the host - for example, at GSL our METexpress server might
@@ -52,9 +62,9 @@ be deployed on a server with an internal URL "https://something.subnet.esrl.noaa
 with the landing page location "/", while the public URL is a proxy redirect
 "https://www.esrl.noaa.gov/gsd/mats". In this case the fully qualified proxy hostName
 is www.esrl.noaa.gov and the proxy_prefix_path needs to be set to "/gsd/mats".
-3) Next you will be prompted for a proxy redirection path.
+4) Next you will be prompted for a proxy redirection path.
 This allows you to serve a different path than "/".
-4) Finally you will be prompted you for database credentials for each role required by each app.
+5) Finally you will be prompted you for database credentials for each role required by each app.
 Database roles are usually some combination of meta_data - the database that contains app metadata,
 sums_data - the database that contains an apps statistical partial sum data, model_data - a database that
 contains metadata about data sources, and possibly sites_data - which contains non standard domain data.
@@ -151,25 +161,24 @@ if [[ ! $? -eq 0  ]]; then
 fi 
 echo -e ${NC}
 domain=$(hostname)
+simple=false
 depenv=metexpress
 runenv="production"
 repository="dtcenter/metexpress-production"
 read -p "Are you using a custom docker repository for this deployment? y|n" -n 1 -r
 echo -e ${NC}
-if [[ $REPLY =~ ^[Nn]$ ]]; then
-    echo -e "${GRN}setting up for ${repository}${NC}"
-else
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo -e ${RED}
     read -p "Enter the custom repository name:" repository
     echo -e ${NC}
-    echo -e "${GRN}setting up for ${repository}${NC}"
 fi
+echo -e "${GRN}setting up for ${repository}${NC}"
 tmpAppList=applist.json
 checkapps=($(cat ${tmpAppList} | jq -r '.[].app'))
 if [[ ${#checkapps[@]} < 1 ]]; then
     echo -e "${RED}There are no apps to configure. exiting.${NC}"
         exit 1
-else 
+else
     tmpfile=stableDeployment.json
     # load the apps from the stable deployment -
     # order is preserved in the array from the tempfile
@@ -181,43 +190,54 @@ else
     cp web/${homepage} web/index.html
 
     echo -e ${ORNG}
-
-    read -p "Is '${domain}' the fully qualified hostname for this deployment? y|n" -n 1 -r
+    read -p "Are you setting up a simple test environment? i.e. localhost and no SSL certificate y|n" -n 1 -r
     echo -e ${NC}
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${GRN}setting up for ${domain}${NC}"
-    else 
-        echo -e ${RED}
-        read -p "Enter the fully qualified hostname:" domain
-        echo -e ${NC}
-        echo -e "${GRN}setting up for ${domain}${NC}"
-    fi
-
-    proxyHost=${domain}
-    read -p "Is '${proxyHost}' the fully qualified proxy hostname for this deployment (if you have no proxy then it should match ${domain})? y|n" -n 1 -r
-    echo -e ${NC}
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        domain="localhost"
+        proxyHost="localhost"
+        proxyPath=""
+        simple=true
         echo -e "${GRN}setting proxyHost to ${domain}${NC}"
     else
-        echo -e ${RED}
-        read -p "Enter the fully qualified proxy hostname:" proxyHost
+        read -p "Is '${domain}' the fully qualified hostname for this deployment? y|n" -n 1 -r
         echo -e ${NC}
-        echo -e "${GRN}setting proxyHost to ${proxyHost}${NC}"
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${GRN}setting up for ${domain}${NC}"
+        else
+            echo -e ${RED}
+            read -p "Enter the fully qualified hostname:" domain
+            echo -e ${NC}
+            echo -e "${GRN}setting up for ${domain}${NC}"
+        fi
+
+        proxyHost=${domain}
+
+        read -p "Is '${proxyHost}' the fully qualified proxy hostname for this deployment (if you have no proxy then it should match ${domain})? y|n" -n 1 -r
+        echo -e ${NC}
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${GRN}setting proxyHost to ${domain}${NC}"
+        else
+            echo -e ${RED}
+            read -p "Enter the fully qualified proxy hostname:" proxyHost
+            echo -e ${NC}
+            echo -e "${GRN}setting proxyHost to ${proxyHost}${NC}"
+        fi
+
+        proxyPath=""
+        read -p "Is there a proxy path for this deployment? e.e '/gsd/mats' y|n" -n 1 -r
+        echo -e ${NC}
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            echo -e "${GRN}Leaving proxy path empty ${NC}"
+        else
+            echo -e ${RED}
+            read -p "Enter the proxy path:" proxyPath
+          proxyPath=${proxyPath%/}  # remove any trailing slash
+            echo -e ${NC}
+            echo -e "${GRN}setting proxyPath to ${proxyPath}${NC}"
+          echo -e "${GRN} The route to the main page will be https://${proxyHost}${proxyPath}"
+        fi
     fi
 
-    proxyPath=""
-    read -p "Is there a proxy path for this deployment? e.e '/gsd/mats' y|n" -n 1 -r
-    echo -e ${NC}
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
-        echo -e "${GRN}Leaving proxy path empty ${NC}"
-    else
-        echo -e ${RED}
-        read -p "Enter the proxy path:" proxyPath
-	    proxyPath=${proxyPath%/}  # remove any trailing slash
-        echo -e ${NC}
-        echo -e "${GRN}setting proxyPath to ${proxyPath}${NC}"
-	    echo -e "${GRN} The route to the main page will be https://${proxyHost}${proxyPath}"
-    fi
     #record the environment
     echo "{\"environment\":\"${depenv}\",\"proxy_prefix\":\"${proxyPath}\"}" > web/environment.json
 
@@ -227,6 +247,38 @@ else
     fi
     unqualifiedHostName=$(echo ${domain} | cut -f1 -d'.')
     #create the traefik.toml file....
+if [[ ${simple} == "true" ]]; then
+cat <<- %ENDSIMPLETRAEFIK > ./traefik.toml
+#To set the passwd for the proxy dashboard use
+#sudo apt-get install apache2-utils
+#htpasswd -nbB admin your_special_password
+#replace "admin:$apr1$GZ23gG9v$8slcUumLt29SsZ9MiL.z30" in the "users =" line of the [entryPoints.dashboard.auth.basic]
+#entrypoint below. The traefik user challenge will then work for the user admin and your_special_password
+#logLevel = "DEBUG"
+logLevel = "INFO"
+defaultEntryPoints = ["http"]
+[entryPoints]
+  [entryPoints.dashboard]
+    address = ":8090"
+    [entryPoints.dashboard.auth]
+      [entryPoints.dashboard.auth.basic]
+        users = ["${adminPhrase}"]
+  [entryPoints.http]
+    address = ":80"
+[api]
+  entrypoint="dashboard"
+
+[docker]
+  domain = "${domain}"
+  watch = true
+  network = "web"
+  exposedbydefualt = false
+[traefikLog]
+  filePath = "/logs/traefik.log"
+[accessLog]
+  filePath = "/logs/access.log"
+%ENDSIMPLETRAEFIK
+else
 cat <<- %ENDTRAEFIK > ./traefik.toml
 #To set the passwd for the proxy dashboard use
 #sudo apt-get install apache2-utils
@@ -285,7 +337,7 @@ defaultEntryPoints = ["http", "https"]
 [accessLog]
   filePath = "/logs/access.log"
 %ENDTRAEFIK
-
+fi
     mapbox_key=""
     read -p "Is there a mapbox key required for this deployment? (answer no for METexpress) y|n" -n 1 -r
     echo -e ${NC}
@@ -456,7 +508,7 @@ services:
    - web
   ports:
    - "443:443"
-   #- "80:80"
+   - "80:80"
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock
    - ${DEPLOYDIR}/traefik.toml:/traefik.toml
