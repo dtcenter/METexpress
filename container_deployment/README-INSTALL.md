@@ -92,7 +92,7 @@ To run the program: cd into this directory (the top of the directory where you c
 The configure script will run the setup program.
 #### Setup artifacts
 The setup program configures this deployment directory, creating a `./docker-compose.yml` configuration file,
-and a `./traefik.toml` file, a suitable `./web/index.html` as a homepage, each configured depending on the deployment environment you chose.
+and a `./traefik.toml` file.
 
 #### Setup Dependencies
 You must have docker, docker-compose and jq installed, and you must be running this script from the top of your deployment directory (where you
@@ -118,6 +118,18 @@ your server you can use LetsEncrypt for no cost certs. The instructions for doin
 ### Reverse proxy interface
 traefik has a reverse proxy interface that can give you statistics, configuration information etc.
 - The reverse proxy interface has a user/password pre-set to user "**admin**" and password "**adminpassword**", you should change this by following the instructions in the traefik.toml file.
+
+### Using HTTP with no cert for testing
+It is possible to get traefik to work if you do not have a cert.
+There is an option in the configuration that allows you to specify a 
+"**simple test environment**". This will require your server to resolve localhost, but it will not require
+SSL or certificates. If you specify "**simple test environment**" the
+tool suite entrypoints are
+* https://localhost/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
+* https://localhost  for the top level landing page
+* https://localhost/appref   for an individual app (replace appref with the actual app reference.)
+
+Many of the remaining configurations are not applicable for the simple test environment and the configuration program will not ask about them.
 
 ##CERTS and SSL - IMPORTANT
 There are two ways to handle ssl. You can let traefik use lets-encrypt automatically to generate and store certs.
@@ -153,15 +165,7 @@ If you cannot acquire a certificate you can enable the apps temporarily by comme
 in the traefik.toml file.
 Follow the comments in the traefik.toml file to make sure you have commented or uncommented the appropriate sections.
 
-#### using hhtp with no cert for testing
-It is possible to get traefik to work if you do not have a cert.
-comment out the following lines in the traefik.html
--     [entryPoints.https.tls]
--     [[entryPoints.https.tls.certificates]]
--     certFile = "/etc/ssl/certs/gsd-sslvpn-161.crt"
--     keyFile = "/etc/ssl/certs/gsd-sslvpn-161.key"
-
-#### Entrypoints
+#### Normal SSL Entrypoints
 The tool suite entrypoints are
 * https://yourfullyqualifieddomain/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
 * https://yourfullyqualifieddomain  for the top level landing page
@@ -210,13 +214,16 @@ can tell the version of a running app by looking at the comments in the docker-c
 you run the setup, with the current version for each app.
 
 #### Debugging
+You can increase the log level of traefik logging by editing the traefik.toml file
+and uncommenting logLevel = "DEBUG" and commenting logLevel = "INFO". Other
+logLevels are available. See traefik [documentation](https://docs.traefik.io/).
 Debugging startup problems:
 You can list services with 
-	
-	bin/listNames
-and you can view a service log with
 
-	bin/showLog NAME 
+	`bin/listNames`
+and you can view a service log with
+	
+	`bin/showLog NAME` 
 where NAME is from the "docker service ls" output.
 You can inspect a single service with 
 	
