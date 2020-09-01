@@ -170,10 +170,13 @@ if [ "${build_images}" == "yes" ]; then
     docker system prune -af
 fi
 
+if [ "X${METEOR_PACKAGE_DIRS}" == "X" ]; then
+    echo -e "${RED}you have not defined METEOR_PACKAGE_DIRS - exiting${NC}"
+    exit 1
+fi
 APP_DIRECTORY="$(pwd)/apps"
 cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"
-BUNDLE_DIRECTORY=${BUILD_DIRECTORY}/bundles
 buildApp() {
   echo "repo is $repo"
   echo "repo user is $repo_user"
@@ -192,9 +195,6 @@ buildApp() {
     fi
     # do not know why I have to do these explicitly, but I do.
     /usr/local/bin/meteor npm install --save @babel/runtime
-#    /usr/local/bin/meteor npm install --save bootstrap
-#    /usr/local/bin/meteor npm audit fix
-
     /usr/local/bin/meteor build --directory ${BUNDLE_DIRECTORY} --server-only --architecture=os.linux.x86_64
     if [ $? -ne 0 ]; then
         echo -e "$0:${myApp}: ${RED} ${failed} to meteor build - must skip app ${myApp} ${NC}"
@@ -214,9 +214,10 @@ buildApp() {
         export MONGO_DB=${myApp}
         export APPNAME=${myApp}
         export TAG="${myApp}-${buildVer}"
+        export REPO=$[REPO}]
         echo "$0:${myApp}: building container in ${BUNDLE_DIRECTORY}"
         # remove the container if it exists - force in case it is running
-        docker rm -f ${repo}:${TAG}
+        docker rm -f ${REPO}:${TAG}
         # Create the Dockerfile
         echo "$0:${myApp}: => Creating Dockerfile..."
         # save and export the meteor node version for the build_app script
@@ -260,34 +261,34 @@ EXPOSE 80
 ENTRYPOINT ["/usr/app/run_app.sh"]
 LABEL version="${buildVer}"
     # build container
-        #docker build --no-cache --rm -t ${TAG} .
-        #docker tag ${repo}:${TAG} ${repo}:${TAG}
-        #docker push ${repo}:${TAG}
+        #docker build --no-cache --rm -t ${REPO}:${TAG} .
+        #docker tag ${REPO}:${TAG} ${REPO}:${TAG}
+        #docker push ${REPO}:${TAG}
 %EOFdockerfile
-        echo "$0:${myApp}: docker build --no-cache --rm -t ${repo}:${TAG} ."
-        docker build --no-cache --rm -t ${repo}:${TAG} .
-        echo "$0:${myApp}: docker tag ${repo}:${TAG} ${repo}:${TAG}"
-        docker tag ${repo}:${TAG} ${repo}:${TAG}
+        echo "$0:${myApp}: docker build --no-cache --rm -t ${REPO}:${TAG} ."
+        docker build --no-cache --rm -t ${REPO}:${TAG} .
+        echo "$0:${myApp}: docker tag ${REPO}:${TAG} ${REPO}:${TAG}"
+        docker tag ${REPO}:${TAG} ${REPO}:${TAG}
         if [ "${pushImage}" == "yes" ]; then
             echo ${docker_password} | docker login -u ${docker_user} --password-stdin
-            echo "$0:${myApp}: pushing image ${repo}:${TAG}"
-            docker push ${repo}:${TAG}
+            echo "$0:${myApp}: pushing image ${REPO}:${TAG}"
+            docker push ${REPO}:${TAG}
             ret=$?
             if [ $ret -ne 0 ]; then
                 # retry
                 echo -e "${RED} Error pushing image - need to retry${NC}"
-                docker push ${repo}:${TAG}
+                docker push ${REPO}:${TAG}
                 ret=$?
             fi
             if [ $ret -eq 0 ]; then
               # remove the docker image - conserve space for build
               echo "${GRN} pushed the image! ${NC}"
-              docker rmi ${repo}:${TAG}
+              docker rmi ${REPO}:${TAG}
             else
               echo "${RED} Failed to push the image! ${NC}"
             fi
         else
-            echo "$0:${myApp}: NOT pushing image ${repo}:${TAG}"
+            echo "$0:${myApp}: NOT pushing image ${REPO}:${TAG}"
         fi
     fi
     rm -rf ${BUNDLE_DIRECTORY}/*
