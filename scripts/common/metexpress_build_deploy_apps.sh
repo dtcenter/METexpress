@@ -214,7 +214,7 @@ buildApp() {
         export MONGO_DB=${myApp}
         export APPNAME=${myApp}
         export TAG="${myApp}-${buildVer}"
-        export REPO=${REPO}
+        export REPO=${repo}
         echo "$0:${myApp}: building container in ${BUNDLE_DIRECTORY}"
         # remove the container if it exists - force in case it is running
         docker rm -f ${REPO}:${TAG}
