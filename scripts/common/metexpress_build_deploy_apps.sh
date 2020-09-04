@@ -178,10 +178,6 @@ APP_DIRECTORY="$(pwd)/apps"
 cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"
 buildApp() {
-  echo "repo is $repo"
-  echo "repo user is $repo_user"
-  echo "repo password is is $repo_password"
-
     local myApp=$1
     cd ${APP_DIRECTORY}/${myApp}
     echo -e "$0:${myApp}: - building app ${GRN}${myApp}${NC}"
