@@ -28,26 +28,26 @@ if [[ ${BUILD_DIRECTORY} != ${rootOfRepo} ]]; then
 if [ ! -f ~/.metexpress-repo-credentials ]; then
     echo "~/.metexpress-repo-credentials file not found!"
     echo "you must create a ~/.metexpress-repo-credentials file with the following entries.."
-    echo "export repo_user='repo user'"
-    echo "export repo_password='repo user password'"
+    echo "export docker_user='docker user'"
+    echo "export docker_password=' docker user password'"
     echo "export repo='repo'"
     exit 1
 fi
 . ~/.metexpress-repo-credentials
-if [ -z ${repo_user+x} ]; then
-  echo -e "${RED} your repo_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+if [ -z ${docker_user+x} ]; then
+  echo -e "${RED} your docker_user is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
-  echo exit 1
+  exit 1
 fi
-if [ -z ${repo_password+x} ]; then
-  echo -e "${RED} your repo_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
+if [ -z ${docker_password+x} ]; then
+  echo -e "${RED} your docker_password is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
-  echo exit 1
+  exit 1
 fi
 if [ -z ${repo+x} ]; then
   echo -e "${RED} your repo is not exported in your ~/.metexpress-repo-credentials file ${NC}"
   echo "I can't go on..."
-  echo exit 1
+  exit 1
 fi
 
 # This "function can tell you if the docker daemon is a swarm manager - copied from app_production_utilities.source
