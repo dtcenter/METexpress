@@ -28,13 +28,20 @@ if [[ ! -d "./settings"  ]]; then
     mkdir settings
 fi
 
-if [[ ! -d "${HOME}/mongodata"  ]]; then
-    echo -e "${RED}Creating a ${HOME}/mongodata directory${NC}"
-    mkdir ${HOME}/mongodata
-else
-    rm -rf ${HOME}/mongodata/*
-fi
 DEPLOYDIR=$(pwd)
+if [[ ! -d "${DEPLOYDIR}/mongodata"  ]]; then
+    echo -e "${RED}Creating a ${DEPLOYDIR}/mongodata directory${NC}"
+    mkdir ${DEPLOYDIR}/mongodata
+else
+    rm -rf ${DEPLOYDIR}/mongodata/*
+fi
+
+if [[ ! -d "${DEPLOYDIR}/logs"  ]]; then
+    echo -e "${RED}Creating a ${DEPLOYDIR}/logs directory${NC}"
+    mkdir ${DEPLOYDIR}/logs
+else
+    rm -rf ${DEPLOYDIR}/logs/*
+fi
 
 cat <<%END > ./README
 This program will help you configure your METexpress tool suite environment.
@@ -82,7 +89,7 @@ You must be running this program as a user that can run docker - do not run this
 After once configuring an app you will have to confirm overwriting the old configuration if you ever re-run setup.
 
 The reverse proxy interface has a user/password pre-set to user "admin" and password "adminpassword", you should change this by following the instructions in the traefik.toml file.
-This program will create a settings directory here in this directory and a mongodata directory in the $HOME of this user if they do not already exist.
+This program will create a settings directory and a mongodata directory here in this directory if they do not already exist.
 
 There are two ways to handle ssl. You can let traefik use lets-encrypt automatically to generate and store certs.
 These are requirements for traefik/lets-encrypt certs
@@ -477,7 +484,7 @@ fi
             fi
         done
         #finish up the document
-        echo "], \"PYTHON_PATH\":\"/usr/bin/python3\", \"MAPBOX_KEY\":\"${mapbox_key}\" }, \"public\":{\"deployment_environment\":\"${depenv}\",\"proxy_prefix_path\":\"${proxyPath}\",\"home\":\"https://${proxyHost}${proxyPath}/\"}}}" >> $tmpSettingsFile
+        echo "], \"PYTHON_PATH\":\"/usr/bin/python3\", \"MAPBOX_KEY\":\"${mapbox_key}\" }, \"public\":{\"deployment_environment\":\"${depenv}\",\"proxy_prefix_path\":\"${proxyPath}\",\"home\":\"https://${proxyHost}${proxyPath}/\"}}" >> $tmpSettingsFile
         jq '.' < $tmpSettingsFile > ./settings/${appref}/settings.json
 
     done
@@ -550,7 +557,7 @@ services:
   ports:
    - "27017:27017"
   volumes:
-   - ${HOME}/mongodata:/data/db
+   - ${DEPLOYDIR}/mongodata:/data/db
   networks:
    - backend
    - web
