@@ -92,7 +92,7 @@ To run the program: cd into this directory (the top of the directory where you c
 The configure script will run the setup program.
 #### Setup artifacts
 The setup program configures this deployment directory, creating a `./docker-compose.yml` configuration file,
-and a `./traefik.toml` file.
+and a `./traefik.toml` file. There are also the **settings directory** and a **logs directory** that will be created. If these directories exist from a previous setup they will be cleaned and the contents will be lost.
 
 #### Setup Dependencies
 You must have docker, docker-compose and jq installed, and you must be running this script from the top of your deployment directory (where you
@@ -118,7 +118,7 @@ your server you can use LetsEncrypt for no cost certs. The instructions for doin
 ### Reverse proxy interface
 traefik has a reverse proxy interface that can give you statistics, configuration information etc.
 - The reverse proxy interface has a user/password pre-set to user "**admin**" and password "**adminpassword**", you should change this by following the instructions in the traefik.toml file.
-
+- See [dashboard](https://docs.traefik.io/operations/dashboard/) for usage.
 ### Using HTTP with no cert for testing
 It is possible to get traefik to work if you do not have a cert.
 There is an option in the configuration that allows you to specify a 
@@ -217,16 +217,62 @@ you run the setup, with the current version for each app.
 You can increase the log level of traefik logging by editing the traefik.toml file
 and uncommenting logLevel = "DEBUG" and commenting logLevel = "INFO". Other
 logLevels are available. See traefik [documentation](https://docs.traefik.io/).
+There will be an access.log and a traefik.log created in the logs directory. 
 Debugging startup problems:
+
+You can list the dep;oyed metexpress services with 
+
+`bin/list`
+A properly deployed stack should give a bin/list output something like
+```
+gsd-sslvpn-172:container_deployment pierce$ bin/list
+ID                  NAME                        MODE                REPLICAS            IMAGE                                            PORTS
+tark5qmm7gkv        metexpress_mats-http        replicated          1/1                 matsapps/production:mats-http                    
+p8kuchvbnmas        metexpress_met-airquality   replicated          1/1                 randytpierce/mats1:met-airquality-custom-2.6.1   
+2soa0cg8g370        metexpress_met-anomalycor   replicated          1/1                 randytpierce/mats1:met-anomalycor-custom-2.6.1   
+or4p21ueqmke        metexpress_met-ensemble     replicated          1/1                 randytpierce/mats1:met-ensemble-custom-2.6.1     
+41truh9v4uyy        metexpress_met-precip       replicated          1/1                 randytpierce/mats1:met-precip-custom-2.6.1       
+nl0338eppwcn        metexpress_met-surface      replicated          1/1                 randytpierce/mats1:met-surface-custom-2.6.1      
+9db70v5aci9y        metexpress_met-upperair     replicated          1/1                 randytpierce/mats1:met-upperair-custom-2.6.1     
+f47z1jttln6f        metexpress_mongo            replicated          1/1                 mongo:4.2.0                                      *:27017->27017/tcp
+nt1uv5jhd5fy        metexpress_traefik          replicated          1/1                 traefik:1.7.16-alpine                            *:80->80/tcp, *:443->443/tcp
+```
+In this case the custom repository is "randytpierce".
+ 
+You can list the current status of the metexpress services with the command
+    
+    `bin/ps metexpress`
+The docker ps command lists all the service statuses even after they change state. 
+It can therefore be useful to grep the output of this command for the running state. i.e.
+    
+    `bin/ps | grep -i running`
 You can list services with 
 
 	`bin/listNames`
 and you can view a service log with
 	
 	`bin/showLog NAME` 
-where NAME is from the "docker service ls" output.
+	or
+	`bin/tailLog NAME`
+where NAME is from the "docker service ls" output. Issuing one of these commands with no parameter will give you a list of service names.
+We have seen occaisions where services cannot connect to the mongo database because the mongodata directory has become corrupted. 
+This condition can be recognized by using the 
+    
+    `bin/showLog NAME`
+command and looking for an error indicationg the inability to connect to the mongo server. 
+You can also use the
+    
+    `bin/showLog metexpress_mongo`
+command and look for an error indicating the inability to create collections.
+
 You can inspect a single service with 
 	
 	docker service inspect NAME
+and look for docker related problems.
+
+You can use the 
+    `bin/execShell NAME` e.g. `bin/execShell metexpress_met-upperair`
+
+to exec into a running service and examine the container operating system and mounted directories.
 
 
