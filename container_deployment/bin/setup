@@ -28,7 +28,7 @@ if [[ ! -d "./settings"  ]]; then
     mkdir settings
 fi
 
-DEPLOYDIR=$(pwd)/container_deployment
+DEPLOYDIR=$(pwd)
 if [[ ! -d "${DEPLOYDIR}/mongodata"  ]]; then
     echo -e "${RED}Creating a ${DEPLOYDIR}/mongodata directory${NC}"
     mkdir ${DEPLOYDIR}/mongodata
