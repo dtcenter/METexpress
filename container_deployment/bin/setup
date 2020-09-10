@@ -13,6 +13,7 @@ function finish {
 trap finish EXIT
 
 # are we in an install area
+
 if [[ "$(basename $(pwd))" != "container_deployment" ]]; then
     echo -e "${RED}I don't see you are in a container_deployment directory - I cannot set up anything, try cd'ing to the container_deployment directory - exiting ${NC}"
     exit 1
