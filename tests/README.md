@@ -1,6 +1,58 @@
 MATS automated test changes to support cucumber-boilerplate
 ====================
+##METexpress testing
+The METexpress tests have been separated into their own test directory underneath the 
+METexpress repository.
+### installation
+These tests use Webdriver. To install then you must have a recent npm on your test machine. 
+cd into the tests directory and run
 
+    `npm install`
+    `npm audit fix`
+### running the tests
+#### Dependencies
+- You must have a recent npm installed
+- You must have Chrome version 84 installed.
+#### configuration
+After running these two commands you can run the automated tests.
+The default configuration assumes that you have installed the tests into localhost such that the home page can be reached with [localhost](http://localhost).
+If you wish to test against a different server (let us assume https://metexpress.nws.noaa.gov) there are two ways to reconfigure the tests to do so.
+- First: edit the wdio.conf.js file and change the 
+
+`baseUrl: 'localhost'`
+  
+  to
+
+`baseUrl: 'https://metexpres.nws.noaa.gov'`
+
+- Second: use the parameter
+
+`-- baseUrl=https://metexpres.nws.noaa.gov`
+
+when you run the test suite. For example...
+
+`./run_tests.sh --baseUrl=https://metexpres.nws.noaa.gov`
+
+will run the test suite against the production METexpress.
+#### run modes
+
+- run_tests.sh
+
+This will open a Chrome browser for each test feature. By default this will run a single test instance at a time untill all the tests are finished.
+This will cause the tests to interact with the browser.
+- run_headless_tests.sh
+
+This will run the tests against a headless browser giving the status in a standard out dot reporter.
+#### run parameters
+- -- baseUrl=someUrl
+
+This will run the tests against a server installed at 'someUrl'
+- --maxInstances=n
+
+This will run the tests with n MULTIPLE test instances simultaneously. This can be very expensive for yout test machine.
+Overloading your test machine might cause failures. **Don't run more instances than you have cores**. 
+
+# MATS Specific DETAILS
 ## changes from old chimp test structure
 The directory `mats-testing/features` has all the old features and commonStepDefinitions which were what the tests previously used under chimp.js. 
 They are for reference only because they won't run due to the node environment being different. The old directory is there so that we can use it for reference. 
