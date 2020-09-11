@@ -178,10 +178,12 @@ simple=false
 depenv=metexpress
 runenv="production"
 repository="dtcenter/metexpress-production"
+custom=false
 read -p "Are you using a custom docker repository for this deployment? y|n" -n 1 -r
 echo -e ${NC}
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo -e ${RED}
+    custom = true
     read -p "Enter the custom repository name:" repository
     echo -e ${NC}
 fi
@@ -573,6 +575,18 @@ services:
     for (( i=0; i<${#apps[@]}; i++ )); do
         appref=${apps[$i]}
         appversion=${versions[$i]}
+        if [[ "$custom"=="true" ]]; then
+          read -p "Is '${appversion}' the correct version for ${appref}? (you may have to look at your docker repository)? y|n" -n 1 -r
+          echo -e ${NC}
+          if [[ $REPLY =~ ^[Yy]$ ]]; then
+              echo -e "${GRN}leaving version as ${appversion}${NC}"
+          else
+              echo -e ${RED}
+              read -p "Enter the version for ${appref}:" appversion
+              echo -e ${NC}
+              echo -e "${GRN}setting appversion to ${appversion}${NC}"
+          fi
+        fi
         apptag="${appref}-${appversion}"
         if [[ ${depenv} == "development" ]]; then
             apptag="${appref}-nightly"
