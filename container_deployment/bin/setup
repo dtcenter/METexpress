@@ -29,6 +29,8 @@ if [[ ! -d "./bin"  ]]; then
     exit 1
 fi
 
+bin/down metexpress
+
 if [[ ! -d "./settings"  ]]; then
     echo -e "${RED}Creating a ./settings directory${NC}"
     mkdir settings
@@ -174,16 +176,16 @@ if [[ ! $? -eq 0  ]]; then
 fi 
 echo -e ${NC}
 domain=$(hostname)
-simple=false
+simple="false"
 depenv=metexpress
 runenv="production"
 repository="dtcenter/metexpress-production"
-custom=false
+custom="false"
 read -p "Are you using a custom docker repository for this deployment? y|n" -n 1 -r
 echo -e ${NC}
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo -e ${RED}
-    custom = true
+    custom="true"
     read -p "Enter the custom repository name:" repository
     echo -e ${NC}
 fi
@@ -194,6 +196,13 @@ if [[ ${#checkapps[@]} < 1 ]]; then
     echo -e "${RED}There are no apps to configure. exiting.${NC}"
         exit 1
 else
+    if [ -s stableDeployment.json ]; then
+      echo saving a copy of stableDeployment.json
+      cp stableDeployment.json stableDeployment.json.save
+      else
+        echo stableDeployment is  empty - that is not correct - exiting.
+        exit 1
+      fi
     tmpfile=stableDeployment.json
     # load the apps from the stable deployment -
     # order is preserved in the array from the tempfile
@@ -211,7 +220,7 @@ else
         domain="localhost"
         proxyHost="localhost"
         proxyPath=""
-        simple=true
+        simple="true"
         echo -e "${GRN}setting proxyHost to ${domain}${NC}"
     else
         read -p "Is '${domain}' the fully qualified hostname for this deployment? y|n" -n 1 -r
@@ -262,7 +271,7 @@ else
     fi
     unqualifiedHostName=$(echo ${domain} | cut -f1 -d'.')
     #create the traefik.toml file....
-if [[ ${simple} == "true" ]]; then
+if [ ${simple} == "true" ]; then
 cat <<- %ENDSIMPLETRAEFIK > ./traefik.toml
 #To set the passwd for the proxy dashboard use
 #sudo apt-get install apache2-utils
@@ -575,7 +584,7 @@ services:
     for (( i=0; i<${#apps[@]}; i++ )); do
         appref=${apps[$i]}
         appversion=${versions[$i]}
-        if [[ "$custom"=="true" ]]; then
+        if [ "$custom" == "true" ]; then
           read -p "Is '${appversion}' the correct version for ${appref}? (you may have to look at your docker repository)? y|n" -n 1 -r
           echo -e ${NC}
           if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -586,19 +595,16 @@ services:
               echo -e ${NC}
               echo -e "${GRN}setting appversion to ${appversion}${NC}"
               # modify the version in the stableDeployment.json file
-              cat stableDeployment.json | jq '(.apps[] | select(.app == "met-upperair") | .version) |= "2.9.1"' > stableDeployment.json-tmp
+              cat stableDeployment.json | jq "(.apps[] | select(.app == \"${appref}\") | .version) |= \"${appversion}\"" > stableDeployment.json-tmp
               mv stableDeployment.json-tmp stableDeployment.json
           fi
         fi
         apptag="${appref}-${appversion}"
-        if [[ ${depenv} == "development" ]]; then
-            apptag="${appref}-nightly"
-        fi
 
         #NOTE: the {id:[0-9]?} at the end of each app frontend.rule below is a workaround
         # for short paths. For some as yet not understood reason short reference names like vil
         # do not match the PathPrefix unless I append the unused regex qualifier. We need to fix this - or at least understand it.
-        if [[ ${simple} == "true" ]]; then
+        if [ ${simple} == "true" ]; then
           cat <<- %COMPOSESIMPLEAPPEND >> $tmpDockerFile
  ${appref}:
   # app ${appref} version is ${appversion}
