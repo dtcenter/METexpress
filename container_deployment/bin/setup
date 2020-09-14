@@ -585,6 +585,9 @@ services:
               read -p "Enter the version for ${appref}:" appversion
               echo -e ${NC}
               echo -e "${GRN}setting appversion to ${appversion}${NC}"
+              # modify the version in the stableDeployment.json file
+              cat stableDeployment.json | jq '(.apps[] | select(.app == "met-upperair") | .version) |= "2.9.1"' > stableDeployment.json-tmp
+              mv stableDeployment.json-tmp stableDeployment.json
           fi
         fi
         apptag="${appref}-${appversion}"
