@@ -138,6 +138,7 @@ echo -e "${GRN}Resolved apps to build - building these apps ${apps[*]}${NC}"
 echo -e "$0 ${GRN} clean and remove existing images ${NC}"
 if [ "${build_images}" == "yes" ]; then
     # clean up and remove existing images images
+    ./container_deployment/bin/down
     #wait for stacks to drain
     if [[ isSwarmNode == "true" ]];then
         docker stack ls | grep -v NAME | awk '{print $1}' | while read stack
@@ -170,10 +171,12 @@ if [ "${build_images}" == "yes" ]; then
     docker system prune -af
 fi
 
-if [ "X${METEOR_PACKAGE_DIRS}" == "X" ]; then
-    echo -e "${RED}you have not defined METEOR_PACKAGE_DIRS - exiting${NC}"
+METEOR_PACKAGE_DIRS=${BUILD_DIRECTORY}/MATScommon/meteor_packages
+if [ ! -d ${METEOR_PACKAGE_DIRS} ]; then
+    echo -e "${RED}you do have a ${BUILD_DIRECTORY}/MATScommon/meteor_packages from the MATScommon submodule - exiting${NC}"
     exit 1
 fi
+
 APP_DIRECTORY="$(pwd)/apps"
 cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"

@@ -14,11 +14,6 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher. Docker also needs to be running.
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
-- #### [MATScommon](https://github.com/dtcenter/MATScommon): You must have cloned the dtcenter/MATScommon project into a local directory accessible by the build user.
-
-- You must have set the environment variable METEOR_PACKAGE_DIRS to the [local directory where you cloned MATScommon]/meteor_packages
- 
- `export METEOR_PACKAGE_DIRS=[MATScommon-dir]/meteor_packages`
 - #### [METviewer](https://github.com/dtcenter/METviewer) DATABASE 
  - METexpress depends upon a [METviewer](https://github.com/dtcenter/METviewer) database. 
 This database has a specific schema and specific load tools. 
@@ -69,7 +64,7 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
 ### Versions
 - All built apps will get the version specified in the -v parameter. 
 If you do not specify a version they will automatically get a version based on the build date. The version will be formatted like "YYYYMMDD".
-### Once you have demonstrated to yourself that the code builds without pushing, 
+### Once you have demonstrated to yourself that the code builds without pushing...
 - once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 - alternatively you can use [-l] which will build the images locally and leave them on your build system.
 **Building local images can be very disk expensive. You must clean up local images periodically if you leave them on your system**
