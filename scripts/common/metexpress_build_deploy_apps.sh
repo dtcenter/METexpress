@@ -171,12 +171,12 @@ if [ "${build_images}" == "yes" ]; then
     docker system prune -af
 fi
 
-METEOR_PACKAGE_DIRS=${BUILD_DIRECTORY}/MATScommon/meteor_packages
+export METEOR_PACKAGE_DIRS=${BUILD_DIRECTORY}/MATScommon/meteor_packages
 if [ ! -d ${METEOR_PACKAGE_DIRS} ]; then
     echo -e "${RED}you do have a ${BUILD_DIRECTORY}/MATScommon/meteor_packages from the MATScommon submodule - exiting${NC}"
     exit 1
 fi
-
+echo "Using ${METEOR_PACKAGE_DIRS} for local meteor package directory" 
 APP_DIRECTORY="$(pwd)/apps"
 cd ${APP_DIRECTORY}
 echo -e "$0 building these apps ${GRN}${apps[*]}${NC}"

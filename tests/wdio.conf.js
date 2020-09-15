@@ -182,9 +182,10 @@ exports.config = {
         profile: [],
         // <string[]> (file/dir) require files before executing features
         require: [
-            './src/steps/given.js',
-            './src/steps/then.js',
-            './src/steps/when.js',
+            '../MATScommon/tests/src/steps/given.js',
+            '../MATScommon/tests/src/steps/then.js',
+            '../MATScommon/tests/src/steps/when.js',
+            '../MATScommon/tests/src/support/**/*.js'
             // Or search a (sub)folder for JS files with a wildcard
             // works since version 1.1 of the wdio-cucumber-framework
             // './src/**/*.js',
