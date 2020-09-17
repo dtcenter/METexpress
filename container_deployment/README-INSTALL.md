@@ -213,6 +213,9 @@ lvwuccg2vk5d        metexpress_met-anomalycor.1   mycustomrepo/metexpress:met-an
 u7hlggz84kjp        metexpress_met-airquality.1   mycustomrepo/metexpress:met-airquality-20204710   docker-desktop      Running             Running 24 hours ago                       
 n7xrcq98xz6y        metexpress_met-upperair.1     mycustomrepo/metexpress:met-upperair-20204710     docker-desktop      Running             Running 24 hours ago         
 ```
+Notice the rightmost column, it is 'Running' state. 
+When an app is coming up it might stay in 'Prepared' state for a short time.
+Durring this time the app will be non-responsive.
 * You can list the running container services with `bin/list`.
 A properly deployed stack should give an output something like
 ```
