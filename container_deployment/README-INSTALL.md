@@ -3,7 +3,7 @@ This readme explains dependencies, and steps to deploy a set of METexpress apps 
 ## Dependencies:
 
 You must have docker, docker-compose, httpaswd, and jq installed. You should have a certificate installed in /etc/ssl/certs, although you can deploy a simple system on localhost with out certificates for testing. A simple testing system can be deployed by answering yes to the question "Are you setting up a simple test environment?" in the configure program.
-There is a depency on python3 which should be accessible in /usr/bin/python3, and requires a number of python modules to be installed, including pymysql, abc.abstractmethod, urllib.request, traceback, ssl, getopt, and json. these may need to be added to your python environment with a package manager.
+There is a dependency on python3 which should be accessible in /usr/bin/python3, and requires a number of python modules to be installed, including pymysql, abc.abstractmethod, urllib.request, traceback, ssl, getopt, and json. these may need to be added to your python environment with a package manager.
 
 
 Configuration steps:
@@ -21,7 +21,7 @@ Configuration steps:
 METexpress is a tool suite of applications that run under Docker.
 For questions or bugs you can use the "contact" link in the header at the top of the landing page or
 if you have NOAA credentials you can use the "bugs/issues" link at the top of each application.
-Failing that contact Randy Pierce at randy.pierce@noaa.gov.
+Failing that contact Randy Pierce at randy.pierce@noaa.gov or Molly Smith at molly.b.smith@noaa.gov.
 #### setup program
 The setup program will help you configure your METexpress tool suite.
 To do this you must have access to the internet in order to read the Dockerhub repository.
@@ -31,7 +31,7 @@ If you answer yes then it will ask for the repository name of a Dockerhub reposi
 #### It will also ask for the version of the apps that you wish to deploy. 
 **The program will use the version
 numbers in the file stableDeployment.json as defaults**. The stableDeployment.json that is provided from github already has the correct version for each app that is the latest in the production pre-built METexpress repository. If you have a custom repository, or if you are deploying older production versions, then the versions will be different. You need to know the versions in a custom repository. You can determine the versions by examining the image tags in the custom repository and taking the portion of the tag that follows the '-' after the app name. For example if a tag is `met-upperair-20204710` the version would be `20204710` The '-' is a seperator, not part of the version. The setup program will ask for the version of each app using the versions that are in the `stableDeployment.json` file as defaults. Editing this file ahead of time may make things easier.  
-**The file `stableDeployment.json` also specifies which apps will be deployed**. You can choose which apps will be deployed by editing this file. For example, If custom apps have been built you will need to add them to this file. If you want to leave some apps undeployed then remove their entries from this file.
+**The file `stableDeployment.json` also specifies which apps will be deployed**. You can choose which apps will be deployed by editing this file. For example, If custom apps with custom names have been built you will need to add them to this file. If you want to leave some apps undeployed then remove their entries from this file.
 #### The program will prompt you for the database credentials for each database role required by each app. 
 For METexpress this is the METviewer database and the credentials will usually be the same for each app.
 #### Database Roles
@@ -41,13 +41,13 @@ Database roles can be some combination of one or more
 * model_data - a database that contains metadata about data sources, 
 * and sites_data - which contains non standard domain data.
 
-**For METExpress there is usually only one role which is sums_data**
+**For METExpress there is usually only one role, which is sums_data**
 #### Database Credentials
 The credentials that you provide are stored in an `[INSTALL_DIR]/settings` directory 
 with the directory structure `INSTALL_DIR/settings/appreference/settings.json` (where appreference is the
 deployment service name of an app, like met-upperair).
 If you are familiar with this directory and the settings.json files you can make changes with an editor and the setup program
-will give you the option to use the existing values as defaults. Alternatively you can answer the setup questions and the program
+will give you the option to use those existing values as defaults. Alternatively you can answer the setup questions and the program
 will create these files for you.
 
 #### Settings Directory
@@ -245,7 +245,8 @@ you can rerun this setup with...
 	>cd your_deployment_directory
 	>bash bin/configure
 
-You may want to occasionally rerun the setup to pick up bug fixes and newly released apps for your deployment. 
+You may want to occasionally rerun the setup to pick up bug fixes and newly released apps for your deployment. If you do
+want to pick up the latest stable apps get the latest stableDeployment.json from the repo. It will have the latest stable app versions. 
 
 #### Uninstall
 You can uninstall with `bin/uninstall metexpress`

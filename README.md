@@ -15,11 +15,11 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
 - #### [METviewer](https://github.com/dtcenter/METviewer) DATABASE 
- - METexpress depends upon a [METviewer](https://github.com/dtcenter/METviewer) database. 
+- METexpress depends upon a [METviewer](https://github.com/dtcenter/METviewer) database. 
 This database has a specific schema and specific load tools. 
 It is required that you have an installed METviewer and that you 
-have write credentials to the METviewer database which you can provide 
-in the METexpress setup and configuration. 
+have read/write credentials to the METviewer database which you can provide 
+for the METexpress setup and configuration. 
 
 - #### [METADATA](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md) 
 - METexpress depends upon metadata that is derived from a 
@@ -46,7 +46,6 @@ or if you have previously cloned the build directory...
 ##### or to get build options
 [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -h
 
-This will build one or all of the apps, and issue errors if the apps fail to build.
 ### You must use a repository to install METexpress
 METexpress can only be installed from Docker images. There are always the most recent images, maintained by the developers, at this [repository](https://github.com/dtcenter/METexpress).
 These instructions are to allow you to create your own private repository and to build the app images from scratch, and to push those apps to your own private repository.
@@ -60,7 +59,6 @@ The ~builduser/.metexpress-repo-credentials file has the following contents.
 `export docker_password='repo_password'`
 
 `export repo='repository'`
-
 ### Versions
 - All built apps will get the version specified in the -v parameter. 
 If you do not specify a version they will automatically get a version based on the build date. The version will be formatted like "YYYYMMDD".
@@ -68,10 +66,10 @@ If you do not specify a version they will automatically get a version based on t
 - once you have a repository set up and the credentials configured, you can push your images to your repository by doing a new build and including the [-i] parameter - which means [push images].
 - alternatively you can use [-l] which will build the images locally and leave them on your build system.
 **Building local images can be very disk expensive. You must clean up local images periodically if you leave them on your system**
-This command will remove local images. `docker system prune -af`
+This command will remove non-running local images. `docker system prune -af`
 
 ## Installation
-For installation and configuration refer to the [README.md](https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md) in the `container_deployment` directory.
+For installation and configuration refer to the [README-INSTALL.md](https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md) in the `container_deployment` directory.
 
 
  
