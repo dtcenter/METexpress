@@ -40,7 +40,7 @@ or if you have previously cloned the build directory...
 #### next
 - cd to [yourMetexpressDir] **(if you are not in the top level of the git repo the build will fail**)
 ##### to build them all
-- [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -a 
+- ./scripts/common/metexpress_build_deploy_apps.sh -a 
 ##### or to build a single app
 [yourMetexpressDir]/scripts/common/metexpress_build_deploy_apps.sh -r met-some_app_name 
 ##### or to get build options
