@@ -168,8 +168,11 @@ if [ "${build_images}" == "yes" ]; then
                 done
         done
     fi
-    docker stop $(docker ps -a -q)
-    docker rm $(docker ps -a -q)
+    running_containers=($(docker ps -a -q))
+    if (( ${#running_containers[@]} > 0 )); then
+      docker stop $(running_containers)
+      docker rm $(running_containers)
+    fi
     docker system prune -af
 fi
 
