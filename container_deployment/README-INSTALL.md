@@ -282,5 +282,5 @@ You can use the
 
 to exec into a running service and examine the container operating system and mounted directories.
 
-### MetaData
+### Metadata
 Before any METexpress app can access a database properly you must run a script that will create metadata in the database. See the [METexpress/scripts/matsMetaDataForApps/createMetadata/README_METADATA.md](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md) readme for an explanation.
