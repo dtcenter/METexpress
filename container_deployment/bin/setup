@@ -59,9 +59,9 @@ the versions specified in the stableDeployment.json file. You should edit this f
 Then it will ask a series of questions in this order...
 1) It will ask if you want to set up a "test environment". If you answer yes, the following questions 2)
 through 4) will not be asked and the router will be configured for a simple http only "localhost" environment.
-You will still need to answer question 5 to configure your daabase credentials.
+You will still need to answer question 5 to configure your database credentials.
 Your server should understand "localhost" if you use this option.
-The toolsuite entrypoints for a simple test environment are ...
+The toolsuite entry points for a simple test environment are ...
 https://localhost/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
 https://localhost  for the top level landing page
 https://localhost/appref   for an individual app (replace appref with the actual app reference.)
@@ -79,7 +79,7 @@ with the landing page location "/", while the public URL is a proxy redirect
 is www.esrl.noaa.gov and the proxy_prefix_path needs to be set to "/gsd/mats".
 4) Next you will be prompted for a proxy redirection path.
 This allows you to serve a different path than "/".
-5) Finally you will be prompted you for database credentials for each role required by each app.
+5) Finally you will be prompted for database credentials for each role required by each app.
 Database roles are usually some combination of meta_data - the database that contains app metadata,
 sums_data - the database that contains an apps statistical partial sum data, model_data - a database that
 contains metadata about data sources, and possibly sites_data - which contains non standard domain data.
@@ -110,7 +110,7 @@ Specifically - comment out these lines...
 certFile = "/etc/ssl/certs/${unqualifiedHostName}.crt"
 keyFile = "/etc/ssl/certs/${unqualifiedHostName}.key"
 
-and uncomment this line in the entrypoints.https section..
+and uncomment this line in the entry points.https section..
 #[entryPoints.https.tls]
 
 and uncomment these lines...
@@ -132,7 +132,7 @@ If you cannot acquire a certificate you can enable the apps temporarily by comme
 in the traefik.toml file.
 Follow the comments in the traefik.toml file to make sure you have commented or uncommented the appropriate sections.
 
-The toolsuite entrypoints are 
+The toolsuite entry points are
 https://yourfullyqualifieddomaini/proxy for the reverse proxy dashboard (look at comments in traefik.toml and docker-compose.yml to enable)
 https://yourfullyqualifieddomain  for the top level landing page
 https://yourfullyqualifieddomain/appref   for an individual app (replace appref with the actual app reference.)
@@ -277,7 +277,7 @@ cat <<- %ENDSIMPLETRAEFIK > ./traefik.toml
 #sudo apt-get install apache2-utils
 #htpasswd -nbB admin your_special_password
 #replace "admin:$apr1$GZ23gG9v$8slcUumLt29SsZ9MiL.z30" in the "users =" line of the [entryPoints.dashboard.auth.basic]
-#entrypoint below. The traefik user challenge will then work for the user admin and your_special_password
+#entry point below. The traefik user challenge will then work for the user admin and your_special_password
 #logLevel = "DEBUG"
 logLevel = "INFO"
 defaultEntryPoints = ["http"]
@@ -308,7 +308,7 @@ cat <<- %ENDTRAEFIK > ./traefik.toml
 #sudo apt-get install apache2-utils
 #htpasswd -nbB admin your_special_password
 #replace "admin:$apr1$GZ23gG9v$8slcUumLt29SsZ9MiL.z30" in the "users =" line of the [entryPoints.dashboard.auth.basic]
-#entrypoint below. The traefik user challenge will then work for the user admin and your_special_password
+#entry point below. The traefik user challenge will then work for the user admin and your_special_password
 #logLevel = "DEBUG"
 logLevel = "INFO"
 defaultEntryPoints = ["http", "https"]
