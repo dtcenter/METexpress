@@ -7,14 +7,14 @@ There is a dependency on python3 which should be accessible in /usr/bin/python3,
 
 
 Configuration steps:
-1. install Docker, docker-compose, htpasswd (apache-utils), and jq.
+1. Install Docker, docker-compose, htpasswd (apache-utils), and jq.
 1. Install a certificate in /etc/ssl/certs (unless you are deploying a simple test).
 1. Copy the contents of this directory (container_deployment) to your install directory [INSTALL_DIR]. 
-1. cd to the top level of the [INSTALL_DIR] directory
-1. run the setup program ... `./bin/configure`
-1. answer the questions about domain, settings etc.
-1. bring the system up by running the up command `./bin/up metexpress`
-1. wait for a moment (let the containers get initialized) then test at `https://yourfullyqualifieddomain` or `http://localhost` (simple test deployment).
+1. Change directory to the top-level of the [INSTALL_DIR] directory
+1. Run the setup program ... `./bin/configure`
+1. Answer the questions about domain, settings etc.
+1. Bring the system up by running the up command `./bin/up metexpress`
+1. Wait for a moment (let the containers get initialized) then test at `https://yourfullyqualifieddomain` or `http://localhost` (simple test deployment).
 
 # Configuration details:
 #### maintainer:
@@ -33,15 +33,19 @@ If you answer yes then it will ask for the repository name of a Dockerhub reposi
 numbers in the file stableDeployment.json as defaults**. The stableDeployment.json that is provided from github already has the correct version for each app that is the latest in the production pre-built METexpress repository. If you have a custom repository, or if you are deploying older production versions, then the versions will be different. You need to know the versions in a custom repository. You can determine the versions by examining the image tags in the custom repository and taking the portion of the tag that follows the '-' after the app name. For example if a tag is `met-upperair-20204710` the version would be `20204710` The '-' is a seperator, not part of the version. The setup program will ask for the version of each app using the versions that are in the `stableDeployment.json` file as defaults. Editing this file ahead of time may make things easier.  
 **The file `stableDeployment.json` also specifies which apps will be deployed**. You can choose which apps will be deployed by editing this file. For example, If custom apps with custom names have been built you will need to add them to this file. If you want to leave some apps undeployed then remove their entries from this file.
 #### The program will prompt you for the database credentials for each database role required by each app. 
-For METexpress this is the METviewer database and the credentials will usually be the same for each app.
+For METexpress this is the METdatadb database and the credentials will usually be the same for each app.
 #### Database Roles
-Database roles can be some combination of one or more
-* meta_data - the database that contains app metadata,
-* sums_data - the database that contains an apps statistical partial sum data, 
-* model_data - a database that contains metadata about data sources, 
-* and sites_data - which contains non standard domain data.
+Database roles can be some combination of one or more predefined roles. These roles correspond to database connections and
+may require different credentials. Currently, for METexpress,
+only one role "sums_data" is used, but that may change in the future. These roles are
+configured in the stableDeployment.json file and should not be changed from what they are in the github code repository. If you 
+add a custom app use the role "sums_data".
+* sums_data - the database that contains an apps statistical partial sum data - **default role**, 
+* meta_data - the database that contains app metadata - **currently unused**,
+* model_data - a database that contains metadata about data sources - **currently unused**, 
+* and sites_data - which contains non standard domain data - **currently unused**.
 
-**For METExpress there is usually only one role, which is sums_data**
+**For METexpress there is currently only one role used, which is sums_data.**
 #### Database Credentials
 The credentials that you provide are stored in an `[INSTALL_DIR]/settings` directory 
 with the directory structure `INSTALL_DIR/settings/appreference/settings.json` (where appreference is the
@@ -84,12 +88,12 @@ This is an example of a settings.json file with dummy credentials.
           }
         ],
         "PYTHON_PATH": "/usr/bin/python3",
-        "MAPBOX_KEY": "your mapbox key"
+        "MAPBOX_KEY": "undefined"
       },
       "public": {}
     }
-**The "PYTHON_PATH" is the required location of a python3 interpreter**
-
+- **The "PYTHON_PATH" is the required location of a python3 interpreter**
+- **The "MAPBOX_KEY" is a placeholder for a map function that is not yet deployed with METexpress. Leave it "undefined"**
 #### Running the setup program
 To run the program: cd into this directory (the top of the directory where you copied this bundle) and run
 `bash bin/configure`
@@ -100,7 +104,7 @@ and a `./traefik.toml` file. There are also the **settings directory** and a **l
 
 #### Setup Dependencies
 You must have docker, docker-compose and jq installed, and you must be running this script from the top of your deployment directory (where you
-un-tarred the bundle).
+cloned the repository).
 
 You should be running this program as a user that can run docker - do not run this script as root, in fact do not run this as any authorized user.
 Create an unauthorized user and add that user to the docker group and run the apps as that user.
@@ -213,7 +217,7 @@ lvwuccg2vk5d        metexpress_met-anomalycor.1   mycustomrepo/metexpress:met-an
 u7hlggz84kjp        metexpress_met-airquality.1   mycustomrepo/metexpress:met-airquality-20204710   docker-desktop      Running             Running 24 hours ago                       
 n7xrcq98xz6y        metexpress_met-upperair.1     mycustomrepo/metexpress:met-upperair-20204710     docker-desktop      Running             Running 24 hours ago         
 ```
-Notice the rightmost column, it is 'Running' state. 
+Notice the rightmost column, which shows the state is 'Running'. 
 When an app is coming up it might stay in 'Prepared' state for a short time.
 Durring this time the app will be non-responsive.
 * You can list the running container services with `bin/list`.

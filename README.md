@@ -1,7 +1,7 @@
 # METexpress apps
 This directory contains [METexpress](https://metexpress.nws.noaa.gov/) app source code. A METexpress app is a [Meteor](https://www.meteor.com/) app that is based on the [MATS](https://www.esrl.noaa.gov/gsd/mats/) Model Analysis Tool Suite application framework.
 
-These apps are specifically designed to be used to visualize [MET](https://dtcenter.org/community-code/model-evaluation-tools-met) data that has been loaded into a [METviewer](https://dtcenter.org/metplus-practical-session-guide-feb-2019/session-5-trkintfeature-relative/metviewer) database. 
+These apps are specifically designed to be used to visualize [MET](https://dtcenter.org/community-code/model-evaluation-tools-met) data that has been loaded into a [METdatadb](https://dtcenter.org/metplus-practical-session-guide-feb-2019/session-5-trkintfeature-relative/metviewer) database. 
 
 ## Dependencies:
 - It is expected that you are building and deploying these apps on a linux based system.
@@ -14,24 +14,24 @@ These apps are specifically designed to be used to visualize [MET](https://dtcen
 - [docker](https://www.docker.com/) - you must have Docker version 19.03.8 or higher. Docker also needs to be running.
 - [docker-compose](https://docs.docker.com/compose/) - you must have docker-compose version 1.25.4.
 - The build user should be in the [docker group](https://docs.docker.com/engine/install/linux-postinstall/) or you must be running docker in [Rootless mode](https://docs.docker.com/engine/security/rootless/) (curently unverified).
-- #### [METviewer](https://github.com/dtcenter/METviewer) DATABASE 
-- METexpress depends upon a [METviewer](https://github.com/dtcenter/METviewer) database. 
-This database has a specific schema and specific load tools. 
-It is required that you have an installed METviewer and that you 
-have read/write credentials to the METviewer database which you can provide 
-for the METexpress setup and configuration. 
+- #### [METdatadb](https://github.com/dtcenter/METviewer) DATABASE 
+    METexpress depends upon a [METdatadb](https://github.com/dtcenter/METviewer) database. 
+    This database has a specific schema and specific load tools. 
+    It is required that you have an installed METviewer and that you 
+    have read/write credentials to the METdatadb database which you can provide 
+    for the METexpress setup and configuration. 
 
 - #### [METADATA](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md) 
-- METexpress depends upon metadata that is derived from a 
- [METviewer](https://github.com/dtcenter/METviewer) database. 
- Before using METexpress you must create this metadata. 
- Please refer to this [document](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md).
- The metadata scripts are kept in the scripts/matsMetaDataForApps/createMetaData/mysql/metexpress directory in this code tree.
+    METexpress depends upon metadata that is derived from a 
+    [METdatadb](https://github.com/dtcenter/METviewer) database. 
+    Before using METexpress you must create this metadata. 
+    Please refer to this [document](https://github.com/dtcenter/METexpress/blob/master/scripts/matsMetaDataForApps/README_METADATA.md).
+    The metadata scripts are in the scripts/matsMetaDataForApps/createMetaData/mysql/metexpress directory in this code tree.
 
 ## Build
-### These apps are always built into and deployed as Docker images. The most recent, standard, production ready docker images are in the public docker  [repository](https://hub.docker.com/repository/docker/dtcenter/metexpress-production). Unless you have a non standard reason for building just use the standard images. For that you can skip to the Installation section.
-To build these apps you use the included build script.
-Be sure to set the environment varaiables listed in the dependencies section above.
+### These apps are always built into and deployed as Docker images. The most recent, standard, production ready docker images are in the public docker  [repository](https://hub.docker.com/repository/docker/dtcenter/metexpress-production). Unless you have a non standard reason for building, use the standard images. For that you can skip to the Installation section.
+To build these apps use the included build script.
+Be sure to set the environment variables listed in the dependencies section above.
 ### steps:
 #### first either ....
 - git clone https://github.com/dtcenter/METexpress [yourMETexpressDir] 
