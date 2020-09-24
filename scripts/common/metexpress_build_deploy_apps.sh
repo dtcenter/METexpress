@@ -109,7 +109,9 @@ done
 shift $((OPTIND - 1))
 echo "Building METexpress apps - requestedApps: ${requestedApp[@]}  date: $(/bin/date +%F_%T)"
 echo -e "using version ${customVersion}"
-
+# init and update the submodules
+git submodule init
+git submodule update
 # find buildable apps from apps directory
 buildableApps=( $(find apps -depth 1 -exec basename {} \;) )
 #build all of the apps
@@ -166,14 +168,17 @@ if [ "${build_images}" == "yes" ]; then
                 done
         done
     fi
-    docker stop $(docker ps -a -q)
-    docker rm $(docker ps -a -q)
+    running_containers=($(docker ps -a -q))
+    if (( ${#running_containers[@]} > 0 )); then
+      docker stop $(running_containers)
+      docker rm $(running_containers)
+    fi
     docker system prune -af
 fi
 
 export METEOR_PACKAGE_DIRS=${BUILD_DIRECTORY}/MATScommon/meteor_packages
 if [ ! -d ${METEOR_PACKAGE_DIRS} ]; then
-    echo -e "${RED}you do have a ${BUILD_DIRECTORY}/MATScommon/meteor_packages from the MATScommon submodule - exiting${NC}"
+    echo -e "${RED}you do not have a ${BUILD_DIRECTORY}/MATScommon/meteor_packages from the MATScommon submodule - exiting${NC}"
     exit 1
 fi
 echo "Using ${METEOR_PACKAGE_DIRS} for local meteor package directory" 
