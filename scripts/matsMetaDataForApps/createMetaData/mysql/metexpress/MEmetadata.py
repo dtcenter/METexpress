@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import ast
 import getopt
@@ -64,11 +63,9 @@ class ParentMetadata:
         runningCnx.autocommit = True
         runningCursor = runningCnx.cursor(pymysql.cursors.DictCursor)
         runningCursor.execute("use  " + self.metadata_database + ";")
-        runningCnx.commit()
 
         runningCursor.execute(
             "select app_reference from metadata_script_info where app_reference = '" + self.get_app_reference() + "'")
-        runningCnx.commit()
         if runningCursor.rowcount == 0:
             # insert
             insert_cmd = 'insert into metadata_script_info (app_reference,  running) values ("' + self.get_app_reference() + '", "' + str(
@@ -87,7 +84,6 @@ class ParentMetadata:
     def update_status(self, status, utc_start, utc_end):
         assert status == "started" or status == "waiting" or status == "succeeded" or status == "failed", "Attempt to update run_stats where status is not one of started | waiting | succeeded | failed: " + status
         self.cursor.execute("select database_name from run_stats where database_name = '" + self.mvdb + "'")
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             # insert
             insert_cmd = 'INSERT INTO run_stats (script_name, run_start_time, run_finish_time, database_name, status) VALUES ("' + self.script_name + '", "' + utc_start + '","' + utc_end + '","' + self.mvdb + '", "' + status + '");'
@@ -130,12 +126,10 @@ class ParentMetadata:
             self.cnx.commit()
 
         self.cursor.execute("use  " + self.metadata_database + ";")
-        self.cnx.commit()
 
         # see if the metadata tables already exist - create them if they do not
         print(self.script_name + " - Checking for metadata tables")
         self.cursor.execute('show tables like "{}_dev";'.format(self.metadata_table))
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
             create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(self.metadata_table)
@@ -143,7 +137,6 @@ class ParentMetadata:
             self.cnx.commit()
 
         self.cursor.execute('show tables like "{}";'.format(self.metadata_table))
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata prod table does not exist--creating it")
             create_table_query = 'create table {} like {}_dev;'.format(self.metadata_table, self.metadata_table)
@@ -171,12 +164,10 @@ class ParentMetadata:
 
         # see if the metadata_script_info tables already exist
         self.cursor.execute('show tables like "metadata_script_info";')
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             self._create_metadata_script_info_table()
         # run stats is used by MEupdate_update.py - because it has to wait for completion
         self.cursor.execute('show tables like "run_stats";')
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             self._create_run_stats_table()
 
@@ -190,11 +181,9 @@ class ParentMetadata:
             self.cnx.commit()
         # get the new groups
         self.cursor.execute("select db_group, dbs from {database_groups_dev};".format(**gd))
-        self.cnx.commit()
         dev_groups = list(self.cursor.fetchall())
         # get the old groups
         self.cursor.execute("select db_group, dbs from {database_groups};".format(**gd))
-        self.cnx.commit()
         existing_groups = list(self.cursor.fetchall())
         existing_group_names = set()
         # get the existing group db names
@@ -238,13 +227,11 @@ class ParentMetadata:
 
         print(self.script_name + " - Publishing metadata")
         self.cursor.execute("use  " + self.metadata_database + ";")
-        self.cnx.commit()
 
         devcnx = pymysql.connect(read_default_file=self.cnf_file)
         devcnx.autocommit = True
         devcursor = devcnx.cursor(pymysql.cursors.DictCursor)
         devcursor.execute("use  " + self.metadata_database + ";")
-        devcnx.commit()
 
         # use a tmp table to hold the new metadata then do a rename of the tmop metadata to the metadata
         # have to do all this extra checking to avoid warnings from mysql
@@ -267,13 +254,11 @@ class ParentMetadata:
         self.cnx.commit()
         # iterate the db model pairs in the metadata_dev table
         self.cursor.execute("select * from {mdt_dev};".format(**d))
-        self.cnx.commit()
         dev_rows = self.cursor.fetchall()
         for dev_row in dev_rows:
             d['db'] = dev_row['db']
             d['model'] = dev_row['model']
             self.cursor.execute('select * from {mdt_tmp} where db = "{db}" and model = "{model}";'.format(**d))
-            self.cnx.commit()
             # does it exist in the tmp_metadata table?
             if self.cursor.rowcount > 0:
                 # yes - then delete the entry from tmp_metadata table
@@ -282,7 +267,6 @@ class ParentMetadata:
             # insert the dev data into the tmp_metadata table
             self.cursor.execute(
                 'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}";'.format(**d))
-            self.cnx.commit()
             d['db'] = ""
             d['model'] = ""
         self.cursor.execute("rename table {mdt} to {tmp_mdt}, {mdt_tmp} to {mdt};".format(**d))
@@ -333,7 +317,6 @@ class ParentMetadata:
         mvdbs = []
         show_mvdbs = 'show databases like "mv_%";'
         self.cursor.execute(show_mvdbs)
-        self.cnx.commit()
         rows = self.cursor.fetchall()
         for row in rows:
             if self.mvdb == "all":
@@ -351,9 +334,7 @@ class ParentMetadata:
             self.cursor.execute(use_db)
             self.cnx.commit()
             cursor2.execute(use_db)
-            cnx2.commit()
             cursor3.execute(use_db)
-            cnx3.commit()
             print("\n\n" + self.script_name + "- Using db " + mvdb)
 
             # Get the models in this database
@@ -363,7 +344,6 @@ class ParentMetadata:
             else:
                 get_models += ';'
             self.cursor.execute(get_models)
-            self.cnx.commit()
             for line in self.cursor:
                 model = list(line.values())[0]
                 per_mvdb[mvdb][model] = {}
@@ -378,108 +358,89 @@ class ParentMetadata:
                 if debug:
                     print(self.script_name + " - variable sql query: " + get_vars)
                 cursor2.execute(get_vars)
-                cnx2.commit()
+
+                if self.appSpecificWhereClause:
+                    end_query = ' and ' + self.appSpecificWhereClause + ';'
+                else:
+                    end_query = ';'
+
                 for line2 in cursor2:
                     variable = list(line2.values())[0]
                     print("\n" + self.script_name + " - Processing variable " + variable)
 
                     # Get the regions for this model/variable in this database
-                    get_regions = 'select distinct vx_mask from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_regions += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_regions += ';'
+                    get_regions = 'select distinct vx_mask from stat_header where model = "' \
+                                  + model + '" and fcst_var = "' + variable + '"' + end_query
                     tmp_regions_list = []
-                    print(self.script_name + " - Getting regions for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting regions for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - region sql query: " + get_regions)
                     cursor3.execute(get_regions)
-                    cnx3.commit()
                     for line3 in cursor3:
                         region = list(line3.values())[0]
                         tmp_regions_list.append(region)
                     tmp_regions_list.sort()
 
                     # Get the levels for this model/variable in this database
-                    get_levels = 'select distinct fcst_lev from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_levels += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_levels += ';'
+                    get_levels = 'select distinct fcst_lev from stat_header where model = "' \
+                                 + model + '" and fcst_var = "' + variable + '"' + end_query
                     tmp_levels_list = []
-                    print(self.script_name + " - Getting levels for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting levels for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - level sql query: " + get_levels)
                     cursor3.execute(get_levels)
-                    cnx3.commit()
                     for line3 in cursor3:
                         level = list(line3.values())[0]
                         tmp_levels_list.append(level)
                     tmp_levels_list.sort(key=self.strip_level)
 
                     # Get the thresholds/variable for this model in this database
-                    get_trshs = 'select distinct fcst_thresh from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_trshs += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_trshs += ';'
+                    get_trshs = 'select distinct fcst_thresh from stat_header where model = "' \
+                                + model + '" and fcst_var = "' + variable + '"' + end_query
                     tmp_trshs_list = []
-                    print(self.script_name + " - Getting thresholds for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting thresholds for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - threshold sql query: " + get_trshs)
                     cursor3.execute(get_trshs)
-                    cnx3.commit()
                     for line3 in cursor3:
                         trsh = str(list(line3.values())[0])
                         tmp_trshs_list.append(trsh)
                     tmp_trshs_list.sort(key=self.strip_trsh)
 
                     # Get the gridpoints for this model/variable in this database
-                    get_gridpoints = 'select distinct interp_pnts from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_gridpoints += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_gridpoints += ';'
+                    get_gridpoints = 'select distinct interp_pnts from stat_header where model = "' \
+                                     + model + '" and fcst_var = "' + variable + '"' + end_query
                     tmp_gridpoints_list = []
-                    print(self.script_name + " - Getting gridpoints for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting gridpoints for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - gridpoints sql query: " + get_gridpoints)
                     cursor3.execute(get_gridpoints)
-                    cnx3.commit()
                     for line3 in cursor3:
                         gridpoint = str(list(line3.values())[0])
                         tmp_gridpoints_list.append(gridpoint)
                     tmp_gridpoints_list.sort(key=int)
 
                     # Get the truths for this model/variable in this database
-                    get_truths = 'select distinct obtype from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_truths += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_truths += ';'
+                    get_truths = 'select distinct obtype from stat_header where model = "' \
+                                 + model + '" and fcst_var = "' + variable + '"'  + end_query
                     tmp_truths_list = []
-                    print(self.script_name + " - Getting truths for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting truths for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - truths sql query: " + get_truths)
                     cursor3.execute(get_truths)
-                    cnx3.commit()
                     for line3 in cursor3:
                         truth = str(list(line3.values())[0])
                         tmp_truths_list.append(truth)
                     tmp_truths_list.sort()
 
                     # Get the descriptions for this model/variable in this database
-                    get_descrs = 'select distinct descr from stat_header where model = "' + model + '" and fcst_var = "' + variable + '"'
-                    if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                        get_descrs += ' and ' + self.appSpecificWhereClause + ';'
-                    else:
-                        get_descrs += ';'
+                    get_descrs = 'select distinct descr from stat_header where model = "' \
+                                 + model + '" and fcst_var = "' + variable + '"' + end_query
                     tmp_descrs_list = []
-                    print(self.script_name + " - Getting descrs for model " + model + " and variable " + variable)
+                    # print(self.script_name + " - Getting descrs for model " + model + " and variable " + variable)
                     if debug:
                         print(self.script_name + " - descrs sql query: " + get_descrs)
                     cursor3.execute(get_descrs)
-                    cnx3.commit()
                     for line3 in cursor3:
                         descr = str(list(line3.values())[0])
                         tmp_descrs_list.append(descr)
@@ -626,7 +587,6 @@ class ParentMetadata:
     def add_model_to_metadata_table(self, cnx_tmp, cursor_tmp, mvdb, model, line_data_table, variable, raw_metadata):
         # Add a row for each model/db combo
         cursor_tmp.execute("use  " + self.metadata_database + ";")
-        cnx_tmp.commit()
         #
         if len(raw_metadata['regions']) > 0 and len(raw_metadata['levels']) > 0 \
                 and len(raw_metadata['fcsts']) > 0 and len(raw_metadata['trshs']) > 0 \
@@ -658,11 +618,9 @@ class ParentMetadata:
             cnx_tmp.commit()
         # put the cursor back to the db it was using
         cursor_tmp.execute("use  " + mvdb + ";")
-        cnx_tmp.commit()
 
     def populate_db_group_tables(self, db_groups):
         self.cursor.execute("use  " + self.metadata_database + ";")
-        self.cnx.commit()
         groups_table = self.database_groups + "_dev"
         for group in db_groups:
             gd = {"groups_table": groups_table}
@@ -692,7 +650,7 @@ class ParentMetadata:
                 if debug:
                     print(self.script_name + " clear to go")
                 waiting = False
-                break;
+                break
 
         return False
 
@@ -710,7 +668,7 @@ class ParentMetadata:
     def get_options(self, args):
         usage = ["(c)nf_file=", "[(m)ats_metadata_database_name]",
                  "[(D)ata_table_stat_header_id_limit - default is 10,000,000,000]",
-                 "[(d)atabase name]" "(u)=metexpress_base_url"]
+                 "[(d)atabase name]", "(u)=metexpress_base_url"]
         cnf_file = None
         db = None
         metexpress_base_url = None

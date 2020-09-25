@@ -78,7 +78,6 @@ Author: Randy Pierce
 
 #  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
-from __future__ import print_function
 
 import getopt
 import importlib
