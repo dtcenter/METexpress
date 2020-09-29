@@ -158,7 +158,7 @@ and uncomment these lines...
 -  main = "${domain}"
 
 If you want to use externally acquired certs then you need to acquire an SSL cert for your domain and put the certificate in /etc/ssl/certs directory of this host. If you have authority over the DNS entry for
-your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://docs.traefik.io/configuration/acme/.
+your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://doc.traefik.io/traefik/https/overview/.
 If you cannot acquire a certificate you can enable the apps temporarily by commenting out
 - [[entryPoints.https.tls.certificates]]
 - certFile = "/etc/ssl/certs/mats-meteor.crt"
