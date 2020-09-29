@@ -34,18 +34,10 @@ numbers in the file stableDeployment.json as defaults**. The stableDeployment.js
 **The file `stableDeployment.json` also specifies which apps will be deployed**. You can choose which apps will be deployed by editing this file. For example, If custom apps with custom names have been built you will need to add them to this file. If you want to leave some apps undeployed then remove their entries from this file.
 #### The program will prompt you for the database credentials for each database role required by each app. 
 For METexpress this is the METdatadb database and the credentials will usually be the same for each app.
-#### Database Roles
-Database roles can be some combination of one or more predefined roles. These roles correspond to database connections and
-may require different credentials. Currently, for METexpress,
-only one role "sums_data" is used, but that may change in the future. These roles are
-configured in the stableDeployment.json file and should not be changed from what they are in the github code repository. If you 
-add a custom app use the role "sums_data".
-* sums_data - the database that contains an apps statistical partial sum data - **default role**, 
-* meta_data - the database that contains app metadata - **currently unused**,
-* model_data - a database that contains metadata about data sources - **currently unused**, 
-* and sites_data - which contains non standard domain data - **currently unused**.
-
-**For METexpress there is currently only one role used, which is sums_data.**
+#### Database Role
+METexpress uses a construct named role to store database credentials. The role is defined as "sums_data". This role is
+configured in the stableDeployment.json file and should not be changed from what it is in the github code repository. If you 
+add a custom app give it the role "sums_data" in that file as well.
 #### Database Credentials
 The credentials that you provide are stored in an `[INSTALL_DIR]/settings` directory 
 with the directory structure `INSTALL_DIR/settings/appreference/settings.json` (where appreference is the
@@ -121,8 +113,8 @@ will map the cert directory to the proxy app.
 
 #### Letsencypt certificate
 If you have authority over the DNS entry for
-your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://docs.traefik.io/configuration/acme/.
-
+your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://doc.traefik.io/traefik/https/overview/.
+Notice that it will require special firewall rules for your server.
 #### Reverse proxy interface
 traefik has a reverse proxy interface that can give you statistics, configuration information etc.
 - The reverse proxy interface has a user/password pre-set to user "**admin**" and password "**adminpassword**", you should change this by following the instructions in the traefik.toml file.
@@ -140,7 +132,7 @@ tool suite entrypoints are
 Many of the remaining configurations are not applicable for the simple test environment and the configuration program will not ask about them.
 
 ##CERTS and SSL - IMPORTANT
-There are two ways to handle ssl. You can let traefik use lets-encrypt automatically to generate and store certs.
+There are two ways to handle ssl. You can let traefik use lets-encrypt to automatically generate and store certs.
 These are requirements for traefik/lets-encrypt certs
 1) You cannot have a firewall blocking outbound traffic  from your server and https://acme-v02.api.letsencrypt.org/directory
 2) You have to follow the comments in the traefik.toml file and properly comment out the externally acquired cert sections
