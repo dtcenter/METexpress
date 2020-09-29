@@ -16,6 +16,7 @@ Configuration steps:
 1. Bring the system up by running the up command `./bin/up metexpress`
 1. Wait for a moment (let the containers get initialized) then test at `https://yourfullyqualifieddomain` or `http://localhost` (simple test deployment).
 
+Any changes that you make to configuration files, traefik.toml, docker-compose.yml, or applist.json will be applied the next time you restart the services.
 # Configuration details:
 #### maintainer:
 METexpress is a tool suite of applications that run under Docker.
