@@ -131,7 +131,7 @@ tool suite entrypoints are
 
 Many of the remaining configurations are not applicable for the simple test environment and the configuration program will not ask about them.
 
-##CERTS and SSL - IMPORTANT
+## CERTS and SSL - IMPORTANT
 There are two ways to handle ssl. You can let traefik use lets-encrypt to automatically generate and store certs.
 These are requirements for traefik/lets-encrypt certs
 1) You cannot have a firewall blocking outbound traffic  from your server and https://acme-v02.api.letsencrypt.org/directory
