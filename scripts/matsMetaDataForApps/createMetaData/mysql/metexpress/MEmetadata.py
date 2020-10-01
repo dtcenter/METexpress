@@ -332,10 +332,29 @@ class ParentMetadata:
             db_has_valid_data = False
             use_db = "use " + mvdb
             self.cursor.execute(use_db)
-            self.cnx.commit()
             cursor2.execute(use_db)
             cursor3.execute(use_db)
             print("\n\n" + self.script_name + "- Using db " + mvdb)
+
+            if self.appSpecificWhereClause:
+                end_query = ' and ' + self.appSpecificWhereClause + ';'
+                where_query = ' where ' + self.appSpecificWhereClause
+            else:
+                end_query = ';'
+                where_query = ''
+
+            get_model_var = 'select distinct model, fcst_var from stat_header' + where_query + ';'
+            cursor3.execute(get_model_var)
+            result1 = cursor3.fetchall()
+            get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
+                            'group_concat(distinct fcst_lev) as levels, ' \
+                            'group_concat(distinct fcst_thresh) as trshs, ' \
+                            'group_concat(distinct interp_pnts) as gridpoints, ' \
+                            'group_concat(distinct obtype) as truths, ' \
+                            'group_concat(distinct descr) as descrs from stat_header' \
+                            + where_query + ' group by model, fcst_var;'
+            cursor3.execute(get_val_lists)
+            result2 = cursor3.fetchall()
 
             # Get the models in this database
             get_models = 'select distinct model from stat_header'
@@ -344,25 +363,19 @@ class ParentMetadata:
             else:
                 get_models += ';'
             self.cursor.execute(get_models)
+
             for line in self.cursor:
                 model = list(line.values())[0]
                 per_mvdb[mvdb][model] = {}
                 print("\n" + self.script_name + " - Processing model " + model)
 
                 # Get the variables for this model in this database
-                get_vars = 'select distinct fcst_var from stat_header where model = "' + model + '"'
-                if self.appSpecificWhereClause is not None and self.appSpecificWhereClause != "":
-                    get_vars += ' and ' + self.appSpecificWhereClause + ';'
-                else:
-                    get_vars += ';'
+                get_vars = 'select distinct fcst_var from stat_header where model = "' \
+                           + model + '"' + end_query
+
                 if debug:
                     print(self.script_name + " - variable sql query: " + get_vars)
                 cursor2.execute(get_vars)
-
-                if self.appSpecificWhereClause:
-                    end_query = ' and ' + self.appSpecificWhereClause + ';'
-                else:
-                    end_query = ';'
 
                 for line2 in cursor2:
                     variable = list(line2.values())[0]
@@ -487,7 +500,6 @@ class ParentMetadata:
                             print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + variable + " sql: " + get_stat_header_ids)
                         try:
                             cursor3.execute(get_stat_header_ids)
-                            cnx3.commit()
                             stat_header_id_values = cursor3.fetchall()
                             stat_header_id_list = [d['stat_header_id'] for d in stat_header_id_values if
                                                    'stat_header_id' in d]
@@ -502,7 +514,6 @@ class ParentMetadata:
                                 print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
                             try:
                                 cursor3.execute(get_fcsts)
-                                cnx3.commit()
                                 for line3 in cursor3:
                                     fcst = int(list(line3.values())[0])
                                     temp_fcsts_orig.add(fcst)
@@ -518,7 +529,6 @@ class ParentMetadata:
                                 print(self.script_name + " - stats sql query: " + get_stats)
                             try:
                                 cursor3.execute(get_stats)
-                                cnx3.commit()
                                 data = cursor3.fetchone()
                                 if data is not None:
                                     mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
@@ -636,14 +646,12 @@ class ParentMetadata:
             print(self.script_name + " waiting on other process")
         mustend = tm.time() + timeout
         self.cursor.execute("select * from metadata_script_info")
-        self.cnx.commit()
         if self.cursor.rowcount == 0:
             return False
         waiting = True
         while tm.time() < mustend and not waiting:
             # some sort of check for running updates
             self.cursor.execute("select app_reference from metadata_script_info where running != 0")
-            self.cnx.commit()
             if self.cursor.rowcount > 0:
                 tm.sleep(period)
             else:
