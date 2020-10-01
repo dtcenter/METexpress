@@ -52,14 +52,14 @@ Consider the impact to the other METplus components.
 ## New Feature Checklist ##
 See the [METplus Workflow](https://dtcenter.github.io/METplus/Contributors_Guide/github_workflow.html) for details.
 - [ ] Complete the issue definition above, including the **Time Estimate** and **Funding source**.
-- [ ] Fork this repository or create a branch of **develop**.
+- [ ] Fork this repository or create a branch of **development**.
 Branch name: `feature_<Issue Number>_<Description>`
 - [ ] Complete the development and test your changes.
 - [ ] Add/update log messages for easier debugging.
 - [ ] Add/update unit tests.
 - [ ] Add/update documentation.
 - [ ] Push local changes to GitHub.
-- [ ] Submit a pull request to merge into **develop**.
+- [ ] Submit a pull request to merge into **development**.
 Pull request: `feature <Issue Number> <Description>`
 - [ ] Define the pull request metadata, as permissions allow.
 Select: **Reviewer(s)**, **Project(s)**, **Milestone**, and **Linked issues**
