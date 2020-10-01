@@ -109,8 +109,6 @@ class ParentMetadata:
             self.cnx.autocommit = True
             self.cursor = self.cnx.cursor(pymysql.cursors.DictCursor)
             self.cursor.execute('set group_concat_max_len=4294967295;')
-            # Very important -- set the session sql mode such that group by queries work without having to select the group by field
-            self.cursor.execute('set session sql_mode="NO_AUTO_CREATE_USER";')
 
         except pymysql.Error as e:
             print(self.script_name + "- Error: " + str(e))
@@ -293,8 +291,7 @@ class ParentMetadata:
             cnx2.autocommit = True
             cursor2 = cnx2.cursor(pymysql.cursors.DictCursor)
             cursor2.execute('set group_concat_max_len=4294967295;')
-            # Very important -- set the session sql mode such that group by queries work without having to select the group by field
-            cursor2.execute('set session sql_mode="NO_AUTO_CREATE_USER";')
+
         except pymysql.Error as e:
             print(self.script_name + " - Error: " + str(e))
             traceback.print_stack()
@@ -304,8 +301,7 @@ class ParentMetadata:
             cnx3.autocommit = True
             cursor3 = cnx3.cursor(pymysql.cursors.DictCursor)
             cursor3.execute('set group_concat_max_len=4294967295;')
-            # Very important -- set the session sql mode such that group by queries work without having to select the group by field
-            cursor3.execute('set session sql_mode="NO_AUTO_CREATE_USER";')
+
         except pymysql.Error as e:
             print(self.script_name + " - Error: " + str(e))
             traceback.print_stack()
@@ -343,7 +339,7 @@ class ParentMetadata:
                 end_query = ';'
                 where_query = ''
 
-            result1 = cursor3.fetchall()
+            # Get the additional data in the stat header for model var pairs
             get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
                             'group_concat(distinct fcst_lev) as levels, ' \
                             'group_concat(distinct fcst_thresh) as trshs, ' \
@@ -351,8 +347,8 @@ class ParentMetadata:
                             'group_concat(distinct obtype) as truths, ' \
                             'group_concat(distinct descr) as descrs from stat_header' \
                             + where_query + ' group by model, fcst_var;'
-            cursor3.execute(get_val_lists)
-            result2 = cursor3.fetchall()
+            cursor2.execute(get_val_lists)
+            result2 = cursor2.fetchall()
 
             for line_data_table in self.line_data_table:
                 for model_var_line in result2:
@@ -384,10 +380,12 @@ class ParentMetadata:
                     maxdate = datetime.min  # earliest epoch?
                     app_specific_clause = end_query[:-1]
 
-                    # select the minimum length set of stat_header_ids from the line_data_table that are unique with respect to model, variable, and vx_mask.
+                    # select the minimum length set of stat_header_ids from the line_data_table that are unique
+                    # with respect to model, variable, and vx_mask.
                     # these will be used to qualify the distinct set of fcst_leads from the line data table.
                     get_stat_header_ids = "select stat_header_id from " + \
-                                          "(select group_concat(stat_header_id) as stat_header_id from stat_header where stat_header_id in (select distinct stat_header_id from " + \
+                                          "(select group_concat(stat_header_id) as stat_header_id " + \
+                                          "from stat_header where stat_header_id in (select distinct stat_header_id from " + \
                                           line_data_table + \
                                           " where model = '" + model + \
                                           "' and fcst_var = '" + fvar + \
@@ -399,7 +397,6 @@ class ParentMetadata:
                     try:
                         cursor3.execute(get_stat_header_ids)
                         stat_header_id_values = cursor3.fetchall()
-                        print(stat_header_id_values)
                         stat_header_id_list = [d['stat_header_id'] for d in stat_header_id_values if
                                                'stat_header_id' in d]
                     except pymysql.Error as e:
@@ -429,7 +426,7 @@ class ParentMetadata:
                         try:
                             cursor3.execute(get_stats)
                             data = cursor3.fetchone()
-                            if data is not None:
+                            if data:
                                 mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
                                     'mindate']
                                 maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
