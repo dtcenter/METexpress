@@ -364,7 +364,7 @@ class ParentMetadata:
                     per_mvdb[mvdb][model][line_data_table][fvar]['trshs'] = \
                         sorted(model_var_line['trshs'].split(','), key=self.strip_trsh)
                     per_mvdb[mvdb][model][line_data_table][fvar]['gridpoints'] = \
-                        sorted(model_var_line['gridpoints'].split(','))
+                        sorted(model_var_line['gridpoints'].split(','), key=int)
                     per_mvdb[mvdb][model][line_data_table][fvar]['truths'] = \
                         sorted(model_var_line['truths'].split(','))
                     per_mvdb[mvdb][model][line_data_table][fvar]['descrs'] = \
