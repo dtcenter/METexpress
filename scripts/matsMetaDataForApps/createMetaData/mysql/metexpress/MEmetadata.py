@@ -341,8 +341,8 @@ class ParentMetadata:
 
             # Get the additional data in the stat header for model var pairs
             get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
-                            'group_concat(distinct fcst_lev) as levels, ' \
-                            'group_concat(distinct fcst_thresh) as trshs, ' \
+                            'group_concat(distinct fcst_lev separator "$") as levels, ' \
+                            'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
                             'group_concat(distinct interp_pnts) as gridpoints, ' \
                             'group_concat(distinct obtype) as truths, ' \
                             'group_concat(distinct descr) as descrs from stat_header' \
@@ -360,9 +360,9 @@ class ParentMetadata:
                     per_mvdb[mvdb][model][line_data_table][fvar]['regions'] = \
                         sorted(model_var_line['regions'].split(','))
                     per_mvdb[mvdb][model][line_data_table][fvar]['levels'] = \
-                        sorted(model_var_line['levels'].split(','), key=self.strip_level)
+                        sorted(model_var_line['levels'].split('$'), key=self.strip_level)
                     per_mvdb[mvdb][model][line_data_table][fvar]['trshs'] = \
-                        sorted(model_var_line['trshs'].split(','), key=self.strip_trsh)
+                        sorted(model_var_line['trshs'].split('$'), key=self.strip_trsh)
                     per_mvdb[mvdb][model][line_data_table][fvar]['gridpoints'] = \
                         sorted(model_var_line['gridpoints'].split(','), key=int)
                     per_mvdb[mvdb][model][line_data_table][fvar]['truths'] = \
