@@ -16,6 +16,7 @@ Configuration steps:
 1. Bring the system up by running the up command `./bin/up metexpress`
 1. Wait for a moment (let the containers get initialized) then test at `https://yourfullyqualifieddomain` or `http://localhost` (simple test deployment).
 
+Any changes that you make to configuration files, traefik.toml, docker-compose.yml, or applist.json will be applied the next time you restart the services.
 # Configuration details:
 #### maintainer:
 METexpress is a tool suite of applications that run under Docker.
@@ -131,7 +132,7 @@ tool suite entrypoints are
 
 Many of the remaining configurations are not applicable for the simple test environment and the configuration program will not ask about them.
 
-##CERTS and SSL - IMPORTANT
+## CERTS and SSL - IMPORTANT
 There are two ways to handle ssl. You can let traefik use lets-encrypt to automatically generate and store certs.
 These are requirements for traefik/lets-encrypt certs
 1) You cannot have a firewall blocking outbound traffic  from your server and https://acme-v02.api.letsencrypt.org/directory
@@ -157,7 +158,7 @@ and uncomment these lines...
 -  main = "${domain}"
 
 If you want to use externally acquired certs then you need to acquire an SSL cert for your domain and put the certificate in /etc/ssl/certs directory of this host. If you have authority over the DNS entry for
-your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://docs.traefik.io/configuration/acme/.
+your server you can use LetsEncrypt for no cost certs. The instructions for doing this are at https://doc.traefik.io/traefik/https/overview/.
 If you cannot acquire a certificate you can enable the apps temporarily by commenting out
 - [[entryPoints.https.tls.certificates]]
 - certFile = "/etc/ssl/certs/mats-meteor.crt"
