@@ -18,7 +18,7 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METexpress'
-author = 'UCAR/NCAR, NOAA, and CSU/CIRA ???'
+author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
 verinfo = '3.0.0'
 version = '3.0.0'
