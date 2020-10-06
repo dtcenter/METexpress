@@ -19,7 +19,7 @@ print(sys.path)
 
 project = 'METexpress'
 author = 'UCAR/NCAR, NOAA, and CSU/CIRA ???'
-author_list = 'Strong, B., Pierce, R., Smith, M., Hagerty, V. ???'
+author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
 verinfo = '3.0.0'
 version = '3.0.0'
 release = f'{version}'

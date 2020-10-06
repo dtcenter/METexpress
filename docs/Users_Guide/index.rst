@@ -4,11 +4,24 @@ User's Guide
 
 **Foreword: A note to MET users**
 
-This User's Guide is provided as an aid to users of the Model Evaluation Tools Express (METexpress). METexpress is an easy-to-use interface that displays plots of statistical verification metrics for data that a user defines interactively.  It was developed by the Developmental Testbed Center (DTC). It is also the core component of the unified METplus verification framework. More details about METplus can be found on the `METplus website <http://dtcenter.org/community-code/metplus>`_.
+This User's Guide is provided as an aid to users of the Model Evaluation
+Tools Express (METexpress). METexpress is an easy-to-use interface that
+displays plots of statistical verification metrics for data that a user
+defines interactively.  It was developed by the Developmental Testbed
+Center (DTC). It is also the core component of the unified METplus
+verification framework. More details about METplus can be found on the
+`METplus website <http://dtcenter.org/community-code/metplus>`_.
 
-It is important to note here that METexpress is an evolving software package. This documentation describes the |release| release dated |release_date|. 
+It is important to note here that METexpress is an evolving software package.
+This documentation describes the |release| release dated |release_date|.
+METexpress may also be able to accept contributions from the community.
+If you have code you would like to contribute, we will gladly consider your
+contribution.  Please send an email to: `mats.gsd@noaa.gov <mailto:>`__.
+We will then determine if we will be able to include the contribution in a
+future version.
 
-This User's Guide was prepared by the developers of METexpress, including Bonny Strong, Randy Pierce, Molly B. Smith, and Venita Hagerty.
+This User's Guide was prepared by the developers of METexpress, including
+Bonny Strong, Randy Pierce, Molly B. Smith, Venita Hagerty, and Jeff Hamilton.
 
 **Model Evaluation Tools Express (METexpress)  TERMS OF USE - IMPORTANT!**
 
@@ -36,12 +49,13 @@ Available at: `METexpress releases <https://github.com/dtcenter/METexpress/relea
 
 **Acknowledgments**
 
-We thank all the METexpress sponsors including: ???  DTC partners (NOAA, NCAR, USAF, and NSF) ??? Thanks also go to the
-staff at the Developmental Testbed Center for their help, advice, and many types of support. ???
+We thank all the METexpress sponsors including: ???  DTC partners
+(NOAA, NCAR, USAF, and NSF) ??? Thanks also go to the staff at the Developmental
+Testbed Center for their help, advice, and many types of support. ???
 		  
 .. toctree::
    :titlesonly:
-   :numbered: 4
+   :numbered: 2
 
    overview
    interface
