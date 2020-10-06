@@ -46,22 +46,28 @@ class MEUpperair(ParentMetadata):
         # helper function for sorting thresholds
         if elem[0] == '>':
             try:
-                return 10000 + int(float(elem[1:]))
-            except ValueError:
-                return 10000
-        elif elem[0] == '<':
-            try:
-                return 20000 + int(float(elem[1:]))
-            except ValueError:
-                return 20000
-        elif elem[0] == '=':
-            try:
-                return 30000 + int(float(elem[1:]))
+                return 1000 + int(float(elem[1:])) * 10000
             except ValueError:
                 try:
-                    return 30000 + int(float(elem[2:]))
+                    return 1000.0001 + int(float(elem[2:])) * 10000
                 except ValueError:
-                    return 30000
+                    return 3000
+        elif elem[0] == '<':
+            try:
+                return 4000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 4000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 6000
+        elif elem[0] == '=':
+            try:
+                return 7000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 70000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 90000
         else:
             try:
                 return int(float(elem))
