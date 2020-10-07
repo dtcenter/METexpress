@@ -27,7 +27,8 @@ and how METexpress integrates with the other tools.
 
 .. figure:: figure/image001.png
 
-            Schematic diagram of the structure of METplus, including METexpress
+            Schematic diagram of the structure of METplus, including
+	    METexpress
 
 In the simplest workflow for verifying model outputs, the model output data
 and “truth” or observation data are input into the MET software package which
@@ -67,7 +68,7 @@ definitions set by the MET package with input from the mathematical expertise
 within the Developmental Testbed Center (DTC).  To learn more about the
 metrics and how to interpret them, please see the
 `MET User Guide, <https://dtcenter.github.io/MET/Users_Guide/index.html>`_
-particularly `Appendix C <https://dtcenter.github.io/MET/Users_Guide/appendixC.html>`_ about Verification Measures and additional material.
+particularly `Appendix C <https://dtcenter.github.io/MET/Users_Guide/appendixC.html>`_ about Verification Measures and `additional material <https://dtcenter.org/community-code/model-evaluation-tools-met/documentation>`_.
 
 One of the features of METexpress is that, generally, it only presents the
 user with choices for data parameters that are valid for the data sets that

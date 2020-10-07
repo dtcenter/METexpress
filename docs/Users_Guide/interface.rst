@@ -42,11 +42,12 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image003`. There are 3 parts to this
-screen: 
-•	Plot Type
-•	Curve Data Parameters 
-•	Plot Parameters
+curves have been defined is shown in :numref:`image003`. There are 3 parts to
+this screen:
+
+* Plot Type
+* Curve Data Parameters 
+* Plot Parameters
  
 .. _image003:
 
@@ -55,7 +56,7 @@ screen:
 	    Upper Air User Interface screen before any curves have been defined
 
 After any curves have been added, the user interface screen includes a
-fourth area, as shown in Figure 2.2 2, that shows what curves have already
+fourth area, as shown in :numref:`image003`, that shows what curves have already
 been defined.  The section for the Curve Data Parameters then allows the
 user to create additional curves to be added to the plot.
  
@@ -63,69 +64,190 @@ user to create additional curves to be added to the plot.
 
 .. figure:: figure/image004.png
 
-	    Upper Air User Interface screen after Curve0 has been added, showing the addition of the area for Defined Curves above the Curve Data Parameters
+	    Upper Air User Interface screen after Curve0 has been added,
+	    showing the addition of the area for Defined Curves above the
+	    Curve Data Parameters
  
 Plot Types
 __________
 
-Immediately below the name of the app is a bar that allows selection of the plot type.  Available types for Upper Air include Time Series, Profile, DieOff, ValidTime, Histogram, and Contour.  Other apps include some plot types specific to that application domain, such as Reliability plots in the Ensemble app or GridScale plots in the Precip app.  The section for each app below will describe the available plot types for that app.
-The user will first want to decide what type of plot they want to produce initially.  Most apps default to Time Series, but the user should change to the type of plot they want to create.  If the plot type is changed after curves have been defined, the user will be prompted whether to keep all existing defined curves or to remove all the existing curves.
-2.3.1.	Curve Data Parameters
- In the central area of the screen is a box to define the data parameters associated with each curve to be plotted.  Blue fields are selectors and green fields are action buttons.
-A default set of selections for each parameter (in blue boxes) will be shown, which will define the data to be plotted.  The user can change any of these selectors. The values available for most selectors depend on what data is stored in the database, and on the values selected for other fields.  For example if the DATA-SOURCE selected is GFS, the values available for REGION will be only the regions that are stored in the database for GFS.
-For these parameters there is a superior-dependent relationship.  For example DATA-SOURCE (which is most typically the name of a model) is superior to VARIABLE and REGION because only certain variables and regions are available for a given DATA-SOURCE.  It is recommended that a user change parameters starting at the top left and progressing across then down the page in typical reading order.  This ordering generally keeps the superior-dependent relationship intact.  If a dependent parameter is set and the superior parameter is subsequently changed, the program attempts to maintain the dependent parameter value if it is still available for the new superior value.  If the dependent value is not available for the new superior then a default value is automatically set for the dependent.  This maintains consistency and prevents invalid parameter choices.
-In the example Upper Air app, the selectable values are derived from the data for these parameters:
-•	Group (as defined in the MET database)
-•	Database (name of user database)
-•	Data-Source (usually a model name)
-•	Region
-•	Variable
-•	Forecast lead time
-•	Pressure level
-•	Description 
-•	Dates – date range that applies to all curves, used for plot types like time series
-•	Curve-dates – range of dates used to filter data for a particular curve, such as seen in vertical profiles, where each curve may potentially be based on data from different date ranges
+Immediately below the name of the app is a bar that allows selection of the
+plot type.  Available types for Upper Air include Time Series, Profile,
+DieOff, ValidTime, Histogram, and Contour.  Other apps include some plot
+types specific to that application domain, such as Reliability plots in the
+Ensemble app or GridScale plots in the Precip app.  The section for each
+app below will describe the available plot types for that app.
+
+The user will first want to decide what type of plot they want to produce
+initially.  Most apps default to Time Series, but the user should change to
+the type of plot they want to create.  If the plot type is changed after
+curves have been defined, the user will be prompted whether to keep all
+existing defined curves or to remove all the existing curves.
+
+Curve Data Parameters
+~~~~~~~~~~~~~~~~~~~~~
+
+In the central area of the screen is a box to define the data parameters
+associated with each curve to be plotted.  Blue fields are selectors and
+green fields are action buttons.
+
+A default set of selections for each parameter (in blue boxes) will be shown,
+which will define the data to be plotted.  The user can change any of these
+selectors. The values available for most selectors depend on what data is
+stored in the database, and on the values selected for other fields.  For
+example if the DATA-SOURCE selected is GFS, the values available for REGION
+will be only the regions that are stored in the database for GFS.
+
+For these parameters there is a superior-dependent relationship.  For example
+DATA-SOURCE (which is most typically the name of a model) is superior to
+VARIABLE and REGION because only certain variables and regions are available
+for a given DATA-SOURCE.  It is recommended that a user change parameters
+starting at the top left and progressing across then down the page in
+typical reading order.  This ordering generally keeps the superior-dependent
+relationship intact.  If a dependent parameter is set and the superior
+parameter is subsequently changed, the program attempts to maintain the
+dependent parameter value if it is still available for the new superior
+value.  If the dependent value is not available for the new superior then a
+default value is automatically set for the dependent.  This maintains
+consistency and prevents invalid parameter choices.
+
+In the example Upper Air app, the selectable values are derived from the
+data for these parameters:
+
+* Group (as defined in the MET database)
+* Database (name of user database)
+* Data-Source (usually a model name)
+* Region
+* Variable
+* Forecast lead time
+* Pressure level
+* Description 
+* Dates – date range that applies to all curves, used for plot types like time series
+* Curve-dates – range of dates used to filter data for a particular curve, such as seen in vertical profiles, where each curve may potentially be based on data from different date ranges
 
 Static fields:
-Some fields are not dependent on data.  In the Upper Air app, these are Statistic, Valid UTC Hour, and Average, but these will vary for each app.  Choices for Statistic mostly depend on the app in question, except for in the MET Ensemble app, where they depend on the MET line types available for the chosen Data-Source.  Average and Valid UTC Hour tend to have standardized choices available across many apps.  
-Valid UTC Hour 
+^^^^^^^^^^^^^^
+
+Some fields are not dependent on data.  In the Upper Air app, these are
+Statistic, Valid UTC Hour, and Average, but these will vary for each app.
+Choices for Statistic mostly depend on the app in question, except for in
+the MET Ensemble app, where they depend on the MET line types available
+for the chosen Data-Source.  Average and Valid UTC Hour tend to have
+standardized choices available across many apps.
+
+Valid UTC Hour
+--------------
+
 This can be set to any whole number 0 to 23 for all of the apps.
 
-Average: If the value for AVERAGE is none, then all points available will be plotted.  Otherwise, all points in the selected interval are averaged into a single value.  Available choices are as follows for all of the apps:
-•	None
-•	1hr
-•	3hr
-•	6hr
-•	12hr
-•	1D
-•	3D
-•	7D
-•	30D
-•	60D
-•	90D
-•	180D
-After selecting all data parameters as desired, the user would click the Add Curve action button inside the green bar, and the area outlined in red in Figure 2.3 1 would be added to show the parameters selected for Curve0.  The color for Curve0 has been given the default value of red and will also be shown with a red line and/or symbols in the plot.  The color assigned to this curve can be changed within the outlined box with the button labeled “rgb(255,0,0)”.
-Note that the user has the option to supply whatever label they prefer to use for each curve, but the default is to create labels “Curve0”, “Curve1”, etc
+Average
+-------
 
- 
-Figure 2.3 1 Interface screen after defining a single curve with default values, then selecting Add Curve
-Editing a Curve: Once a curve is added, a user can go back and change any of its parameters. There are two ways to do this: by clicking directly on the selector value to be changed within the red outlined area, or by clicking “Edit Curve” inside the red outline. The user would then set any selectors to their updated values. If “Edit Curve” was used, or if the value of a multi-select (a selector that can have multiple values chosen) was altered, the user must finish the edit by clicking “Save Curve Changes”.
-Defining Multiple Curves: In Figure 2.3 1 “Curve0” has been defined.  The user can then repeat the selection of curve data parameters followed by Add Curve for as many curves as they wish to show on the plot.  Each new curve will be assigned a new color.  
-An example of the interface screen with 2 curves defined is shown in Figure 2.3 2.  Curve0 data parameters are shown in the red box and Curve1 data parameters are shown in the blue box.
- 
-Figure 2.3 2 Interface screen after defining 2 curves and selecting Add Curve after each
+If the value for AVERAGE is none, then all points available will be plotted.
+Otherwise, all points in the selected interval are averaged into a single
+value.  Available choices are as follows for all of the apps:
 
-2.3.2.	Plot Parameters
-The Plot Parameters appear in the box below the Curve Data Parameters box and apply to all curves defined in the Curve Data Parameters.  The user can select the dates to be included in the plot, plus the plotFormat.  Note that MATS also has an option to define QC parameters, but these are not readily supported from the METviewer database.  
-The plotFormat defines whether or not to show differences between curves.  It has 3 options: “show matching diffs”, “pairwise diffs” or “no diffs”.  
-Show matching diffs takes the difference of each of the curves from Curve0.  For example, if a user had defined Curve0, Curve1, Curve2, and Curve3, and selected "Show matching diffs", the plot would have three difference curves: Curve1-Curve0, Curve2-Curve0, and Curve3-Curve0. 
-Pairwise diffs takes the difference of each pair of adjacent curves. So, if a user had defined Curve0, Curve1, Curve2, and Curve3, and selected "pairwise diffs", the plot would have two difference curves: Curve1-Curve0, and Curve3-Curve2. 
+* None
+* 1hr
+* 3hr
+* 6hr
+* 12hr
+* 1D
+* 3D
+* 7D
+* 30D
+* 60D
+* 90D
+* 180D
+
+After selecting all data parameters as desired, the user would click the Add
+Curve action button inside the green bar, and the area outlined in red in
+:numref:`image005` would be added to show the parameters selected for Curve0.
+The color for Curve0 has been given the default value of red and will also
+be shown with a red line and/or symbols in the plot.  The color assigned to
+this curve can be changed within the outlined box with the button labeled
+“rgb(255,0,0)”.
+
+Note that the user has the option to supply whatever label they prefer to use
+for each curve, but the default is to create labels “Curve0”, “Curve1”, etc
+
+.. _image005:
+
+.. figure:: figure/image005.png
+
+	    Interface screen after defining a single curve with default
+	    values, then selecting Add Curve
+
+**Editing a Curve:** Once a curve is added, a user can go back and change any of
+its parameters. There are two ways to do this: by clicking directly on the
+selector value to be changed within the red outlined area, or by clicking
+“Edit Curve” inside the red outline. The user would then set any selectors
+to their updated values. If “Edit Curve” was used, or if the value of a
+multi-select (a selector that can have multiple values chosen) was altered,
+the user must finish the edit by clicking “Save Curve Changes”.
+
+**Defining Multiple Curves:** In :numref:`image005` “Curve0” has been
+defined.  The user can then repeat the selection of curve data parameters
+followed by Add Curve for as many curves as they wish to show on the plot.
+Each new curve will be assigned a new color.  
+
+An example of the interface screen with 2 curves defined is shown in
+:numref:`image006`.  Curve0 data parameters are shown in the red box and
+Curve1 data parameters are shown in the blue box.
+
+.. _image006:
+
+.. figure:: figure/image006.png
+
+	    Interface screen after defining 2 curves and selecting
+	    Add Curve after each
+
+Plot Parameters
+~~~~~~~~~~~~~~~
+
+The Plot Parameters appear in the box below the Curve Data Parameters box
+and apply to all curves defined in the Curve Data Parameters.  The user
+can select the dates to be included in the plot, plus the plotFormat.
+Note that MATS also has an option to define QC parameters, but these are
+not readily supported from the METviewer database.
+
+The plotFormat defines whether or not to show differences between curves.
+It has 3 options: “show matching diffs”, “pairwise diffs” or “no diffs”.
+
+Show matching diffs takes the difference of each of the curves from Curve0.
+For example, if a user had defined Curve0, Curve1, Curve2, and Curve3, and
+selected "Show matching diffs", the plot would have three difference curves:
+Curve1-Curve0, Curve2-Curve0, and Curve3-Curve0.
+
+Pairwise diffs takes the difference of each pair of adjacent curves. So,
+if a user had defined Curve0, Curve1, Curve2, and Curve3, and selected
+"pairwise diffs", the plot would have two difference curves: Curve1-Curve0,
+and Curve3-Curve2.
+
 All difference curves calculate differences only where the data is matching.
-No diffs is the default and will not include any difference curves in the plot.
-2.3.3.	Saving and Restoring Settings
-When all parameters have been set as desired – including curve data parameters, plot parameters, and plot types - the user has an option to Save All Curve Settings.  If selected, the user will be prompted to provide a name for the saved settings.  In future the user has the option for “Restore Settings”.  If selected, they will be prompted for the saved-settings name.  After selecting saved-settings, all curve definitions, plot parameters, and plot type will be reset from the saved-settings definitions.
-2.3.4.	Generating a Plot
-When the user is ready to generate a plot, the user would click either the “Plot Unmatched” or the “Plot Matched” action button directly below the outlined boxes with curve definitions.  
+
+No diffs is the default and will not include any difference curves in the
+plot.
+
+Saving and Restoring Settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When all parameters have been set as desired – including curve data
+parameters, plot parameters, and plot types - the user has an option to
+Save All Curve Settings.  If selected, the user will be prompted to provide
+a name for the saved settings.  In future the user has the option for
+“Restore Settings”.  If selected, they will be prompted for the
+saved-settings name.  After selecting saved-settings, all curve definitions,
+plot parameters, and plot type will be reset from the saved-settings
+definitions.
+
+Generating a Plot
+~~~~~~~~~~~~~~~~~
+
+When the user is ready to generate a plot, the user would click either the
+“Plot Unmatched” or the “Plot Matched” action button directly below the
+outlined boxes with curve definitions.  
+
 Plot Unmatched will plot points for all data available for each defined curve.  
 Plot Matched will only plot points at x-axis values (y-axis for vertical profiles) where data values exist for all defined curves. In addition, only database values that exist at the same time period and same vertical level for all defined curves will be considered when computing y-axis values (x-axis for vertical profiles).
 Hide Gaps: Note that when data points are missing, by default a line is not shown connecting the surrounding points.  The user can force METexpress to draw lines between points in all cases, by selecting Hide Gaps.  

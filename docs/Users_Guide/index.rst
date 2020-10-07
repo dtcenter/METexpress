@@ -25,8 +25,6 @@ Bonny Strong, Randy Pierce, Molly B. Smith, Venita Hagerty, and Jeff Hamilton.
 
 **Model Evaluation Tools Express (METexpress)  TERMS OF USE - IMPORTANT!**
 
-2020, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES
-
 Copyright |copyright|
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
