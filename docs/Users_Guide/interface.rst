@@ -42,7 +42,7 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image003`. There are 3 parts to
+curves have been defined is shown in :numref:`image002`. There are 3 parts to
 this screen:
 
 * Plot Type
@@ -60,9 +60,9 @@ fourth area, as shown in :numref:`image003`, that shows what curves have already
 been defined.  The section for the Curve Data Parameters then allows the
 user to create additional curves to be added to the plot.
  
-.. _image004:
+.. _image005:
 
-.. figure:: figure/image004.png
+.. figure:: figure/image005.png
 
 	    Upper Air User Interface screen after Curve0 has been added,
 	    showing the addition of the area for Defined Curves above the
@@ -162,7 +162,7 @@ value.  Available choices are as follows for all of the apps:
 
 After selecting all data parameters as desired, the user would click the Add
 Curve action button inside the green bar, and the area outlined in red in
-:numref:`image005` would be added to show the parameters selected for Curve0.
+:numref:`image003` ?? would be added to show the parameters selected for Curve0.
 The color for Curve0 has been given the default value of red and will also
 be shown with a red line and/or symbols in the plot.  The color assigned to
 this curve can be changed within the outlined box with the button labeled
@@ -171,9 +171,9 @@ this curve can be changed within the outlined box with the button labeled
 Note that the user has the option to supply whatever label they prefer to use
 for each curve, but the default is to create labels “Curve0”, “Curve1”, etc
 
-.. _image005:
+.. _image007:
 
-.. figure:: figure/image005.png
+.. figure:: figure/image007.png
 
 	    Interface screen after defining a single curve with default
 	    values, then selecting Add Curve
@@ -186,18 +186,18 @@ to their updated values. If “Edit Curve” was used, or if the value of a
 multi-select (a selector that can have multiple values chosen) was altered,
 the user must finish the edit by clicking “Save Curve Changes”.
 
-**Defining Multiple Curves:** In :numref:`image005` “Curve0” has been
+**Defining Multiple Curves:** In :numref:`image007` “Curve0” has been
 defined.  The user can then repeat the selection of curve data parameters
 followed by Add Curve for as many curves as they wish to show on the plot.
 Each new curve will be assigned a new color.  
 
 An example of the interface screen with 2 curves defined is shown in
-:numref:`image006`.  Curve0 data parameters are shown in the red box and
-Curve1 data parameters are shown in the blue box.
+:numref:`image008` Curve0 data parameters are shown in the red box
+and Curve1 data parameters are shown  in the blue box.
 
-.. _image006:
+.. _image008:
 
-.. figure:: figure/image006.png
+.. figure:: figure/image008.png
 
 	    Interface screen after defining 2 curves and selecting
 	    Add Curve after each
@@ -248,54 +248,187 @@ When the user is ready to generate a plot, the user would click either the
 “Plot Unmatched” or the “Plot Matched” action button directly below the
 outlined boxes with curve definitions.  
 
-Plot Unmatched will plot points for all data available for each defined curve.  
-Plot Matched will only plot points at x-axis values (y-axis for vertical profiles) where data values exist for all defined curves. In addition, only database values that exist at the same time period and same vertical level for all defined curves will be considered when computing y-axis values (x-axis for vertical profiles).
-Hide Gaps: Note that when data points are missing, by default a line is not shown connecting the surrounding points.  The user can force METexpress to draw lines between points in all cases, by selecting Hide Gaps.  
-Figure 2.3 3 shows the plot screen after the user selects Plot Unmatched or Plot Matched with a single curve defined.  Figure 5b shows the same plot but with Hide Gaps selected.  The same curve data as defined in Figure 2.3 3 is used to generate the plot in Figure 2.3 4, but with Hide Gaps selected.
+**Plot Unmatched** will plot points for all data available for each defined
+curve.
 
- 
-Figure 2.3 3 Plot of Time Series for a single curve with default values
+**Plot Matched** will only plot points at x-axis values (y-axis for vertical
+profiles) where data values exist for all defined curves. In addition, only
+database values that exist at the same time period and same vertical level
+for all defined curves will be considered when computing y-axis values
+(x-axis for vertical profiles).
 
- 
-Figure 2.3 4 Same plot as shown in Figure 2.3-3, but with Hide Gaps selected.
-Figure 2.3 5 shows a sample plot with 2 curves: Curve0 and Curve1 in red and blue, and has also added a difference curve in yellow showing the difference between Curve0 and Curve1 and error bars on all curves.
+**Hide Gaps:** Note that when data points are missing, by default a line is
+not shown connecting the surrounding points.  The user can force METexpress
+to draw lines between points in all cases, by selecting Hide Gaps.
 
- 
-Figure 2.3 5 Plot with Multiple Curves for Time Series, including Error Bars and Difference Curves.  The yellow curve shows the difference between the red and blue curves.
-2.3.5.	User controls on plot screen
-After the plot has been produced, the user can interact with the plot in various ways.  For example, the user might want to focus on one particular area of the plot to examine more detail, or the user might want to change titles, line widths, etc to produce a plot suitable for publication. Figure 2.3 6 highlights the tools available to interact with a plot.
- 
-Figure 2.3 6 Detail of plot controls from figure above
+:numref:`image009` shows the plot screen after the user selects Plot
+	Unmatched or Plot Matched with a single curve defined.  Figure 5b
+	shows the same plot but with Hide Gaps selected.  The same curve
+	data as defined in :numref:`image009` is used to generate the plot
+	in :numref:`image010`, but with Hide Gaps selected.
 
-The user can choose to dynamically zoom in and out on the plot.  In order to zoom in on a plot, the user can click and drag a box over the area of interest on the graph, and the zoom level will be automatically adjusted to reflect the bounds of the box. To zoom back out, the user should double click on the plot or click the blue refresh button to the far right the dark blue toolbar.
-METexpress plots are produced with the graphing package Plotly, and as such inherit a suite of basic graph controls from Plotly. These tools appear in the upper right corner of the plot when a user hovers their cursor over the graph area. From left to right, the Plotly tools allow a user to:
-•	Icon 1) Save a low-resolution PNG of the plot (METexpress has a separate capability to save high-resolution PNGs, as described below).
-•	Icons 2-3) Toggle between clicking to zoom (default) and clicking to pan.
-•	Icons 4-5) Toggle between using a box to zoom or pan (default) and using a lasso.
-•	Icons 6-7) Zoom in or out while maintaining the current center point of the graph.
-•	Icon 8) Have Plotly guess what the appropriate zoom level is to best frame the plot contents.
-•	Icon 9) Reset the x- and y- axes to their original zoom and pan settings.
-•	Icon 10) Turn on/off lines that trace the cursor’s position on the x- and y- axes.
-•	Icons 11-12) Toggle between only displaying the data tooltip when the cursor is over a point (default), or always displaying the nearest tooltip to the user.
-•	Icon 13) Visit Plotly’s website.
-Beyond the inherited Plotly controls, a number of buttons on the plot screen allow the user to interact with the displayed plot.
-The Back button will return the user to the main app page, where the curve parameters were defined.  This would allow the user to modify the plot definitions and re-plot.
-The Preview button will copy the interactive plot into a separate window, to store it for comparison with future plots. The plot preview window also has the functionality to save each plot as a PDF or PNG.
-The Data Lineage button displays all of the plot parameters, data queries, point values, and other metadata in a JSON format. 
-The Axes button allows users to customize the plot axes.  This includes options to change the x- and y-axis limits, labels, label font sizes, and tick font sizes, as well as the plot legend font size and font color, and the grid line weight and color. These modifications all occur instantly, without the user having to regenerate the plot.
-The Y Linear/Log button appears for profile plots, and allows users to toggle between having a linear vertical scale (the default), and a logarithmic one.
-The Equi-space X button appears for threshold plots, and allows users to toggle between having a linear x-axis scale (the default), and equally spacing all of the returned threshold values.
-The Curve Styles button allows users to customize the appearance of the curves in the plot. Here, users can change each curve’s color, line style, line weight, marker style, and marker weight.
-The Colorbar button appears for contour plots, and allows users to customize the appearance of the contours. Here, users can change the colorbar label, colorbar range, colorbar stride, colormap being used, the direction of the chosen colormap (normal or reversed), and whether to interpolate over any null points in the graph.
-The Show/Hide button allows users to show/hide individual curves, the markers on individual curves, the error bars on individual curves (if applicable), the bars of individual histograms (if plotting histograms), the mean/median/stdev annotation corresponding to individual curves, and the entry for each curve in the plot legend.
-The Edit Legend button allows users to customize the legend text for each curve. By default, the legend displays the curve label, followed by each of the curve parameters contributing to that plot trace.
-The Re-sample button allows users to change the zoom level of the x-axis and then re-query the database with the new x-axis limits. This has two advantages. Firstly, if the user initially asked for too narrow a time period on a time series, they can increase the x-axis limits to their new time range of interest, click the Re-sample button, and receive a new plot with the full time range, all without having to return to the main app page. Secondly, if the user initially requested a large time period, METexpress will downsample the returned data with the Largest Triangle Three Buckets algorithm, in order to prevent huge datasets from slowing down the user’s web browser. The user can zoom in on a time period of interest, click Re-sample, and receive the full, un-downsampled dataset for that smaller time range.
-The Re-cache button forces METexpress to re-query the database in the event of new data being ingested. For the most part, METexpress will cache requested plots for eight hours, and if another user requests the identical curve/plot parameters within that eight hours, METexpress will return its cached plot, instead of re-generating it. Re-cache forces it to actually re-retrieve the data from the database and remake the plot.
-The Text button changes from the plot page to a text page, which displays all of the data on the graph in tables, along with statistics relating to each point, as shown in Figure 2.3 7 for the plot in Figure 2.3 5. These data tables can be exported as CSV files by clicking the “Export” button at the top (next to the “Data Lineage” button), so that users have the option of creating their own plots from the queried data.
- 
-Figure 2.3 7 Beginning of text screen for plot in Figure 2.3 5
-The blue refresh button to the right of the text button will reset the graph to its original pan and zoom settings, as well as reverting any customization that the user has done to the axes or curves. 
-Tool-tips: On the graph itself, each point on each curve has an interactive tool-tip. When a user mouses over a point, the tool-tip pops up, providing details about that point’s x- and y-value and statistics.
-Error bars: When the user clicks the “Plot Matched” action button instead of “Plot Unmatched”, the points on the graphs will display error bars, which are useful for comparing multiple curves. It should be noted, however, that error bars will not display if each point only has one database value contributing to it, as error bars are based on standard deviation, and the standard deviation of one value is zero.
+.. _image009:
+
+.. figure:: figure/image009.png
+
+	    Plot of Time Series for a single curve with default values
+
+.. _image010:
+
+.. figure:: figure/image010.png
+
+	    Same plot as shown in :numref:`image009`, but with Hide Gaps
+	    selected.
+	    
+:numref:`image011` shows a sample plot with 2 curves: Curve0 and Curve1 in red and blue, and has also added a difference curve in yellow showing the difference between Curve0 and Curve1 and error bars on all curves.
+
+.. _image011:
+
+.. figure:: figure/image011.png
+
+	    Plot with Multiple Curves for Time Series, including Error Bars
+	    and Difference Curves.  The yellow curve shows the
+	    difference between the red and blue curves.
+
+User controls on plot screen
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After the plot has been produced, the user can interact with the plot in
+various ways.  For example, the user might want to focus on one particular
+area of the plot to examine more detail, or the user might want to change
+titles, line widths, etc to produce a plot suitable for publication.
+:numref:`image012` highlights the tools available to interact with a plot.
+
+.. _image012:
+
+.. figure:: figure/image012.png
+
+	    Detail of plot controls from figure above
+
+The user can choose to dynamically zoom in and out on the plot.  In order
+to zoom in on a plot, the user can click and drag a box over the area of
+interest on the graph, and the zoom level will be automatically adjusted
+to reflect the bounds of the box. To zoom back out, the user should double
+click on the plot or click the blue refresh button to the far right the
+dark blue toolbar.
+
+METexpress plots are produced with the graphing package Plotly, and as
+such inherit a suite of basic graph controls from Plotly. These tools
+appear in the upper right corner of the plot when a user hovers their
+cursor over the graph area. From left to right, the Plotly tools allow
+a user to:
+
+* Icon 1) Save a low-resolution PNG of the plot (METexpress has a separate
+  capability to save high-resolution PNGs, as described below).
+* Icons 2-3) Toggle between clicking to zoom (default) and clicking to pan.
+* Icons 4-5) Toggle between using a box to zoom or pan (default) and using
+  a lasso.
+* Icons 6-7) Zoom in or out while maintaining the current center point of
+  the graph.
+* Icon 8) Have Plotly guess what the appropriate zoom level is to best
+  frame the plot contents.
+* Icon 9) Reset the x- and y- axes to their original zoom and pan settings.
+* Icon 10) Turn on/off lines that trace the cursor’s position on the x-
+  and y- axes.
+* Icons 11-12) Toggle between only displaying the data tooltip when the
+  cursor is over a point (default), or always displaying the nearest
+  tooltip to the user.
+* Icon 13) Visit Plotly’s website.
+
+Beyond the inherited Plotly controls, a number of buttons on the plot
+screen allow the user to interact with the displayed plot.
+
+The **Back** button will return the user to the main app page, where the
+curve parameters were defined.  This would allow the user to modify the
+plot definitions and re-plot.
+
+The **Preview** button will copy the interactive plot into a separate window,
+to store it for comparison with future plots. The plot preview window
+also has the functionality to save each plot as a PDF or PNG.
+
+The **Data Lineage** button displays all of the plot parameters, data queries,
+point values, and other metadata in a JSON format.
+
+The **Axes** button allows users to customize the plot axes.  This includes
+options to change the x- and y-axis limits, labels, label font sizes,
+and tick font sizes, as well as the plot legend font size and font color,
+and the grid line weight and color. These modifications all occur instantly,
+without the user having to regenerate the plot.
+
+The **Y Linear/Log** button appears for profile plots, and allows users to
+toggle between having a linear vertical scale (the default), and a
+logarithmic one.
+
+The **Equi-space X** button appears for threshold plots, and allows users to
+toggle between having a linear x-axis scale (the default), and equally
+spacing all of the returned threshold values.
+
+The **Curve Styles** button allows users to customize the appearance of the
+curves in the plot. Here, users can change each curve’s color, line style,
+line weight, marker style, and marker weight.
+
+The **Colorbar** button appears for contour plots, and allows users to
+customize the appearance of the contours. Here, users can change the
+colorbar label, colorbar range, colorbar stride, colormap being used,
+the direction of the chosen colormap (normal or reversed), and whether
+to interpolate over any null points in the graph.
+
+The **Show/Hide** button allows users to show/hide individual curves, the
+markers on individual curves, the error bars on individual curves (if
+applicable), the bars of individual histograms (if plotting histograms),
+the mean/median/stdev annotation corresponding to individual curves, and
+the entry for each curve in the plot legend.
+
+The **Edit Legend** button allows users to customize the legend text for each
+curve. By default, the legend displays the curve label, followed by each
+of the curve parameters contributing to that plot trace.
+
+The **Re-sample** button allows users to change the zoom level of the x-axis
+and then re-query the database with the new x-axis limits. This has two
+advantages. Firstly, if the user initially asked for too narrow a time
+period on a time series, they can increase the x-axis limits to their new
+time range of interest, click the Re-sample button, and receive a new plot
+with the full time range, all without having to return to the main app
+page. Secondly, if the user initially requested a large time period,
+METexpress will downsample the returned data with the Largest Triangle
+Three Buckets algorithm, in order to prevent huge datasets from slowing
+down the user’s web browser. The user can zoom in on a time period of
+interest, click Re-sample, and receive the full, un-downsampled dataset
+for that smaller time range.
+
+The **Re-cache** button forces METexpress to re-query the database in the event
+of new data being ingested. For the most part, METexpress will cache
+requested plots for eight hours, and if another user requests the identical
+curve/plot parameters within that eight hours, METexpress will return its
+cached plot, instead of re-generating it. Re-cache forces it to actually
+re-retrieve the data from the database and remake the plot.
+
+The **Text** button changes from the plot page to a text page, which displays
+all of the data on the graph in tables, along with statistics relating to
+each point, as shown in :numref:`image011` for the plot in
+:numref:`image009`. These
+data tables can be exported as CSV files by clicking the “Export” button
+at the top (next to the “Data Lineage” button), so that users have the
+option of creating their own plots from the queried data.
+
+.. _image014:
+
+.. figure:: figure/image014.png
+
+	    Beginning of text screen for plot in :numref:`image011`
+    
+The **blue refresh** button to the right of the text button will reset the
+graph to its original pan and zoom settings, as well as reverting
+any customization that the user has done to the axes or curves.
+
+**Tool-tips**: On the graph itself, each point on each curve has an interactive
+tool-tip. When a user mouses over a point, the tool-tip pops up, providing
+details about that point’s x- and y-value and statistics.
+
+**Error bars**: When the user clicks the “Plot Matched” action button instead
+of “Plot Unmatched”, the points on the graphs will display error bars,
+which are useful for comparing multiple curves. It should be noted,
+however, that error bars will not display if each point only has one
+database value contributing to it, as error bars are based on standard
+deviation, and the standard deviation of one value is zero.
  
-
