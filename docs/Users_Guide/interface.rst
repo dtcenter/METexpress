@@ -26,7 +26,7 @@ described only in terms of their specific information and functionality.
 Home Page
 _________
 
-The METexpress home page is shown in :numref:`image002`. The home page has a
+The METexpress home page is shown in :numref:`image003`. The home page has a
 button for each available app.  Each app lets the user create certain types
 of plots for a certain type of data.  The user must begin by selecting the
 app they want to use.
@@ -42,7 +42,7 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image002`. There are 3 parts to
+curves have been defined is shown in :numref:`image003`. There are 3 parts to
 this screen:
 
 * Plot Type
@@ -56,7 +56,7 @@ this screen:
 	    Upper Air User Interface screen before any curves have been defined
 
 After any curves have been added, the user interface screen includes a
-fourth area, as shown in :numref:`image003`, that shows what curves have already
+fourth area, as shown in :numref:`image005`, that shows what curves have already
 been defined.  The section for the Curve Data Parameters then allows the
 user to create additional curves to be added to the plot.
  
@@ -162,7 +162,7 @@ value.  Available choices are as follows for all of the apps:
 
 After selecting all data parameters as desired, the user would click the Add
 Curve action button inside the green bar, and the area outlined in red in
-:numref:`image003` ?? would be added to show the parameters selected for Curve0.
+:numref:`image007` would be added to show the parameters selected for Curve0.
 The color for Curve0 has been given the default value of red and will also
 be shown with a red line and/or symbols in the plot.  The color assigned to
 this curve can be changed within the outlined box with the button labeled
@@ -214,19 +214,19 @@ not readily supported from the METviewer database.
 The plotFormat defines whether or not to show differences between curves.
 It has 3 options: “show matching diffs”, “pairwise diffs” or “no diffs”.
 
-Show matching diffs takes the difference of each of the curves from Curve0.
+**Show matching diffs** takes the difference of each of the curves from Curve0.
 For example, if a user had defined Curve0, Curve1, Curve2, and Curve3, and
 selected "Show matching diffs", the plot would have three difference curves:
 Curve1-Curve0, Curve2-Curve0, and Curve3-Curve0.
 
-Pairwise diffs takes the difference of each pair of adjacent curves. So,
+**Pairwise diffs** takes the difference of each pair of adjacent curves. So,
 if a user had defined Curve0, Curve1, Curve2, and Curve3, and selected
 "pairwise diffs", the plot would have two difference curves: Curve1-Curve0,
 and Curve3-Curve2.
 
 All difference curves calculate differences only where the data is matching.
 
-No diffs is the default and will not include any difference curves in the
+**No diffs** is the default and will not include any difference curves in the
 plot.
 
 Saving and Restoring Settings
@@ -262,10 +262,10 @@ not shown connecting the surrounding points.  The user can force METexpress
 to draw lines between points in all cases, by selecting Hide Gaps.
 
 :numref:`image009` shows the plot screen after the user selects Plot
-	Unmatched or Plot Matched with a single curve defined.  Figure 5b
-	shows the same plot but with Hide Gaps selected.  The same curve
-	data as defined in :numref:`image009` is used to generate the plot
-	in :numref:`image010`, but with Hide Gaps selected.
+Unmatched or Plot Matched with a single curve defined.  Figure 5b
+shows the same plot but with Hide Gaps selected.  The same curve
+data as defined in :numref:`image009` is used to generate the plot
+in :numref:`image010`, but with Hide Gaps selected.
 
 .. _image009:
 
@@ -405,8 +405,8 @@ re-retrieve the data from the database and remake the plot.
 
 The **Text** button changes from the plot page to a text page, which displays
 all of the data on the graph in tables, along with statistics relating to
-each point, as shown in :numref:`image011` for the plot in
-:numref:`image009`. These
+each point, as shown in :numref:`image014` for the plot in
+:numref:`image011`. These
 data tables can be exported as CSV files by clicking the “Export” button
 at the top (next to the “Data Lineage” button), so that users have the
 option of creating their own plots from the queried data.
