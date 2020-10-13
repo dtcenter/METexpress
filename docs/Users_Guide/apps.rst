@@ -12,6 +12,7 @@ The user interface for Upper Air follows the general description from
 above.  Choices specific to this app are shown below.
 
 Choices for Statistic:
+
 * RMSE
 * Bias-corrected RMSE
 * MSE
@@ -26,6 +27,7 @@ Choices for Statistic:
 * Pearson Correlation
 
 The Upper Air app includes functionality for these types of plots:
+
 * Time Series
 * Profile
 * Dieoff
