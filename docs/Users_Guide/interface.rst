@@ -26,7 +26,7 @@ described only in terms of their specific information and functionality.
 Home Page
 _________
 
-The METexpress home page is shown in :numref:`image003`. The home page has a
+The METexpress home page is shown in :numref:`image002`. The home page has a
 button for each available app.  Each app lets the user create certain types
 of plots for a certain type of data.  The user must begin by selecting the
 app they want to use.
@@ -42,7 +42,7 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image003`. There are 3 parts to
+curves have been defined is shown in :numref:`image002`. There are 3 parts to
 this screen:
 
 * Plot Type
