@@ -45,7 +45,7 @@ the y-axis.
 and the mean value of the selected parameter on the x-axis.  
 
 **Die-off**: Die-off plots show how skill (or the inverse, error)
-changes with increasing lead time.  Figure 3.1 1 shows the user
+changes with increasing lead time.  :numref:`image017` shows the user
 interface page after selecting the plot type of DieOff.  Note that
 another selector is included for DIEOFF TYPE, which has the following
 possible values:
@@ -56,12 +56,16 @@ possible values:
 	
 	3. Single cycle forecast
 
- 
-Figure 3.1 User Interface screen after selecting plot type of DieOff.
+.. _image017:
 
-Figure 3.1 2 shows a sample of a DieOff plot in METexpress.  This looks more
+.. figure:: figure/image017.png
+
+	    User Interface screen after selecting plot type of DieOff.
+
+:numref:`image018` shows a sample of a DieOff plot in METexpress.
+This looks more
 like a familiar die-off curve when plotting skill, such as anomaly
-correlation as plotted in Figure 3.1 3 using the Anomaly Correlation
+correlation as plotted in :numref:`image019` using the Anomaly Correlation
 app, rather than error as is plotted with the Upper Air app.  
 
 The option “dieoff” for Dieoff Type uses all data at each given forecast
@@ -71,12 +75,17 @@ specified cycle initialization time, such as 0 or 12.  The option
 “Single cycle forecast” uses only the forecasts from the first cycle in
 the specified date range.
 
+.. _image018:
 
- 
-Figure 3.1 2 Upper Air DieOff plot
+.. figure:: figure/image018.png
+	    
+	    Upper Air DieOff plot
 
- 
-Figure 3.1 3 Anomaly Correlation DieOff plot
+.. _image019:
+
+.. figure:: figure/image019.png
+
+	    Anomaly Correlation DieOff plot
 
 **ValidTime**: The ValidTime plot type (also sometimes known as diurnal
 cycle plots) displays valid UTC hour on the x–axis and the mean value of
@@ -123,12 +132,20 @@ Histograms have a number of additional selectors that control their appearance:
 
 	* Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
 
-	  Figure 3.1 4 shows the user interface for histogram plots and Figure 3.1 5 shows a sample plot.
- 
-Figure 3.1 4 The user interface for histogram plots.
+:numref:`image021` shows the user interface for histogram plots
+and :numref:`image022` shows a sample plot.
 
- 
-Figure 3.1 5 Plot generated from selections in Figure 3.1 4
+.. _image021:
+
+.. figure:: figure/image021.png
+	    
+	    The user interface for histogram plots.
+
+.. _image022:
+
+.. figure:: figure/image022.png
+
+	    Plot generated from selections in :numref:`image021`
 
 **Contour**: Contour plots can be used in many ways.  One can illustrate
 data with respect to height, as in plots seen at
@@ -141,22 +158,30 @@ only pressure level / height on the y-axis or forecast lead time on the x-axis.
 They can reverse the two, place valid or init UTC hour on one of the axes,
 create Hovmoller diagrams, and many other combinations.
 
-Contour plots have two additional selectors, x-axis-parameter and y-axis-parameter.
-With these, a user can decide which field to place on the x-axis (e.g. forecast lead
-time), and which to place on the y-axis (e.g. pressure level or valid UTC hour).
+Contour plots have two additional selectors, x-axis-parameter and
+y-axis-parameter. With these, a user can decide which field to place on
+the x-axis (e.g. forecast lead time), and which to place on the y-axis
+(e.g. pressure level or valid UTC hour).
 
-Figure 3.1 6 shows an example of an Upper Air profile plotted as a contour plot.
+:numref:`image023` Figure 3.1 6 shows an example of an Upper Air profile plotted as a contour plot.
 
+.. _image023:
+
+.. figure:: figure/image023.png
  
-Figure 3.1 6 Upper Air profile, as a contour plot
+	    Figure 3.1 6 Upper Air profile, as a contour plot
 
 Anomaly Correlation App
 _______________________
 
-An example of the Anomaly Correlation app user interface is shown in Figure 3.2 1.
-This interface is similar to the one for Upper Air but has fewer selectable parameters.  
+An example of the Anomaly Correlation app user interface is shown in :numref:`image039`
+This interface is similar to the one for Upper Air but has fewer selectable parameters.
+
+.. _image039:
+
+.. figure:: figure/image039.png
  
-Figure 3.2 1 Anomaly Correlation app user interface
+	    Anomaly Correlation app user interface
 
 In this application, the selectable values are derived from the data for these parameters:
 
