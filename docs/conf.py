@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+from datetime import datetime
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 print(sys.path)
@@ -18,14 +19,24 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METexpress'
+
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
-verinfo = '3.0.0'
+
+# The stable version, displayed on the front page of the PDF
 version = '3.0.0'
+verinfo = version
+
+# The full version, including alpha/beta/rc tags
 release = f'{version}'
+
 release_year = '2020'
-release_date = f'{release_year}XXXX'
+
+release_date = f'{release_year}1001'
+
 copyright = f'{release_year}, {author}'
+
+release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
 # -- General configuration ---------------------------------------------------
 
@@ -51,20 +62,12 @@ suppress_warnings = ['ref.citation']
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_path = ["_themes", ]
+html_js_files = ['pop_ver.js']
+html_theme_options = {'canonical_url': 'https://dtcenter.github.io/METexpress/latest/'}
+html_theme_options['versions'] = {'latest': '../latest', 'development': '../development'}
 html_css_files = ['theme_override.css']
-#html_js_files = ['pop_ver.js']
 
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#html_theme_options = {'canonical_url': 'https://dtcenter.github.io/METexpress/latest/'}
-#if 'sphinx_rtd_theme' in vars() and sphinx_rtd_theme.__version__ == '0.2.5b1.post1':
-#        html_theme_options['versions'] = {'latest': '../latest', 'development': '../development'}
-
-# The name for this set of Sphinx documents.  If None, it defaults to
-# "<project> v<release> documentation".
-html_title = ' '.join((project, version))
-        
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -83,6 +86,7 @@ numfig_format = {
     'figure': 'Figure %s',
 }
 
+    
 # -- Export variables --------------------------------------------------------
 
 rst_epilog = """
