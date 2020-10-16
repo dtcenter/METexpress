@@ -42,7 +42,7 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image002`. There are 3 parts to
+curves have been defined is shown in :numref:`image003`. There are 3 parts to
 this screen:
 
 * Plot Type
