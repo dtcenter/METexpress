@@ -231,7 +231,7 @@ class ParentMetadata:
         devcursor = devcnx.cursor(pymysql.cursors.DictCursor)
         devcursor.execute("use  " + self.metadata_database + ";")
 
-        # use a tmp table to hold the new metadata then do a rename of the tmop metadata to the metadata
+        # use a tmp table to hold the new metadata then do a rename of the tmp metadata to the metadata
         # have to do all this extra checking to avoid warnings from mysql
         # apparently if exists doesn't quite work right
         d = {'mdt': metadata_table, 'mdt_tmp': metadata_table_tmp, 'mdt_dev': metadata_table_dev,
@@ -256,17 +256,21 @@ class ParentMetadata:
         for dev_row in dev_rows:
             d['db'] = dev_row['db']
             d['model'] = dev_row['model']
-            self.cursor.execute('select * from {mdt_tmp} where db = "{db}" and model = "{model}";'.format(**d))
+            d['line_data_table'] = dev_row['line_data_table']
+            d['variable'] = dev_row['variable']
+            self.cursor.execute('select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
             # does it exist in the tmp_metadata table?
             if self.cursor.rowcount > 0:
                 # yes - then delete the entry from tmp_metadata table
-                self.cursor.execute('delete from {mdt_tmp} where db = "{db}" and model = "{model}";'.format(**d))
+                self.cursor.execute('delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
                 self.cnx.commit()
             # insert the dev data into the tmp_metadata table
             self.cursor.execute(
-                'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}";'.format(**d))
+                'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
             d['db'] = ""
             d['model'] = ""
+            d['line_data_table'] = ""
+            d['variable'] = ""
         self.cursor.execute("rename table {mdt} to {tmp_mdt}, {mdt_tmp} to {mdt};".format(**d))
         self.cnx.commit()
         self.cursor.execute("drop table if exists {tmp_mdt};".format(**d))
