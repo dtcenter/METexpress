@@ -13,7 +13,6 @@ Author: Molly B Smith, heavily modified by Randy Pierce
 
 #  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
-from __future__ import print_function
 
 import sys
 from datetime import datetime
@@ -24,7 +23,7 @@ from metexpress.MEmetadata import ParentMetadata
 class MESurface(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
-        options['appSpecificWhereClause'] = 'fcst_lev in ("MSL", "SFC", "Z0", "Z2", "Z10", "H0", "H2", "H10", "L0") and fcst_var not regexp "^OZ|^PM25"'
+        options['appSpecificWhereClause'] = 'fcst_lev in ("MSL", "SFC", "SFC=", "Z0", "Z2", "Z10", "H0", "H2", "H10", "L0") and fcst_var not regexp "^OZ|^PM25"'
         options['line_data_table'] = ["line_data_sl1l2"]    # used for scalar stats on all plot types
         options['metadata_table'] = "surface_mats_metadata"
         options['app_reference'] = "met-surface"
@@ -52,22 +51,28 @@ class MESurface(ParentMetadata):
         # helper function for sorting thresholds
         if elem[0] == '>':
             try:
-                return 10000 + int(float(elem[1:]))
-            except ValueError:
-                return 10000
-        elif elem[0] == '<':
-            try:
-                return 20000 + int(float(elem[1:]))
-            except ValueError:
-                return 20000
-        elif elem[0] == '=':
-            try:
-                return 30000 + int(float(elem[1:]))
+                return 1000 + int(float(elem[1:])) * 10000
             except ValueError:
                 try:
-                    return 30000 + int(float(elem[2:]))
+                    return 1000.0001 + int(float(elem[2:])) * 10000
                 except ValueError:
-                    return 30000
+                    return 3000
+        elif elem[0] == '<':
+            try:
+                return 4000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 4000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 6000
+        elif elem[0] == '=':
+            try:
+                return 7000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 70000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 90000
         else:
             try:
                 return int(float(elem))
