@@ -116,21 +116,21 @@ Histograms have a number of additional selectors that control their appearance:
 
     * Has sub-selector “Bin pivot value”
 
-      * Set number of bins and make zero a bin bound
+  * Set number of bins and make zero a bin bound
 
-	* Has sub-selector “Number of bins”
+    * Has sub-selector “Number of bins”
 
-      * Set number of bins and choose a bin bound
+  * Set number of bins and choose a bin bound
 
-	* Has sub-selectors “Number of bins” and “Bin pivot value”
+    * Has sub-selectors “Number of bins” and “Bin pivot value”
 
-      * Manual bins
+  * Manual bins
 
-	* Has sub-selector “Bin bounds”
+    * Has sub-selector “Bin bounds”
 
-      * Manual start, number, and stride
+  * Manual start, number, and stride
 
-	* Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
+    * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
 
 :numref:`image021_edit` shows the user interface for histogram plots
 and :numref:`image022` shows a sample plot.
