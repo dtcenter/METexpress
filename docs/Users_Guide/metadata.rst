@@ -30,9 +30,9 @@ metadata scripts will create a new schema within the MySQL database called
 mats_metadata, and store the metadata within it. The scripts will never
 write to any other location. 
 
-The metadata scripts are written in python3, and require a number of python
+The metadata scripts are written in Python 3, and require a number of Python
 modules, including pymysql, abc.abstractmethod, urllib.request, traceback,
-ssl, getopt, and json, which may need to be added to the python environment
+ssl, getopt, and json, which may need to be added to the Python environment
 with a package manager.
 
 **To run the metadata scripts for the first time:**
