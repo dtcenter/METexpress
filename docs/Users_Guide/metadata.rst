@@ -44,25 +44,31 @@ with a package manager.
 * You will need a .my.cnf file with the login credentials for your mysql
   database. Remember, the credentials must be for a user with write
   permissions.
-* cd to your run directory. Remember, the contents of this run directory
+* Change directories to your run directory. Remember, the contents of this run directory
   should be identical to the contents of
   scripts/matsMetaDataForApps/createMetaData/mysql.  Please note that this
-  is ONE LEVEL ABOVE the directory where the metadata scripts actually are.
-  
-  * (e.g.    cd /home/metexpress/scripts).
+  is ONE LEVEL ABOVE the directory where the metadata scripts actually are. For example:
 
-* Set the python path to your run directory 
+  .. code-block:: none
+		
+    cd /home/metexpress/scripts
 
-  * (e.g.    export PYTHONPATH=”/home/metexpress/scripts”).
+* Set the PYTHONPATH to your run directory. For example: 
+
+  .. code-block:: none
+		  
+    export PYTHONPATH="/home/metexpress/scripts").
 
 * Run the scripts from the command line. You will need to pass in the path
   to your .my.cnf file and the URL where METexpress will be available as
-  arguments. The URL <metexpress_url> is the actual access url of your
+  arguments. The URL <metexpress_url> is the actual access URL of your
   metexpress installation, e.g. `https://yourdomain/metexpress`. The URL is
   necessary so that the metadata scripts can inform METexpress that new
-  metadata is available.
-  
-  * (e.g.    /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>).
+  metadata is available.  For example:
+
+  .. code-block:: none
+		    
+    /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>
     
 * The scripts should generate the necessary metadata and store it in the
   database. 
@@ -71,21 +77,25 @@ with a package manager.
 
 Once the apps are up, any new MET data loaded into the database will not
 appear in METexpress until the metadata scripts are run again. Because of
-this, we recommend running the following steps from the write access user’s
+this, we recommend running the following steps from the write access user'ss
 crontab, either once daily or at another interval that you prefer. The
 metadata scripts can also be run manually at any time.
 
 **To run the metadata scripts subsequent times (such as from the crontab):**
 
-* Set the python path to your run directory 
+* Set the PYTHONPATH to your run directory. For example: 
 
-  * (e.g.    export PYTHONPATH=”/home/metexpress/scripts”).
+  .. code-block:: none
+		    
+    export PYTHONPATH="/home/metexpress/scripts"
 
 * Run the scripts from the command line. You will need to pass in the path
   to your .my.cnf file and the URL where METexpress is available as
-  arguments.
+  arguments. For example:
 
-  * (e.g.    /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>).
+  .. code-block:: none
+		    
+    /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>
 
 * The scripts should generate the necessary metadata and store it in the
   database. 
