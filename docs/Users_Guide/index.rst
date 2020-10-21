@@ -42,18 +42,21 @@ limitations under the License.
 
 **Citations**
 
-The citation for this User's Guide should be:
-
 |author_list|, |release_year|: The METexpress Version |version| User's Guide.
 Developmental Testbed Center.
 Available at: `METexpress releases <https://github.com/dtcenter/METexpress/releases>`_
 
 **Acknowledgments**
 
-We thank all the METexpress sponsors including: ???  DTC partners
-(NOAA, NCAR, USAF, and NSF) ??? Thanks also go to the staff at the Developmental
-Testbed Center for their help, advice, and many types of support. ???
-		  
+We thank all the METexpress sponsors including: Next Generation Global
+Prediction System (NGGPS), Unified Forecast System (UFS) R2O Project,
+Developmental Testbed Center, and NOAA/Global
+Systems Laboratory (GSL). Thanks also go to the staff at the Developmental
+Testbed Center for their help, advice, and many types of support, to
+NOAA/NWS/Environmental Modeling Center (EMC) for their input and review,
+and to Ken Sperow of NOAA/NWS/Meteorological Development Laboratory for
+assistance with deploying METexpress in the cloud on Amazon Web Services.
+
 .. toctree::
    :titlesonly:
    :numbered: 2

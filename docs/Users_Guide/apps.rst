@@ -108,7 +108,7 @@ Histograms have a number of additional selectors that control their appearance:
 
   * Default bins
   * Set number of bins
-
+    
     * Has sub-selector “Number of bins”
 
   * Make zero a bin bound

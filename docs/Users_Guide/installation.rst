@@ -5,10 +5,9 @@ METexpress System Requirements, Installation and Support
 
 **Repository:**  METexpress is a community software package
 managed by the Developmental Testbed Center (DTC) and is available
-through Github at
-https://github.com/dtcenter/METexpress
+through `Github <https://github.com/dtcenter/METexpress>`_.
 
-This repository includes a readme file at the top-level that
+This repository includes a README file at the top-level that
 covers an overview and build instructions, with further links to
 installation instructions.
 
@@ -34,14 +33,14 @@ installation instructions.
   your python environment with a package manager.
 
 Meteor Framework: METexpress is built on the Meteor free and
-open-source JavaScript web framework.  You must install Meteor
-from this location: https://www.meteor.com/install if you intend
+open-source JavaScript web framework.
+`Meteor <https://www.meteor.com/install>`_  must be installed in order
 to build METexpress.  Meteor is not required to deploy METexpress containers.
 
 **Database requirements**:  METexpress must have access to a METdatadb
 database and must have read/write privileges. For further information
 about installation of this database please see
-http://dtcenter.ucar.edu/met/metviewer/doc/install.html
+http://dtcenter.ucar.edu/met/metviewer/doc/install.html  ??Is this the right link?  I noticed it points to the metviewer, not METdatadb??
 
 **Configuration**: In order to install METexpress you must run a configuration
 script which will prompt you to provide information specific to your
@@ -87,24 +86,23 @@ installation.  Some of the information you will usually need to provide includes
   the setup script.  Alternatively,  you can use a no-cost
   certificate provided by traefik using lets-encrypt software
   from within METexpress containers.  Instructions for this
-  option are available at
-  https://doc.traefik.io/traefik/https/overview/.
+  option are available in the
+  `overview for traefik <https://doc.traefik.io/traefik/https/overview/>`_.
   Be aware, however, that this option requires modifications
   to the server’s firewall by someone with network administrative
   privileges.
 
 **Building METexpress**:  It is only necessary to build METexpress
 if you require a custom build; otherwise it is recommended that METexpress
-be installed directly from the provided docker images.  The direct
-link for the overview and build readme is:
-https://github.com/dtcenter/METexpress/blob/master/README.md
+be installed directly from the provided docker images.  See the
+`overview and build README <https://github.com/dtcenter/METexpress/blob/master/README.md>`_.
 
 **Installation**:  METexpress can only be installed from Docker
 images.  The most recent images are maintained by METexpress
-developers and are available in the dockerhub repository here:
-https://hub.docker.com/r/dtcenter/metexpress-production
+developers and are available in the
+`dockerhub repository <https://hub.docker.com/r/dtcenter/metexpress-production>`_.
 
-Installation guidance is provided at:
-https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md
+For guidance on the installation see the
+`METexpress Deployment for Containers README <https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md>`_.
 
 **Support**: For support for METexpress, please email mats.gsd@noaa.gov.

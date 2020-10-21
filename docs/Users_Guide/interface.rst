@@ -125,8 +125,8 @@ data for these parameters:
 * Dates – date range that applies to all curves, used for plot types like time series
 * Curve-dates – range of dates used to filter data for a particular curve, such as seen in vertical profiles, where each curve may potentially be based on data from different date ranges
 
-Static fields:
-^^^^^^^^^^^^^^
+Static fields
+^^^^^^^^^^^^^
 
 Some fields are not dependent on data.  In the Upper Air app, these are
 Statistic, Valid UTC Hour, and Average, but these will vary for each app.
@@ -135,14 +135,10 @@ the MET Ensemble app, where they depend on the MET line types available
 for the chosen Data-Source.  Average and Valid UTC Hour tend to have
 standardized choices available across many apps.
 
-Valid UTC Hour
---------------
-
+**Valid UTC Hour:**
 This can be set to any whole number 0 to 23 for all of the apps.
 
-Average
--------
-
+**Average:**
 If the value for AVERAGE is none, then all points available will be plotted.
 Otherwise, all points in the selected interval are averaged into a single
 value.  Available choices are as follows for all of the apps:
@@ -169,7 +165,7 @@ this curve can be changed within the outlined box with the button labeled
 “rgb(255,0,0)”.
 
 Note that the user has the option to supply whatever label they prefer to use
-for each curve, but the default is to create labels “Curve0”, “Curve1”, etc
+for each curve, but the default is to create labels “Curve0”, “Curve1”, etc.
 
 .. _image007:
 
@@ -178,7 +174,10 @@ for each curve, but the default is to create labels “Curve0”, “Curve1”, 
 	    Interface screen after defining a single curve with default
 	    values, then selecting Add Curve
 
-**Editing a Curve:** Once a curve is added, a user can go back and change any of
+Editing a Curve
+^^^^^^^^^^^^^^^
+
+Once a curve is added, a user can go back and change any of
 its parameters. There are two ways to do this: by clicking directly on the
 selector value to be changed within the red outlined area, or by clicking
 “Edit Curve” inside the red outline. The user would then set any selectors
@@ -186,7 +185,10 @@ to their updated values. If “Edit Curve” was used, or if the value of a
 multi-select (a selector that can have multiple values chosen) was altered,
 the user must finish the edit by clicking “Save Curve Changes”.
 
-**Defining Multiple Curves:** In :numref:`image007` “Curve0” has been
+Defining Multiple Curves
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+In :numref:`image007` “Curve0” has been
 defined.  The user can then repeat the selection of curve data parameters
 followed by Add Curve for as many curves as they wish to show on the plot.
 Each new curve will be assigned a new color.  
@@ -405,15 +407,15 @@ re-retrieve the data from the database and remake the plot.
 
 The **Text** button changes from the plot page to a text page, which displays
 all of the data on the graph in tables, along with statistics relating to
-each point, as shown in :numref:`image014` for the plot in
+each point, as shown in :numref:`image014_edit` for the plot in
 :numref:`image011`. These
 data tables can be exported as CSV files by clicking the “Export” button
 at the top (next to the “Data Lineage” button), so that users have the
 option of creating their own plots from the queried data.
 
-.. _image014:
+.. _image014_edit:
 
-.. figure:: figure/image014.png
+.. figure:: figure/image014_edit.png
 
 	    Beginning of text screen for plot in :numref:`image011`
     
