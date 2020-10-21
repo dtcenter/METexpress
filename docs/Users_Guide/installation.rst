@@ -40,7 +40,7 @@ to build METexpress.  Meteor is not required to deploy METexpress containers.
 **Database requirements**:  METexpress must have access to a METdatadb
 database and must have read/write privileges. For further information
 about installation of this database please see
-http://dtcenter.ucar.edu/met/metviewer/doc/install.html  ??Is this the right link?  I noticed it points to the metviewer, not METdatadb??
+http://dtcenter.ucar.edu/met/metviewer/doc/install.html
 
 **Configuration**: In order to install METexpress you must run a configuration
 script which will prompt you to provide information specific to your
