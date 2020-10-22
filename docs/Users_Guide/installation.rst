@@ -19,32 +19,34 @@ installation instructions.
   Windows but this has not been tested and the configuration and
   management scripts are written in bash.
 
-* Software: You must have docker, docker-compose, httpaswd, and jq
-  installed. You should have a certificate installed in /etc/ssl/certs,
-  although you can deploy a simple system on localhost without
-  certificates for testing. A simple testing system can be deployed by
-  answering yes to the question "Are you setting up a simple test environment?"
-  in the configure program.
+* Software:  These packages must be installed: docker, docker-compose,
+  httpaswd, and jq.  For a robust testing environment, install the
+  certificate located in /etc/ssl/certs (see SSL certificates below).
+  A simple testing system can be deployed on the localhost without
+  certificates for testing. A simple testing system can be deployed
+  by answering yes to the question “Are you setting up a simple test
+  environment?” in the configure program.
 
 * Python3: There is a dependency on python3 which should be accessible
   in /usr/bin/python3, and requires a number of python modules to be
   installed, including pymysql, abc.abstractmethod, urllib.request,
   traceback, ssl, getopt, and json.  These may need to be added to
-  your python environment with a package manager.
+  the python environment with a package manager.
 
 Meteor Framework: METexpress is built on the Meteor free and
 open-source JavaScript web framework.
 `Meteor <https://www.meteor.com/install>`_  must be installed in order
 to build METexpress.  Meteor is not required to deploy METexpress containers.
 
-**Database requirements**:  METexpress must have access to a METdatadb
+**Database requirements:**  METexpress must have access to a METdatadb
 database and must have read/write privileges. For further information
 about installation of this database please see
 http://dtcenter.ucar.edu/met/metviewer/doc/install.html
 
-**Configuration**: In order to install METexpress you must run a configuration
-script which will prompt you to provide information specific to your
-installation.  Some of the information you will usually need to provide includes:
+**Configuration:** In order to install METexpress, a configuration script
+needs to be run which will give a prompt to provide information specific
+to the installation. Below is a list of information that usually needs
+to be provided:
 
 * Networking information: 
 
@@ -54,7 +56,7 @@ installation.  Some of the information you will usually need to provide includes
 
   * Fully qualified proxy hostname, defaulting to the domainName
 
-    * Your deployment might be behind a redirection proxy with
+    * The deployment might be behind a redirection proxy with
       redirection to a different path than what is actually on the host.
       For example, the METexpress server might be deployed on a
       server with an internal URL "https://something.subnet.esrl.noaa.gov"
@@ -67,7 +69,7 @@ installation.  Some of the information you will usually need to provide includes
 
   * Proxy redirection path
 
-    * This allows you to serve a different path than "/"
+    * This allows a different path other than "/"
 
 * Database credentials:
   Building on the architecture of MATS, METexpress has a
@@ -80,20 +82,18 @@ installation.  Some of the information you will usually need to provide includes
   Username and password for each role required for each app.
 
 * SSL certificates:
-  An SSL certificate is required to run METexpress.  This is
-  usually an externally acquired certificate for your domain,
-  which you will need to place in a directory as instructed by
-  the setup script.  Alternatively,  you can use a no-cost
-  certificate provided by traefik using lets-encrypt software
-  from within METexpress containers.  Instructions for this
-  option are available in the
+  An SSL certificate is required to run METexpress. This is usually
+  an externally acquired certificate for the users domain, which users
+  will need to place in a directory as instructed by the setup script.
+  Alternatively, a no-cost certificate can be used provided by traefik
+  using Let's Encrypt software from within METexpress containers.
+  Instructions for this option are available in the
   `overview for traefik <https://doc.traefik.io/traefik/https/overview/>`_.
-  Be aware, however, that this option requires modifications
-  to the server’s firewall by someone with network administrative
-  privileges.
-
+  Be aware, however, that this option requires modifications to the
+  server’s firewall by someone with network administrative privileges.
+  
 **Building METexpress**:  It is only necessary to build METexpress
-if you require a custom build; otherwise it is recommended that METexpress
+if a custom build is required. Otherwise, it is recommended that METexpress
 be installed directly from the provided docker images.  See the
 `overview and build README <https://github.com/dtcenter/METexpress/blob/master/README.md>`_.
 
