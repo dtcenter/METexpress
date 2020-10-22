@@ -23,15 +23,14 @@ installation instructions.
   httpaswd, and jq.  For a robust testing environment, install the
   certificate located in /etc/ssl/certs (see SSL certificates below).
   A simple testing system can be deployed on the localhost without
-  certificates for testing. A simple testing system can be deployed
-  by answering yes to the question “Are you setting up a simple test
-  environment?” in the configure program.
+  certificates for testing by answering yes to the question "Are you
+  setting up a simple test environment?" in the configure program.
 
-* Python3: There is a dependency on python3 which should be accessible
-  in /usr/bin/python3, and requires a number of python modules to be
+* Python 3: There is a dependency on Python 3 which should be accessible
+  in /usr/bin/python3, and requires a number of Python modules to be
   installed, including pymysql, abc.abstractmethod, urllib.request,
   traceback, ssl, getopt, and json.  These may need to be added to
-  the python environment with a package manager.
+  the Python environment with a package manager.
 
 Meteor Framework: METexpress is built on the Meteor free and
 open-source JavaScript web framework.
