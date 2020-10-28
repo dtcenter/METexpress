@@ -7,16 +7,17 @@ User's Guide
 This User's Guide is provided as an aid to users of the Model Evaluation
 Tools Express (METexpress). METexpress is an easy-to-use interface that
 displays plots of statistical verification metrics for data that a user
-defines interactively.  It was developed by the Developmental Testbed
-Center (DTC). It is also the core component of the unified METplus
+defines interactively.  It was developed by NOAA/Global Systems Laboratory
+the Developmental Testbed Center (DTC) as part of the METplus suite of
+verification tools. It is also the core component of the unified METplus
 verification framework. More details about METplus can be found on the
 `METplus website <http://dtcenter.org/community-code/metplus>`_.
 
 It is important to note here that METexpress is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
-METexpress may also be able to accept contributions from the community.
+METexpress may be able to accept contributions from the community.
 If you have code you would like to contribute, we will gladly consider your
-contribution.  Please send an email to: `mats.gsd@noaa.gov <mailto:>`__.
+contribution.  Please send an email to: `mats.gsl@noaa.gov <mailto:>`__.
 We will then determine if we will be able to include the contribution in a
 future version.
 
