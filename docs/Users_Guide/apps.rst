@@ -45,7 +45,7 @@ the y-axis.
 and the mean value of the selected parameter on the x-axis.  
 
 **Die-off**: Die-off plots show how skill (or the inverse, error)
-changes with increasing lead time.  :numref:`image017_edit` shows the user
+changes with increasing lead time.  :numref:`apps_interface_dieoff` shows the user
 interface page after selecting the plot type of DieOff.  Note that
 another selector is included for DIEOFF TYPE, which has the following
 possible values:
@@ -56,16 +56,16 @@ possible values:
 	
 	3. Single cycle forecast
 
-.. _image017_edit:
+.. _apps_interface_dieoff:
 
-.. figure:: figure/image017_edit.png
+.. figure:: figure/apps_interface_dieoff.png
 
 	    User Interface screen after selecting plot type of DieOff.
 
-:numref:`image018` shows a sample of a DieOff plot in METexpress.
+:numref:`apps_upper_air_dieoff_plot` shows a sample of a DieOff plot in METexpress.
 This looks more
 like a familiar die-off curve when plotting skill, such as anomaly
-correlation as plotted in :numref:`image019` using the Anomaly Correlation
+correlation as plotted in :numref:`apps_anom_corr_dieoff_plot` using the Anomaly Correlation
 app, rather than error as is plotted with the Upper Air app.  
 
 The option “dieoff” for Dieoff Type uses all data at each given forecast
@@ -75,15 +75,15 @@ specified cycle initialization time, such as 0 or 12.  The option
 “Single cycle forecast” uses only the forecasts from the first cycle in
 the specified date range.
 
-.. _image018:
+.. _apps_upper_air_dieoff_plot:
 
-.. figure:: figure/image018.png
+.. figure:: figure/apps_upper_air_dieoff_plot.png
 	    
 	    Upper Air DieOff plot
 
-.. _image019:
+.. _apps_anom_corr_dieoff_plot:
 
-.. figure:: figure/image019.png
+.. figure:: figure/apps_anom_corr_dieoff_plot.png
 
 	    Anomaly Correlation DieOff plot
 
@@ -132,20 +132,20 @@ Histograms have a number of additional selectors that control their appearance:
 
     * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
 
-:numref:`image021_edit` shows the user interface for histogram plots
-and :numref:`image022` shows a sample plot.
+:numref:`apps_interface_histogram` shows the user interface for histogram plots
+and :numref:`apps_histogram_plot` shows a sample plot.
 
-.. _image021_edit:
+.. _apps_interface_histogram:
 
-.. figure:: figure/image021_edit.png
+.. figure:: figure/apps_interface_histogram.png
 	    
 	    The user interface for histogram plots.
 
-.. _image022:
+.. _apps_histogram_plot:
 
-.. figure:: figure/image022.png
+.. figure:: figure/apps_histogram_plot.png
 
-	    Plot generated from selections in :numref:`image021_edit`
+	    Plot generated from selections in :numref:`apps_interface_histogram`
 
 **Contour**: Contour plots can be used in many ways.  One can illustrate
 data with respect to height, as in plots seen at
@@ -163,23 +163,23 @@ y-axis-parameter. With these, a user can decide which field to place on
 the x-axis (e.g. forecast lead time), and which to place on the y-axis
 (e.g. pressure level or valid UTC hour).
 
-:numref:`image023` shows an example of an Upper Air profile plotted as a contour plot.
+:numref:`apps_upper_air_contour_plot` shows an example of an Upper Air profile plotted as a contour plot.
 
-.. _image023:
+.. _apps_upper_air_contour_plot:
 
-.. figure:: figure/image023.png
+.. figure:: figure/apps_upper_air_contour_plot.png
  
 	    Upper Air profile, as a contour plot
 
 Anomaly Correlation App
 _______________________
 
-An example of the Anomaly Correlation app user interface is shown in :numref:`image024`
+An example of the Anomaly Correlation app user interface is shown in :numref:`apps_interface_anom_corr`
 This interface is similar to the one for Upper Air but has fewer selectable parameters.
 
-.. _image024:
+.. _apps_interface_anom_corr:
 
-.. figure:: figure/image024.png
+.. figure:: figure/apps_interface_anom_corr.png
  
 	    Anomaly Correlation app user interface
 
@@ -209,22 +209,22 @@ Plot types available include
 * Contour
 
 All plot types function the same here as they do in MET Upper Air described above.
-A sample anomaly correlation plot is shown in :numref:`image025`.
+A sample anomaly correlation plot is shown in :numref:`apps_anom_corr_sample_plot`.
 
-.. _image025:
+.. _apps_anom_corr_sample_plot:
 
-.. figure:: figure/image025.png
+.. figure:: figure/apps_anom_corr_sample_plot.png
 
 	    Anomaly Correlation sample plot.
  
 Surface App
 ___________
 
-The user interface for the Surface app is shown in :numref:`image026`.
+The user interface for the Surface app is shown in :numref:`apps_interface_surface`.
 
-.. _image026:
+.. _apps_interface_surface:
 
-.. figure:: figure/image026.png
+.. figure:: figure/apps_interface_surface.png
 
 	    User Interface for the Surface app
 
@@ -266,11 +266,11 @@ Plot types available include:
 
 Plots in the Surface app for Time Series, DieOff, ValidTime, Histogram, and
 Contour are the same as in Upper Air. An example of a Valid Time plot
-is shown in :numref:`image027`.
+is shown in :numref:`apps_surface_plot`.
 
-.. _image027:
+.. _apps_surface_plot:
 
-.. figure:: figure/image027.png
+.. figure:: figure/apps_surface_plot.png
 
 	    Surface app ValidTime plot
  
@@ -330,11 +330,11 @@ An additional plot type, Threshold, is available in this app.
 Threshold plots display threshold on the x-axis, and the mean value
 of the selected parameter on the y-axis.
 	    
-:numref:`image028` shows an example of an Air Quality Threshold plot. 
+:numref:`apps_air_qual_thresh_plot` shows an example of an Air Quality Threshold plot. 
 
-.. _image028:
+.. _apps_air_qual_thresh_plot:
 
-.. figure:: figure/image028.png
+.. figure:: figure/apps_air_qual_thresh_plot.png
 
 	    Air Quality app Threshold plot
  
@@ -417,49 +417,49 @@ with False Alarm Rate on the x-axis, and Probability of Detection on
 the y-axis. An additional diagonal line will be displayed on the graph,
 denoting no skill.
 
-:numref:`image030_edit` shows the user interface for defining an Ensemble
-Histogram and :numref:`image031` through :numref:`image035` show
+:numref:`apps_interface_ens_hist` shows the user interface for defining an Ensemble
+Histogram and :numref:`apps_ens_hist_plot_rank_hist` through :numref:`apps_ens_hist_plot_rel_pos_hist` show
 examples of the 3 types of Ensemble Histograms.
 
-.. _image030_edit:
+.. _apps_interface_ens_hist:
 
-.. figure:: figure/image030_edit.png
+.. figure:: figure/apps_interface_ens_hist.png
 
 	    The Ensemble app user interface for Ensemble
 	    Histogram plots.  Note the selector for Histogram Type which
 	    is unique to this plot type.
 
-.. _image031:
+.. _apps_ens_hist_plot_rank_hist:
 
-.. figure:: figure/image031.png
+.. figure:: figure/apps_ens_hist_plot_rank_hist.png
 
 	    Ensemble Histogram plot type with Histogram Type
 	    of Rank Histogram.
 
-.. _image033:
+.. _apps_ens_hist_plot_pith:
 
-.. figure:: figure/image033.png
+.. figure:: figure/apps_ens_hist_plot_pith.png
 
 	    Ensemble Histogram plot type with Histogram Type
 	    of Probability Integral Transform Histogram.
 
-.. _image035:
+.. _apps_ens_hist_plot_rel_pos_hist:
 
-.. figure:: figure/image035.png
+.. figure:: figure/apps_ens_hist_plot_rel_pos_hist.png
 
 	    Ensemble Histogram plot type with Histogram
 	    Type of Relative Position Histogram
 
-:numref:`image037` shows an example Reliability plot and
-:numref:`image038` shows an example ROC plot,
+:numref:`apps_ens_reliability_plot` shows an example Reliability plot and
+:numref:`apps_ens_roc_plot` shows an example ROC plot,
 both for the same data set.
 
-.. _image037:
+.. _apps_ens_reliability_plot:
 
-.. figure:: figure/image037.png
+.. figure:: figure/apps_ens_reliability_plot.png
 
 	    Ensemble App Reliability Plot for data defined
-	    in :numref:`image030_edit`.
+	    in :numref:`apps_interface_ens_hist`.
 	    The 1:1 diagonal gray line represents
 	    perfect skill between forecast probability and observation
 	    frequency. The diagonal line with the lower slope indicates
@@ -467,12 +467,12 @@ both for the same data set.
 	    than climatology, and the vertical and horizontal lines
 	    indicate climatology.
 
-.. _image038:
+.. _apps_ens_roc_plot:
 
-.. figure:: figure/image038.png
+.. figure:: figure/apps_ens_roc_plot.png
 
 	    Ensemble app ROC plot for the same data
-	    set defined in :numref:`image030_edit`.
+	    set defined in :numref:`apps_interface_ens_hist`.
 
 Precipitation App
 _________________
@@ -538,28 +538,28 @@ Another unique plot type, GridScale, is included in this app.
 GridScale plots display grid scale on the x-axis, and the mean value
 of the selected parameter on the y-axis.
 
-:numref:`image039` shows an example of the user interface for the
-Precipitation app, :numref:`image040` shows an example Threshold plot, and
-:numref:`image042` shows an example GridScale plot.
+:numref:`apps_interface_thresh_precip` shows an example of the user interface for the
+Precipitation app, :numref:`apps_thresh_plot_precip` shows an example Threshold plot, and
+:numref:`apps_gridscale_plot_precip` shows an example GridScale plot.
 
-.. _image039:
+.. _apps_interface_thresh_precip:
 
-.. figure:: figure/image039.png
+.. figure:: figure/apps_interface_thresh_precip.png
 
 	    User interface screen for a Threshold plot
 	    in the Precipitation app
 
-.. _image040:
+.. _apps_thresh_plot_precip:
 
-.. figure:: figure/image040.png
+.. figure:: figure/apps_thresh_plot_precip.png
 
 	    Threshold plot in the Precipitation
-	    app produced from selections in :numref:`image039`
+	    app produced from selections in :numref:`apps_interface_thresh_precip`
 
-.. _image042:
+.. _apps_gridscale_plot_precip:
 
-.. figure:: figure/image042.png  
+.. figure:: figure/apps_gridscale_plot_precip.png  
 
 	    GridScale plot in the Precipitation app
-	    produced from selections in :numref:`image039` 
+	    produced from selections in :numref:`apps_interface_thresh_precip` 
  

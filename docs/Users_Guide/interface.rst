@@ -26,14 +26,14 @@ described only in terms of their specific information and functionality.
 Home Page
 _________
 
-The METexpress home page is shown in :numref:`image002`. The home page has a
+The METexpress home page is shown in :numref:`interface_home_page`. The home page has a
 button for each available app.  Each app lets the user create certain types
 of plots for a certain type of data.  The user must begin by selecting the
 app they want to use.
 
-.. _image002:
+.. _interface_home_page:
  
-.. figure:: figure/image002.png
+.. figure:: figure/interface_home_page.png
 	    
 	    METexpress Home Page
 
@@ -42,27 +42,27 @@ ________________________________________
 
 The Upper Air app is used as an example here to describe the general layout
 that is carried through on all apps.  The Upper Air user interface before any
-curves have been defined is shown in :numref:`image003`. There are 3 parts to
+curves have been defined is shown in :numref:`interface_upper_air_no_curve`. There are 3 parts to
 this screen:
 
 * Plot Type
 * Curve Data Parameters 
 * Plot Parameters
  
-.. _image003:
+.. _interface_upper_air_no_curve:
 
-.. figure:: figure/image003.png
+.. figure:: figure/interface_upper_air_no_curve.png
 
 	    Upper Air User Interface screen before any curves have been defined
 
 After any curves have been added, the user interface screen includes a
-fourth area, as shown in :numref:`image005`, that shows what curves have already
+fourth area, as shown in :numref:`interface_upper_air_curve0`, that shows what curves have already
 been defined.  The section for the Curve Data Parameters then allows the
 user to create additional curves to be added to the plot.
  
-.. _image005:
+.. _interface_upper_air_curve0:
 
-.. figure:: figure/image005.png
+.. figure:: figure/interface_upper_air_curve0.png
 
 	    Upper Air User Interface screen after Curve0 has been added,
 	    showing the addition of the area for Defined Curves above the
@@ -158,7 +158,7 @@ value.  Available choices are as follows for all of the apps:
 
 After selecting all data parameters as desired, the user would click the Add
 Curve action button inside the green bar, and the area outlined in red in
-:numref:`image007` would be added to show the parameters selected for Curve0.
+:numref:`interface_upper_air_add_curve` would be added to show the parameters selected for Curve0.
 The color for Curve0 has been given the default value of red and will also
 be shown with a red line and/or symbols in the plot.  The color assigned to
 this curve can be changed within the outlined box with the button labeled
@@ -167,9 +167,9 @@ this curve can be changed within the outlined box with the button labeled
 Note that the user has the option to supply whatever label they prefer to use
 for each curve, but the default is to create labels “Curve0”, “Curve1”, etc.
 
-.. _image007:
+.. _interface_upper_air_add_curve:
 
-.. figure:: figure/image007.png
+.. figure:: figure/interface_upper_air_add_curve.png
 
 	    Interface screen after defining a single curve with default
 	    values, then selecting Add Curve
@@ -188,18 +188,18 @@ the user must finish the edit by clicking “Save Curve Changes”.
 Defining Multiple Curves
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-In :numref:`image007` “Curve0” has been
+In :numref:`interface_upper_air_add_curve` “Curve0” has been
 defined.  The user can then repeat the selection of curve data parameters
 followed by Add Curve for as many curves as they wish to show on the plot.
 Each new curve will be assigned a new color.  
 
 An example of the interface screen with 2 curves defined is shown in
-:numref:`image008` Curve0 data parameters are shown in the red box
+:numref:`interface_upper_air_two_curves` Curve0 data parameters are shown in the red box
 and Curve1 data parameters are shown  in the blue box.
 
-.. _image008:
+.. _interface_upper_air_two_curves:
 
-.. figure:: figure/image008.png
+.. figure:: figure/interface_upper_air_two_curves.png
 
 	    Interface screen after defining 2 curves and selecting
 	    Add Curve after each
@@ -263,30 +263,30 @@ for all defined curves will be considered when computing y-axis values
 not shown connecting the surrounding points.  The user can force METexpress
 to draw lines between points in all cases, by selecting Hide Gaps.
 
-:numref:`image009` shows the plot screen after the user selects Plot
+:numref:`interface_series_plot` shows the plot screen after the user selects Plot
 Unmatched or Plot Matched with a single curve defined.  Figure 5b
 shows the same plot but with Hide Gaps selected.  The same curve
-data as defined in :numref:`image009` is used to generate the plot
-in :numref:`image010`, but with Hide Gaps selected.
+data as defined in :numref:`interface_series_plot` is used to generate the plot
+in :numref:`interface_series_plot_hide_gaps`, but with Hide Gaps selected.
 
-.. _image009:
+.. _interface_series_plot:
 
-.. figure:: figure/image009.png
+.. figure:: figure/interface_series_plot.png
 
 	    Plot of Time Series for a single curve with default values
 
-.. _image010:
+.. _interface_series_plot_hide_gaps:
 
-.. figure:: figure/image010.png
+.. figure:: figure/interface_series_plot_hide_gaps.png
 
-	    Same plot as shown in :numref:`image009`, but with Hide Gaps
+	    Same plot as shown in :numref:`interface_series_plot`, but with Hide Gaps
 	    selected.
 	    
-:numref:`image011` shows a sample plot with 2 curves: Curve0 and Curve1 in red and blue, and has also added a difference curve in yellow showing the difference between Curve0 and Curve1 and error bars on all curves.
+:numref:`interface_series_plot_multiple` shows a sample plot with 2 curves: Curve0 and Curve1 in red and blue, and has also added a difference curve in yellow showing the difference between Curve0 and Curve1 and error bars on all curves.
 
-.. _image011:
+.. _interface_series_plot_multiple:
 
-.. figure:: figure/image011.png
+.. figure:: figure/interface_series_plot_multiple.png
 
 	    Plot with Multiple Curves for Time Series, including Error Bars
 	    and Difference Curves.  The yellow curve shows the
@@ -299,11 +299,11 @@ After the plot has been produced, the user can interact with the plot in
 various ways.  For example, the user might want to focus on one particular
 area of the plot to examine more detail, or the user might want to change
 titles, line widths, etc to produce a plot suitable for publication.
-:numref:`image012` highlights the tools available to interact with a plot.
+:numref:`interface_plot_controls` highlights the tools available to interact with a plot.
 
-.. _image012:
+.. _interface_plot_controls:
 
-.. figure:: figure/image012.png
+.. figure:: figure/interface_plot_controls.png
 
 	    Detail of plot controls from figure above
 
@@ -407,17 +407,17 @@ re-retrieve the data from the database and remake the plot.
 
 The **Text** button changes from the plot page to a text page, which displays
 all of the data on the graph in tables, along with statistics relating to
-each point, as shown in :numref:`image014_edit` for the plot in
-:numref:`image011`. These
+each point, as shown in :numref:`interface_text_screen` for the plot in
+:numref:`interface_series_plot_multiple`. These
 data tables can be exported as CSV files by clicking the “Export” button
 at the top (next to the “Data Lineage” button), so that users have the
 option of creating their own plots from the queried data.
 
-.. _image014_edit:
+.. _interface_text_screen:
 
-.. figure:: figure/image014_edit.png
+.. figure:: figure/interface_text_screen.png
 
-	    Beginning of text screen for plot in :numref:`image011`
+	    Beginning of text screen for plot in :numref:`interface_series_plot_multiple`
     
 The **blue refresh** button to the right of the text button will reset the
 graph to its original pan and zoom settings, as well as reverting

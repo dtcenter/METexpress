@@ -20,12 +20,12 @@ way that best gives them insight into how their model performed.
 METexpress is one component of the METplus verification tool suite, which is
 created and managed by the Developmental Testbed Center (DTC) and is the
 official verification tool for NOAA’s Unified Forecast System.
-:numref:`overview_image001` shows a graphic of the entire METplus package
+:numref:`overview_metplus_schematic` shows a graphic of the entire METplus package
 and how METexpress integrates with the other tools.
 
-.. _overview_image001:
+.. _overview_metplus_schematic:
 
-.. figure:: figure/image001.png
+.. figure:: figure/overview_metplus_schematic.png
 
             Schematic diagram of the structure of METplus, including
 	    METexpress
