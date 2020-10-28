@@ -45,6 +45,22 @@ release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 # ones.
 extensions = ['sphinx.ext.autodoc','sphinx.ext.intersphinx']
 
+# To enable PDF generation, set METPLUS_DOC_PDF environment variable
+#  sphinx 2.4.2+ and rst2pdf packages are required
+if os.environ.get('METEXPRESS_DOC_PDF'):
+    extensions.append('rst2pdf.pdfbuilder')
+        
+# used for generating PDF
+pdf_documents = [('index',
+                  f'METplus_Users_Guide_v{version}',
+                  'METplus User\'s Guide',
+                  ('Bonny Strong\\',
+                   'Randy Pierce\\',
+                   'Molly B. Smith\\',
+                   'Venita Hagerty\\',
+                   'Jeff Hamilton\\',
+                   ))]
+                   
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
