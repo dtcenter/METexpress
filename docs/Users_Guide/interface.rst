@@ -85,7 +85,7 @@ curves have been defined, the user will be prompted whether to keep all
 existing defined curves or to remove all the existing curves.
 
 Curve Data Parameters
-~~~~~~~~~~~~~~~~~~~~~
+_____________________
 
 In the central area of the screen is a box to define the data parameters
 associated with each curve to be plotted.  Blue fields are selectors and
@@ -205,7 +205,7 @@ and Curve1 data parameters are shown  in the blue box.
 	    Add Curve after each
 
 Plot Parameters
-~~~~~~~~~~~~~~~
+_______________
 
 The Plot Parameters appear in the box below the Curve Data Parameters box
 and apply to all curves defined in the Curve Data Parameters.  The user
@@ -232,7 +232,7 @@ All difference curves calculate differences only where the data is matching.
 plot.
 
 Saving and Restoring Settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+_____________________________
 
 When all parameters have been set as desired – including curve data
 parameters, plot parameters, and plot types - the user has an option to
@@ -244,7 +244,7 @@ plot parameters, and plot type will be reset from the saved-settings
 definitions.
 
 Generating a Plot
-~~~~~~~~~~~~~~~~~
+_________________
 
 When the user is ready to generate a plot, the user would click either the
 “Plot Unmatched” or the “Plot Matched” action button directly below the
@@ -264,8 +264,7 @@ not shown connecting the surrounding points.  The user can force METexpress
 to draw lines between points in all cases, by selecting Hide Gaps.
 
 :numref:`interface_series_plot` shows the plot screen after the user selects Plot
-Unmatched or Plot Matched with a single curve defined.  Figure 5b
-shows the same plot but with Hide Gaps selected.  The same curve
+Unmatched or Plot Matched with a single curve defined. The same curve
 data as defined in :numref:`interface_series_plot` is used to generate the plot
 in :numref:`interface_series_plot_hide_gaps`, but with Hide Gaps selected.
 
@@ -293,7 +292,7 @@ in :numref:`interface_series_plot_hide_gaps`, but with Hide Gaps selected.
 	    difference between the red and blue curves.
 
 User controls on plot screen
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+____________________________
 
 After the plot has been produced, the user can interact with the plot in
 various ways.  For example, the user might want to focus on one particular

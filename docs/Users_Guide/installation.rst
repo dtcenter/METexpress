@@ -13,7 +13,7 @@ installation instructions.
 
 **System requirements:**
 
-* Hardware: Metexpress runs on Docker.  It can successfully run on a
+* Hardware: METexpress runs on Docker.  It can successfully run on a
   system with four cores, 8 GB of memory and 10GB of free disk space.
   METexpress has been tested on Linux and MAC systems.  It may run on
   Windows but this has not been tested and the configuration and
@@ -53,6 +53,8 @@ to be provided:
 
     * METexpress uses this to configure its own proxy service that fronts the apps.
 
+      | 
+      
   * Fully qualified proxy hostname, defaulting to the domainName
 
     * The deployment might be behind a redirection proxy with
@@ -66,16 +68,20 @@ to be provided:
 	www.esrl.noaa.gov and the proxy_prefix_path needs to be set
 	to "/gsd/mats".
 
+	| 
+
   * Proxy redirection path
 
     * This allows a different path other than "/"
+
+      | 
 
 * Database credentials:
   Building on the architecture of MATS, METexpress has a
   construct for a database role.  Within METexpress the only role
   that is used is one named “sums_data”.  METexpress requires
   that a user exist in the MET database that has database read and
-  write.  Write permissions are needed to create metadata entries.
+  write permissions.  Write permissions are needed to create metadata entries.
   During the installation, it will be necessary to provide the
   username and password for this user.
   Username and password for each role required for each app.
