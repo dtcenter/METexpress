@@ -83,8 +83,8 @@ to be provided:
   that a user exist in the MET database that has database read and
   write permissions.  Write permissions are needed to create metadata entries.
   During the installation, it will be necessary to provide the
-  username and password for this user.
-  Username and password for each role required for each app.
+  username and password for this user. The username and password for the
+  sums_data role is required for each app.
 
 * SSL certificates:
   An SSL certificate is required to run METexpress. This is usually

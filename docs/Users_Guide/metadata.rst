@@ -77,7 +77,7 @@ with a package manager.
 
 Once the apps are up, any new MET data loaded into the database will not
 appear in METexpress until the metadata scripts are run again. Because of
-this, It is recommended to run the following steps from the write
+this, it is recommended to run the following steps from the write
 access user's
 crontab, either once a day or at another interval of the user's choosing.
 The metadata scripts can also be run manually at any time.
