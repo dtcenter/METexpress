@@ -24,15 +24,15 @@ author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
 
 # The stable version, displayed on the front page of the PDF
-version = '3.0.0'
+version = 'development'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 
-release_year = '2020'
+release_year = '2021'
 
-release_date = f'{release_year}1001'
+release_date = f'{release_year}0317'
 
 copyright = f'{release_year}, {author}'
 
