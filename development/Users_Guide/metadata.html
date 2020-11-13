@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5. METexpress Metadata &mdash; METexpress development documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://dtcenter.github.io/METexpress/latest/Users_Guide/metadata.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/theme_override.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="METexpress development documentation" href="../index.html"/>
+        <link rel="up" title="User’s Guide" href="index.html"/>
+        <link rel="next" title="6. Appendix A - Public Deployments of METexpress" href="appendixA.html"/>
+        <link rel="prev" title="4. METexpress System Requirements, Installation and Support" href="installation.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> METexpress
+          
+
+          
+            
+            <img src="../_static/met_express_logo_2019_09.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>development</option>
+                      
+                        
+                          <option value="../latest">latest</option>
+                        
+                      
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">METexpress</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview of METexpress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">2. General Interface Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apps.html">3. METexpress Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">4. METexpress System Requirements, Installation and Support</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. METexpress Metadata</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-metadata-for-metexpress">5.1. What is metadata for METexpress?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-metadata-for-a-mysql-database">5.2. Generating metadata for a MySQL database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="appendixA.html">6. Appendix A - Public Deployments of METexpress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">METexpress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">User’s Guide</a> &raquo;</li>
+        
+      <li><span class="section-number">5. </span>METexpress Metadata</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/Users_Guide/metadata.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="metexpress-metadata">
+<span id="metadata"></span><h1><span class="section-number">5. </span>METexpress Metadata<a class="headerlink" href="#metexpress-metadata" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-metadata-for-metexpress">
+<h2><span class="section-number">5.1. </span>What is metadata for METexpress?<a class="headerlink" href="#what-is-metadata-for-metexpress" title="Permalink to this headline">¶</a></h2>
+<p>Generally, the term metadata refers to data about the data.  METexpress
+stores metadata about each data set in the database to describe parameters
+such as the model (or data source), regions, variables, levels, dates, etc
+that are included in that data set.</p>
+<p>This metadata is then used to populate the selectors displayed on the
+initial page of each METexpress app, so that only valid data combinations
+are presented to the user for plotting.  For example, select a
+data-source of GFSFV3. The selections that are listed for Regions will
+only include regions actually produced and stored with the GFSFV3 data set.</p>
+</div>
+<div class="section" id="generating-metadata-for-a-mysql-database">
+<h2><span class="section-number">5.2. </span>Generating metadata for a MySQL database<a class="headerlink" href="#generating-metadata-for-a-mysql-database" title="Permalink to this headline">¶</a></h2>
+<p><strong>The metadata scripts must be run at least once before attempting to run
+METexpress with a new database, or the apps will fail to start.</strong></p>
+<p>The scripts can be run from any host (with UNIX) that has access to the MET
+database, but must be run by a user with write permissions to that database.
+This is because after generating the metadata required by each app, the
+metadata scripts will create a new schema within the MySQL database called
+mats_metadata, and store the metadata within it. The scripts will never
+write to any other location.</p>
+<p>The metadata scripts are written in Python 3, and require a number of Python
+modules, including pymysql, abc.abstractmethod, urllib.request, traceback,
+ssl, getopt, and json, which may need to be added to the Python environment
+with a package manager.</p>
+<p><strong>To run the metadata scripts for the first time:</strong></p>
+<ul>
+<li><p>The scripts are located in the <a class="reference external" href="https://github.com/dtcenter/METexpress/tree/master/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress">METexpress repo</a>.</p></li>
+<li><p>After cloning this repo, link the contents of the
+scripts/matsMetaDataForApps/createMetaData/mysql directory to the
+preferred run directory (e.g., something like /home/metexpress/scripts).</p></li>
+<li><p>A .my.cnf file with the login credentials will be needed for the mysql
+database. Remember, the credentials must be for a user with write
+permissions.</p></li>
+<li><p>Change directories to the run directory. Remember, the contents of
+this run directory should be identical to the contents of
+scripts/matsMetaDataForApps/createMetaData/mysql.  Please note that this
+is ONE LEVEL ABOVE the directory where the metadata scripts are actually
+located. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd /home/metexpress/scripts
+</pre></div>
+</div>
+</li>
+<li><p>Set the PYTHONPATH to the run directory. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>export PYTHONPATH=&quot;/home/metexpress/scripts&quot;).
+</pre></div>
+</div>
+</li>
+<li><p>Run the scripts from the command line. Pass in the path
+to the .my.cnf file and the URL where METexpress will be available as
+arguments. The URL &lt;metexpress_url&gt; is the actual access URL of the
+metexpress installation, e.g. <cite>https://yourdomain/metexpress</cite>. The URL is
+necessary so that the metadata scripts can inform METexpress that new
+metadata is available.  For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u &lt;metexpress_url&gt;
+</pre></div>
+</div>
+</li>
+<li><p>The scripts should generate the necessary metadata and store it in the
+database.</p></li>
+<li><p>A METexpress instance that looks at this database can now be run.</p></li>
+</ul>
+<p>Once the apps are up, any new MET data loaded into the database will not
+appear in METexpress until the metadata scripts are run again. Because of
+this, it is recommended to run the following steps from the write
+access user’s
+crontab, either once a day or at another interval of the user’s choosing.
+The metadata scripts can also be run manually at any time.</p>
+<p><strong>To run the metadata scripts subsequent times (such as from the crontab):</strong></p>
+<ul>
+<li><p>Set the PYTHONPATH to the run directory. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>export PYTHONPATH=&quot;/home/metexpress/scripts&quot;
+</pre></div>
+</div>
+</li>
+<li><p>Run the scripts from the command line. Pass in the path
+to the .my.cnf file and the URL where METexpress is available as
+arguments. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u &lt;metexpress_url&gt;
+</pre></div>
+</div>
+</li>
+<li><p>The scripts should generate the necessary metadata and store it in the
+database.</p></li>
+<li><p>The scripts will then briefly connect to each app at the provided URL,
+triggering a metadata update and causing the selectors to display the
+latest information.</p></li>
+</ul>
+<p><strong>Having mv_load or METdbload trigger a metadata update:</strong></p>
+<p>In addition to running the metadata scripts from the crontab at a given
+interval, it is also possible to invoke the metadata script when any new
+data is loaded into the database. To do this, insert a metadata
+script invocation (using the steps given in the previous section) into
+the end of the METviewer mv_load.sh script. Be sure to set the PYTHONPATH
+in the script invocation.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="appendixA.html" class="btn btn-neutral float-right" title="6. Appendix A - Public Deployments of METexpress" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="4. METexpress System Requirements, Installation and Support" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

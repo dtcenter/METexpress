@@ -1,0 +1,803 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3. METexpress Apps &mdash; METexpress development documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://dtcenter.github.io/METexpress/latest/Users_Guide/apps.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/theme_override.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="METexpress development documentation" href="../index.html"/>
+        <link rel="up" title="User’s Guide" href="index.html"/>
+        <link rel="next" title="4. METexpress System Requirements, Installation and Support" href="installation.html"/>
+        <link rel="prev" title="2. General Interface Description" href="interface.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> METexpress
+          
+
+          
+            
+            <img src="../_static/met_express_logo_2019_09.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>development</option>
+                      
+                        
+                          <option value="../latest">latest</option>
+                        
+                      
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">METexpress</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview of METexpress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">2. General Interface Description</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. METexpress Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#upper-air-app">3.1. Upper Air App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#anomaly-correlation-app">3.2. Anomaly Correlation App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surface-app">3.3. Surface App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#air-quality-app">3.4. Air Quality App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensemble-app">3.5. Ensemble App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#precipitation-app">3.6. Precipitation App</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">4. METexpress System Requirements, Installation and Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">5. METexpress Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendixA.html">6. Appendix A - Public Deployments of METexpress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">METexpress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">User’s Guide</a> &raquo;</li>
+        
+      <li><span class="section-number">3. </span>METexpress Apps</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/Users_Guide/apps.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="metexpress-apps">
+<span id="apps"></span><h1><span class="section-number">3. </span>METexpress Apps<a class="headerlink" href="#metexpress-apps" title="Permalink to this headline">¶</a></h1>
+<p>This section includes a description of the unique feature of each app.</p>
+<div class="section" id="upper-air-app">
+<h2><span class="section-number">3.1. </span>Upper Air App<a class="headerlink" href="#upper-air-app" title="Permalink to this headline">¶</a></h2>
+<p>The user interface for Upper Air follows the general description from
+above.  Choices specific to this app are shown below.</p>
+<p>Choices for Statistic:</p>
+<ul class="simple">
+<li><p>RMSE</p></li>
+<li><p>Bias-corrected RMSE</p></li>
+<li><p>MSE</p></li>
+<li><p>Bias-corrected MSE</p></li>
+<li><p>ME (Additive bias)</p></li>
+<li><p>Multiplicative bias</p></li>
+<li><p>Forecast mean</p></li>
+<li><p>Observed mean</p></li>
+<li><p>Forecast stdev</p></li>
+<li><p>Observed stdev</p></li>
+<li><p>Error stdev</p></li>
+<li><p>Pearson Correlation</p></li>
+</ul>
+<p>The Upper Air app includes functionality for these types of plots:</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>Profile</p></li>
+<li><p>Dieoff</p></li>
+<li><p>ValidTime</p></li>
+<li><p>Histogram</p></li>
+<li><p>Contour</p></li>
+</ul>
+<p>The Upper Air app includes the following plot types.</p>
+<p><strong>Time Series</strong>: The default plot type is Time Series, which has date on
+the x-axis and the mean value of the selected parameter for that date on
+the y-axis.</p>
+<p><strong>Profile</strong>: The Profile plot type displays pressure level on the y–axis
+and the mean value of the selected parameter on the x-axis.</p>
+<p><strong>Die-off</strong>: Die-off plots show how skill (or the inverse, error)
+changes with increasing lead time.  <a class="reference internal" href="#apps-interface-dieoff"><span class="std std-numref">Figure 3.1</span></a> shows the user
+interface page after selecting the plot type of DieOff.  Note that
+another selector is included for DIEOFF TYPE, which has the following
+possible values:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Dieoff</p></li>
+<li><p>Dieoff for a specific UTC cycle start time</p></li>
+<li><p>Single cycle forecast</p></li>
+</ol>
+</div></blockquote>
+<div class="figure align-default" id="id1">
+<span id="apps-interface-dieoff"></span><img alt="../_images/apps_interface_dieoff.png" src="../_images/apps_interface_dieoff.png" />
+<p class="caption"><span class="caption-number">Figure 3.1 </span><span class="caption-text">User Interface screen after selecting plot type of DieOff.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference internal" href="#apps-upper-air-dieoff-plot"><span class="std std-numref">Figure 3.2</span></a> shows a sample of a DieOff plot in METexpress.
+This looks more
+like a familiar die-off curve when plotting skill, such as anomaly
+correlation as plotted in <a class="reference internal" href="#apps-anom-corr-dieoff-plot"><span class="std std-numref">Figure 3.3</span></a> using the Anomaly Correlation
+app, rather than error as is plotted with the Upper Air app.</p>
+<p>The option “dieoff” for Dieoff Type uses all data at each given forecast
+hour within the specified date range.  The option for “Dieoff for a
+specific UTC cycle start time” filters data to only use those at a
+specified cycle initialization time, such as 0 or 12.  The option
+“Single cycle forecast” uses only the forecasts from the first cycle in
+the specified date range.</p>
+<div class="figure align-default" id="id2">
+<span id="apps-upper-air-dieoff-plot"></span><img alt="../_images/apps_upper_air_dieoff_plot.png" src="../_images/apps_upper_air_dieoff_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.2 </span><span class="caption-text">Upper Air DieOff plot</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id3">
+<span id="apps-anom-corr-dieoff-plot"></span><img alt="../_images/apps_anom_corr_dieoff_plot.png" src="../_images/apps_anom_corr_dieoff_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.3 </span><span class="caption-text">Anomaly Correlation DieOff plot</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>ValidTime</strong>: The ValidTime plot type (also sometimes known as diurnal
+cycle plots) displays valid UTC hour on the x–axis and the mean value of
+the selected parameter on the y-axis.</p>
+<p><strong>Histograms</strong>: Histograms allow users to visualize the distribution of
+a given statistic over a specified time period. For example, if a user
+requested a histogram of RMSE for 144-h GFS forecasts over the global
+domain for a month, they would see the frequencies of specific RMSE values
+produced by individual GFS runs over that month. Histograms have statistical
+value bins on the x-axis, and number or frequency counts on the y-axis.</p>
+<p>Histograms have a number of additional selectors that control their appearance:</p>
+<ul>
+<li><p>Y-axis mode: Can be set to either “Relative frequency” or “Number”, depending
+on whether a user wants the frequency of a given statistic displayed as a
+fraction of 100, or as a raw count.</p></li>
+<li><p>Customize bins: With this selector, the user can choose one of the following
+options to customize their x-axis bins:</p>
+<ul>
+<li><p>Default bins</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+<li><p>Set number of bins</p>
+<ul>
+<li><p>Has sub-selector “Number of bins”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Make zero a bin bound</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+<li><p>Choose a bin bound</p>
+<ul>
+<li><p>Has sub-selector “Bin pivot value”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Set number of bins and make zero a bin bound</p>
+<ul>
+<li><p>Has sub-selector “Number of bins”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Set number of bins and choose a bin bound</p>
+<ul>
+<li><p>Has sub-selectors “Number of bins” and “Bin pivot value”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Manual bins</p>
+<ul>
+<li><p>Has sub-selector “Bin bounds”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Manual start, number, and stride</p>
+<ul>
+<li><p>Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><a class="reference internal" href="#apps-interface-histogram"><span class="std std-numref">Figure 3.4</span></a> shows the user interface for histogram plots
+and <a class="reference internal" href="#apps-histogram-plot"><span class="std std-numref">Figure 3.5</span></a> shows a sample plot.</p>
+<div class="figure align-default" id="id4">
+<span id="apps-interface-histogram"></span><img alt="../_images/apps_interface_histogram.png" src="../_images/apps_interface_histogram.png" />
+<p class="caption"><span class="caption-number">Figure 3.4 </span><span class="caption-text">The user interface for histogram plots.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id5">
+<span id="apps-histogram-plot"></span><img alt="../_images/apps_histogram_plot.png" src="../_images/apps_histogram_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.5 </span><span class="caption-text">Plot generated from selections in <a class="reference internal" href="#apps-interface-histogram"><span class="std std-numref">Figure 3.4</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Contour</strong>: Contour plots can be used in many ways.  One can illustrate
+data with respect to height, as in plots seen at
+<a class="reference external" href="http://www.emc.ncep.noaa.gov/gmb/STATS_vsdb/">http://www.emc.ncep.noaa.gov/gmb/STATS_vsdb/</a>,
+which have height on the y-axis and forecast hour (as in lead time) on
+the x-axis.  These VSDB stat plots can be easily replicated in METexpress
+by using the contour plot type, except that the plot in METexpress will have
+only one pane, not two. In addition, METexpress users are not bound to have
+only pressure level / height on the y-axis or forecast lead time on the x-axis.
+They can reverse the two, place valid or init UTC hour on one of the axes,
+create Hovmoller diagrams, and many other combinations.</p>
+<p>Contour plots have two additional selectors, x-axis-parameter and
+y-axis-parameter. With these, a user can decide which field to place on
+the x-axis (e.g. forecast lead time), and which to place on the y-axis
+(e.g. pressure level or valid UTC hour).</p>
+<p><a class="reference internal" href="#apps-upper-air-contour-plot"><span class="std std-numref">Figure 3.6</span></a> shows an example of an Upper Air profile plotted as a contour plot.</p>
+<div class="figure align-default" id="id6">
+<span id="apps-upper-air-contour-plot"></span><img alt="../_images/apps_upper_air_contour_plot.png" src="../_images/apps_upper_air_contour_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.6 </span><span class="caption-text">Upper Air profile, as a contour plot</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="anomaly-correlation-app">
+<h2><span class="section-number">3.2. </span>Anomaly Correlation App<a class="headerlink" href="#anomaly-correlation-app" title="Permalink to this headline">¶</a></h2>
+<p>An example of the Anomaly Correlation app user interface is shown in <a class="reference internal" href="#apps-interface-anom-corr"><span class="std std-numref">Figure 3.7</span></a>
+This interface is similar to the one for Upper Air but has fewer selectable parameters.</p>
+<div class="figure align-default" id="id7">
+<span id="apps-interface-anom-corr"></span><img alt="../_images/apps_interface_anom_corr.png" src="../_images/apps_interface_anom_corr.png" />
+<p class="caption"><span class="caption-number">Figure 3.7 </span><span class="caption-text">Anomaly Correlation app user interface</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this application, the selectable values are derived from the data for these parameters:</p>
+<ul class="simple">
+<li><p>Group</p></li>
+<li><p>Database</p></li>
+<li><p>Data-Source</p></li>
+<li><p>Region</p></li>
+<li><p>Variable</p></li>
+<li><p>Forecast lead time</p></li>
+<li><p>Level</p></li>
+<li><p>Description</p></li>
+<li><p>Dates</p></li>
+<li><p>Curve-dates</p></li>
+</ul>
+<p>METexpress Anomaly Correlation does not have a Statistic selector, as it displays anomaly
+correlation as its only statistic.</p>
+<p>Plot types available include</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>Profile</p></li>
+<li><p>DieOff</p></li>
+<li><p>ValidTime</p></li>
+<li><p>Histogram</p></li>
+<li><p>Contour</p></li>
+</ul>
+<p>All plot types function the same here as they do in MET Upper Air described above.
+A sample anomaly correlation plot is shown in <a class="reference internal" href="#apps-anom-corr-sample-plot"><span class="std std-numref">Figure 3.8</span></a>.</p>
+<div class="figure align-default" id="id8">
+<span id="apps-anom-corr-sample-plot"></span><img alt="../_images/apps_anom_corr_sample_plot.png" src="../_images/apps_anom_corr_sample_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.8 </span><span class="caption-text">Anomaly Correlation sample plot.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="surface-app">
+<h2><span class="section-number">3.3. </span>Surface App<a class="headerlink" href="#surface-app" title="Permalink to this headline">¶</a></h2>
+<p>The user interface for the Surface app is shown in <a class="reference internal" href="#apps-interface-surface"><span class="std std-numref">Figure 3.9</span></a>.</p>
+<div class="figure align-default" id="id9">
+<span id="apps-interface-surface"></span><img alt="../_images/apps_interface_surface.png" src="../_images/apps_interface_surface.png" />
+<p class="caption"><span class="caption-number">Figure 3.9 </span><span class="caption-text">User Interface for the Surface app</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>For this app, the following parameters have choices derived from the data.</p>
+<ul class="simple">
+<li><p>Group</p></li>
+<li><p>Database</p></li>
+<li><p>Data-source</p></li>
+<li><p>Region</p></li>
+<li><p>Variable</p></li>
+<li><p>Forecast lead time</p></li>
+<li><p>Ground level</p></li>
+<li><p>Description</p></li>
+<li><p>Dates</p></li>
+<li><p>Curve-dates</p></li>
+</ul>
+<p>The selector for the Statistic has these possible choices:</p>
+<ul class="simple">
+<li><p>RMSE</p></li>
+<li><p>Bias-corrected RMSE</p></li>
+<li><p>MSE</p></li>
+<li><p>Bias-corrected MSE</p></li>
+<li><p>ME (Additive bias)</p></li>
+<li><p>Multiplicative bias</p></li>
+<li><p>Forecast mean</p></li>
+<li><p>Observed mean</p></li>
+<li><p>Forecast stdev</p></li>
+<li><p>Observed stdev</p></li>
+<li><p>Error stdev</p></li>
+<li><p>Pearson Correlation</p></li>
+</ul>
+<p>Plot types available include:</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>DieOff</p></li>
+<li><p>ValidTime</p></li>
+<li><p>Histogram</p></li>
+<li><p>Contour</p></li>
+</ul>
+<p>Plots in the Surface app for Time Series, DieOff, ValidTime, Histogram, and
+Contour are the same as in Upper Air. An example of a Valid Time plot
+is shown in <a class="reference internal" href="#apps-surface-plot"><span class="std std-numref">Figure 3.10</span></a>.</p>
+<div class="figure align-default" id="id10">
+<span id="apps-surface-plot"></span><img alt="../_images/apps_surface_plot.png" src="../_images/apps_surface_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.10 </span><span class="caption-text">Surface app ValidTime plot</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="air-quality-app">
+<h2><span class="section-number">3.4. </span>Air Quality App<a class="headerlink" href="#air-quality-app" title="Permalink to this headline">¶</a></h2>
+<p>For this app, the following parameters have choices derived from the data.</p>
+<ul class="simple">
+<li><p>Group</p></li>
+<li><p>Database</p></li>
+<li><p>Data-source</p></li>
+<li><p>Region</p></li>
+<li><p>Variable</p></li>
+<li><p>Threshold</p></li>
+<li><p>Forecast lead time</p></li>
+<li><p>Ground level</p></li>
+<li><p>Description</p></li>
+<li><p>Dates</p></li>
+<li><p>Curve-dates</p></li>
+</ul>
+<p>The selector for the Statistic has these possible choices:</p>
+<ul class="simple">
+<li><p>CSI</p></li>
+<li><p>FAR</p></li>
+<li><p>FBIAS</p></li>
+<li><p>GSS</p></li>
+<li><p>HSS</p></li>
+<li><p>PODy</p></li>
+<li><p>PODn</p></li>
+<li><p>POFD</p></li>
+<li><p>RMSE</p></li>
+<li><p>Bias-corrected RMSE</p></li>
+<li><p>MSE</p></li>
+<li><p>Bias-corrected MSE</p></li>
+<li><p>ME (Additive bias)</p></li>
+<li><p>Multiplicative bias</p></li>
+<li><p>Forecast mean</p></li>
+<li><p>Observed mean</p></li>
+<li><p>Forecast stdev</p></li>
+<li><p>Observed stdev</p></li>
+<li><p>Error stdev</p></li>
+<li><p>Pearson Correlation</p></li>
+</ul>
+<p>Plot types available include</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>DieOff</p></li>
+<li><p>Threshold</p></li>
+<li><p>ValidTime</p></li>
+<li><p>Histogram</p></li>
+<li><p>Contour</p></li>
+</ul>
+<p>Plots in the Air Quality app for Time Series, DieOff, ValidTime,
+Histogram, and Contour are the same as in Upper Air.</p>
+<p>An additional plot type, Threshold, is available in this app.
+Threshold plots display threshold on the x-axis, and the mean value
+of the selected parameter on the y-axis.</p>
+<p><a class="reference internal" href="#apps-air-qual-thresh-plot"><span class="std std-numref">Figure 3.11</span></a> shows an example of an Air Quality Threshold plot.</p>
+<div class="figure align-default" id="id11">
+<span id="apps-air-qual-thresh-plot"></span><img alt="../_images/apps_air_qual_thresh_plot.png" src="../_images/apps_air_qual_thresh_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.11 </span><span class="caption-text">Air Quality app Threshold plot</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="ensemble-app">
+<h2><span class="section-number">3.5. </span>Ensemble App<a class="headerlink" href="#ensemble-app" title="Permalink to this headline">¶</a></h2>
+<p>For this app, the following parameters have choices derived from the data.</p>
+<ul class="simple">
+<li><p>Group</p></li>
+<li><p>Database</p></li>
+<li><p>Data-source</p></li>
+<li><p>Region</p></li>
+<li><p>Statistic</p></li>
+<li><p>Variable</p></li>
+<li><p>Forecast lead time</p></li>
+<li><p>Level</p></li>
+<li><p>Description</p></li>
+<li><p>Dates</p></li>
+<li><p>Curve-dates</p></li>
+</ul>
+<p>Unlike in the other apps, statistics for MET Ensemble are not static,
+but depend on the MET line types loaded into the database. Available
+statistics can include:</p>
+<ul class="simple">
+<li><p>RMSE</p></li>
+<li><p>RMSE with obs error</p></li>
+<li><p>Spread</p></li>
+<li><p>Spread with obs error</p></li>
+<li><p>ME (Additive bias)</p></li>
+<li><p>ME with obs error</p></li>
+<li><p>CRPS</p></li>
+<li><p>CRPSS</p></li>
+<li><p>MAE</p></li>
+<li><p>ACC</p></li>
+<li><p>BS</p></li>
+<li><p>BSS</p></li>
+<li><p>BS reliability</p></li>
+<li><p>BS resolution</p></li>
+<li><p>BS uncertainty</p></li>
+<li><p>BS lower confidence limit</p></li>
+<li><p>BS upper confidence limit</p></li>
+<li><p>ROC AUC</p></li>
+<li><p>EV</p></li>
+<li><p>FSS</p></li>
+</ul>
+<p>Plot types available include</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>DieOff</p></li>
+<li><p>ValidTime</p></li>
+<li><p>Histogram</p></li>
+<li><p>Ensemble Histogram</p></li>
+<li><p>Reliability</p></li>
+<li><p>ROC</p></li>
+</ul>
+<p>Plots in the Ensemble app for Time Series, DieOff, ValidTime, and
+Histogram are the same as in Upper Air.</p>
+<p>Three plot types are specific to this app: Ensemble Histogram,
+Reliability, and ROC.</p>
+<p>Ensemble Histograms are controlled by the Histogram type selector
+that appears at the bottom of the main app page when the plot type
+of Ensemble Histogram is selected.  This can be set to Rank
+Histogram, Probability Integral Transform Histogram, or Relative
+Position Histogram. Selecting one of these will produce the
+corresponding plot, with bins pre-calculated in the MET
+verification process. As with regular histogram plots, the user
+has the option of setting the Y-axis mode to either “Relative frequency”
+or “Number”.</p>
+<p>Reliability plots produce a single curve for the chosen parameters
+(probabilistic variables only), with Forecast Probability on the
+x-axis, and Observed Relative Frequency on the y-axis. Four additional
+lines will be displayed on the graph, denoting perfect skill, no skill,
+x climatology, and y climatology.</p>
+<p>ROC plots can display multiple curves (probabilistic variables only),
+with False Alarm Rate on the x-axis, and Probability of Detection on
+the y-axis. An additional diagonal line will be displayed on the graph,
+denoting no skill.</p>
+<p><a class="reference internal" href="#apps-interface-ens-hist"><span class="std std-numref">Figure 3.12</span></a> shows the user interface for defining an Ensemble
+Histogram and <a class="reference internal" href="#apps-ens-hist-plot-rank-hist"><span class="std std-numref">Figure 3.13</span></a> through <a class="reference internal" href="#apps-ens-hist-plot-rel-pos-hist"><span class="std std-numref">Figure 3.15</span></a> show
+examples of the 3 types of Ensemble Histograms.</p>
+<div class="figure align-default" id="id12">
+<span id="apps-interface-ens-hist"></span><img alt="../_images/apps_interface_ens_hist.png" src="../_images/apps_interface_ens_hist.png" />
+<p class="caption"><span class="caption-number">Figure 3.12 </span><span class="caption-text">The Ensemble app user interface for Ensemble
+Histogram plots.  Note the selector for Histogram Type which
+is unique to this plot type.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id13">
+<span id="apps-ens-hist-plot-rank-hist"></span><img alt="../_images/apps_ens_hist_plot_rank_hist.png" src="../_images/apps_ens_hist_plot_rank_hist.png" />
+<p class="caption"><span class="caption-number">Figure 3.13 </span><span class="caption-text">Ensemble Histogram plot type with Histogram Type
+of Rank Histogram.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id14">
+<span id="apps-ens-hist-plot-pith"></span><img alt="../_images/apps_ens_hist_plot_pith.png" src="../_images/apps_ens_hist_plot_pith.png" />
+<p class="caption"><span class="caption-number">Figure 3.14 </span><span class="caption-text">Ensemble Histogram plot type with Histogram Type
+of Probability Integral Transform Histogram.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id15">
+<span id="apps-ens-hist-plot-rel-pos-hist"></span><img alt="../_images/apps_ens_hist_plot_rel_pos_hist.png" src="../_images/apps_ens_hist_plot_rel_pos_hist.png" />
+<p class="caption"><span class="caption-number">Figure 3.15 </span><span class="caption-text">Ensemble Histogram plot type with Histogram
+Type of Relative Position Histogram</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference internal" href="#apps-ens-reliability-plot"><span class="std std-numref">Figure 3.16</span></a> shows an example Reliability plot and
+<a class="reference internal" href="#apps-ens-roc-plot"><span class="std std-numref">Figure 3.17</span></a> shows an example ROC plot,
+both for the same data set.</p>
+<div class="figure align-default" id="id16">
+<span id="apps-ens-reliability-plot"></span><img alt="../_images/apps_ens_reliability_plot.png" src="../_images/apps_ens_reliability_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.16 </span><span class="caption-text">Ensemble App Reliability Plot for data defined
+in <a class="reference internal" href="#apps-interface-ens-hist"><span class="std std-numref">Figure 3.12</span></a>.
+The 1:1 diagonal gray line represents
+perfect skill between forecast probability and observation
+frequency. The diagonal line with the lower slope indicates
+the point above which the forecast becomes more skillful
+than climatology, and the vertical and horizontal lines
+indicate climatology.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id17">
+<span id="apps-ens-roc-plot"></span><img alt="../_images/apps_ens_roc_plot.png" src="../_images/apps_ens_roc_plot.png" />
+<p class="caption"><span class="caption-number">Figure 3.17 </span><span class="caption-text">Ensemble app ROC plot for the same data
+set defined in <a class="reference internal" href="#apps-interface-ens-hist"><span class="std std-numref">Figure 3.12</span></a>.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="precipitation-app">
+<h2><span class="section-number">3.6. </span>Precipitation App<a class="headerlink" href="#precipitation-app" title="Permalink to this headline">¶</a></h2>
+<p>For this app, the following parameters have choices derived from the data.</p>
+<ul class="simple">
+<li><p>Group</p></li>
+<li><p>Database</p></li>
+<li><p>Data-source</p></li>
+<li><p>Region</p></li>
+<li><p>Variable</p></li>
+<li><p>Threshold</p></li>
+<li><p>Scale</p></li>
+<li><p>Obs type</p></li>
+<li><p>Forecast lead time</p></li>
+<li><p>Level</p></li>
+<li><p>Description</p></li>
+<li><p>Dates</p></li>
+<li><p>Curve-dates</p></li>
+</ul>
+<p>The selector for the Statistic has these possible choices:</p>
+<ul class="simple">
+<li><p>CSI</p></li>
+<li><p>FAR</p></li>
+<li><p>FBIAS</p></li>
+<li><p>GSS</p></li>
+<li><p>HSS</p></li>
+<li><p>PODy</p></li>
+<li><p>PODn</p></li>
+<li><p>POFD</p></li>
+<li><p>FSS</p></li>
+<li><p>RMSE</p></li>
+<li><p>Bias-corrected RMSE</p></li>
+<li><p>MSE</p></li>
+<li><p>Bias-corrected MSE</p></li>
+<li><p>ME (Additive bias)</p></li>
+<li><p>Multiplicative bias</p></li>
+<li><p>Forecast mean</p></li>
+<li><p>Observed mean</p></li>
+<li><p>Forecast stdev</p></li>
+<li><p>Observed stdev</p></li>
+<li><p>Error stdev</p></li>
+<li><p>Pearson Correlation</p></li>
+</ul>
+<p>Plot types available include</p>
+<ul class="simple">
+<li><p>Time Series</p></li>
+<li><p>DieOff</p></li>
+<li><p>Threshold</p></li>
+<li><p>ValidTime</p></li>
+<li><p>GridScale</p></li>
+<li><p>Histogram</p></li>
+<li><p>Contour</p></li>
+</ul>
+<p>Plots in the Precipitation app for Time Series, DieOff,
+ValidTime, Histogram, and Contour are the same as in Upper Air.</p>
+<p>A different plot type, Threshold, is present in this app. Threshold
+plots display threshold on the x-axis, and the mean value of the
+selected parameter on the y-axis.</p>
+<p>Another unique plot type, GridScale, is included in this app.
+GridScale plots display grid scale on the x-axis, and the mean value
+of the selected parameter on the y-axis.</p>
+<p><a class="reference internal" href="#apps-interface-thresh-precip"><span class="std std-numref">Figure 3.18</span></a> shows an example of the user interface for the
+Precipitation app, <a class="reference internal" href="#apps-thresh-plot-precip"><span class="std std-numref">Figure 3.19</span></a> shows an example Threshold plot, and
+<a class="reference internal" href="#apps-gridscale-plot-precip"><span class="std std-numref">Figure 3.20</span></a> shows an example GridScale plot.</p>
+<div class="figure align-default" id="id18">
+<span id="apps-interface-thresh-precip"></span><img alt="../_images/apps_interface_thresh_precip.png" src="../_images/apps_interface_thresh_precip.png" />
+<p class="caption"><span class="caption-number">Figure 3.18 </span><span class="caption-text">User interface screen for a Threshold plot
+in the Precipitation app</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id19">
+<span id="apps-thresh-plot-precip"></span><img alt="../_images/apps_thresh_plot_precip.png" src="../_images/apps_thresh_plot_precip.png" />
+<p class="caption"><span class="caption-number">Figure 3.19 </span><span class="caption-text">Threshold plot in the Precipitation
+app produced from selections in <a class="reference internal" href="#apps-interface-thresh-precip"><span class="std std-numref">Figure 3.18</span></a></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id20">
+<span id="apps-gridscale-plot-precip"></span><img alt="../_images/apps_gridscale_plot_precip.png" src="../_images/apps_gridscale_plot_precip.png" />
+<p class="caption"><span class="caption-number">Figure 3.20 </span><span class="caption-text">GridScale plot in the Precipitation app
+produced from selections in <a class="reference internal" href="#apps-interface-thresh-precip"><span class="std std-numref">Figure 3.18</span></a></span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="4. METexpress System Requirements, Installation and Support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="interface.html" class="btn btn-neutral" title="2. General Interface Description" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
