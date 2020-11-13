@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script determines the the models for a databse that has been updated as a result
+This script determines the models for a database that has been updated as a result
 of an mv_load operation. It then passes a list of database model pairs to the selective_update_metadata
 scripts that are associated with each METexpress app.
 
@@ -22,12 +22,14 @@ create table mats_metadata.run_stats
   run_finish_time datetime    null,
   database_name   varchar(50) null,
   status          varchar(30)
-) comment 'keep track of matadata_upate stats - status one of started|waiting|succeeded|failed';
+) comment 'keep track of metadata_update stats - status one of started|waiting|succeeded|failed';
 
 and the retrieved run_finish_time will be the initial epoch, 0 i.e. Thu, 1 Jan 1970 00:00:00 GMT
 
-2) The script will retrieve the slective_update classes from the metexpress module using inspect, and the apprefs and associated data_table_patterns
-(there may be more than one in a comma seperated list) from getters in each update class, and populate the mats_metadata.metadata_script_info table.
+2) The script will retrieve the selective_update classes from the metexpress module
+using inspect, and the apprefs and associated data_table_patterns
+(there may be more than one in a comma separated list) from getters in each update class,
+and populate the mats_metadata.metadata_script_info table.
 SQL:
 select * from mats_metadata.metadata_script_info
 If the table does not exist it will be created by
@@ -43,17 +45,17 @@ INSERT INTO mats_metadata.metadata_script_info (apref, data_table_pattern_list, 
     VALUES ('met-surface', False);
 INSERT INTO mats_metadata.metadata_script_info (apref, data_table_pattern_list, app_reference, running)
     VALUES ('met-upperair', False);
-NOTE: The import and inspect mechanisms will depend on the metexpress module being updated whenever a new app and metadata script
-is added.
+NOTE: The import and inspect mechanisms will depend on the metexpress module being updated
+whenever a new app and metadata script are added.
 3) The script will use the run_finish_time, the data_table_pattern, and the mv_database_name to form a multiselect query
 that will return the models within the given database that were updated since the run_finish_time.
 i.e. select distinct data_file_id from mv_gsd.data_file where load_date > "2018-11-13 13:02:00"
 ...the mv_gsd would be the database name and the  2018-11-13 13:02:00 would be the last run_finish_time...
 would retrieve the data_file_ids modified since the run_finish_time,
 and select stat_header_id from mv_gsd.line_data_sl1l2 where data_file_id in data_file_ids
-... would retireve the stat_headers associated with those data_file_ids,
+... would retrieve the stat_headers associated with those data_file_ids,
 and select distinct model from mv_gsd.stat_header where stat_header_id in (the list of stat_header_ids)
-... would retirve the affected model names.
+... would retrieve the affected model names.
 i.e.
 select distinct model
 from mv_gsd.stat_header
@@ -65,20 +67,20 @@ where stat_header_id in (select stat_header_id
 ...the mv_gsd would be the database name, the line_data_sl1l2 is the data_table_pattern,
     and the  2018-11-13 20:05:00 would be the last run_finish_time.
 This query should return the models that have been modified in the given database
-since the last time the metadata update was sucessfully run.
+since the last time the metadata update was successfully run.
 The script will create a list of db, model pairs that can be used with each of the selective_update_MExxxx scripts.
 
 5) The script will then call each of the selective_update_MExxxx scripts (from mats_metadata.metadata_script_info table)
 with the usage: ./selective_update_MEanomalycor.py path_to_file.cnf refresh_metadata_url db.model1,db.model2,...
-The refresh_metadata_url is derived from the metexpress_base_url and the appref. e.g. https://metexpress.nws.noaa.gov/met-upperair/refreshMetadata
-7) Finally the script will update the run_stats table with the completion time and status. Staus 0 success, 1 error.
+The refresh_metadata_url is derived from the metexpress_base_url and the appref.
+e.g. https://metexpress.nws.noaa.gov/met-upperair/refreshMetadata
+7) Finally the script will update the run_stats table with the completion time and status. Status 0 success, 1 error.
 
 Author: Randy Pierce
 """
 
 #  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
-from __future__ import print_function
 
 import getopt
 import importlib
@@ -94,7 +96,7 @@ import pymysql
 import metexpress
 
 
-class metadatUpdate:
+class metadataUpdate:
     def __init__(self, options):
         print('MATS METADATA UPDATE FOR MET OPTIONS: ' + str(options))
         self.metadata_database = options['metadata_database']
@@ -173,7 +175,8 @@ class metadatUpdate:
             try:
                 me_updater = elem['updater']
                 me_updater_app_reference = elem['app_reference']
-                #        options are like {'cnf_file': cnf_file, , 'mv_database':mvdb, 'data_table_stat_header_id_limit': data_table_stat_header_id_limit,
+                #        options are like {'cnf_file': cnf_file, , 'mv_database':mvdb,
+                #        'data_table_stat_header_id_limit': data_table_stat_header_id_limit,
                 #         "metadata_database": metadata_database, "metexpress_base_url": metexpress_base_url}
                 #         "data_table_stat_header_id_limit" is are optional
                 me_options = {'cnf_file': self.cnf_file, 'mvdb': self.db_name,
@@ -187,12 +190,14 @@ class metadatUpdate:
         print('MATS METADATA UPDATE FOR MET END: ' + str(datetime.utcnow()))
 
     # process 'c' style options - using getopt - usage describes options
-    # options like {'cnf_file':cnf_file, 'mv_database_name:mv_database_name', 'metexpress_base_url':metexpress_base_url, ['app_reference':app_reference, 'metadataDatabaseName':metadataDatabaseName]}
+    # options like {'cnf_file':cnf_file, 'mv_database_name:mv_database_name',
+    # 'metexpress_base_url':metexpress_base_url,
+    # ['app_reference':app_reference, 'metadataDatabaseName':metadataDatabaseName]}
     # cnf_file - mysql cnf file,
     # mv_database_name - name of mv_something,
     # metexpress_base_url - metexpress address
     # app_reference - is optional and is used to limit running to only one app
-    # (m)ats_metadata_database_name] allows to override the default metadata database name (mats_metadata) with something
+    # (m)ats_metadata_database_name] override the default metadata database name (mats_metadata) with something
     @classmethod
     def get_options(self, args):
         usage = ["(c)= cnf_file", "(d)= db_name", "(u)= metexpress_base_url",
@@ -234,8 +239,8 @@ class metadatUpdate:
 
 
 if __name__ == '__main__':
-    options = metadatUpdate.get_options(sys.argv)
-    metadataUpdater = metadatUpdate(options)
+    options = metadataUpdate.get_options(sys.argv)
+    metadataUpdater = metadataUpdate(options)
     print("prior metadata table counts")
     metadataUpdater._print_table_counts()
     metadataUpdater._reconcile_metadata_script_info_table()
