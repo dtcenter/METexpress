@@ -13,6 +13,7 @@ Author: Molly B Smith, heavily modified by Randy Pierce
 
 #  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
+from __future__ import print_function
 
 import sys
 from datetime import datetime
@@ -58,28 +59,22 @@ class MEAnomalycor(ParentMetadata):
         # helper function for sorting thresholds
         if elem[0] == '>':
             try:
-                return 1000 + int(float(elem[1:])) * 10000
+                return 10000 + int(float(elem[1:]))
             except ValueError:
-                try:
-                    return 1000.0001 + int(float(elem[2:])) * 10000
-                except ValueError:
-                    return 3000
+                return 10000
         elif elem[0] == '<':
             try:
-                return 4000 + int(float(elem[1:])) * 10000
+                return 20000 + int(float(elem[1:]))
             except ValueError:
-                try:
-                    return 4000.0001 + int(float(elem[2:])) * 10000
-                except ValueError:
-                    return 6000
+                return 20000
         elif elem[0] == '=':
             try:
-                return 7000 + int(float(elem[1:])) * 10000
+                return 30000 + int(float(elem[1:]))
             except ValueError:
                 try:
-                    return 70000.0001 + int(float(elem[2:])) * 10000
+                    return 30000 + int(float(elem[2:]))
                 except ValueError:
-                    return 90000
+                    return 30000
         else:
             try:
                 return int(float(elem))
