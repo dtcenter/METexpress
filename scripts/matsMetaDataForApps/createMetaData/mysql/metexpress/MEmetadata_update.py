@@ -106,6 +106,9 @@ class metadataUpdate:
         self.metexpress_base_url = options['metexpress_base_url']
         self.app_reference = options['app_reference'] if options['app_reference'] is not None else None
         if not os.path.isfile(self.cnf_file):
+            # close connection before raising error
+            self.cursor.close()
+            self.cnx.close()
             raise ValueError("cnf file: " + self.cnf_file + " is not a file - exiting")
 
         self.cnx = pymysql.connect(read_default_file=self.cnf_file,
@@ -125,11 +128,21 @@ class metadataUpdate:
 
         if self.db_name is not None:
             if not self.db_name.startswith('mv_'):
+                # close connection before raising error
+                self.cursor.close()
+                self.cnx.close()
                 raise ValueError('Supplied database ' + self.db_name + 'does not start with mv_  - exiting')
             self.cursor.execute('show databases like "' + self.db_name + '";')
             self.cnx.commit()
             if self.cursor.rowcount == 0:
+                # close connection before raising error
+                self.cursor.close()
+                self.cnx.close()
                 raise ValueError("database: " + self.db_name + " does not exist - exiting")
+
+        # close connection
+        self.cursor.close()
+        self.cnx.close()
 
     def _print_table_counts(self):
         cnx1 = pymysql.connect(read_default_file=self.cnf_file, cursorclass=pymysql.cursors.DictCursor)
@@ -152,6 +165,11 @@ class metadataUpdate:
             cursor2.execute("select count(*) from " + table + ";")
             cnx2.commit()
             print("table " + table + ":" + str(cursor2.fetchone()['count(*)']))
+        # close connections
+        cursor1.close()
+        cnx1.close()
+        cursor2.close()
+        cnx2.close()
 
     def _reconcile_metadata_script_info_table(self):
         updaterList = []

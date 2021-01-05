@@ -78,7 +78,7 @@ class ParentMetadata:
                 int(state)) + '" where app_reference = "' + self.get_app_reference() + '";'
             runningCursor.execute(update_cmd)
             runningCnx.commit()
-        runningCursor.close
+        runningCursor.close()
         runningCnx.close()
 
     def update_status(self, status, utc_start, utc_end):
@@ -226,11 +226,6 @@ class ParentMetadata:
         print(self.script_name + " - Publishing metadata")
         self.cursor.execute("use  " + self.metadata_database + ";")
 
-        devcnx = pymysql.connect(read_default_file=self.cnf_file)
-        devcnx.autocommit = True
-        devcursor = devcnx.cursor(pymysql.cursors.DictCursor)
-        devcursor.execute("use  " + self.metadata_database + ";")
-
         # use a tmp table to hold the new metadata then do a rename of the tmp metadata to the metadata
         # have to do all this extra checking to avoid warnings from mysql
         # apparently if exists doesn't quite work right
@@ -277,6 +272,9 @@ class ParentMetadata:
         self.cnx.commit()
         # finally reconcile the groups
         self.reconcile_groups(groups_table)
+        # close connection
+        self.cursor.close()
+        self.cnx.close()
 
     @abstractmethod
     def strip_level(self, elem):
