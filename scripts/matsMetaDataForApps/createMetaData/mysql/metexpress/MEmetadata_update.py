@@ -190,21 +190,21 @@ class metadataUpdate:
     def update(self):
         print('MATS METADATA UPDATE FOR MET START: ' + str(datetime.utcnow()))
         for elem in self.updater_list:
-            # try:
-            me_updater = elem['updater']
-            me_updater_app_reference = elem['app_reference']
-            #        options are like {'cnf_file': cnf_file, , 'mv_database':mvdb,
-            #        'data_table_stat_header_id_limit': data_table_stat_header_id_limit,
-            #         "metadata_database": metadata_database, "metexpress_base_url": metexpress_base_url}
-            #         "data_table_stat_header_id_limit" is are optional
-            me_options = {'cnf_file': self.cnf_file, 'mvdb': self.db_name,
-                          'metadata_database': self.metadata_database,
-                          'metexpress_base_url': self.metexpress_base_url}
-            if self.app_reference is None or self.app_reference == me_updater_app_reference:
-                me_updater.main()
-            # except Exception as uex:
-            #     print("Exception running update for: " + elem['app_reference'] + " : " + str(uex))
-            #     traceback.print_stack()
+            try:
+                me_updater = elem['updater']
+                me_updater_app_reference = elem['app_reference']
+                #        options are like {'cnf_file': cnf_file, , 'mv_database':mvdb,
+                #        'data_table_stat_header_id_limit': data_table_stat_header_id_limit,
+                #         "metadata_database": metadata_database, "metexpress_base_url": metexpress_base_url}
+                #         "data_table_stat_header_id_limit" is are optional
+                me_options = {'cnf_file': self.cnf_file, 'mvdb': self.db_name,
+                              'metadata_database': self.metadata_database,
+                              'metexpress_base_url': self.metexpress_base_url}
+                if self.app_reference is None or self.app_reference == me_updater_app_reference:
+                    me_updater.main()
+            except Exception as uex:
+                print("Exception running update for: " + elem['app_reference'] + " : " + str(uex))
+                traceback.print_stack()
         print('MATS METADATA UPDATE FOR MET END: ' + str(datetime.utcnow()))
 
     # process 'c' style options - using getopt - usage describes options
