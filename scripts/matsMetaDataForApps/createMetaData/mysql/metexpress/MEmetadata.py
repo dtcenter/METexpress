@@ -216,7 +216,7 @@ class ParentMetadata:
                         **gd))
                 self.cnx.commit()
 
-    def deploy_dev_table_and_close_cnx(self):
+    def deploy_dev_table(self):
         groups_table = self.database_groups
         metadata_table = self.metadata_table
         metadata_table_tmp = metadata_table + "_tmp"
@@ -272,9 +272,6 @@ class ParentMetadata:
         self.cnx.commit()
         # finally reconcile the groups
         self.reconcile_groups(groups_table)
-        # close connection
-        self.cursor.close()
-        self.cnx.close()
 
     @abstractmethod
     def strip_level(self, elem):
@@ -621,7 +618,7 @@ class ParentMetadata:
         self.update_status("started", self.utc_start, str(datetime.utcnow()))
         try:
             self.build_stats_object()
-            self.deploy_dev_table_and_close_cnx()
+            self.deploy_dev_table()
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
@@ -638,4 +635,7 @@ class ParentMetadata:
         finally:
             self.set_running(False)
             self.update_status("succeeded", self.utc_start, str(datetime.utcnow()))
+        # close connection
+        self.cursor.close()
+        self.cnx.close()
         return self.dbs_too_large
