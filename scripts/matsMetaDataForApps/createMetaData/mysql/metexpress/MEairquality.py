@@ -26,6 +26,7 @@ class MEAirquality(ParentMetadata):
         options['appSpecificWhereClause'] = 'fcst_var regexp "^OZ|^PM25|^PMTF|^PDM|^PMAVE"'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_vl1l2",    # used for vector stats on all plot types
+                                      "line_data_vcnt",     # used for vector calculations on all plot types
                                       "line_data_ctc"]      # used for ctc stats on all plot types
         options['metadata_table'] = "airquality_mats_metadata"
         options['app_reference'] = "met-airquality"
