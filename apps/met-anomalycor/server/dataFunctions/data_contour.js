@@ -45,17 +45,34 @@ dataContour = function (plotParams, plotFunction) {
     var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
     var modelClause = "and h.model = '" + model + "'";
     var selectorPlotType = curve['plot-type'];
-    var statistic = "ACC";
-    var statLineType = 'scalar';
-    var lineDataType = 'line_data_sal1l2';
-    var statisticClause = "count(ld.fabar) as n, " +
-        "avg(ld.fabar) as sub_fbar, " +
-        "avg(ld.oabar) as sub_obar, " +
-        "avg(ld.ffabar) as sub_ffbar, " +
-        "avg(ld.ooabar) as sub_oobar, " +
-        "avg(ld.foabar) as sub_fobar, " +
-        "avg(ld.total) as sub_total, " +
-        "avg(ld.fcst_valid_beg) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
+    var statistic = curve['statistic'];
+    var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+    var statLineType = statisticOptionsMap[statistic][0];
+    var statisticClause = "";
+    var lineDataType = "";
+    if (statLineType === 'scalar') {
+        statisticClause = "count(ld.fabar) as n, " +
+            "avg(ld.fabar) as sub_fbar, " +
+            "avg(ld.oabar) as sub_obar, " +
+            "avg(ld.ffabar) as sub_ffbar, " +
+            "avg(ld.ooabar) as sub_oobar, " +
+            "avg(ld.foabar) as sub_fobar, " +
+            "avg(ld.total) as sub_total, ";
+        lineDataType = "line_data_sal1l2";
+    } else if (statLineType === 'vector') {
+        statisticClause = "count(ld.ufabar) as n, " +
+            "avg(ld.ufabar) as sub_ufbar, " +
+            "avg(ld.vfabar) as sub_vfbar, " +
+            "avg(ld.uoabar) as sub_uobar, " +
+            "avg(ld.voabar) as sub_vobar, " +
+            "avg(ld.uvfoabar) as sub_uvfobar, " +
+            "avg(ld.uvffabar) as sub_uvffbar, " +
+            "avg(ld.uvooabar) as sub_uvoobar, " +
+            "avg(ld.total) as sub_total, ";
+        lineDataType = "line_data_val1l2";
+    }
+    statisticClause = statisticClause +
+        "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
         "count(h.fcst_lev) as sub_levs";      // this is just a dummy for the common python function -- the actual value doesn't matter
     var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
     var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
@@ -135,7 +152,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     // For contours, this functions as the colorbar label.
-    curve['unitKey'] = variable + " " + statistic;
+    curve['unitKey'] = "ACC";
 
     var d;
     // this is a database driven curve, not a difference curve

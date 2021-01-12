@@ -46,12 +46,27 @@ dataValidTime = function (plotParams, plotFunction) {
         var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
-        var statistic = "ACC";
-        var statLineType = 'scalar';
-        var lineDataType = 'line_data_sal1l2';
-        var statisticClause = "avg(ld.fabar) as fbar, " +
+        var statistic = curve['statistic'];
+        var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+        var statLineType = statisticOptionsMap[statistic][0];
+        var statisticClause = "";
+        var lineDataType = "";
+        if (statLineType === 'scalar') {
+            statisticClause = "avg(ld.fabar) as fbar, " +
                 "avg(ld.oabar) as obar, " +
-                "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_sal1l2";
+        } else if (statLineType === 'vector') {
+            statisticClause = "avg(ld.ufabar) as ufbar, " +
+                "avg(ld.vfabar) as vfbar, " +
+                "avg(ld.uoabar) as uobar, " +
+                "avg(ld.voabar) as vobar, " +
+                "group_concat(distinct ld.ufabar, ';', ld.vfabar, ';', ld.uoabar, ';', ld.voabar, ';', " +
+                "ld.uvfoabar, ';', ld.uvffabar, ';', ld.uvooabar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_val1l2";
+        }
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
         regions = Array.isArray(regions) ? regions : [regions];
@@ -113,7 +128,7 @@ dataValidTime = function (plotParams, plotFunction) {
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
         // The axis number is assigned to the axisKeySet value, which is the axisKey.
-        var axisKey = variable + " " + statistic;
+        var axisKey = "ACC";
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
         var d;

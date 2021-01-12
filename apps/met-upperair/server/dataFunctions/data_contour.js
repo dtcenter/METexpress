@@ -59,7 +59,7 @@ dataContour = function (plotParams, plotFunction) {
             "avg(ld.fobar) as sub_fobar, " +
             "avg(ld.total) as sub_total, ";
         lineDataType = "line_data_sl1l2";
-        } else if (statLineType === 'vector') {
+    } else if (statLineType === 'vector') {
         statisticClause = "count(ld.ufbar) as n, " +
             "avg(ld.ufbar) as sub_ufbar, " +
             "avg(ld.vfbar) as sub_vfbar, " +

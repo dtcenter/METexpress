@@ -210,7 +210,8 @@ const doCurveParams = function () {
     }
 
     const masterPlotTypeOptionsMap = {
-        "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
+        "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.profile, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
+        "line_data_vl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.profile, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
     };
 
     const masterStatsOptionsMap = {
@@ -227,6 +228,30 @@ const doCurveParams = function () {
             'Observed stdev': ['scalar'],
             'Error stdev': ['scalar'],
             'Pearson correlation': ['scalar']
+        },
+        "line_data_vl1l2": {
+            'Forecast length of mean wind vector': ['vector'],
+            'Observed length of mean wind vector': ['vector'],
+            'Forecast length - observed length of mean wind vector': ['vector'],
+            'abs(Forecast length - observed length of mean wind vector)': ['vector'],
+            'Length of forecast - observed mean wind vector': ['vector'],
+            'abs(Length of forecast - observed mean wind vector)': ['vector'],
+            'Forecast direction of mean wind vector': ['vector'],
+            'Observed direction of mean wind vector': ['vector'],
+            'Angle between mean forecast and mean observed wind vectors': ['vector'],
+            'abs(Angle between mean forecast and mean observed wind vectors)': ['vector'],
+            'Direction of forecast - observed mean wind vector': ['vector'],
+            'abs(Direction of forecast - observed mean wind vector)': ['vector'],
+            'RMSE of forecast wind vector length': ['vector'],
+            'RMSE of observed wind vector length': ['vector'],
+            'Vector wind speed MSVE': ['vector'],
+            'Vector wind speed RMSVE': ['vector'],
+            'Forecast mean of wind vector length': ['vector'],
+            'Observed mean of wind vector length': ['vector'],
+            'Forecast mean - observed mean of wind vector length': ['vector'],
+            'abs(Forecast mean - observed mean of wind vector length)': ['vector'],
+            'Forecast stdev of wind vector length': ['vector'],
+            'Observed stdev of wind vector length': ['vector'],
         }
     };
 

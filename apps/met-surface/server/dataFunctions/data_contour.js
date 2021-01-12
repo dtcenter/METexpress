@@ -59,14 +59,19 @@ dataContour = function (plotParams, plotFunction) {
             "avg(ld.fobar) as sub_fobar, " +
             "avg(ld.total) as sub_total, ";
         lineDataType = "line_data_sl1l2";
-    } else if (statLineType === 'ctc') {
-        statisticClause = "count(ld.fy_oy) as n, " +
-            "avg(ld.fy_oy) as sub_fy_oy, " +
-            "avg(ld.fy_on) as sub_fy_on, " +
-            "avg(ld.fn_oy) as sub_fn_oy, " +
-            "avg(ld.fn_on) as sub_fn_on, " +
+    } else if (statLineType === 'vector') {
+        statisticClause = "count(ld.ufbar) as n, " +
+            "avg(ld.ufbar) as sub_ufbar, " +
+            "avg(ld.vfbar) as sub_vfbar, " +
+            "avg(ld.uobar) as sub_uobar, " +
+            "avg(ld.vobar) as sub_vobar, " +
+            "avg(ld.uvfobar) as sub_uvfobar, " +
+            "avg(ld.uvffbar) as sub_uvffbar, " +
+            "avg(ld.uvoobar) as sub_uvoobar, " +
+            "avg(ld.f_speed_bar) as sub_f_speed_bar, " +
+            "avg(ld.o_speed_bar) as sub_o_speed_bar, " +
             "avg(ld.total) as sub_total, ";
-        lineDataType = "line_data_ctc";
+        lineDataType = "line_data_vl1l2";
     }
     statisticClause = statisticClause +
         "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
@@ -146,7 +151,15 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     // For contours, this functions as the colorbar label.
-    curve['unitKey'] = variable + " " + statistic;
+    var unitKey;
+    if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
+        unitKey = "Vector wind speed";
+    } else if (statistic.includes("vector") && (statistic.includes("direction")  || statistic.includes("angle")  || statistic.includes("Direction")  || statistic.includes("Angle"))){
+        unitKey = "Vector wind direction";
+    } else {
+        unitKey = variable + " " + statistic;
+    }
+    curve['unitKey'] = unitKey;
 
     var d;
     // this is a database driven curve, not a difference curve
