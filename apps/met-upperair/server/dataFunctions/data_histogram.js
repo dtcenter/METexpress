@@ -56,12 +56,18 @@ dataHistogram = function (plotParams, plotFunction) {
         if (statLineType === 'scalar') {
             statisticClause = "avg(ld.fbar) as fbar, " +
                 "avg(ld.obar) as obar, " +
-                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_sl1l2";
-        } else if (statLineType === 'ctc') {
-            statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-            lineDataType = "line_data_ctc";
+        } else if (statLineType === 'vector') {
+            statisticClause = "avg(ld.ufbar) as ufbar, " +
+                "avg(ld.vfbar) as vfbar, " +
+                "avg(ld.uobar) as uobar, " +
+                "avg(ld.vobar) as vobar, " +
+                "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
+                "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_vl1l2";
         }
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
