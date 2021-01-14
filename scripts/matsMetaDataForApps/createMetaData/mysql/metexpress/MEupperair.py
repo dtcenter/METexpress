@@ -24,7 +24,8 @@ class MEUpperair(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = 'fcst_lev like "P%"'
-        options['line_data_table'] = ["line_data_sl1l2"]    # used for scalar stats on all plot types
+        options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
+                                      "line_data_vl1l2"]     # used for vector stats on all plot types
         options['metadata_table'] = "upperair_mats_metadata"
         options['app_reference'] = "met-upperair"
         options['database_groups'] = "upperair_database_groups"
