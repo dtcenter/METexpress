@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 
 import pymysql
 
-#  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
+#  Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
 # set to False to limit print output
 debug = False
 

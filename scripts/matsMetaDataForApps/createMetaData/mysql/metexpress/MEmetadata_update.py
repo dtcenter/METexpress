@@ -79,7 +79,7 @@ e.g. https://metexpress.nws.noaa.gov/met-upperair/refreshMetadata
 Author: Randy Pierce
 """
 
-#  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
+#  Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
 
 import getopt
