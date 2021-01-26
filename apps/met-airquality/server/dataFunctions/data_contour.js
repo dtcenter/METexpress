@@ -82,7 +82,7 @@ dataContour = function (plotParams, plotFunction) {
         regionsClause = "and h.vx_mask IN(" + regions + ")";
     }
     var variable = curve['variable'];
-    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
     var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
     var threshold = curve['threshold'];
     var thresholdClause = "";
@@ -109,7 +109,7 @@ dataContour = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][variable];
             fcsts = fcsts.map(function (fl) {
                 return forecastValueMap[fl];
             }).join(',');
@@ -135,7 +135,7 @@ dataContour = function (plotParams, plotFunction) {
         levelsClause = "and h.fcst_lev IN(" + levels + ")";
     } else {
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
         levels = levels.map(function (l) {
             return "'" + l + "'";
         }).join(',');

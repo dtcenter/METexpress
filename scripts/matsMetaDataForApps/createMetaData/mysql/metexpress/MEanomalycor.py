@@ -24,8 +24,7 @@ class MEAnomalycor(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
-        options['line_data_table'] = ["line_data_sal1l2",    # used for scalar stats on all plot types
-                                      "line_data_val1l2"]    # used for vector stats on all plot types
+        options['line_data_table'] = ["line_data_sal1l2"]    # used for scalar stats on all plot types
         options['metadata_table'] = "anomalycor_mats_metadata"
         options['app_reference'] = "met-anomalycor"
         options['database_groups'] = "anomalycor_database_groups"

@@ -54,14 +54,10 @@ dataDieOff = function (plotParams, plotFunction) {
         if (statLineType === 'scalar') {
             statisticClause = "avg(ld.fbar) as fbar, " +
                 "avg(ld.obar) as obar, " +
-                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_sl1l2";
         } else if (statLineType === 'ctc') {
             statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "avg(ld.fy_on) as fy_on, " +
-                "avg(ld.fn_oy) as fn_oy, " +
-                "avg(ld.fn_on) as fn_on, " +
                 "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_ctc";
         }
@@ -76,7 +72,7 @@ dataDieOff = function (plotParams, plotFunction) {
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var threshold = curve['threshold'];
         var thresholdClause = "";
@@ -121,7 +117,7 @@ dataDieOff = function (plotParams, plotFunction) {
             levelsClause = "and h.fcst_lev IN(" + levels + ")";
         } else {
             // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
             levels = levels.map(function (l) {
                 return "'" + l + "'";
             }).join(',');

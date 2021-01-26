@@ -59,19 +59,14 @@ dataContour = function (plotParams, plotFunction) {
             "avg(ld.fobar) as sub_fobar, " +
             "avg(ld.total) as sub_total, ";
         lineDataType = "line_data_sl1l2";
-    } else if (statLineType === 'vector') {
-        statisticClause = "count(ld.ufbar) as n, " +
-            "avg(ld.ufbar) as sub_ufbar, " +
-            "avg(ld.vfbar) as sub_vfbar, " +
-            "avg(ld.uobar) as sub_uobar, " +
-            "avg(ld.vobar) as sub_vobar, " +
-            "avg(ld.uvfobar) as sub_uvfobar, " +
-            "avg(ld.uvffbar) as sub_uvffbar, " +
-            "avg(ld.uvoobar) as sub_uvoobar, " +
-            "avg(ld.f_speed_bar) as sub_f_speed_bar, " +
-            "avg(ld.o_speed_bar) as sub_o_speed_bar, " +
+    } else if (statLineType === 'ctc') {
+        statisticClause = "count(ld.fy_oy) as n, " +
+            "avg(ld.fy_oy) as sub_fy_oy, " +
+            "avg(ld.fy_on) as sub_fy_on, " +
+            "avg(ld.fn_oy) as sub_fn_oy, " +
+            "avg(ld.fn_on) as sub_fn_on, " +
             "avg(ld.total) as sub_total, ";
-        lineDataType = "line_data_vl1l2";
+        lineDataType = "line_data_ctc";
     }
     statisticClause = statisticClause +
         "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
@@ -87,7 +82,7 @@ dataContour = function (plotParams, plotFunction) {
         regionsClause = "and h.vx_mask IN(" + regions + ")";
     }
     var variable = curve['variable'];
-    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
     var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
     var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
     var validTimeClause = "";
@@ -109,7 +104,7 @@ dataContour = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][variable];
             fcsts = fcsts.map(function (fl) {
                 return forecastValueMap[fl];
             }).join(',');
@@ -135,7 +130,7 @@ dataContour = function (plotParams, plotFunction) {
         levelsClause = "and h.fcst_lev IN(" + levels + ")";
     } else {
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
         levels = levels.map(function (l) {
             return "'" + l + "'";
         }).join(',');
@@ -151,15 +146,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     // For contours, this functions as the colorbar label.
-    var unitKey;
-    if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
-        unitKey = "Vector wind speed";
-    } else if (statistic.includes("vector") && (statistic.includes("direction")  || statistic.includes("angle")  || statistic.includes("Direction")  || statistic.includes("Angle"))){
-        unitKey = "Vector wind direction";
-    } else {
-        unitKey = variable + " " + statistic;
-    }
-    curve['unitKey'] = unitKey;
+    curve['unitKey'] = variable + " " + statistic;
 
     var d;
     // this is a database driven curve, not a difference curve

@@ -210,8 +210,7 @@ const doCurveParams = function () {
     }
 
     const masterPlotTypeOptionsMap = {
-        "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.profile, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
-        "line_data_vl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.profile, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
+        "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
     };
 
     const masterStatsOptionsMap = {
@@ -228,30 +227,6 @@ const doCurveParams = function () {
             'Observed stdev': ['scalar'],
             'Error stdev': ['scalar'],
             'Pearson correlation': ['scalar']
-        },
-        "line_data_vl1l2": {
-            'Forecast length of mean wind vector': ['vector'],
-            'Observed length of mean wind vector': ['vector'],
-            'Forecast length - observed length of mean wind vector': ['vector'],
-            'abs(Forecast length - observed length of mean wind vector)': ['vector'],
-            'Length of forecast - observed mean wind vector': ['vector'],
-            'abs(Length of forecast - observed mean wind vector)': ['vector'],
-            'Forecast direction of mean wind vector': ['vector'],
-            'Observed direction of mean wind vector': ['vector'],
-            'Angle between mean forecast and mean observed wind vectors': ['vector'],
-            'abs(Angle between mean forecast and mean observed wind vectors)': ['vector'],
-            'Direction of forecast - observed mean wind vector': ['vector'],
-            'abs(Direction of forecast - observed mean wind vector)': ['vector'],
-            'RMSE of forecast wind vector length': ['vector'],
-            'RMSE of observed wind vector length': ['vector'],
-            'Vector wind speed MSVE': ['vector'],
-            'Vector wind speed RMSVE': ['vector'],
-            'Forecast mean of wind vector length': ['vector'],
-            'Observed mean of wind vector length': ['vector'],
-            'Forecast mean - observed mean of wind vector length': ['vector'],
-            'abs(Forecast mean - observed mean of wind vector length)': ['vector'],
-            'Forecast stdev of wind vector length': ['vector'],
-            'Observed stdev of wind vector length': ['vector'],
         }
     };
 
@@ -398,7 +373,7 @@ const doCurveParams = function () {
                     if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
                         // if we haven't encountered this plot type for this model yet, initialize everything
                         statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
-                        variableOptionsMap[thisDB][model][thisPlotType] = {};
+                        variableOptionsMap[thisDB][model][thisPlotType] = [];
                         variableValuesMap[thisDB][model][thisPlotType] = {};
                         regionModelOptionsMap[thisDB][model][thisPlotType] = {};
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
@@ -410,41 +385,27 @@ const doCurveParams = function () {
                         statisticOptionsMap[thisDB][model][thisPlotType] = {...statisticOptionsMap[thisDB][model][thisPlotType], ...validStats};
                     }
                     const jsonFriendlyVariable = variable.replace(/\./g, "_");
-                    const theseValidStats = Object.keys(validStats);
-                    var thisValidStat;
-                    for (var vsidx = 0; vsidx < theseValidStats.length; vsidx++) {
-                        thisValidStat = theseValidStats[vsidx];
-                        if (variableValuesMap[thisDB][model][thisPlotType][thisValidStat] === undefined) {
-                            // if we haven't encountered this variable for this stat yet, initialize everything
-                            variableOptionsMap[thisDB][model][thisPlotType][thisValidStat] = [];
-                            variableValuesMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                            forecastValueOptionsMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStat] = {};
-                        }
-                        if (variableValuesMap[thisDB][model][thisPlotType][jsonFriendlyVariable] === undefined) {
-                            // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
-                            variableOptionsMap[thisDB][model][thisPlotType][thisValidStat].push(jsonFriendlyVariable);
-                            variableValuesMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = variable;
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = regionsArr;
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = forecastLengthArr;
-                            forecastValueOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = lengthValMap;
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = levelsArr;
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = descrsArr;
-                        } else {
-                            // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = _.union(regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable], regionsArr);
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable], forecastLengthArr);
-                            forecastValueOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = {...forecastValueOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable], ...lengthValMap};
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable], levelsArr);
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][thisValidStat][jsonFriendlyVariable], descrsArr);
-                        }
+                    if (variableValuesMap[thisDB][model][thisPlotType][jsonFriendlyVariable] === undefined) {
+                        // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
+                        variableOptionsMap[thisDB][model][thisPlotType].push(jsonFriendlyVariable);
+                        variableValuesMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = variable;
+                        regionModelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = regionsArr;
+                        forecastLengthOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = forecastLengthArr;
+                        forecastValueOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = lengthValMap;
+                        levelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = levelsArr;
+                        descrOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = descrsArr;
+                    } else {
+                        // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                        regionModelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = _.union(regionModelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable], regionsArr);
+                        forecastLengthOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable], forecastLengthArr);
+                        forecastValueOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = {...forecastValueOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable], ...lengthValMap};
+                        levelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable], levelsArr);
+                        descrOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][jsonFriendlyVariable], descrsArr);
                     }
                 }
             }
         }
+
     } catch (err) {
         console.log(err.message);
     }
@@ -472,7 +433,6 @@ const doCurveParams = function () {
     var defaultDB = dbGroupMap[defaultGroup][0];
     var defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
-    var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
 
     if (matsCollections.CurveParams.findOne({name: 'group'}) == undefined) {
         matsCollections.CurveParams.insert(
@@ -584,7 +544,7 @@ const doCurveParams = function () {
                 optionsMap: plotTypeOptionsMap,
                 options: plotTypeOptionsMap[defaultDB][defaultModel],
                 superiorNames: ['database', 'data-source'],
-                dependentNames: ["statistic"],
+                dependentNames: ["statistic", "variable"],
                 controlButtonCovered: false,
                 default: defaultPlotType,
                 unique: false,
@@ -614,11 +574,11 @@ const doCurveParams = function () {
                 name: 'region',
                 type: matsTypes.InputTypes.select,
                 optionsMap: regionModelOptionsMap,
-                options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]],
+                superiorNames: ['database', 'data-source', 'plot-type', 'variable'],
                 controlButtonCovered: true,
                 unique: false,
-                default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]][0],
+                default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]][0],
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
@@ -633,8 +593,8 @@ const doCurveParams = function () {
             matsCollections.CurveParams.update({name: 'region'}, {
                 $set: {
                     optionsMap: regionModelOptionsMap,
-                    options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
-                    default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]][0]
+                    options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]],
+                    default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]][0]
                 }
             });
         }
@@ -648,10 +608,9 @@ const doCurveParams = function () {
                 optionsMap: statisticOptionsMap,
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["variable"],
                 controlButtonCovered: true,
                 unique: false,
-                default: defaultStatistic,
+                default: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0],
                 controlButtonVisibility: 'block',
                 displayOrder: 2,
                 displayPriority: 1,
@@ -666,7 +625,7 @@ const doCurveParams = function () {
                 $set: {
                     optionsMap: statisticOptionsMap,
                     options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
-                    default: defaultStatistic
+                    default: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]
                 }
             });
         }
@@ -678,13 +637,13 @@ const doCurveParams = function () {
                 name: 'variable',
                 type: matsTypes.InputTypes.select,
                 optionsMap: variableOptionsMap,
-                options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic],
+                options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType],
                 valuesMap: variableValuesMap,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic'],
+                superiorNames: ['database', 'data-source', 'plot-type'],
                 dependentNames: ["region", "forecast-length", "level", "description"],
                 controlButtonCovered: true,
                 unique: false,
-                default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][0],
+                default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][0],
                 controlButtonVisibility: 'block',
                 displayOrder: 3,
                 displayPriority: 1,
@@ -700,14 +659,14 @@ const doCurveParams = function () {
                 $set: {
                     optionsMap: variableOptionsMap,
                     valuesMap: variableValuesMap,
-                    options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic],
-                    default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][0]
+                    options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType],
+                    default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][0]
                 }
             });
         }
     }
 
-    const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]];
+    const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]];
     var fhrDefault;
     if (fhrOptions.indexOf("24") !== -1) {
         fhrDefault = "24";
@@ -725,7 +684,7 @@ const doCurveParams = function () {
                 optionsMap: forecastLengthOptionsMap,
                 options: fhrOptions,
                 valuesMap: forecastValueOptionsMap,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'variable'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
@@ -848,7 +807,7 @@ const doCurveParams = function () {
             });
     }
 
-    const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]];
+    const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]];
     var levelDefault;
     if (levelOptions.indexOf("P500") !== -1) {
         levelDefault = "P500";
@@ -865,7 +824,7 @@ const doCurveParams = function () {
                 type: matsTypes.InputTypes.select,
                 optionsMap: levelOptionsMap,
                 options: levelOptions,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'variable'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
@@ -898,8 +857,8 @@ const doCurveParams = function () {
                 name: 'description',
                 type: matsTypes.InputTypes.select,
                 optionsMap: descrOptionsMap,
-                options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]],
+                superiorNames: ['database', 'data-source', 'plot-type', 'variable'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
@@ -918,8 +877,8 @@ const doCurveParams = function () {
             matsCollections.CurveParams.update({name: 'description'}, {
                 $set: {
                     optionsMap: descrOptionsMap,
-                    options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
-                    default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]][0]
+                    options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]],
+                    default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType])[0]][0]
                 }
             });
         }
@@ -1235,14 +1194,7 @@ Meteor.startup(function () {
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['surface_mats_metadata', 'surface_database_groups']);
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-surface',
-            title: "MET Surface",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-surface', title: "MET Surface", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }
