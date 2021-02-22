@@ -226,13 +226,6 @@ const doCurveParams = function () {
         }
     };
 
-    var curve_params_with_dependents = [];
-    var curve_params_with_superiors = [];
-    var curve_params_with_no_dependents = [];
-    var curve_params_with_no_superiors = [];
-    var curve_params_with_no_dependents_and_either_hide_or_disable = [];
-    var curve_params_with_no_dependents_and_no_hide_or_disable = [];
-
     var myDBs = [];
     var dbGroupMap = {};
     var modelOptionsMap = {};
@@ -985,14 +978,6 @@ const doCurveParams = function () {
             });
         }
     }
-
-    // store information about various curve parameters
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_dependents": curve_params_with_dependents});
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_superiors": curve_params_with_superiors});
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_no_dependents": curve_params_with_no_dependents});
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_no_superiors": curve_params_with_no_superiors});
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_no_dependents_and_either_hide_or_disable": curve_params_with_no_dependents_and_either_hide_or_disable});
-    matsCollections.CurveParamsInfo.insert({"curve_params_with_no_dependents_and_no_hide_or_disable": curve_params_with_no_dependents_and_no_hide_or_disable});
 };
 
 /* The format of a curveTextPattern is an array of arrays, each sub array has
