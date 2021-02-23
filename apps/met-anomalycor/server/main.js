@@ -314,7 +314,7 @@ const doCurveParams = function () {
                 var forecastLengths = rows[i].fcst_orig;
                 var forecastLengthArr = forecastLengths.split(',').map(Function.prototype.call, String.prototype.trim);
                 for (var j = 0; j < forecastLengthArr.length; j++) {
-                    forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]/g, "");
+                    forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]|0000/g, "");
                 }
 
                 var levels = rows[i].levels;
@@ -416,7 +416,7 @@ const doCurveParams = function () {
     }
 
     var defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsl_gfs_g2g") !== -1) ? "mv_gsl_gfs_g2g" : dbGroupMap[defaultGroup][0];
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsl_global_g2g") !== -1) ? "mv_gsl_global_g2g" : dbGroupMap[defaultGroup][0];
     var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GFS") !== -1) ? "GFS" : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
@@ -555,17 +555,27 @@ const doCurveParams = function () {
         }
     }
 
+    const regionOptions = regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]];
+    var regionDefault;
+    if (regionOptions.indexOf("FULL") !== -1) {
+        regionDefault = "FULL";
+    } else if (regionOptions.indexOf("CONUS") !== -1) {
+        regionDefault = "CONUS";
+    } else {
+        regionDefault = regionOptions[0];
+    }
+
     if (matsCollections["region"].findOne({name: 'region'}) == undefined) {
         matsCollections["region"].insert(
             {
                 name: 'region',
                 type: matsTypes.InputTypes.select,
                 optionsMap: regionModelOptionsMap,
-                options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
+                options: regionOptions,
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
                 controlButtonCovered: true,
                 unique: false,
-                default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]][0],
+                default: regionDefault,
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
@@ -580,8 +590,8 @@ const doCurveParams = function () {
             matsCollections["region"].update({name: 'region'}, {
                 $set: {
                     optionsMap: regionModelOptionsMap,
-                    options: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]],
-                    default: regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatistic])[0]][0]
+                    options: regionOptions,
+                    default: regionDefault
                 }
             });
         }
