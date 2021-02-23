@@ -415,9 +415,9 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("PROD") !== -1) ? "PROD" : Object.keys(dbGroupMap)[0];
-    var defaultDB = dbGroupMap[defaultGroup][0];
-    var defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsl_gfs_g2g") !== -1) ? "mv_gsl_gfs_g2g" : dbGroupMap[defaultGroup][0];
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GFS") !== -1) ? "GFS" : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
 
@@ -536,7 +536,7 @@ const doCurveParams = function () {
                 default: defaultPlotType,
                 unique: false,
                 controlButtonVisibility: 'none',
-                displayOrder: 3,
+                displayOrder: 4,
                 displayPriority: 1,
                 displayGroup: 2
             });
@@ -719,7 +719,7 @@ const doCurveParams = function () {
                 default: Object.keys(dieoffOptionsMap)[0],
                 controlButtonVisibility: 'block',
                 controlButtonText: 'dieoff type',
-                displayOrder: 1,
+                displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 5
             });
@@ -737,7 +737,7 @@ const doCurveParams = function () {
                 default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
                 controlButtonText: "valid utc hour",
-                displayOrder: 2,
+                displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 5,
                 multiple: true
@@ -755,7 +755,7 @@ const doCurveParams = function () {
                 default: 12,
                 controlButtonVisibility: 'block',
                 controlButtonText: "utc cycle init hour",
-                displayOrder: 3,
+                displayOrder: 4,
                 displayPriority: 1,
                 displayGroup: 5,
             });
