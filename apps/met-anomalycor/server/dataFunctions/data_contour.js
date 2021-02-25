@@ -85,7 +85,7 @@ dataContour = function (plotParams, plotFunction) {
         regionsClause = "and h.vx_mask IN(" + regions + ")";
     }
     var variable = curve['variable'];
-    var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+    var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
     var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
     var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
     var validTimeClause = "";
@@ -132,7 +132,7 @@ dataContour = function (plotParams, plotFunction) {
         levelsClause = "and h.fcst_lev IN(" + levels + ")";
     } else {
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+        levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
         if (xAxisParam === 'Pressure level' || yAxisParam === 'Pressure level') {
             levels = levels.filter(lev => lev.toString().startsWith("P"));  // remove anything that isn't a pressure level for this plot.
         }

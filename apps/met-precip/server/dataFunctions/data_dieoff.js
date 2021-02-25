@@ -43,11 +43,11 @@ dataDieOff = function (plotParams, plotFunction) {
         var diffFrom = curve.diffFrom;
         var label = curve['label'];
         var database = curve['database'];
-        var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+        var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
         var statistic = curve['statistic'];
-        var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+        var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
         var lineDataType = "";
@@ -84,7 +84,7 @@ dataDieOff = function (plotParams, plotFunction) {
             scaleClause = "and h.interp_pnts = '" + scale + "'";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+        var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var truth = curve['truth'];
         var truthClause = "";
@@ -101,7 +101,7 @@ dataDieOff = function (plotParams, plotFunction) {
         var utcCycleStart;
         var utcCycleStartClause = "";
         var dieoffTypeStr = curve['dieoff-type'];
-        var dieoffTypeOptionsMap = matsCollections.CurveParams.findOne({name: 'dieoff-type'}, {optionsMap: 1})['optionsMap'];
+        var dieoffTypeOptionsMap = matsCollections['dieoff-type'].findOne({name: 'dieoff-type'}, {optionsMap: 1})['optionsMap'];
         var dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
         var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
         var fromSecs = dateRange.fromSeconds;
@@ -134,7 +134,7 @@ dataDieOff = function (plotParams, plotFunction) {
             levelsClause = "and h.fcst_lev IN(" + levels + ")";
         } else {
             // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+            levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
             levels = levels.map(function (l) {
                 return "'" + l + "'";
             }).join(',');

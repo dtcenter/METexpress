@@ -39,14 +39,14 @@ dataContour = function (plotParams, plotFunction) {
     var label = curve['label'];
     var xAxisParam = curve['x-axis-parameter'];
     var yAxisParam = curve['y-axis-parameter'];
-    var xValClause = matsCollections.CurveParams.findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
-    var yValClause = matsCollections.CurveParams.findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
+    var xValClause = matsCollections['x-axis-parameter'].findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
+    var yValClause = matsCollections['y-axis-parameter'].findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
     var database = curve['database'];
-    var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+    var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
     var modelClause = "and h.model = '" + model + "'";
     var selectorPlotType = curve['plot-type'];
     var statistic = curve['statistic'];
-    var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+    var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
     var statLineType = statisticOptionsMap[statistic][0];
     var statisticClause = "";
     var lineDataType = "";
@@ -92,7 +92,7 @@ dataContour = function (plotParams, plotFunction) {
         scaleClause = "and h.interp_pnts = '" + scale + "'";
     }
     var variable = curve['variable'];
-    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+    var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
     var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
     var truth = curve['truth'];
     var truthClause = "";
@@ -124,11 +124,10 @@ dataContour = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
             fcsts = fcsts.map(function (fl) {
-                return forecastValueMap[fl];
+                return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN (" + fcsts + ")";
+            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
     }
     var dateString = "";
@@ -150,7 +149,7 @@ dataContour = function (plotParams, plotFunction) {
         levelsClause = "and h.fcst_lev IN(" + levels + ")";
     } else {
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+        levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
         levels = levels.map(function (l) {
             return "'" + l + "'";
         }).join(',');

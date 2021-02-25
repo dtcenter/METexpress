@@ -43,11 +43,11 @@ dataProfile = function (plotParams, plotFunction) {
         var diffFrom = curve.diffFrom;
         var label = curve['label'];
         var database = curve['database'];
-        var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+        var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
         var statistic = curve['statistic'];
-        var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+        var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
         var lineDataType = "";
@@ -78,7 +78,7 @@ dataProfile = function (plotParams, plotFunction) {
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic];
+        var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
@@ -97,18 +97,17 @@ dataProfile = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
             fcsts = fcsts.map(function (fl) {
-                return forecastValueMap[fl];
+                return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN (" + fcsts + ")";
+            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
         var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
         var fromSecs = dateRange.fromSeconds;
         var toSecs = dateRange.toSeconds;
         var dateClause = "and unix_timestamp(ld.fcst_valid_beg) >= " + fromSecs + " and unix_timestamp(ld.fcst_valid_beg) <= " + toSecs;
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        var levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statistic][variable];
+        var levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
         levels = levels.map(function (l) {
             return "'" + l + "'";
         }).join(',');
