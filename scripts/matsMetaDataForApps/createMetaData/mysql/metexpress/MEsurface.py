@@ -24,7 +24,8 @@ class MESurface(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = 'fcst_lev in ("MSL", "SFC", "SFC=", "Z0", "Z2", "Z10", "H0", "H2", "H10", "L0") and fcst_var not regexp "^OZ|^PM25|^PMTF|^PDM|^PMAVE"'
-        options['line_data_table'] = ["line_data_sl1l2"]    # used for scalar stats on all plot types
+        options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
+                                      "line_data_vl1l2"]     # used for vector stats on all plot types
         options['metadata_table'] = "surface_mats_metadata"
         options['app_reference'] = "met-surface"
         options['database_groups'] = "surface_database_groups"
