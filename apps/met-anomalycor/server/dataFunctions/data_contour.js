@@ -39,23 +39,40 @@ dataContour = function (plotParams, plotFunction) {
     var label = curve['label'];
     var xAxisParam = curve['x-axis-parameter'];
     var yAxisParam = curve['y-axis-parameter'];
-    var xValClause = matsCollections.CurveParams.findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
-    var yValClause = matsCollections.CurveParams.findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
+    var xValClause = matsCollections['x-axis-parameter'].findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
+    var yValClause = matsCollections['y-axis-parameter'].findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
     var database = curve['database'];
-    var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+    var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
     var modelClause = "and h.model = '" + model + "'";
     var selectorPlotType = curve['plot-type'];
-    var statistic = "ACC";
-    var statLineType = 'scalar';
-    var lineDataType = 'line_data_sal1l2';
-    var statisticClause = "count(ld.fabar) as n, " +
-        "avg(ld.fabar) as sub_fbar, " +
-        "avg(ld.oabar) as sub_obar, " +
-        "avg(ld.ffabar) as sub_ffbar, " +
-        "avg(ld.ooabar) as sub_oobar, " +
-        "avg(ld.foabar) as sub_fobar, " +
-        "avg(ld.total) as sub_total, " +
-        "avg(ld.fcst_valid_beg) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
+    var statistic = curve['statistic'];
+    var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+    var statLineType = statisticOptionsMap[statistic][0];
+    var statisticClause = "";
+    var lineDataType = "";
+    if (statLineType === 'scalar') {
+        statisticClause = "count(ld.fabar) as n, " +
+            "avg(ld.fabar) as sub_fbar, " +
+            "avg(ld.oabar) as sub_obar, " +
+            "avg(ld.ffabar) as sub_ffbar, " +
+            "avg(ld.ooabar) as sub_oobar, " +
+            "avg(ld.foabar) as sub_fobar, " +
+            "avg(ld.total) as sub_total, ";
+        lineDataType = "line_data_sal1l2";
+    } else if (statLineType === 'vector') {
+        statisticClause = "count(ld.ufabar) as n, " +
+            "avg(ld.ufabar) as sub_ufbar, " +
+            "avg(ld.vfabar) as sub_vfbar, " +
+            "avg(ld.uoabar) as sub_uobar, " +
+            "avg(ld.voabar) as sub_vobar, " +
+            "avg(ld.uvfoabar) as sub_uvfobar, " +
+            "avg(ld.uvffabar) as sub_uvffbar, " +
+            "avg(ld.uvooabar) as sub_uvoobar, " +
+            "avg(ld.total) as sub_total, ";
+        lineDataType = "line_data_val1l2";
+    }
+    statisticClause = statisticClause +
+        "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
         "count(h.fcst_lev) as sub_levs";      // this is just a dummy for the common python function -- the actual value doesn't matter
     var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
     var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
@@ -68,7 +85,7 @@ dataContour = function (plotParams, plotFunction) {
         regionsClause = "and h.vx_mask IN(" + regions + ")";
     }
     var variable = curve['variable'];
-    var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
+    var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
     var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
     var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
     var validTimeClause = "";
@@ -90,11 +107,10 @@ dataContour = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][variable];
             fcsts = fcsts.map(function (fl) {
-                return forecastValueMap[fl];
+                return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN (" + fcsts + ")";
+            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
     }
     var dateString = "";
@@ -116,7 +132,7 @@ dataContour = function (plotParams, plotFunction) {
         levelsClause = "and h.fcst_lev IN(" + levels + ")";
     } else {
         // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-        levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
+        levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
         if (xAxisParam === 'Pressure level' || yAxisParam === 'Pressure level') {
             levels = levels.filter(lev => lev.toString().startsWith("P"));  // remove anything that isn't a pressure level for this plot.
         }
@@ -135,7 +151,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     // For contours, this functions as the colorbar label.
-    curve['unitKey'] = variable + " " + statistic;
+    curve['unitKey'] = "ACC";
 
     var d;
     // this is a database driven curve, not a difference curve
