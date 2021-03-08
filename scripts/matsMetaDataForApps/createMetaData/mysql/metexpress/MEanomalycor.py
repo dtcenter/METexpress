@@ -11,9 +11,8 @@ Usage: ["(c)nf_file=", "[(m)ats_metadata_database_name]",
 Author: Molly B Smith, heavily modified by Randy Pierce
 """
 
-#  Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
+#  Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
 
-from __future__ import print_function
 
 import sys
 from datetime import datetime
@@ -25,7 +24,8 @@ class MEAnomalycor(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
-        options['line_data_table'] = ["line_data_sal1l2"]    # used for scalar stats on all plot types
+        options['line_data_table'] = ["line_data_sal1l2",    # used for scalar stats on all plot types
+                                      "line_data_val1l2"]    # used for vector stats on all plot types
         options['metadata_table'] = "anomalycor_mats_metadata"
         options['app_reference'] = "met-anomalycor"
         options['database_groups'] = "anomalycor_database_groups"
@@ -59,22 +59,28 @@ class MEAnomalycor(ParentMetadata):
         # helper function for sorting thresholds
         if elem[0] == '>':
             try:
-                return 10000 + int(float(elem[1:]))
-            except ValueError:
-                return 10000
-        elif elem[0] == '<':
-            try:
-                return 20000 + int(float(elem[1:]))
-            except ValueError:
-                return 20000
-        elif elem[0] == '=':
-            try:
-                return 30000 + int(float(elem[1:]))
+                return 1000 + int(float(elem[1:])) * 10000
             except ValueError:
                 try:
-                    return 30000 + int(float(elem[2:]))
+                    return 1000.0001 + int(float(elem[2:])) * 10000
                 except ValueError:
-                    return 30000
+                    return 3000
+        elif elem[0] == '<':
+            try:
+                return 4000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 4000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 6000
+        elif elem[0] == '=':
+            try:
+                return 7000 + int(float(elem[1:])) * 10000
+            except ValueError:
+                try:
+                    return 70000.0001 + int(float(elem[2:])) * 10000
+                except ValueError:
+                    return 90000
         else:
             try:
                 return int(float(elem))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Colorado State University and Regents of the University of Colorado. All rights reserved.
+ * Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
  */
 
 import {matsCollections} from 'meteor/randyp:mats-common';
@@ -45,22 +45,25 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         var diffFrom = curve.diffFrom;
         var label = curve['label'];
         var database = curve['database'];
-        var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+        var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
-        var statistic = histogramType;    // histogramType isn't really a statistic, but it's a good way to pass the type of histogram to the query function.
-        var statLineType = 'ensemble';
+        var statistic;
+        var statLineType = 'precalculated';
         var lineDataType;
         var lineDataSuffix;
         if (histogramType === 'Rank Histogram') {
             lineDataType = 'line_data_rhist';
             lineDataSuffix = 'rank';
+            statistic = "rhist";
         } else if (histogramType === 'Probability Integral Transform Histogram') {
             lineDataType = 'line_data_phist';
             lineDataSuffix = 'bin';
+            statistic = "phist";
         } else if (histogramType === 'Relative Position Histogram') {
             lineDataType = 'line_data_relp';
             lineDataSuffix = 'ens';
+            statistic = "relp";
         } else {
             throw new Error("Unrecognized histogram type.");
         }
@@ -77,7 +80,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
+        var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
@@ -96,11 +99,10 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][variable];
             fcsts = fcsts.map(function (fl) {
-                return forecastValueMap[fl];
+                return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN (" + fcsts + ")";
+            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
         var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
         var fromSecs = dateRange.fromSeconds;
@@ -117,7 +119,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             levelsClause = "and h.fcst_lev IN(" + levels + ")";
         } else {
             // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
+            levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
             levels = levels.map(function (l) {
                 return "'" + l + "'";
             }).join(',');
@@ -182,7 +184,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             var finishMoment;
             try {
                 // send the query statement to the query function
-                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
+                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, histogramType, appParams, vts);
                 finishMoment = moment();
                 dataRequests["data retrieval (query) time - " + label] = {
                     begin: startMoment.format(),
@@ -205,7 +207,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
                     // this is an error returned by the mysql database
                     error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
                     if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
+                        throw new Error("INFO:  The statistic/variable combination [" + histogramType + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
                     } else {
                         throw new Error(error);
                     }
