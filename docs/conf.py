@@ -49,8 +49,19 @@ extensions = ['sphinx.ext.autodoc','sphinx.ext.intersphinx']
 #  sphinx 2.4.2+ and rst2pdf packages are required
 if os.environ.get('METEXPRESS_DOC_PDF'):
     extensions.append('rst2pdf.pdfbuilder')
-        
-# used for generating PDF
+
+
+# settings for ReadTheDocs PDF creation
+latex_engine = 'pdflatex'
+latex_documents = [ 'Users_Guide/index',
+        f'METexpress_Users_Guide_v{version}'
+        'METexpress User\' s Guide',
+        'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
+        'manual',
+        True ]
+latex_logo = '_static/press_logo_2019_09.png'
+
+# used for generating PDF built locally
 pdf_documents = [('Users_Guide/index',
                   f'METexpress_Users_Guide_v{version}',
                   'METexpress User\'s Guide', 
