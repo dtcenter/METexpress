@@ -59,7 +59,7 @@ latex_documents = [ 'Users_Guide/index',
         'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
         'manual',
         'True' ]
-latex_logo = '_static/metexpress_logo_2019_09.png'
+latex_logo = 'docs/_static/metexpress_logo_2019_09.png'
 
 # used for generating PDF built locally
 pdf_documents = [('Users_Guide/index',
