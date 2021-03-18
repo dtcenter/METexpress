@@ -63,13 +63,14 @@ with a package manager.
 * Run the scripts from the command line. Pass in the path
   to the .my.cnf file and the URL where METexpress will be available as
   arguments. The URL <metexpress_url> is the actual access URL of the
-  metexpress installation, e.g. `https://yourdomain/metexpress`. The URL is
+  metexpress installation, e.g. **https://yourdomain/metexpress**. The URL is
   necessary so that the metadata scripts can inform METexpress that new
   metadata is available.  For example:
 
   .. code-block:: none
 		    
-    /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>
+    /home/metexpress/scripts/metexpress/MEmetadata_update.py 
+        -c /home/metexpress/.my.cnf -u <metexpress_url>
     
 * The scripts should generate the necessary metadata and store it in the
   database. 
