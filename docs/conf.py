@@ -58,7 +58,7 @@ latex_documents = [ 'Users_Guide/index',
         'METexpress User\' s Guide',
         'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
         'manual',
-        True ]
+        'True' ]
 latex_logo = '_static/press_logo_2019_09.png'
 
 # used for generating PDF built locally
