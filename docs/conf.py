@@ -60,7 +60,7 @@ latex_engine = 'pdflatex'
 #        'manual',
 #        'True' ]
 #latex_logo = 'docs/_static/metexpress_logo_2019_09.png'
-latex_toplevel_sectioning = 'section'
+latex_toplevel_sectioning = 'chapter'
 
 
 # used for generating PDF built locally
