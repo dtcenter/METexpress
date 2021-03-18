@@ -130,7 +130,7 @@ class ParentMetadata:
         self.cursor.execute('show tables like "{}_dev";'.format(self.metadata_table))
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
-            create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(self.metadata_table)
+            create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
 
@@ -342,6 +342,7 @@ class ParentMetadata:
             get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
                             'group_concat(distinct fcst_lev separator "$") as levels, ' \
                             'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
+                            'group_concat(distinct interp_mthd) as interp_mthds, ' \
                             'group_concat(distinct interp_pnts) as gridpoints, ' \
                             'group_concat(distinct obtype) as truths, ' \
                             'group_concat(distinct descr) as descrs from stat_header' \
@@ -362,6 +363,8 @@ class ParentMetadata:
                         sorted(model_var_line['levels'].split('$'), key=self.strip_level)
                     per_mvdb[mvdb][model][line_data_table][fvar]['trshs'] = \
                         sorted(model_var_line['trshs'].split('$'), key=self.strip_trsh)
+                    per_mvdb[mvdb][model][line_data_table][fvar]['interp_mthds'] = \
+                        sorted(model_var_line['interp_mthds'].split(','), key=int)
                     per_mvdb[mvdb][model][line_data_table][fvar]['gridpoints'] = \
                         sorted(model_var_line['gridpoints'].split(','), key=int)
                     per_mvdb[mvdb][model][line_data_table][fvar]['truths'] = \
@@ -501,7 +504,7 @@ class ParentMetadata:
             mindate = raw_metadata['mindate']
             maxdate = raw_metadata['maxdate']
             display_text = model.replace('.', '_')
-            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, levels, fcst_lens, trshs, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(self.metadata_table)
+            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, levels, fcst_lens, trshs, interp_mthds, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(self.metadata_table)
             qd.append(mvdb)
             qd.append(model)
             qd.append(display_text)
@@ -511,6 +514,7 @@ class ParentMetadata:
             qd.append(str(raw_metadata['levels']))
             qd.append(str(raw_metadata['fcsts']))
             qd.append(str(raw_metadata['trshs']))
+            qd.append(str(raw_metadata['interp_mthds']))
             qd.append(str(raw_metadata['gridpoints']))
             qd.append(str(raw_metadata['truths']))
             qd.append(str(raw_metadata['descrs']))
