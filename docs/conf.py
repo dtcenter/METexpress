@@ -60,7 +60,7 @@ latex_documents = [ 'Users_Guide/index',
         'manual',
         'True' ]
 latex_logo = '_static/met_express_logo_2019_09.png'
-#latex_toplevel_sectioning = 'part'
+latex_toplevel_sectioning = 'section'
 
 
 # used for generating PDF built locally
