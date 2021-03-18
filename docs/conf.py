@@ -59,7 +59,7 @@ latex_engine = 'pdflatex'
 #        'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
 #        'manual',
 #        'True' ]
-latex_logo = 'docs/_static/met_express_logo_2019_09.png'
+latex_logo = '_static/met_express_logo_2019_09.png'
 #latex_toplevel_sectioning = 'part'
 
 
