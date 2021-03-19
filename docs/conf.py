@@ -53,7 +53,7 @@ if os.environ.get('METEXPRESS_DOC_PDF'):
 
 # settings for ReadTheDocs PDF creation
 latex_engine = 'pdflatex'
-#latex_theme = 'manual'
+latex_theme = 'manual'
 #latex_documents = [ 'Users_Guide/index',
 #        'METexpress_Users_Guide_v{version}.pdf'
 #        'METexpress User\' s Guide',
@@ -61,8 +61,8 @@ latex_engine = 'pdflatex'
 #        'manual',
 #        'True' ]
 latex_logo = '_static/met_express_logo_2019_09.png'
-#latex_toplevel_sectioning = 'section'
-#latex_show_pagerefs = 'True'
+latex_toplevel_sectioning = 'section'
+latex_show_pagerefs = 'True'
 master_doc = 'Users_Guide/index'
 
 latex_elements = {
@@ -74,7 +74,7 @@ latex_elements = {
     'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
                          
     'figure_align':'htbp',
-    'pointsize': '11pt',
+    'pointsize': '12pt',
     
     
     'sphinxsetup': \
@@ -93,7 +93,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'main.tex', 'METexpress User\'s Guide\\v{version}',
+    (master_doc, 'master.tex', 'METexpress User\'s Guide\\v{version}',
                  'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 'report')
     ]
     
