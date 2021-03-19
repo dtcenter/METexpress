@@ -94,7 +94,7 @@ latex_documents = [
     (master_doc, 
         'users_guide.tex', 
         'METexpress User\'s Guide',
-        'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 
+        'B. Strong, R. Pierce, M. B. Smith, V. Hagerty, J. Hamilton', 
         'manual')
     ]
     
