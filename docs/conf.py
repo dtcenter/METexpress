@@ -92,7 +92,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'master.tex', 'METexpress User\'s Guide',
+    (master_doc, 'master.tex', 'METexpress User\'s Guide v4.0',
                  'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 'report')
     ]
     
