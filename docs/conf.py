@@ -76,7 +76,6 @@ latex_elements = {
     'figure_align':'htbp',
     'pointsize': '12pt',
     
-    
     'sphinxsetup': \
         'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
         verbatimwithframe=true, \
