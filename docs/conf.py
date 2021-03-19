@@ -54,7 +54,7 @@ if os.environ.get('METEXPRESS_DOC_PDF'):
 # settings for ReadTheDocs PDF creation
 latex_engine = 'pdflatex'
 latex_theme = 'manual'
-latex_logo = '_static/met_express_logo_2019_09.png'
+latex_logo = os.path.join('_static','met_express_logo_2019_09.png')
 latex_show_pagerefs = 'True'
 master_doc = 'Users_Guide/index'
 
@@ -67,7 +67,7 @@ latex_elements = {
     'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
                          
     'figure_align':'htbp',
-    'pointsize': '12pt',
+    'pointsize': '11pt',
     
     'sphinxsetup': \
         'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
