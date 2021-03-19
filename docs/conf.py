@@ -53,14 +53,16 @@ if os.environ.get('METEXPRESS_DOC_PDF'):
 
 # settings for ReadTheDocs PDF creation
 latex_engine = 'pdflatex'
-latex_documents = [ 'Users_Guide/index',
-        'METexpress_Users_Guide_v{version}'
-        'METexpress User\' s Guide',
-        'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
-        'manual',
-        'True' ]
+latex_theme = 'manual'
+#latex_documents = [ 'Users_Guide/index',
+#        'METexpress_Users_Guide_v{version}.pdf'
+#        'METexpress User\' s Guide',
+#        'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
+#        'manual',
+#        'True' ]
 latex_logo = '_static/met_express_logo_2019_09.png'
-latex_toplevel_sectioning = 'section'
+#latex_toplevel_sectioning = 'section'
+latex_show_pagerefs = 'True'
 
 
 # used for generating PDF built locally
