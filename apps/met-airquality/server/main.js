@@ -313,7 +313,7 @@ const doCurveParams = function () {
             scaleOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_lens,fcst_orig,trshs,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
