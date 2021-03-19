@@ -68,13 +68,13 @@ master_doc = 'Users_Guide/index'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    'papersize': 'a4paper',
-    'releasename':" ",
+    'papersize': 'letterpaper',
+    'releasename':"{version}",
     'fncychap': '\\usepackage{fncychap}',
     'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
                          
     'figure_align':'htbp',
-    'pointsize': '10pt',
+    'pointsize': '11pt',
     
     
     'sphinxsetup': \
@@ -84,17 +84,17 @@ latex_elements = {
         HeaderFamily=\\rmfamily\\bfseries, \
         InnerLinkColor={rgb}{0,0,1}, \
         OuterLinkColor={rgb}{0,0,1}',
-
-        'tableofcontents':' ',
-
+      'maketitle': '\\sphinxmaketitle'  
+      'tableofcontents': 'sphinxtableofcontentsi',
+      'printindex': '\\printindex'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'main.tex', 'Sphinx format for Latex and HTML',
-                 'Meher Krishna Patel', 'report')
+    (master_doc, 'main.tex', 'METexpress User\'s Guide',
+                 'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 'report')
     ]
     
     
