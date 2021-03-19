@@ -97,7 +97,6 @@ latex_documents = [
                  'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 'report')
     ]
     
-    
 # used for generating PDF built locally
 pdf_documents = [('Users_Guide/index',
                   f'METexpress_Users_Guide_v{version}',
