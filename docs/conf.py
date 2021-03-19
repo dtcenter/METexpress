@@ -52,7 +52,7 @@ if os.environ.get('METEXPRESS_DOC_PDF'):
 
 
 # settings for ReadTheDocs PDF creation
-#latex_engine = 'pdflatex'
+latex_engine = 'pdflatex'
 #latex_theme = 'manual'
 #latex_documents = [ 'Users_Guide/index',
 #        'METexpress_Users_Guide_v{version}.pdf'
@@ -60,12 +60,44 @@ if os.environ.get('METEXPRESS_DOC_PDF'):
 #        'Bonny String\\Randy Rierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\',
 #        'manual',
 #        'True' ]
-#latex_logo = '_static/met_express_logo_2019_09.png'
+latex_logo = '_static/met_express_logo_2019_09.png'
 #latex_toplevel_sectioning = 'section'
 #latex_show_pagerefs = 'True'
 master_doc = 'Users_Guide/index'
 
+latex_elements = {
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    'papersize': 'a4paper',
+    'releasename':" ",
+    'fncychap': '\\usepackage{fncychap}',
+    'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
+                         
+    'figure_align':'htbp',
+    'pointsize': '10pt',
+    
+    
+    'sphinxsetup': \
+        'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
+        verbatimwithframe=true, \
+        TitleColor={rgb}{0,0,0}, \
+        HeaderFamily=\\rmfamily\\bfseries, \
+        InnerLinkColor={rgb}{0,0,1}, \
+        OuterLinkColor={rgb}{0,0,1}',
 
+        'tableofcontents':' ',
+
+}
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title,
+#  author, documentclass [howto, manual, or own class]).
+latex_documents = [
+    (master_doc, 'main.tex', 'Sphinx format for Latex and HTML',
+                 'Meher Krishna Patel', 'report')
+    ]
+    
+    
 # used for generating PDF built locally
 pdf_documents = [('Users_Guide/index',
                   f'METexpress_Users_Guide_v{version}',
