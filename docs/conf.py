@@ -64,7 +64,7 @@ latex_elements = {
     'papersize': 'letterpaper',
     'releasename':"{version}",
     'fncychap': '\\usepackage{fncychap}',
-    'fontpkg': '\\usepackage{helvet,amsmath,amsfonts,amssymb,amsthm}',
+    'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
                          
     'figure_align':'htbp',
     'pointsize': '11pt',
@@ -88,7 +88,7 @@ latex_documents = [
     (master_doc, 
         'users_guide.tex', 
         'METexpress User\'s Guide',
-        'Bonny Strong, Randy Pierce, Molly B. Smith, Venita Hagerty, Jeff Hamilton', 
+        'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\', 
         'manual')
     ]
     
