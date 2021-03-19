@@ -68,6 +68,12 @@ latex_elements = {
                          
     'figure_align':'htbp',
     'pointsize': '11pt',
+ 
+    'preamble': r'''
+        \usepackage{charter}
+        \usepackage[defaultsans]{lato}
+        \usepackage{inconsolata}
+     ''',
     
     'sphinxsetup': \
         'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
