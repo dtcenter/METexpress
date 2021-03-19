@@ -64,7 +64,7 @@ latex_elements = {
     'papersize': 'letterpaper',
     'releasename':"{version}",
     'fncychap': '\\usepackage{fncychap}',
-    'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
+    'fontpkg': '\\usepackage{helvet,amsmath,amsfonts,amssymb,amsthm}',
                          
     'figure_align':'htbp',
     'pointsize': '11pt',
