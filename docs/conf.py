@@ -84,8 +84,8 @@ latex_elements = {
         HeaderFamily=\\rmfamily\\bfseries, \
         InnerLinkColor={rgb}{0,0,1}, \
         OuterLinkColor={rgb}{0,0,1}',
-      'maketitle': '\\sphinxmaketitle'  
-      'tableofcontents': 'sphinxtableofcontentsi',
+      'maketitle': '\\sphinxmaketitle',  
+      'tableofcontents': '\\sphinxtableofcontents',
       'printindex': '\\printindex'
 }
 
