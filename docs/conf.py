@@ -61,7 +61,7 @@ latex_theme = 'manual'
 #        'manual',
 #        'True' ]
 latex_logo = '_static/met_express_logo_2019_09.png'
-latex_toplevel_sectioning = 'section'
+#latex_toplevel_sectioning = 'section'
 latex_show_pagerefs = 'True'
 master_doc = 'Users_Guide/index'
 
