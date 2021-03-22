@@ -52,7 +52,7 @@ to be provided:
   * The domainName of the deployment server.  
   
     * METexpress uses this to configure its own proxy service that fronts the apps.
-      
+  |    
   * Fully qualified proxy hostname, defaulting to the domainName
   
     * The deployment might be behind a redirection proxy with
@@ -65,11 +65,11 @@ to be provided:
       * In this case the fully qualified proxy hostname is
 	www.esrl.noaa.gov and the proxy_prefix_path needs to be set
 	to "/gsd/mats".
-
+  | 
   * Proxy redirection path
   
     * This allows a different path other than "/"
-
+  | 
 * Database credentials:
   Building on the architecture of MATS, METexpress has a
   construct for a database role.  Within METexpress the only role
