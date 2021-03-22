@@ -107,13 +107,13 @@ Histograms have a number of additional selectors that control their appearance:
   options to customize their x-axis bins:
 
   * Default bins
-
+  |  
   * Set number of bins
   
      * Has sub-selector “Number of bins”
   |   
   * Make zero a bin bound
-
+  |  
   * Choose a bin bound
 
      * Has sub-selector “Bin pivot value”

@@ -46,23 +46,22 @@ http://dtcenter.ucar.edu/met/metviewer/doc/install.html
 needs to be run which will give a prompt to provide information specific
 to the installation. Below is a list of information that usually needs
 to be provided:
-
 * Networking information: 
   
   * The domainName of the deployment server.  
   
-    * METexpress uses this to configure its own proxy service that fronts the apps.
+     * METexpress uses this to configure its own proxy service that fronts the apps.
   |    
   * Fully qualified proxy hostname, defaulting to the domainName
   
-    * The deployment might be behind a redirection proxy with
+     * The deployment might be behind a redirection proxy with
       redirection to a different path than what is actually on the host.
       For example, the METexpress server might be deployed on a
       server with an internal URL "https://something.subnet.esrl.noaa.gov"
       and have a landing page location of "/", while the public URL
       is a proxy redirect like "https://www.esrl.noaa.gov/gsd/mats". 
   
-      * In this case the fully qualified proxy hostname is
+        * In this case the fully qualified proxy hostname is
 	www.esrl.noaa.gov and the proxy_prefix_path needs to be set
 	to "/gsd/mats".
   | 
@@ -70,6 +69,7 @@ to be provided:
   
     * This allows a different path other than "/"
   | 
+
 * Database credentials:
   Building on the architecture of MATS, METexpress has a
   construct for a database role.  Within METexpress the only role
@@ -79,7 +79,7 @@ to be provided:
   During the installation, it will be necessary to provide the
   username and password for this user. The username and password for the
   sums_data role is required for each app.
-
+  |  
 * SSL certificates:
   An SSL certificate is required to run METexpress. This is usually
   an externally acquired certificate for the users domain, which users
