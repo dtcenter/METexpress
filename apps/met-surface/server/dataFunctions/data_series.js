@@ -46,23 +46,29 @@ dataSeries = function (plotParams, plotFunction) {
         var diffFrom = curve.diffFrom;
         var label = curve['label'];
         var database = curve['database'];
-        var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+        var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
         var statistic = curve['statistic'];
-        var statisticOptionsMap = matsCollections.CurveParams.findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+        var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
         var lineDataType = "";
         if (statLineType === 'scalar') {
             statisticClause = "avg(ld.fbar) as fbar, " +
                 "avg(ld.obar) as obar, " +
-                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_sl1l2";
-        } else if (statLineType === 'ctc') {
-            statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-            lineDataType = "line_data_ctc";
+        } else if (statLineType === 'vector') {
+            statisticClause = "avg(ld.ufbar) as ufbar, " +
+                "avg(ld.vfbar) as vfbar, " +
+                "avg(ld.uobar) as uobar, " +
+                "avg(ld.vobar) as vobar, " +
+                "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
+                "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_vl1l2";
         }
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
@@ -75,7 +81,7 @@ dataSeries = function (plotParams, plotFunction) {
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
+        var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
@@ -94,11 +100,10 @@ dataSeries = function (plotParams, plotFunction) {
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
         if (fcsts.length > 0) {
-            const forecastValueMap = matsCollections.CurveParams.findOne({name: 'forecast-length'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][variable];
             fcsts = fcsts.map(function (fl) {
-                return forecastValueMap[fl];
+                return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN (" + fcsts + ")";
+            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
         var dateClause = "and unix_timestamp(ld.fcst_valid_beg) >= " + fromSecs + " and unix_timestamp(ld.fcst_valid_beg) <= " + toSecs;
         var levels = (curve['level'] === undefined || curve['level'] === matsTypes.InputTypes.unused) ? [] : curve['level'];
@@ -112,7 +117,7 @@ dataSeries = function (plotParams, plotFunction) {
             levelsClause = "and h.fcst_lev IN(" + levels + ")";
         } else {
             // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
+            levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
             levels = levels.map(function (l) {
                 return "'" + l + "'";
             }).join(',');
@@ -128,13 +133,20 @@ dataSeries = function (plotParams, plotFunction) {
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
         var averageStr = curve['average'];
-        var averageOptionsMap = matsCollections.CurveParams.findOne({name: 'average'}, {optionsMap: 1})['optionsMap'];
+        var averageOptionsMap = matsCollections['average'].findOne({name: 'average'}, {optionsMap: 1})['optionsMap'];
         var average = averageOptionsMap[averageStr][0];
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
         // The axis number is assigned to the axisKeySet value, which is the axisKey.
-        var axisKey = variable + " " + statistic;
+        var axisKey;
+        if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
+            axisKey = "Vector wind speed";
+        } else if (statistic.includes("vector") && (statistic.includes("direction")  || statistic.includes("angle")  || statistic.includes("Direction")  || statistic.includes("Angle"))){
+            axisKey = "Vector wind direction";
+        } else {
+            axisKey = variable + " " + statistic;
+        }
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
         var d;

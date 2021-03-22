@@ -43,15 +43,30 @@ dataDieOff = function (plotParams, plotFunction) {
         var diffFrom = curve.diffFrom;
         var label = curve['label'];
         var database = curve['database'];
-        var model = matsCollections.CurveParams.findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
+        var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
-        var statistic = "ACC";
-        var statLineType = 'scalar';
-        var lineDataType = 'line_data_sal1l2';
-        var statisticClause = "avg(ld.fabar) as fbar, " +
+        var statistic = curve['statistic'];
+        var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
+        var statLineType = statisticOptionsMap[statistic][0];
+        var statisticClause = "";
+        var lineDataType = "";
+        if (statLineType === 'scalar') {
+            statisticClause = "avg(ld.fabar) as fbar, " +
                 "avg(ld.oabar) as obar, " +
-                "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_sal1l2";
+        } else if (statLineType === 'vector') {
+            statisticClause = "avg(ld.ufabar) as ufbar, " +
+                "avg(ld.vfabar) as vfbar, " +
+                "avg(ld.uoabar) as uobar, " +
+                "avg(ld.voabar) as vobar, " +
+                "group_concat(distinct ld.ufabar, ';', ld.vfabar, ';', ld.uoabar, ';', ld.voabar, ';', " +
+                "ld.uvfoabar, ';', ld.uvffabar, ';', ld.uvooabar, ';', " +
+                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_val1l2";
+        }
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
         regions = Array.isArray(regions) ? regions : [regions];
@@ -63,14 +78,14 @@ dataDieOff = function (plotParams, plotFunction) {
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
         var variable = curve['variable'];
-        var variableValuesMap = matsCollections.CurveParams.findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType];
+        var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
         var utcCycleStart;
         var utcCycleStartClause = "";
         var dieoffTypeStr = curve['dieoff-type'];
-        var dieoffTypeOptionsMap = matsCollections.CurveParams.findOne({name: 'dieoff-type'}, {optionsMap: 1})['optionsMap'];
+        var dieoffTypeOptionsMap = matsCollections['dieoff-type'].findOne({name: 'dieoff-type'}, {optionsMap: 1})['optionsMap'];
         var dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
         var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
         var fromSecs = dateRange.fromSeconds;
@@ -103,7 +118,7 @@ dataDieOff = function (plotParams, plotFunction) {
             levelsClause = "and h.fcst_lev IN(" + levels + ")";
         } else {
             // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-            levels = matsCollections.CurveParams.findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][variable];
+            levels = matsCollections['level'].findOne({name: 'level'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType][statLineType][variable];
             levels = levels.map(function (l) {
                 return "'" + l + "'";
             }).join(',');
@@ -122,7 +137,7 @@ dataDieOff = function (plotParams, plotFunction) {
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
         // The axis number is assigned to the axisKeySet value, which is the axisKey.
-        var axisKey = variable + " " + statistic;
+        var axisKey = "ACC";
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
         var d;
