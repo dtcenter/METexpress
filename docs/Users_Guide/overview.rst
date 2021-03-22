@@ -10,13 +10,15 @@ _________________
 
 METexpress is an easy-to-use interface that displays plots of statistical
 verification metrics for the data that a user defines interactively.
-The foundational metrics must first be generated from model output and
-“truth” data (usually observations or gridded model analyses) produced by
-the MET verification tool and the output files produced by MET must then be
-loaded into a MET database.  It allows a model developer to explore metrics
-about their model runs quickly and flexibly without relying on someone else
-producing pre-generated plots.  The developer can slice and dice data in the
-way that best gives them insight into how their model performed.
+Prior to using METexpress, these verification metrics must generated from
+model output and “truth” data (usually observations or gridded model analyses)
+by the MET verification tools (https://dtcenter.github.io/MET/latest/), and the
+output files produced by this MET verification must be loaded into a MET database.
+*METexpress is not used to create this database, only view its contents.*
+It allows a model developer to explore metrics about their model runs quickly
+and flexibly without relying on someone else producing pre-generated plots.
+The developer can slice and dice data in the way that best gives them insight
+into how their model performed.
 
 METexpress is one component of the METplus verification tool suite, which is
 created and managed by the Developmental Testbed Center (DTC) and is the

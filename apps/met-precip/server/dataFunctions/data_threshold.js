@@ -83,6 +83,11 @@ dataThreshold = function (plotParams, plotFunction) {
         if (scale !== 'All scales') {
             scaleClause = "and h.interp_pnts = '" + scale + "'";
         }
+        var im = curve['interp-method'];
+        var imClause = "";
+        if (im !== 'All methods') {
+            imClause = "and h.interp_mthd = '" + im + "'";
+        }
         var variable = curve['variable'];
         var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
@@ -166,6 +171,7 @@ dataThreshold = function (plotParams, plotFunction) {
                 "{{dateClause}} " +
                 "{{modelClause}} " +
                 "{{regionsClause}} " +
+                "{{imClause}} " +
                 "{{scaleClause}} " +
                 "{{variableClause}} " +
                 "{{truthClause}} " +
@@ -183,6 +189,7 @@ dataThreshold = function (plotParams, plotFunction) {
             statement = statement.replace('{{queryTableClause}}', queryTableClause);
             statement = statement.replace('{{modelClause}}', modelClause);
             statement = statement.replace('{{regionsClause}}', regionsClause);
+            statement = statement.replace('{{imClause}}', imClause);
             statement = statement.replace('{{scaleClause}}', scaleClause);
             statement = statement.replace('{{variableClause}}', variableClause);
             statement = statement.replace('{{truthClause}}', truthClause);

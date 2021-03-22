@@ -78,6 +78,11 @@ dataGridScale = function (plotParams, plotFunction) {
             }).join(',');
             regionsClause = "and h.vx_mask IN(" + regions + ")";
         }
+        var im = curve['interp-method'];
+        var imClause = "";
+        if (im !== 'All methods') {
+            imClause = "and h.interp_mthd = '" + im + "'";
+        }
         var variable = curve['variable'];
         var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
@@ -165,6 +170,7 @@ dataGridScale = function (plotParams, plotFunction) {
                 "{{dateClause}} " +
                 "{{modelClause}} " +
                 "{{regionsClause}} " +
+                "{{imClause}} " +
                 "{{variableClause}} " +
                 "{{truthClause}} " +
                 "{{thresholdClause}} " +
@@ -181,6 +187,7 @@ dataGridScale = function (plotParams, plotFunction) {
             statement = statement.replace('{{queryTableClause}}', queryTableClause);
             statement = statement.replace('{{modelClause}}', modelClause);
             statement = statement.replace('{{regionsClause}}', regionsClause);
+            statement = statement.replace('{{imClause}}', imClause);
             statement = statement.replace('{{variableClause}}', variableClause);
             statement = statement.replace('{{truthClause}}', truthClause);
             statement = statement.replace('{{thresholdClause}}', thresholdClause);

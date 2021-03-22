@@ -118,7 +118,10 @@ data for these parameters:
 * Database (name of user database)
 * Data-Source (usually a model name)
 * Region
+* Statistic
 * Variable
+* Interp-Method
+* Scale
 * Forecast lead time
 * Pressure level
 * Description 
@@ -129,11 +132,8 @@ Static fields
 ^^^^^^^^^^^^^
 
 Some fields are not dependent on data.  In the Upper Air app, these are
-Statistic, Valid UTC Hour, and Average, but these will vary for each app.
-Choices for Statistic mostly depend on the app in question, except for in
-the MET Ensemble app, where they depend on the MET line types available
-for the chosen Data-Source.  Average and Valid UTC Hour tend to have
-standardized choices available across many apps.
+Valid UTC Hour and Average, but these will vary for each app. Average
+and Valid UTC Hour tend to have standardized choices available across many apps.
 
 **Valid UTC Hour:**
 This can be set to any whole number 0 to 23 for all of the apps.

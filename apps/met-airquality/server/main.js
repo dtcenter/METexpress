@@ -262,6 +262,8 @@ const doCurveParams = function () {
     var forecastLengthOptionsMap = {};
     var levelOptionsMap = {};
     var thresholdOptionsMap = {};
+    var imOptionsMap = {};
+    var scaleOptionsMap = {};
     var descrOptionsMap = {};
 
     var rows;
@@ -307,9 +309,11 @@ const doCurveParams = function () {
             forecastLengthOptionsMap[thisDB] = {};
             levelOptionsMap[thisDB] = {};
             thresholdOptionsMap[thisDB] = {};
+            imOptionsMap[thisDB] = {};
+            scaleOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_lens,fcst_orig,trshs,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -362,6 +366,20 @@ const doCurveParams = function () {
                 }
                 trshArr.unshift('All thresholds');
 
+                var ims = rows[i].interp_mthds;
+                var imsArr = ims.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < imsArr.length; j++) {
+                    imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
+                }
+                imsArr.unshift('All methods');
+
+                var scales = rows[i].gridpoints;
+                var scalesArr = scales.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < scalesArr.length; j++) {
+                    scalesArr[j] = scalesArr[j].replace(/'|\[|\]/g, "");
+                }
+                scalesArr.unshift('All scales');
+
                 var descrs = rows[i].descrs;
                 var descrsArr = descrs.split(',').map(Function.prototype.call, String.prototype.trim);
                 for (var j = 0; j < descrsArr.length; j++) {
@@ -375,6 +393,8 @@ const doCurveParams = function () {
                 forecastLengthOptionsMap[thisDB][model] = forecastLengthOptionsMap[thisDB][model] === undefined ? {} : forecastLengthOptionsMap[thisDB][model];
                 levelOptionsMap[thisDB][model] = levelOptionsMap[thisDB][model] === undefined ? {} : levelOptionsMap[thisDB][model];
                 thresholdOptionsMap[thisDB][model] = thresholdOptionsMap[thisDB][model] === undefined ? {} : thresholdOptionsMap[thisDB][model];
+                imOptionsMap[thisDB][model] = imOptionsMap[thisDB][model] === undefined ? {} : imOptionsMap[thisDB][model];
+                scaleOptionsMap[thisDB][model] = scaleOptionsMap[thisDB][model] === undefined ? {} : scaleOptionsMap[thisDB][model];
                 descrOptionsMap[thisDB][model] = descrOptionsMap[thisDB][model] === undefined ? {} : descrOptionsMap[thisDB][model];
 
                 var thisPlotType;
@@ -389,6 +409,8 @@ const doCurveParams = function () {
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
                         levelOptionsMap[thisDB][model][thisPlotType] = {};
                         thresholdOptionsMap[thisDB][model][thisPlotType] = {};
+                        imOptionsMap[thisDB][model][thisPlotType] = {};
+                        scaleOptionsMap[thisDB][model][thisPlotType] = {};
                         descrOptionsMap[thisDB][model][thisPlotType] = {};
                     } else {
                         // if we have encountered this plot type for this model, add in any new stats
@@ -407,6 +429,8 @@ const doCurveParams = function () {
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                            scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                         }
                         if (variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] === undefined) {
@@ -417,6 +441,8 @@ const doCurveParams = function () {
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = forecastLengthArr;
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = levelsArr;
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = trshArr;
+                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = imsArr;
+                            scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = scalesArr;
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = descrsArr;
                         } else {
                             // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
@@ -424,6 +450,8 @@ const doCurveParams = function () {
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], levelsArr);
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], trshArr);
+                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], imsArr);
+                            scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], scalesArr);
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], descrsArr);
                         }
                     }
@@ -678,7 +706,7 @@ const doCurveParams = function () {
                 options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType],
                 valuesMap: variableValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic'],
-                dependentNames: ["region", "forecast-length", "level", "threshold", "description"],
+                dependentNames: ["region", "forecast-length", "level", "threshold", "interp-method", "scale", "description"],
                 controlButtonCovered: true,
                 unique: false,
                 default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][0],
@@ -730,6 +758,68 @@ const doCurveParams = function () {
                     optionsMap: thresholdOptionsMap,
                     options: thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
                     default: thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+                }
+            });
+        }
+    }
+
+    if (matsCollections["interp-method"].findOne({name: 'interp-method'}) == undefined) {
+        matsCollections["interp-method"].insert(
+            {
+                name: 'interp-method',
+                type: matsTypes.InputTypes.select,
+                optionsMap: imOptionsMap,
+                options: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                controlButtonCovered: true,
+                unique: false,
+                default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
+                controlButtonVisibility: 'block',
+                displayOrder: 2,
+                displayPriority: 1,
+                displayGroup: 4
+            });
+    } else {
+        // it is defined but check for necessary update
+        var currentParam = matsCollections["interp-method"].findOne({name: 'interp-method'});
+        if (!matsDataUtils.areObjectsEqual(imOptionsMap, currentParam.optionsMap)) {
+            // have to reload im data
+            matsCollections["interp-method"].update({name: 'interp-method'}, {
+                $set: {
+                    optionsMap: imOptionsMap,
+                    options: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                    default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+                }
+            });
+        }
+    }
+
+    if (matsCollections["scale"].findOne({name: 'scale'}) == undefined) {
+        matsCollections["scale"].insert(
+            {
+                name: 'scale',
+                type: matsTypes.InputTypes.select,
+                optionsMap: scaleOptionsMap,
+                options: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                controlButtonCovered: true,
+                unique: false,
+                default: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
+                controlButtonVisibility: 'block',
+                displayOrder: 3,
+                displayPriority: 1,
+                displayGroup: 4
+            });
+    } else {
+        // it is defined but check for necessary update
+        var currentParam = matsCollections["scale"].findOne({name: 'scale'});
+        if (!matsDataUtils.areObjectsEqual(scaleOptionsMap, currentParam.optionsMap)) {
+            // have to reload scale data
+            matsCollections["scale"].update({name: 'scale'}, {
+                $set: {
+                    optionsMap: scaleOptionsMap,
+                    options: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                    default: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
                 }
             });
         }
@@ -1081,7 +1171,9 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
-                ['', 'threshold', ' '],
+                ['', 'threshold', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
@@ -1091,7 +1183,7 @@ const doCurveTextPatterns = function () {
                 ['desc: ', 'description', ' ']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });
@@ -1102,7 +1194,9 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
-                ['', 'threshold', ' '],
+                ['', 'threshold', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
@@ -1113,7 +1207,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1124,6 +1218,8 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
@@ -1133,7 +1229,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "forecast-length", "valid-time", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "valid-time", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1144,7 +1240,9 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
-                ['', 'threshold', ' '],
+                ['', 'threshold', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
@@ -1153,7 +1251,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1164,7 +1262,9 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
-                ['', 'threshold', ' '],
+                ['', 'threshold', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
@@ -1174,7 +1274,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1185,16 +1285,18 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
-                ['', 'threshold', ' '],
+                ['', 'threshold', ', '],
+                ['', 'interp-method', ' '],
+                ['', 'scale', ', '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
+                ['valid-time: ', 'valid-time', ', '],
                 ['desc: ', 'description', ' ']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "valid-time", "forecast-length", "level", "description", "x-axis-parameter", "y-axis-parameter"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "x-axis-parameter", "y-axis-parameter"
             ],
             groupSize: 6
         });

@@ -11,7 +11,7 @@ _____________
 The user interface for Upper Air follows the general description from
 above.  Choices specific to this app are shown below.
 
-Choices for Statistic:
+Choices for Statistic (depending on available line types):
 
 * RMSE
 * Bias-corrected RMSE
@@ -25,6 +25,24 @@ Choices for Statistic:
 * Observed stdev
 * Error stdev
 * Pearson Correlation
+* Forecast length of mean wind vector
+* Observed length of mean wind vector
+* Forecast length - observed length of mean wind vector
+* abs(Forecast length - observed length of mean wind vector)
+* Length of forecast - observed mean wind vector
+* abs(Length of forecast - observed mean wind vector)
+* Forecast direction of mean wind vector
+* Observed direction of mean wind vector
+* RMSE of forecast wind vector length
+* RMSE of observed wind vector length
+* Vector wind speed MSVE
+* Vector wind speed RMSVE
+* Forecast mean of wind vector length
+* Observed mean of wind vector length
+* Forecast mean - observed mean of wind vector length
+* abs(Forecast mean - observed mean of wind vector length)
+* Forecast stdev of wind vector length
+* Observed stdev of wind vector length
 
 The Upper Air app includes functionality for these types of plots:
 
@@ -196,15 +214,21 @@ In this application, the selectable values are derived from the data for these p
 * Database
 * Data-Source
 * Region
+* Statistic
 * Variable
+* Interp-Method
+* Scale
 * Forecast lead time
 * Level
 * Description
 * Dates
 * Curve-dates
 
-METexpress Anomaly Correlation does not have a Statistic selector, as it displays anomaly
-correlation as its only statistic.
+The selector for the Statistic has these possible choices (depending on available MET line types):
+
+* ACC
+* Vector ACC
+
 
 Plot types available include 
 
@@ -241,14 +265,17 @@ For this app, the following parameters have choices derived from the data.
 * Database
 * Data-source
 * Region
+* Statistic
 * Variable
+* Interp-Method
+* Scale
 * Forecast lead time
 * Ground level
 * Description
 * Dates
 * Curve-dates
 
-The selector for the Statistic has these possible choices:
+The selector for the Statistic has these possible choices (depending on available MET line types):
 
 * RMSE
 * Bias-corrected RMSE
@@ -262,6 +289,24 @@ The selector for the Statistic has these possible choices:
 * Observed stdev
 * Error stdev
 * Pearson Correlation
+* Forecast length of mean wind vector
+* Observed length of mean wind vector
+* Forecast length - observed length of mean wind vector
+* abs(Forecast length - observed length of mean wind vector)
+* Length of forecast - observed mean wind vector
+* abs(Length of forecast - observed mean wind vector)
+* Forecast direction of mean wind vector
+* Observed direction of mean wind vector
+* RMSE of forecast wind vector length
+* RMSE of observed wind vector length
+* Vector wind speed MSVE
+* Vector wind speed RMSVE
+* Forecast mean of wind vector length
+* Observed mean of wind vector length
+* Forecast mean - observed mean of wind vector length
+* abs(Forecast mean - observed mean of wind vector length)
+* Forecast stdev of wind vector length
+* Observed stdev of wind vector length
 
 Plot types available include:
 
@@ -290,15 +335,18 @@ For this app, the following parameters have choices derived from the data.
 * Database
 * Data-source
 * Region
+* Statistic
 * Variable
 * Threshold
+* Interp-Method
+* Scale
 * Forecast lead time
 * Ground level
 * Description
 * Dates
 * Curve-dates
 
-The selector for the Statistic has these possible choices:
+The selector for the Statistic has these possible choices (depending on available MET line types):
 
 * CSI
 * FAR
@@ -362,9 +410,7 @@ For this app, the following parameters have choices derived from the data.
 * Dates
 * Curve-dates
 
-Unlike in the other apps, statistics for MET Ensemble are not static,
-but depend on the MET line types loaded into the database. Available
-statistics can include:
+The selector for the Statistic has these possible choices (depending on available MET line types):
 
 * RMSE
 * RMSE with obs error
@@ -490,8 +536,10 @@ For this app, the following parameters have choices derived from the data.
 * Database
 * Data-source
 * Region
+* Statistic
 * Variable
 * Threshold
+* Interp-Method
 * Scale
 * Obs type
 * Forecast lead time
@@ -500,7 +548,7 @@ For this app, the following parameters have choices derived from the data.
 * Dates
 * Curve-dates
 
-The selector for the Statistic has these possible choices:
+The selector for the Statistic has these possible choices (depending on available MET line types):
 
 * CSI
 * FAR
