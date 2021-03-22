@@ -29,7 +29,7 @@ verinfo = version
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 release_year = '2021'
-release_date = f'{release_year}-03-31'
+release_date = f'{release_year}0331'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
