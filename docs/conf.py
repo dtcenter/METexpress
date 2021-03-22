@@ -31,7 +31,7 @@ release = f'{version}'
 release_year = '2021'
 release_date = f'{release_year}-03-31'
 copyright = f'{release_year}, {author}'
-#release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
+release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
 # -- General configuration ---------------------------------------------------
 
