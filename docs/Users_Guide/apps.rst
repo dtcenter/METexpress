@@ -107,39 +107,25 @@ Histograms have a number of additional selectors that control their appearance:
   options to customize their x-axis bins:
 
   * Default bins
-
-      
   * Set number of bins
-    
-    * Has sub-selector “Number of bins”
-
   
+     * Has sub-selector “Number of bins”
   * Make zero a bin bound
-
-      
   * Choose a bin bound
 
-    * Has sub-selector “Bin pivot value”
-
-  
+     * Has sub-selector “Bin pivot value”
   * Set number of bins and make zero a bin bound
-
-    * Has sub-selector “Number of bins”
-
   
+     * Has sub-selector “Number of bins”
   * Set number of bins and choose a bin bound
-
-    * Has sub-selectors “Number of bins” and “Bin pivot value”
-
   
+     * Has sub-selectors “Number of bins” and “Bin pivot value”
   * Manual bins
-
-    * Has sub-selector “Bin bounds”
-
-  
+    
+     * Has sub-selector “Bin bounds”
   * Manual start, number, and stride
 
-    * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
+     * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
   
 
 :numref:`apps_interface_histogram` shows the user interface for histogram plots
