@@ -1,4 +1,3 @@
-
 import ast
 import getopt
 import json
@@ -130,7 +129,8 @@ class ParentMetadata:
         self.cursor.execute('show tables like "{}_dev";'.format(self.metadata_table))
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
-            create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(self.metadata_table)
+            create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
+                self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
 
@@ -253,15 +253,20 @@ class ParentMetadata:
             d['model'] = dev_row['model']
             d['line_data_table'] = dev_row['line_data_table']
             d['variable'] = dev_row['variable']
-            self.cursor.execute('select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
+            self.cursor.execute(
+                'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                    **d))
             # does it exist in the tmp_metadata table?
             if self.cursor.rowcount > 0:
                 # yes - then delete the entry from tmp_metadata table
-                self.cursor.execute('delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
+                self.cursor.execute(
+                    'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                        **d))
                 self.cnx.commit()
             # insert the dev data into the tmp_metadata table
             self.cursor.execute(
-                'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(**d))
+                'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                    **d))
             d['db'] = ""
             d['model'] = ""
             d['line_data_table'] = ""
@@ -331,6 +336,14 @@ class ParentMetadata:
             cursor3.execute(use_db)
             print("\n\n" + self.script_name + "- Using db " + mvdb)
 
+            # check if stat_header table exists
+            stat_header_check = "show tables like 'stat_header';"
+            cursor2.execute(stat_header_check)
+            if cursor2.rowcount == 0:
+                continue
+            else:
+                test_result = cursor2.fetchall()
+
             if self.appSpecificWhereClause:
                 end_query = ' and ' + self.appSpecificWhereClause + ';'
                 where_query = ' where ' + self.appSpecificWhereClause
@@ -395,7 +408,8 @@ class ParentMetadata:
                                           app_specific_clause + \
                                           " group by model, fcst_var, vx_mask) as stat_header_id order by length(stat_header_id) limit 1;"
                     if debug:
-                        print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
+                        print(
+                            self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
                     try:
                         cursor3.execute(get_stat_header_ids)
                         stat_header_id_values = cursor3.fetchall()
@@ -407,7 +421,8 @@ class ParentMetadata:
                     if stat_header_id_list:
                         get_fcsts = "select distinct fcst_lead from " + line_data_table + " where stat_header_id in (" + ','.join(
                             stat_header_id_list) + ");"
-                        print(self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
+                        print(
+                            self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
                         if debug:
                             print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
                         try:
@@ -442,15 +457,20 @@ class ParentMetadata:
                         mindate = datetime.utcnow()
                     if maxdate is None is maxdate is datetime.min:
                         maxdate = datetime.utcnow()
-                    per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
-                    per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
+                    per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(
+                        mindate.replace(tzinfo=timezone.utc).timestamp())
+                    per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(
+                        maxdate.replace(tzinfo=timezone.utc).timestamp())
                     per_mvdb[mvdb][model][line_data_table][fvar]['numrecs'] = num_recs
                     if int(num_recs) > 0:
                         db_has_valid_data = True
-                        print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
-                        self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
+                        print(
+                            "\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                        self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar,
+                                                         per_mvdb[mvdb][model][line_data_table][fvar])
                     else:
-                        print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                        print(
+                            "\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
 
             # Get the group(s) this db is in
             if db_has_valid_data:
@@ -504,7 +524,8 @@ class ParentMetadata:
             mindate = raw_metadata['mindate']
             maxdate = raw_metadata['maxdate']
             display_text = model.replace('.', '_')
-            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, levels, fcst_lens, trshs, interp_mthds, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(self.metadata_table)
+            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, levels, fcst_lens, trshs, interp_mthds, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+                self.metadata_table)
             qd.append(mvdb)
             qd.append(model)
             qd.append(display_text)
