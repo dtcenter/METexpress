@@ -121,52 +121,37 @@ Histograms have a number of additional selectors that control their appearance:
 * Y-axis mode: Can be set to either “Relative frequency” or “Number”, depending
   on whether a user wants the frequency of a given statistic displayed as a
   fraction of 100, or as a raw count.
+
 * Customize bins: With this selector, the user can choose one of the following
   options to customize their x-axis bins:
 
   * Default bins
 
-    |
-    
   * Set number of bins
-    
-    * Has sub-selector “Number of bins”
-
-      | 
-
+ 
+     * Has sub-selector “Number of bins”
+  
   * Make zero a bin bound
 
-    |
-    
   * Choose a bin bound
 
-    * Has sub-selector “Bin pivot value”
-
-      | 
+     * Has sub-selector “Bin pivot value”
 
   * Set number of bins and make zero a bin bound
 
-    * Has sub-selector “Number of bins”
-
-      | 
+     * Has sub-selector “Number of bins”
 
   * Set number of bins and choose a bin bound
 
-    * Has sub-selectors “Number of bins” and “Bin pivot value”
-
-      | 
-
+     * Has sub-selectors “Number of bins” and “Bin pivot value”
+ 
   * Manual bins
-
-    * Has sub-selector “Bin bounds”
-
-      | 
-
+ 
+     * Has sub-selector “Bin bounds”
+ 
   * Manual start, number, and stride
 
-    * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
-
-      | 
+     * Has sub-selectors “Number of bins”, “Bin start”, and “Bin stride”
 
 :numref:`apps_interface_histogram` shows the user interface for histogram plots
 and :numref:`apps_histogram_plot` shows a sample plot.

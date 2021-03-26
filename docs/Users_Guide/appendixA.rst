@@ -5,6 +5,6 @@ Appendix A - Public Deployments of METexpress
 =============================================
 
 For NWS/NCEP/EMC, METexpress is currently running on the Amazon Web
-Services cloud and is available
-`here <https://metexpress.nws.noaa.gov/>`_.
+Services cloud and is available at
+`metexpress.nws.noaa.gov <https://metexpress.nws.noaa.gov/>`_.
 

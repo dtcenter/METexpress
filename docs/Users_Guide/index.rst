@@ -69,11 +69,11 @@ assistance with deploying METexpress in the cloud on Amazon Web Services.
    metadata
    appendixA
    
+..
+  Indices and tables
+  ==================
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
+  * :ref:`genindex`
+  * :ref:`search`
 
       
