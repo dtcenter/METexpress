@@ -257,25 +257,45 @@ class ParentMetadata:
             d['db'] = dev_row['db']
             d['model'] = dev_row['model']
             d['line_data_table'] = dev_row['line_data_table']
-            d['variable'] = dev_row['variable']
-            self.cursor.execute(
-                'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
-                    **d))
-            # does it exist in the tmp_metadata table?
-            if self.cursor.rowcount > 0:
-                # yes - then delete the entry from tmp_metadata table
+            if self.statHeaderType == "stat_header":
+                d['variable'] = dev_row['variable']
                 self.cursor.execute(
-                    'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                    'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
                         **d))
-                self.cnx.commit()
-            # insert the dev data into the tmp_metadata table
-            self.cursor.execute(
-                'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
-                    **d))
+                # does it exist in the tmp_metadata table?
+                if self.cursor.rowcount > 0:
+                    # yes - then delete the entry from tmp_metadata table
+                    self.cursor.execute(
+                        'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                            **d))
+                    self.cnx.commit()
+                # insert the dev data into the tmp_metadata table
+                self.cursor.execute(
+                    'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                        **d))
+            else:
+                d['basin'] = dev_row['basin']
+                self.cursor.execute(
+                    'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                        **d))
+                # does it exist in the tmp_metadata table?
+                if self.cursor.rowcount > 0:
+                    # yes - then delete the entry from tmp_metadata table
+                    self.cursor.execute(
+                        'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                            **d))
+                    self.cnx.commit()
+                # insert the dev data into the tmp_metadata table
+                self.cursor.execute(
+                    'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                        **d))
             d['db'] = ""
             d['model'] = ""
             d['line_data_table'] = ""
-            d['variable'] = ""
+            if self.statHeaderType == "stat_header":
+                d['variable'] = ""
+            else:
+                d['basin'] = ""
         self.cursor.execute("rename table {mdt} to {tmp_mdt}, {mdt_tmp} to {mdt};".format(**d))
         self.cnx.commit()
         self.cursor.execute("drop table if exists {tmp_mdt};".format(**d))
