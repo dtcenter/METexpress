@@ -13,7 +13,7 @@ import pymysql
 
 #  Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
 # set to False to limit print output
-debug = False
+debug = True
 
 
 # debug = False
@@ -597,6 +597,7 @@ class ParentMetadata:
                             if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
                             else:
+                                print("Year " + year + " not used--calculated row data")
                                 per_mvdb[mvdb][model][line_data_table][basin][year] = {}
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'] = [storm, ]
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['truths'] = \
@@ -607,6 +608,7 @@ class ParentMetadata:
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['fcst_orig'] = list(map(str, sorted(temp_fcsts_orig)))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['levels'] = list(map(str, sorted(temp_levels)))
 
+                                print("Year " + year + " getting stat_headers")
                                 # select the minimum length set of tcst_header_ids from the line_data_table that are unique
                                 # with respect to model, basin, truth, amd year.
                                 # these will be used to qualify the distinct set of fcst_leads from the line data table.
@@ -622,7 +624,7 @@ class ParentMetadata:
                                                       " group by amodel, basin, bmodel) as tcst_header_id order by length(tcst_header_id) limit 1;"
                                 if debug:
                                     print(
-                                        self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin + " sql: " + get_tcst_header_ids)
+                                        self.script_name + " - Getting year-specific get_tcst_header_ids lens for model " + model + " and basin " + basin + " sql: " + get_tcst_header_ids)
                                 try:
                                     cursor3.execute(get_tcst_header_ids)
                                     tcst_header_id_values = cursor3.fetchall()
@@ -631,6 +633,7 @@ class ParentMetadata:
                                 except pymysql.Error as e:
                                     continue
 
+                                print("Year " + year + " tcst_headers are" + str(tcst_header_id_list))
                                 if tcst_header_id_list:
                                     get_stats = 'select min(fcst_valid) as mindate, max(fcst_valid) as maxdate, count(fcst_valid) as numrecs from ' + line_data_table + " where tcst_header_id in (" + ','.join(
                                         tcst_header_id_list) + ");"
