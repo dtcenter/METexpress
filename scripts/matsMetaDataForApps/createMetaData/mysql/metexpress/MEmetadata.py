@@ -436,8 +436,7 @@ class ParentMetadata:
                                               app_specific_clause + \
                                               " group by model, fcst_var, vx_mask) as stat_header_id order by length(stat_header_id) limit 1;"
                         if debug:
-                            print(
-                                self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
+                            print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
                         try:
                             cursor3.execute(get_stat_header_ids)
                             stat_header_id_values = cursor3.fetchall()
@@ -449,8 +448,7 @@ class ParentMetadata:
                         if stat_header_id_list:
                             get_fcsts = "select distinct fcst_lead from " + line_data_table + " where stat_header_id in (" + ','.join(
                                 stat_header_id_list) + ");"
-                            print(
-                                self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
+                            print(self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
                             if debug:
                                 print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
                             try:
@@ -485,20 +483,15 @@ class ParentMetadata:
                             mindate = datetime.utcnow()
                         if maxdate is None is maxdate is datetime.min:
                             maxdate = datetime.utcnow()
-                        per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(
-                            mindate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(
-                            maxdate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
                         per_mvdb[mvdb][model][line_data_table][fvar]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print(
-                                "\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
-                            self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar,
-                                                             per_mvdb[mvdb][model][line_data_table][fvar])
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
                         else:
-                            print(
-                                "\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
             elif self.statHeaderType == "tcst_header":
                 # check if tcst_header table exists
                 tcst_header_check = "show tables like 'tcst_header';"
@@ -560,7 +553,7 @@ class ParentMetadata:
                                                       " group by amodel, basin, bmodel) as tcst_header_id order by length(tcst_header_id) limit 1;"
                                 if debug:
                                     print(
-                                        self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin + " sql: " + get_tcst_header_ids)
+                                        self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin+ " and year " + year + " sql: " + get_tcst_header_ids)
                                 try:
                                     cursor3.execute(get_tcst_header_ids)
                                     tcst_header_id_values = cursor3.fetchall()
@@ -633,15 +626,15 @@ class ParentMetadata:
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs'] = num_recs
 
                             db_has_valid_data = True
-                            for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
-                                if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
-                                    print(
-                                        "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
-                                    self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
-                                                                        basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
-                                else:
-                                    print(
-                                        "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
+                        for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
+                            if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
+                                print(
+                                    "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
+                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
+                                                                    basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
+                            else:
+                                print(
+                                    "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
             else:
                 continue
 
