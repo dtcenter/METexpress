@@ -174,7 +174,7 @@ class metadataUpdate:
     def _reconcile_metadata_script_info_table(self):
         updaterList = []
         for importer, modname, ispkg in pkgutil.iter_modules(metexpress.__path__):
-            if modname.startswith('METc'):
+            if modname.startswith('ME'):
                 submod = importlib.import_module('metexpress' + '.' + modname)
                 for updateClass in inspect.getmembers(submod, inspect.isclass):
                     if updateClass[0].startswith('ME'):
