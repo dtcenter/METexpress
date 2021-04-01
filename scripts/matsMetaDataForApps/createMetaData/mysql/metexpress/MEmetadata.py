@@ -530,8 +530,6 @@ class ParentMetadata:
                         temp_fcsts_orig = set()
                         temp_levels = set()
                         num_recs = 0
-                        mindate = datetime.max
-                        maxdate = datetime.min  # earliest epoch?
                         app_specific_clause = end_query[:-1]
 
                         # select the minimum length set of tcst_header_ids from the line_data_table that are unique
@@ -590,25 +588,12 @@ class ParentMetadata:
                                     continue
                             else:
                                 temp_levels.add("NA")
-                            get_stats = 'select min(fcst_valid) as mindate, max(fcst_valid) as maxdate, count(fcst_valid) as numrecs from ' + line_data_table + " where tcst_header_id in (" + ','.join(
-                                tcst_header_id_list) + ");"
-                            print(self.script_name + " - Getting stats for model " + model + " and basin " + basin)
-                            if debug:
-                                print(self.script_name + " - stats sql query: " + get_stats)
-                            try:
-                                cursor3.execute(get_stats)
-                                data = cursor3.fetchone()
-                                if data:
-                                    mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                        'mindate']
-                                    maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                        'maxdate']
-                                    num_recs = num_recs + data['numrecs']
-                            except pymysql.Error as e:
-                                continue
 
                         for storm in model_var_line['storms'].split(','):
                             year = storm[4:9]
+                            num_recs = 0
+                            mindate = datetime.max
+                            maxdate = datetime.min  # earliest epoch?
                             if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
                             else:
@@ -621,6 +606,48 @@ class ParentMetadata:
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['fcsts'] = list(map(str, sorted(temp_fcsts)))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['fcst_orig'] = list(map(str, sorted(temp_fcsts_orig)))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['levels'] = list(map(str, sorted(temp_levels)))
+
+                                # select the minimum length set of tcst_header_ids from the line_data_table that are unique
+                                # with respect to model, basin, truth, amd year.
+                                # these will be used to qualify the distinct set of fcst_leads from the line data table.
+                                get_tcst_header_ids = "select tcst_header_id from " + \
+                                                      "(select group_concat(tcst_header_id) as tcst_header_id " + \
+                                                      "from tcst_header where tcst_header_id in (select distinct tcst_header_id from " + \
+                                                      line_data_table + \
+                                                      " where amodel = '" + model + \
+                                                      "' and basin = '" + basin + \
+                                                      "' and storm_id like '%" + year + \
+                                                      "' order by tcst_header_id)" + \
+                                                      app_specific_clause + \
+                                                      " group by amodel, basin, bmodel) as tcst_header_id order by length(tcst_header_id) limit 1;"
+                                if debug:
+                                    print(
+                                        self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin + " sql: " + get_tcst_header_ids)
+                                try:
+                                    cursor3.execute(get_tcst_header_ids)
+                                    tcst_header_id_values = cursor3.fetchall()
+                                    tcst_header_id_list = [d['tcst_header_id'] for d in tcst_header_id_values if
+                                                           'tcst_header_id' in d]
+                                except pymysql.Error as e:
+                                    continue
+
+                                if tcst_header_id_list:
+                                    get_stats = 'select min(fcst_valid) as mindate, max(fcst_valid) as maxdate, count(fcst_valid) as numrecs from ' + line_data_table + " where tcst_header_id in (" + ','.join(
+                                        tcst_header_id_list) + ");"
+                                    print(
+                                        self.script_name + " - Getting stats for model " + model + " and basin " + basin)
+                                    if debug:
+                                        print(self.script_name + " - stats sql query: " + get_stats)
+                                    try:
+                                        cursor3.execute(get_stats)
+                                        data = cursor3.fetchone()
+                                        if data:
+                                            mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data['mindate']
+                                            maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data['maxdate']
+                                            num_recs = num_recs + data['numrecs']
+                                    except pymysql.Error as e:
+                                        continue
+
                                 if mindate is None or mindate is datetime.max:
                                     mindate = datetime.utcnow()
                                 if maxdate is None is maxdate is datetime.min:
