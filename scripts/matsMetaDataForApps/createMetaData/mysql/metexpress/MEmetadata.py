@@ -134,7 +134,7 @@ class ParentMetadata:
                 create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
                     self.metadata_table)
             else:
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), storms varchar(4095), snames varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), snames varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
                     self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
@@ -275,19 +275,20 @@ class ParentMetadata:
                         **d))
             else:
                 d['basin'] = dev_row['basin']
+                d['year'] = dev_row['year']
                 self.cursor.execute(
-                    'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                    'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
                         **d))
                 # does it exist in the tmp_metadata table?
                 if self.cursor.rowcount > 0:
                     # yes - then delete the entry from tmp_metadata table
                     self.cursor.execute(
-                        'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                        'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
                             **d))
                     self.cnx.commit()
                 # insert the dev data into the tmp_metadata table
                 self.cursor.execute(
-                    'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}";'.format(
+                    'insert into {mdt_tmp} select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
                         **d))
             d['db'] = ""
             d['model'] = ""
@@ -296,6 +297,7 @@ class ParentMetadata:
                 d['variable'] = ""
             else:
                 d['basin'] = ""
+                d['year'] = ""
         self.cursor.execute("rename table {mdt} to {tmp_mdt}, {mdt_tmp} to {mdt};".format(**d))
         self.cnx.commit()
         self.cursor.execute("drop table if exists {tmp_mdt};".format(**d))
@@ -507,8 +509,8 @@ class ParentMetadata:
                     test_result = cursor2.fetchall()
 
                 # Get the additional data in the tcst header for model var pairs
-                get_val_lists = 'select amodel as model, basin, group_concat(distinct storm_id) as storms, ' \
-                                'group_concat(distinct storm_id) as snames, ' \
+                get_val_lists = 'select amodel as model, basin, ' \
+                                'group_concat(distinct storm_id, " - ", storm_name) as storms, ' \
                                 'group_concat(distinct bmodel) as truths, ' \
                                 'group_concat(distinct descr) as descrs from tcst_header' \
                                 + where_query + ' group by model, basin;'
@@ -522,22 +524,11 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table] = {}
                         basin = model_var_line['basin']
                         per_mvdb[mvdb][model][line_data_table][basin] = {}
-                        per_mvdb[mvdb][model][line_data_table][basin]['storms'] = \
-                            sorted(model_var_line['storms'].split(','))
-                        per_mvdb[mvdb][model][line_data_table][basin]['snames'] = \
-                            sorted(model_var_line['snames'].split(','))
-                        per_mvdb[mvdb][model][line_data_table][basin]['truths'] = \
-                            sorted(model_var_line['truths'].split(','))
-                        per_mvdb[mvdb][model][line_data_table][basin]['descrs'] = \
-                            model_var_line['descrs'].split(',')
 
                         # get the line_date-specific fields
                         temp_fcsts = set()
                         temp_fcsts_orig = set()
                         temp_levels = set()
-                        per_mvdb[mvdb][model][line_data_table][basin]['fcsts'] = []
-                        per_mvdb[mvdb][model][line_data_table][basin]['fcst_orig'] = []
-                        per_mvdb[mvdb][model][line_data_table][basin]['levels'] = []
                         num_recs = 0
                         mindate = datetime.max
                         maxdate = datetime.min  # earliest epoch?
@@ -615,24 +606,38 @@ class ParentMetadata:
                                     num_recs = num_recs + data['numrecs']
                             except pymysql.Error as e:
                                 continue
-                        per_mvdb[mvdb][model][line_data_table][basin]['fcsts'] = list(map(str, sorted(temp_fcsts)))
-                        per_mvdb[mvdb][model][line_data_table][basin]['fcst_orig'] = list(map(str, sorted(temp_fcsts_orig)))
-                        per_mvdb[mvdb][model][line_data_table][basin]['levels'] = list(map(str, sorted(temp_levels)))
-                        if mindate is None or mindate is datetime.max:
-                            mindate = datetime.utcnow()
-                        if maxdate is None is maxdate is datetime.min:
-                            maxdate = datetime.utcnow()
-                        per_mvdb[mvdb][model][line_data_table][basin]['mindate'] = int(
-                            mindate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model][line_data_table][basin]['maxdate'] = int(
-                            maxdate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model][line_data_table][basin]['numrecs'] = num_recs
+
+                        for storm in model_var_line['storms'].split(','):
+                            year = int(storm[4:9])
+                            if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
+                            else:
+                                per_mvdb[mvdb][model][line_data_table][basin][year] = {}
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['storms'] = [storm, ]
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['truths'] = \
+                                    sorted(model_var_line['truths'].split(','))
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['descrs'] = \
+                                    model_var_line['descrs'].split(',')
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['fcsts'] = list(map(str, sorted(temp_fcsts)))
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['fcst_orig'] = list(map(str, sorted(temp_fcsts_orig)))
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['levels'] = list(map(str, sorted(temp_levels)))
+                                if mindate is None or mindate is datetime.max:
+                                    mindate = datetime.utcnow()
+                                if maxdate is None is maxdate is datetime.min:
+                                    maxdate = datetime.utcnow()
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['mindate'] = int(
+                                    mindate.replace(tzinfo=timezone.utc).timestamp())
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['maxdate'] = int(
+                                    maxdate.replace(tzinfo=timezone.utc).timestamp())
+                                per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs'] = num_recs
+
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print(
-                                "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
-                            self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin,
-                                                             per_mvdb[mvdb][model][line_data_table][basin])
+                            for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
+                                print(
+                                    "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
+                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin,
+                                                                 year, per_mvdb[mvdb][model][line_data_table][basin][year])
                         else:
                             print(
                                 "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
@@ -716,7 +721,7 @@ class ParentMetadata:
         # put the cursor back to the db it was using
         cursor_tmp.execute("use  " + mvdb + ";")
 
-    def add_model_to_metadata_table_tc(self, cnx_tmp, cursor_tmp, mvdb, model, line_data_table, basin, raw_metadata):
+    def add_model_to_metadata_table_tc(self, cnx_tmp, cursor_tmp, mvdb, model, line_data_table, basin, year, raw_metadata):
         # Add a row for each model/db combo
         cursor_tmp.execute("use  " + self.metadata_database + ";")
         #
@@ -726,13 +731,14 @@ class ParentMetadata:
             mindate = raw_metadata['mindate']
             maxdate = raw_metadata['maxdate']
             display_text = model.replace('.', '_')
-            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, basin, storms, snames, truths, descrs, fcst_lens, levels, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, basin, year, storms, snames, truths, descrs, fcst_lens, levels, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
                 self.metadata_table)
             qd.append(mvdb)
             qd.append(model)
             qd.append(display_text)
             qd.append(line_data_table)
             qd.append(basin)
+            qd.append(year)
             qd.append(str(raw_metadata['storms']))
             qd.append(str(raw_metadata['snames']))
             qd.append(str(raw_metadata['truths']))
