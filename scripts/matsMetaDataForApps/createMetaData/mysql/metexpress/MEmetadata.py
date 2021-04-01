@@ -590,7 +590,7 @@ class ParentMetadata:
                                 temp_levels.add("NA")
 
                         for storm in model_var_line['storms'].split(','):
-                            year = storm[4:9]
+                            year = storm[4:8]
                             num_recs = 0
                             mindate = datetime.max
                             maxdate = datetime.min  # earliest epoch?
