@@ -436,8 +436,7 @@ class ParentMetadata:
                                               app_specific_clause + \
                                               " group by model, fcst_var, vx_mask) as stat_header_id order by length(stat_header_id) limit 1;"
                         if debug:
-                            print(
-                                self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
+                            print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
                         try:
                             cursor3.execute(get_stat_header_ids)
                             stat_header_id_values = cursor3.fetchall()
@@ -449,8 +448,7 @@ class ParentMetadata:
                         if stat_header_id_list:
                             get_fcsts = "select distinct fcst_lead from " + line_data_table + " where stat_header_id in (" + ','.join(
                                 stat_header_id_list) + ");"
-                            print(
-                                self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
+                            print(self.script_name + " - Getting forecast lengths for model " + model + " and variable " + fvar)
                             if debug:
                                 print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
                             try:
@@ -485,20 +483,15 @@ class ParentMetadata:
                             mindate = datetime.utcnow()
                         if maxdate is None is maxdate is datetime.min:
                             maxdate = datetime.utcnow()
-                        per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(
-                            mindate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(
-                            maxdate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][line_data_table][fvar]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][line_data_table][fvar]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
                         per_mvdb[mvdb][model][line_data_table][fvar]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print(
-                                "\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
-                            self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar,
-                                                             per_mvdb[mvdb][model][line_data_table][fvar])
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
                         else:
-                            print(
-                                "\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
             elif self.statHeaderType == "tcst_header":
                 # check if tcst_header table exists
                 tcst_header_check = "show tables like 'tcst_header';"
@@ -524,91 +517,8 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table] = {}
                         basin = model_var_line['basin']
                         per_mvdb[mvdb][model][line_data_table][basin] = {}
-
-                        # get the line_date-specific fields
-                        temp_fcsts = set()
-                        temp_fcsts_orig = set()
-                        temp_levels = set()
-                        num_recs = 0
-                        mindate = datetime.max
-                        maxdate = datetime.min  # earliest epoch?
-                        app_specific_clause = end_query[:-1]
-
-                        # select the minimum length set of tcst_header_ids from the line_data_table that are unique
-                        # with respect to model, basin, and truth.
-                        # these will be used to qualify the distinct set of fcst_leads from the line data table.
-                        get_tcst_header_ids = "select tcst_header_id from " + \
-                                              "(select group_concat(tcst_header_id) as tcst_header_id " + \
-                                              "from tcst_header where tcst_header_id in (select distinct tcst_header_id from " + \
-                                              line_data_table + \
-                                              " where amodel = '" + model + \
-                                              "' and basin = '" + basin + \
-                                              "' order by tcst_header_id)" + \
-                                              app_specific_clause + \
-                                              " group by amodel, basin, bmodel) as tcst_header_id order by length(tcst_header_id) limit 1;"
-                        if debug:
-                            print(
-                                self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin + " sql: " + get_tcst_header_ids)
-                        try:
-                            cursor3.execute(get_tcst_header_ids)
-                            tcst_header_id_values = cursor3.fetchall()
-                            tcst_header_id_list = [d['tcst_header_id'] for d in tcst_header_id_values if
-                                                   'tcst_header_id' in d]
-                        except pymysql.Error as e:
-                            continue
-
-                        if tcst_header_id_list:
-                            get_fcsts = "select distinct fcst_lead from " + line_data_table + " where tcst_header_id in (" + ','.join(
-                                tcst_header_id_list) + ");"
-                            print(
-                                self.script_name + " - Getting forecast lengths for model " + model + " and basin " + basin)
-                            if debug:
-                                print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
-                            try:
-                                cursor3.execute(get_fcsts)
-                                for line3 in cursor3:
-                                    fcst = int(list(line3.values())[0])
-                                    temp_fcsts_orig.add(fcst)
-                                    if fcst % 10000 == 0:
-                                        fcst = int(fcst / 10000)
-                                    temp_fcsts.add(fcst)
-                            except pymysql.Error as e:
-                                continue
-                            if line_data_table == "line_data_tcmpr":
-                                get_levels = "select distinct level from " + line_data_table + " where tcst_header_id in (" + ','.join(
-                                    tcst_header_id_list) + ");"
-                                print(
-                                    self.script_name + " - Getting levels for model " + model + " and basin " + basin)
-                                if debug:
-                                    print(self.script_name + " - level sql query: " + get_levels)
-                                try:
-                                    cursor3.execute(get_levels)
-                                    for line3 in cursor3:
-                                        level = list(line3.values())[0]
-                                        temp_levels.add(level)
-                                except pymysql.Error as e:
-                                    continue
-                            else:
-                                temp_levels.add("NA")
-                            get_stats = 'select min(fcst_valid) as mindate, max(fcst_valid) as maxdate, count(fcst_valid) as numrecs from ' + line_data_table + " where tcst_header_id in (" + ','.join(
-                                tcst_header_id_list) + ");"
-                            print(self.script_name + " - Getting stats for model " + model + " and basin " + basin)
-                            if debug:
-                                print(self.script_name + " - stats sql query: " + get_stats)
-                            try:
-                                cursor3.execute(get_stats)
-                                data = cursor3.fetchone()
-                                if data:
-                                    mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                        'mindate']
-                                    maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                        'maxdate']
-                                    num_recs = num_recs + data['numrecs']
-                            except pymysql.Error as e:
-                                continue
-
                         for storm in model_var_line['storms'].split(','):
-                            year = storm[4:9]
+                            year = storm[4:8]
                             if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
                             else:
@@ -618,6 +528,90 @@ class ParentMetadata:
                                     sorted(model_var_line['truths'].split(','))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['descrs'] = \
                                     model_var_line['descrs'].split(',')
+
+                                # get the line_date-specific fields
+                                temp_fcsts = set()
+                                temp_fcsts_orig = set()
+                                temp_levels = set()
+                                num_recs = 0
+                                mindate = datetime.max
+                                maxdate = datetime.min  # earliest epoch?
+                                app_specific_clause = end_query[:-1]
+
+                                # select the minimum length set of tcst_header_ids from the line_data_table that are unique
+                                # with respect to model, basin, and truth.
+                                # these will be used to qualify the distinct set of fcst_leads from the line data table.
+                                get_tcst_header_ids = "select tcst_header_id from " + \
+                                                      "(select group_concat(tcst_header_id) as tcst_header_id " + \
+                                                      "from tcst_header where tcst_header_id in (select distinct tcst_header_id from " + \
+                                                      line_data_table + \
+                                                      " where amodel = '" + model + \
+                                                      "' and basin = '" + basin + \
+                                                      "' and storm_id like '%" + year + \
+                                                      "' order by tcst_header_id)" + \
+                                                      app_specific_clause + \
+                                                      " group by amodel, basin, bmodel) as tcst_header_id order by length(tcst_header_id) limit 1;"
+                                if debug:
+                                    print(
+                                        self.script_name + " - Getting get_tcst_header_ids lens for model " + model + " and basin " + basin+ " and year " + year + " sql: " + get_tcst_header_ids)
+                                try:
+                                    cursor3.execute(get_tcst_header_ids)
+                                    tcst_header_id_values = cursor3.fetchall()
+                                    tcst_header_id_list = [d['tcst_header_id'] for d in tcst_header_id_values if
+                                                           'tcst_header_id' in d]
+                                except pymysql.Error as e:
+                                    continue
+
+                                if tcst_header_id_list:
+                                    get_fcsts = "select distinct fcst_lead from " + line_data_table + " where tcst_header_id in (" + ','.join(
+                                        tcst_header_id_list) + ");"
+                                    print(
+                                        self.script_name + " - Getting forecast lengths for model " + model + " and basin " + basin)
+                                    if debug:
+                                        print(self.script_name + " - fcst_lead sql query: " + get_fcsts)
+                                    try:
+                                        cursor3.execute(get_fcsts)
+                                        for line3 in cursor3:
+                                            fcst = int(list(line3.values())[0])
+                                            temp_fcsts_orig.add(fcst)
+                                            if fcst % 10000 == 0:
+                                                fcst = int(fcst / 10000)
+                                            temp_fcsts.add(fcst)
+                                    except pymysql.Error as e:
+                                        continue
+                                    if line_data_table == "line_data_tcmpr":
+                                        get_levels = "select distinct level from " + line_data_table + " where tcst_header_id in (" + ','.join(
+                                            tcst_header_id_list) + ");"
+                                        print(
+                                            self.script_name + " - Getting levels for model " + model + " and basin " + basin)
+                                        if debug:
+                                            print(self.script_name + " - level sql query: " + get_levels)
+                                        try:
+                                            cursor3.execute(get_levels)
+                                            for line3 in cursor3:
+                                                level = list(line3.values())[0]
+                                                temp_levels.add(level)
+                                        except pymysql.Error as e:
+                                            continue
+                                    else:
+                                        temp_levels.add("NA")
+                                    get_stats = 'select min(fcst_valid) as mindate, max(fcst_valid) as maxdate, count(fcst_valid) as numrecs from ' + line_data_table + " where tcst_header_id in (" + ','.join(
+                                        tcst_header_id_list) + ");"
+                                    print(self.script_name + " - Getting stats for model " + model + " and basin " + basin)
+                                    if debug:
+                                        print(self.script_name + " - stats sql query: " + get_stats)
+                                    try:
+                                        cursor3.execute(get_stats)
+                                        data = cursor3.fetchone()
+                                        if data:
+                                            mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
+                                                'mindate']
+                                            maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
+                                                'maxdate']
+                                            num_recs = num_recs + data['numrecs']
+                                    except pymysql.Error as e:
+                                        continue
+
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['fcsts'] = list(map(str, sorted(temp_fcsts)))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['fcst_orig'] = list(map(str, sorted(temp_fcsts_orig)))
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['levels'] = list(map(str, sorted(temp_levels)))
@@ -631,16 +625,16 @@ class ParentMetadata:
                                     maxdate.replace(tzinfo=timezone.utc).timestamp())
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs'] = num_recs
 
-                        if int(num_recs) > 0:
                             db_has_valid_data = True
-                            for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
+                        for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
+                            if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
                                 print(
                                     "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
-                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin,
-                                                                 year, per_mvdb[mvdb][model][line_data_table][basin][year])
-                        else:
-                            print(
-                                "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
+                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
+                                                                    basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
+                            else:
+                                print(
+                                    "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
             else:
                 continue
 
