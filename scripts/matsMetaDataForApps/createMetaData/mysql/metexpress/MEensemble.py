@@ -24,6 +24,7 @@ class MEEnsemble(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
+        options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_ecnt",     # used for most stats on timeseries/dieoff/validtime/hist
                                       "line_data_cnt",      # used for MAE and ACC on timeseries/dieoff/validtime/hist
                                       "line_data_pstd",     # used for brier scores on timeseries/dieoff/validtime/hist
@@ -67,7 +68,7 @@ class MEEnsemble(ParentMetadata):
                 return 1000 + int(float(elem[1:])) * 10000
             except ValueError:
                 try:
-                    return 1000.0001 + int(float(elem[2:]))* 10000
+                    return 1000.0001 + int(float(elem[2:])) * 10000
                 except ValueError:
                     return 3000
         elif elem[0] == '<':

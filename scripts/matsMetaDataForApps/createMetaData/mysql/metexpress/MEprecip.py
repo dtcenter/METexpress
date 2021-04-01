@@ -24,6 +24,7 @@ class MEPrecip(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = 'fcst_var regexp "PCP|PRECIP|precip|pcp"'
+        options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_ctc",      # used for ctc stats on all plot types
                                       "line_data_eclv",     # used for EV on all plot types
@@ -35,7 +36,7 @@ class MEPrecip(ParentMetadata):
 
     @staticmethod
     def get_app_reference():
-        return "met-airquality"
+        return "met-precip"
 
     def strip_level(self, elem):
         # helper function for sorting levels

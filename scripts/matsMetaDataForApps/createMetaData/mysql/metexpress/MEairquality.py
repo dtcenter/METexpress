@@ -24,6 +24,7 @@ class MEAirquality(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = 'fcst_var regexp "^OZ|^PM25|^PMTF|^PDM|^PMAVE"'
+        options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_ctc"]      # used for ctc stats on all plot types
         options['metadata_table'] = "airquality_mats_metadata"
@@ -79,6 +80,7 @@ class MEAirquality(ParentMetadata):
                 return int(float(elem))
             except ValueError:
                 return 0
+
 
 if __name__ == '__main__':
     options = MEAirquality.get_options(sys.argv)
