@@ -55,25 +55,6 @@ const doPlotParams = function () {
                 displayGroup: 3
             });
 
-        const histogramOptionsMap = {
-            "Rank Histogram": ["rhist"],
-            "Probability Integral Transform Histogram": ["phist"],
-            "Relative Position Histogram": ["relp"]
-        };
-        matsCollections.PlotParams.insert(
-            {
-                name: 'histogram-type-controls',
-                type: matsTypes.InputTypes.select,
-                optionsMap: histogramOptionsMap,
-                options: Object.keys(histogramOptionsMap),
-                default: Object.keys(histogramOptionsMap)[0],
-                controlButtonCovered: true,
-                controlButtonText: 'Histogram Type',
-                displayOrder: 1,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
         const yAxisOptionsMap = {
             "Relative frequency": ["relFreq"],
             "Number": ["number"]
@@ -232,54 +213,30 @@ const doCurveParams = function () {
     }
 
     const masterPlotTypeOptionsMap = {
-        "line_data_ecnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_cnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_pstd": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_eclv": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_nbrcnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_rhist": [matsTypes.PlotTypes.ensembleHistogram],
-        "line_data_pct": [matsTypes.PlotTypes.reliability, matsTypes.PlotTypes.roc]
+        "line_data_tcmpr": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
+        "line_data_probrirw": [matsTypes.PlotTypes.performanceDiagram]
     };
 
     const masterStatsOptionsMap = {
-        "line_data_ecnt": {
-            'RMSE': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'RMSE with obs error': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Spread': ['precalculated', 'line_data_ecnt', 'ld.spread'],
-            'Spread with obs error': ['precalculated', 'line_data_ecnt', 'ld.spread_oerr'],
-            'ME (Additive bias)': ['precalculated', 'line_data_ecnt', 'ld.me'],
-            'ME with obs error': ['precalculated', 'line_data_ecnt', 'ld.me_oerr'],
-            'CRPS': ['precalculated', 'line_data_ecnt', 'ld.crps'],
-            'CRPSS': ['precalculated', 'line_data_ecnt', 'ld.crpss']
+        "line_data_tcmpr": {
+            'Track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
+            'X error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
+            'Y error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
+            'Along track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
+            'Cross track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
+            'Model distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Truth distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Model-truth distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Model MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Truth MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Model-truth MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Model maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Truth maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Model-truth maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
         },
-        "line_data_cnt": {
-            'MAE': ['precalculated', 'line_data_cnt', 'ld.mae'],
-            'ACC': ['precalculated', 'line_data_cnt', 'ld.anom_corr']
-        },
-        "line_data_pstd": {
-            'BS': ['precalculated', 'line_data_pstd', 'ld.brier'],
-            'BSS': ['precalculated', 'line_data_pstd', 'ld.bss'],
-            'BS reliability': ['precalculated', 'line_data_pstd', 'ld.reliability'],
-            'BS resolution': ['precalculated', 'line_data_pstd', 'ld.resolution'],
-            'BS uncertainty': ['precalculated', 'line_data_pstd', 'ld.uncertainty'],
-            'BS lower confidence limit': ['precalculated', 'line_data_pstd', 'ld.brier_ncl'],
-            'BS upper confidence limit': ['precalculated', 'line_data_pstd', 'ld.brier_ncu'],
-            'ROC AUC': ['precalculated', 'line_data_pstd', 'ld.roc_auc']
-        },
-        "line_data_eclv": {
-            'EV': ['precalculated', 'line_data_eclv', 'ld.value_baser']
-        },
-        "line_data_nbrcnt": {
-            'FSS': ['precalculated', 'line_data_nbrcnt', 'ld.fss']
-        },
-        "line_data_pct": {
+        "line_data_probrirw": {
             'Reliability': ['precalculated', 'line_data_pct', ''],
             'ROC': ['precalculated', 'line_data_pct', ''],
-        },
-        "line_data_rhist": {
-            'rhist': ['precalculated', 'line_data_rhist', ''],
-            'phist': ['precalculated', 'line_data_phist', ''],
-            'relp': ['precalculated', 'line_data_relp ', '']
         }
     };
 
