@@ -632,16 +632,16 @@ class ParentMetadata:
                                     maxdate.replace(tzinfo=timezone.utc).timestamp())
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs'] = num_recs
 
-                        if int(num_recs) > 0:
                             db_has_valid_data = True
                             for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
-                                print(
-                                    "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
-                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin,
-                                                                 year, per_mvdb[mvdb][model][line_data_table][basin][year])
-                        else:
-                            print(
-                                "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
+                                if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
+                                    print(
+                                        "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
+                                    self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
+                                                                        basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
+                                else:
+                                    print(
+                                        "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
             else:
                 continue
 
