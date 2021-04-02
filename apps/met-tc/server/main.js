@@ -27,7 +27,7 @@ const doPlotParams = function () {
                 options: [''],
                 startDate: minDate,
                 stopDate: maxDate,
-                superiorNames: ['database', 'data-source'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin', 'year'],
                 controlButtonCovered: true,
                 default: dstr,
                 controlButtonVisibility: 'block',
@@ -214,30 +214,87 @@ const doCurveParams = function () {
 
     const masterPlotTypeOptionsMap = {
         "line_data_tcmpr": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_probrirw": [matsTypes.PlotTypes.performanceDiagram]
+        "line_data_probrirw": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram]
     };
 
     const masterStatsOptionsMap = {
         "line_data_tcmpr": {
-            'Track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'X error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'Y error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'Along track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'Cross track error': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'Model distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Truth distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Model-truth distance to land': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Model MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Truth MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Model-truth MSLP': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Model maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Truth maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Model-truth maximum wind speed': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Track error': ['precalculated', 'line_data_tcmpr', 'ld.tk_err'],
+            'X error': ['precalculated', 'line_data_tcmpr', 'ld.x_err'],
+            'Y error': ['precalculated', 'line_data_tcmpr', 'ld.y_err'],
+            'Along track error': ['precalculated', 'line_data_tcmpr', 'ld.altk_err'],
+            'Cross track error': ['precalculated', 'line_data_tcmpr', 'ld.crtk_err'],
+            'Model distance to land': ['precalculated', 'line_data_tcmpr', 'ld.adland'],
+            'Truth distance to land': ['precalculated', 'line_data_tcmpr', 'ld.bdland'],
+            'Model-truth distance to land': ['precalculated', 'line_data_tcmpr', 'ld.adland-ld.bdland'],
+            'Model MSLP': ['precalculated', 'line_data_tcmpr', 'ld.amslp'],
+            'Truth MSLP': ['precalculated', 'line_data_tcmpr', 'ld.bmslp'],
+            'Model-truth MSLP': ['precalculated', 'line_data_tcmpr', 'ld.amslp-ld.bmslp'],
+            'Model maximum wind speed': ['precalculated', 'line_data_tcmpr', 'ld.amax_wind'],
+            'Truth maximum wind speed': ['precalculated', 'line_data_tcmpr', 'ld.bmax_wind'],
+            'Model-truth maximum wind speed': ['precalculated', 'line_data_tcmpr', 'ld.amax_wind-ld.bmax_wind'],
+            'Model radius of maximum winds': ['precalculated', 'line_data_tcmpr', 'ld.amrd'],
+            'Truth radius of maximum winds': ['precalculated', 'line_data_tcmpr', 'ld.bmrd'],
+            'Model-truth radius of maximum winds': ['precalculated', 'line_data_tcmpr', 'ld.amrd-ld.bmrd'],
+            'Model eye diameter': ['precalculated', 'line_data_tcmpr', 'ld.aeye'],
+            'Truth eye diameter': ['precalculated', 'line_data_tcmpr', 'ld.beye'],
+            'Model-truth eye diameter': ['precalculated', 'line_data_tcmpr', 'ld.aeye-ld.beye'],
+            'Model storm speed': ['precalculated', 'line_data_tcmpr', 'ld.aspeed'],
+            'Truth storm speed': ['precalculated', 'line_data_tcmpr', 'ld.bspeed'],
+            'Model-truth storm speed': ['precalculated', 'line_data_tcmpr', 'ld.aspeed-ld.bspeed'],
+            'Model storm direction': ['precalculated', 'line_data_tcmpr', 'ld.adir'],
+            'Truth storm direction': ['precalculated', 'line_data_tcmpr', 'ld.bdir'],
+            'Model-truth storm direction': ['precalculated', 'line_data_tcmpr', 'ld.adir-ld.bdir']
         },
         "line_data_probrirw": {
-            'Reliability': ['precalculated', 'line_data_pct', ''],
-            'ROC': ['precalculated', 'line_data_pct', ''],
+            'RI start hour': ['precalculated', 'line_data_probrirw', 'ld.ri_beg'],
+            'RI end hour': ['precalculated', 'line_data_probrirw', 'ld.ri_end'],
+            'RI time duration': ['precalculated', 'line_data_probrirw', 'ld.ri_window'],
+            'RI end model max wind speed': ['precalculated', 'line_data_probrirw', 'ld.awind_end'],
+            'RI start truth max wind speed': ['precalculated', 'line_data_probrirw', 'ld.bwind_beg'],
+            'RI end truth max wind speed': ['precalculated', 'line_data_probrirw', 'ld.bwind_end'],
+            'RI truth start to end change in max wind speed': ['precalculated', 'line_data_probrirw', 'ld.bdelta'],
+            'RI truth maximum change in max wind speed': ['precalculated', 'line_data_probrirw', 'ld.bdelta_max']
         }
+    };
+
+    const bestTrackDefs = {
+        "TD": {
+            "name": "Tropical depression (wind <34kt)",
+            "order": "0"
+        },
+        "TS": {
+            "name": "Tropical storm (wind 34–63 kt)",
+            "order": "1"
+        },
+        "HU": {
+            "name": "Hurricane (wind ≥64 kt)",
+            "order": "2"
+        },
+        "EX": {
+            "name": "Extratropical cyclone (any intensity)",
+            "order": "3"
+        },
+        "SD": {
+            "name": "Subtropical depression (wind <34kt)",
+            "order": "4"
+        },
+        "SS": {
+            "name": "Subtropical storm (wind ≥34kt)",
+            "order": "5"
+        },
+        "LO": {
+            "name": "Low that isn't a tropical, subtropical, or extratropical cyclone",
+            "order": "6"
+        },
+        "WV": {
+            "name": "Tropical wave (any intensity)",
+            "order": "7"
+        },
+        "DB": {
+            "name": "Disturbance (any intensity)",
+            "order": "8"
+        },
     };
 
     var masterStatsValuesMap = {};
@@ -252,11 +309,12 @@ const doCurveParams = function () {
     var dbDateRangeMap = {};
     var plotTypeOptionsMap = {};
     var statisticOptionsMap = {};
-    var variableOptionsMap = {};
-    var variableValuesMap = {};
-    var regionModelOptionsMap = {};
+    var basinOptionsMap = {};
+    var yearOptionsMap = {};
+    var stormsOptionsMap = {};
     var forecastLengthOptionsMap = {};
     var levelOptionsMap = {};
+    var sourceOptionsMap = {};
     var descrOptionsMap = {};
 
     var rows;
@@ -264,7 +322,7 @@ const doCurveParams = function () {
     var dbs;
     var dbArr;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select * from ensemble_database_groups order by db_group;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select * from tc_database_groups order by db_group;");
         for (var i = 0; i < rows.length; i++) {
             thisGroup = rows[i].db_group.trim();
             dbs = rows[i].dbs;
@@ -280,7 +338,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from ensemble_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from tc_mats_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -296,14 +354,15 @@ const doCurveParams = function () {
             dbDateRangeMap[thisDB] = {};
             plotTypeOptionsMap[thisDB] = {};
             statisticOptionsMap[thisDB] = {};
-            variableOptionsMap[thisDB] = {};
-            variableValuesMap[thisDB] = {};
-            regionModelOptionsMap[thisDB] = {};
+            basinOptionsMap[thisDB] = {};
+            yearOptionsMap[thisDB] = {};
+            stormsOptionsMap[thisDB] = {};
             forecastLengthOptionsMap[thisDB] = {};
             levelOptionsMap[thisDB] = {};
+            sourceOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,mindate,maxdate from ensemble_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from tc_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -312,23 +371,25 @@ const doCurveParams = function () {
 
                 var rowMinDate = moment.utc(rows[i].mindate * 1000).format("MM/DD/YYYY HH:mm");
                 var rowMaxDate = moment.utc(rows[i].maxdate * 1000).format("MM/DD/YYYY HH:mm");
-                if (dbDateRangeMap[thisDB][model] === undefined) {
-                    dbDateRangeMap[thisDB][model] = {minDate: rowMinDate, maxDate: rowMaxDate};
-                } else {
-                    dbDateRangeMap[thisDB][model][minDate] = dbDateRangeMap[thisDB][model][minDate] < rowMinDate ? dbDateRangeMap[thisDB][model][minDate] : rowMinDate;
-                    dbDateRangeMap[thisDB][model][maxDate] = dbDateRangeMap[thisDB][model][maxDate] > rowMaxDate ? dbDateRangeMap[thisDB][model][maxDate] : rowMaxDate;
-                }
 
                 var line_data_table = rows[i].line_data_table.trim();
                 var validPlotTypes = masterPlotTypeOptionsMap[line_data_table];
                 plotTypeOptionsMap[thisDB][model] = plotTypeOptionsMap[thisDB][model] === undefined ? validPlotTypes : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
                 var validStats = masterStatsOptionsMap[line_data_table];
-                var variable = rows[i].variable.trim();
+                var basin = rows[i].basin.trim();
+                var year = rows[i].year;
 
-                var regions = rows[i].regions;
-                var regionsArr = regions.split(',').map(Function.prototype.call, String.prototype.trim);
-                for (var j = 0; j < regionsArr.length; j++) {
-                    regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
+                var storms = rows[i].storms;
+                var stormsArr = storms.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < stormsArr.length; j++) {
+                    stormsArr[j] = stormsArr[j].replace(/'|\[|\]/g, "");
+                }
+                stormsArr.unshift('All storms');
+
+                var sources = rows[i].truths;
+                var sourceArr = sources.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < sourceArr.length; j++) {
+                    sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
                 }
 
                 var forecastLengths = rows[i].fcst_orig;
@@ -341,13 +402,22 @@ const doCurveParams = function () {
                 var levelsArrRaw = levels.split(',').map(Function.prototype.call, String.prototype.trim);
                 var levelsArr = [];
                 var dummyLevel;
+                var dummyObj;
                 for (var j = 0; j < levelsArrRaw.length; j++) {
                     // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
                     dummyLevel = levelsArrRaw[j].replace(/'|\[|\]|\=/g, "");
-                    if (levelsArr.indexOf(dummyLevel) === -1) {
-                        levelsArr.push(dummyLevel);
+                    if (Object.keys(bestTrackDefs).indexOf(dummyLevel) !== -1) {
+                        dummyObj = bestTrackDefs[dummyLevel];
+                    } else {
+                        dummyObj = {
+                            "name": dummyLevel,
+                            "order": 10 + j
+                        };
                     }
+                    levelsArr.push(dummyObj);
                 }
+                levelsArr = levelsArr.sort((a, b) => (a.order > b.order) ? 1 : -1);
+                levelsArr = levelsArr.map(a => a.name);
 
                 var descrs = rows[i].descrs;
                 var descrsArr = descrs.split(',').map(Function.prototype.call, String.prototype.trim);
@@ -356,12 +426,14 @@ const doCurveParams = function () {
                 }
 
                 statisticOptionsMap[thisDB][model] = statisticOptionsMap[thisDB][model] === undefined ? {} : statisticOptionsMap[thisDB][model];
-                variableOptionsMap[thisDB][model] = variableOptionsMap[thisDB][model] === undefined ? {} : variableOptionsMap[thisDB][model];
-                variableValuesMap[thisDB][model] = variableValuesMap[thisDB][model] === undefined ? {} : variableValuesMap[thisDB][model];
-                regionModelOptionsMap[thisDB][model] = regionModelOptionsMap[thisDB][model] === undefined ? {} : regionModelOptionsMap[thisDB][model];
+                basinOptionsMap[thisDB][model] = basinOptionsMap[thisDB][model] === undefined ? {} : basinOptionsMap[thisDB][model];
+                yearOptionsMap[thisDB][model] = yearOptionsMap[thisDB][model] === undefined ? {} : yearOptionsMap[thisDB][model];
+                stormsOptionsMap[thisDB][model] = stormsOptionsMap[thisDB][model] === undefined ? {} : stormsOptionsMap[thisDB][model];
                 forecastLengthOptionsMap[thisDB][model] = forecastLengthOptionsMap[thisDB][model] === undefined ? {} : forecastLengthOptionsMap[thisDB][model];
                 levelOptionsMap[thisDB][model] = levelOptionsMap[thisDB][model] === undefined ? {} : levelOptionsMap[thisDB][model];
+                sourceOptionsMap[thisDB][model] = sourceOptionsMap[thisDB][model] === undefined ? {} : sourceOptionsMap[thisDB][model];
                 descrOptionsMap[thisDB][model] = descrOptionsMap[thisDB][model] === undefined ? {} : descrOptionsMap[thisDB][model];
+                dbDateRangeMap[thisDB][model] = dbDateRangeMap[thisDB][model] === undefined ? {} : dbDateRangeMap[thisDB][model];
 
                 var thisPlotType;
                 for (var ptidx = 0; ptidx < validPlotTypes.length; ptidx++) {
@@ -369,45 +441,47 @@ const doCurveParams = function () {
                     if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
                         // if we haven't encountered this plot type for this model yet, initialize everything
                         statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
-                        variableOptionsMap[thisDB][model][thisPlotType] = {};
-                        variableValuesMap[thisDB][model][thisPlotType] = {};
-                        regionModelOptionsMap[thisDB][model][thisPlotType] = {};
+                        basinOptionsMap[thisDB][model][thisPlotType] = [];
+                        yearOptionsMap[thisDB][model][thisPlotType] = {};
+                        stormsOptionsMap[thisDB][model][thisPlotType] = {};
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
                         levelOptionsMap[thisDB][model][thisPlotType] = {};
+                        sourceOptionsMap[thisDB][model][thisPlotType] = {};
                         descrOptionsMap[thisDB][model][thisPlotType] = {};
+                        dbDateRangeMap[thisDB][model][thisPlotType] = {};
                     } else {
                         // if we have encountered this plot type for this model, add in any new stats
                         statisticOptionsMap[thisDB][model][thisPlotType] = {...statisticOptionsMap[thisDB][model][thisPlotType], ...validStats};
                     }
-                    const jsonFriendlyVariable = variable.replace(/\./g, "_");
-                    const theseValidStats = Object.keys(validStats);
-                    var thisValidStatType;
-                    for (var vsidx = 0; vsidx < theseValidStats.length; vsidx++) {
-                        thisValidStatType = validStats[theseValidStats[vsidx]][0];
-                        if (variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] === undefined) {
-                            // if we haven't encountered this variable for this stat yet, initialize everything
-                            variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
-                            variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                        }
-                        if (variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] === undefined) {
-                            // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
-                            variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(jsonFriendlyVariable);
-                            variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = variable;
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = regionsArr;
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = forecastLengthArr;
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = levelsArr;
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = descrsArr;
-                        } else {
-                            // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], regionsArr);
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
-                            levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], levelsArr);
-                            descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], descrsArr);
-                        }
+                    if (stormsOptionsMap[thisDB][model][thisPlotType][basin] === undefined) {
+                        // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                        basinOptionsMap[thisDB][model][thisPlotType].push(basin);
+                        yearOptionsMap[thisDB][model][thisPlotType][basin] = [];
+                        stormsOptionsMap[thisDB][model][thisPlotType][basin] = {};
+                        forecastLengthOptionsMap[thisDB][model][thisPlotType][basin] = {};
+                        levelOptionsMap[thisDB][model][thisPlotType][basin] = {};
+                        sourceOptionsMap[thisDB][model][thisPlotType][basin] = sourceArr;
+                        descrOptionsMap[thisDB][model][thisPlotType][basin] = descrsArr;
+                        dbDateRangeMap[thisDB][model][thisPlotType][basin] = {};
+                    } else {
+                        // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                        sourceOptionsMap[thisDB][model][thisPlotType][basin] = _.union(sourceOptionsMap[thisDB][model][thisPlotType][basin], sourceArr);
+                        descrOptionsMap[thisDB][model][thisPlotType][basin] = _.union(descrOptionsMap[thisDB][model][thisPlotType][basin], descrsArr);
+                    }
+                    if (stormsOptionsMap[thisDB][model][thisPlotType][basin][year] === undefined) {
+                        // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                        yearOptionsMap[thisDB][model][thisPlotType][basin].push(year);
+                        stormsOptionsMap[thisDB][model][thisPlotType][basin][year] = stormsArr;
+                        forecastLengthOptionsMap[thisDB][model][thisPlotType][basin][year] = forecastLengthArr;
+                        levelOptionsMap[thisDB][model][thisPlotType][basin][year] = levelsArr;
+                        dbDateRangeMap[thisDB][model][thisPlotType][basin][year] = {minDate: rowMinDate, maxDate: rowMaxDate};
+                    } else {
+                        // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                        stormsOptionsMap[thisDB][model][thisPlotType][basin][year] = _.union(stormsOptionsMap[thisDB][model][thisPlotType][basin][year], stormsArr);
+                        forecastLengthOptionsMap[thisDB][model][thisPlotType][basin][year] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][basin][year], forecastLengthArr);
+                        levelOptionsMap[thisDB][model][thisPlotType][basin][year] = _.union(levelOptionsMap[thisDB][model][thisPlotType][basin][year], levelsArr);
+                        dbDateRangeMap[thisDB][model][thisPlotType][basin][year][minDate] = dbDateRangeMap[thisDB][model][thisPlotType][basin][year][minDate] < rowMinDate ? dbDateRangeMap[thisDB][model][thisPlotType][basin][year][minDate] : rowMinDate;
+                        dbDateRangeMap[thisDB][model][thisPlotType][basin][year][maxDate] = dbDateRangeMap[thisDB][model][thisPlotType][basin][year][maxDate] > rowMaxDate ? dbDateRangeMap[thisDB][model][thisPlotType][basin][year][maxDate] : rowMaxDate;
                     }
                 }
             }
@@ -435,12 +509,11 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsd_ensemble_test") !== -1) ? "mv_gsd_ensemble_test" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("HREF") !== -1) ? "HREF" : Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf("mollytc") !== -1) ? "mollytc" : Object.keys(dbGroupMap)[0];
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_testtc") !== -1) ? "mv_testtc" : dbGroupMap[defaultGroup][0];
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("AEMI") !== -1) ? "AEMI" : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
-    var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
 
     if (matsCollections["group"].findOne({name: 'group'}) == undefined) {
         matsCollections["group"].insert(
@@ -520,7 +593,7 @@ const doCurveParams = function () {
                 optionsMap: modelOptionsMap,
                 options: Object.keys(modelOptionsMap[defaultDB]),
                 superiorNames: ["database"],
-                dependentNames: ["plot-type", "dates", "curve-dates"],
+                dependentNames: ["plot-type"],
                 controlButtonCovered: true,
                 default: defaultModel,
                 unique: false,
@@ -576,43 +649,41 @@ const doCurveParams = function () {
         }
     }
 
-    const regionOptions = regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
-    var regionDefault;
-    if (regionOptions.indexOf("FULL") !== -1) {
-        regionDefault = "FULL";
-    } else if (regionOptions.indexOf("CONUS") !== -1) {
-        regionDefault = "CONUS";
+    const basinOptions = basinOptionsMap[defaultDB][defaultModel][defaultPlotType];
+    var defaultBasin;
+    if (basinOptions.indexOf("AL") !== -1) {
+        defaultBasin = "AL";
     } else {
-        regionDefault = regionOptions[0];
+        defaultBasin = basinOptions[0];
     }
 
-    if (matsCollections["region"].findOne({name: 'region'}) == undefined) {
-        matsCollections["region"].insert(
+    if (matsCollections["basin"].findOne({name: 'basin'}) == undefined) {
+        matsCollections["basin"].insert(
             {
-                name: 'region',
+                name: 'basin',
                 type: matsTypes.InputTypes.select,
-                optionsMap: regionModelOptionsMap,
-                options: regionOptions,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                optionsMap: basinOptionsMap,
+                options: basinOptions,
+                superiorNames: ['database', 'data-source', 'plot-type'],
+                dependentNames: ["year", "truth", "description"],
                 controlButtonCovered: true,
                 unique: false,
-                default: regionDefault,
+                default: defaultBasin,
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
-                displayGroup: 3,
-                help: 'region.html'
+                displayGroup: 3
             });
     } else {
         // it is defined but check for necessary update
-        var currentParam = matsCollections["region"].findOne({name: 'region'});
-        if (!matsDataUtils.areObjectsEqual(regionModelOptionsMap, currentParam.optionsMap)) {
-            // have to reload region data
-            matsCollections["region"].update({name: 'region'}, {
+        var currentParam = matsCollections["basin"].findOne({name: 'basin'});
+        if (!matsDataUtils.areObjectsEqual(basinOptionsMap, currentParam.optionsMap)) {
+            // have to reload basin data
+            matsCollections["basin"].update({name: 'basin'}, {
                 $set: {
-                    optionsMap: regionModelOptionsMap,
-                    options: regionOptions,
-                    default: regionDefault
+                    optionsMap: basinOptionsMap,
+                    options: basinOptions,
+                    default: defaultBasin
                 }
             });
         }
@@ -627,7 +698,6 @@ const doCurveParams = function () {
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["variable"],
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -651,50 +721,104 @@ const doCurveParams = function () {
         }
     }
 
-    const variableOptions = variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType];
-    var variableDefault;
-    if (variableOptions.indexOf("REFC") !== -1) {
-        variableDefault = "REFC";
-    } else {
-        variableDefault = variableOptions[0];
-    }
-
-    if (matsCollections["variable"].findOne({name: 'variable'}) == undefined) {
-        matsCollections["variable"].insert(
+    const defaultYear = yearOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][0];
+    
+    if (matsCollections["year"].findOne({name: 'year'}) == undefined) {
+        matsCollections["year"].insert(
             {
-                name: 'variable',
+                name: 'year',
                 type: matsTypes.InputTypes.select,
-                optionsMap: variableOptionsMap,
-                options: variableOptions,
-                valuesMap: variableValuesMap,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic'],
-                dependentNames: ["region", "forecast-length", "level", "description"],
+                optionsMap: yearOptionsMap,
+                options: yearOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin'],
+                dependentNames: ["storm", "forecast-length", "level", "dates", "curve-dates"],
                 controlButtonCovered: true,
                 unique: false,
-                default: variableDefault,
+                default: defaultYear,
                 controlButtonVisibility: 'block',
-                displayOrder: 3,
+                displayOrder: 2,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 4
             });
     } else {
         // it is defined but check for necessary update
-        var currentParam = matsCollections["variable"].findOne({name: 'variable'});
-        if ((!matsDataUtils.areObjectsEqual(variableOptionsMap, currentParam.optionsMap)) ||
-            (!matsDataUtils.areObjectsEqual(variableValuesMap, currentParam.valuesMap))) {
-            // have to reload variable data
-            matsCollections["variable"].update({name: 'variable'}, {
+        var currentParam = matsCollections["year"].findOne({name: 'year'});
+        if (!matsDataUtils.areObjectsEqual(yearOptionsMap, currentParam.optionsMap)) {
+            // have to reload year data
+            matsCollections["year"].update({name: 'year'}, {
                 $set: {
-                    optionsMap: variableOptionsMap,
-                    valuesMap: variableValuesMap,
-                    options: variableOptions,
-                    default: variableDefault
+                    optionsMap: yearOptionsMap,
+                    options: yearOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                    default: defaultYear
                 }
             });
         }
     }
 
-    const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
+    if (matsCollections["storm"].findOne({name: 'storm'}) == undefined) {
+        matsCollections["storm"].insert(
+            {
+                name: 'storm',
+                type: matsTypes.InputTypes.select,
+                optionsMap: stormsOptionsMap,
+                options: stormsOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin', 'year'],
+                controlButtonCovered: true,
+                unique: false,
+                default: stormsOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear][0],
+                controlButtonVisibility: 'block',
+                // multiple: true,
+                displayOrder: 3,
+                displayPriority: 1,
+                displayGroup: 4
+            });
+    } else {
+        // it is defined but check for necessary update
+        var currentParam = matsCollections["storm"].findOne({name: 'storm'});
+        if (!matsDataUtils.areObjectsEqual(stormsOptionsMap, currentParam.optionsMap)) {
+            // have to reload storm data
+            matsCollections["storm"].update({name: 'storm'}, {
+                $set: {
+                    optionsMap: stormsOptionsMap,
+                    options: stormsOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear],
+                    default: stormsOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear][0]
+                }
+            });
+        }
+    }
+
+    if (matsCollections["truth"].findOne({name: 'truth'}) == undefined) {
+        matsCollections["truth"].insert(
+            {
+                name: 'truth',
+                type: matsTypes.InputTypes.select,
+                optionsMap: sourceOptionsMap,
+                options: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin'],
+                controlButtonCovered: true,
+                unique: false,
+                default: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][0],
+                controlButtonVisibility: 'block',
+                displayOrder: 4,
+                displayPriority: 1,
+                displayGroup: 4
+            });
+    } else {
+        // it is defined but check for necessary update
+        var currentParam = matsCollections["truth"].findOne({name: 'truth'});
+        if (!matsDataUtils.areObjectsEqual(sourceOptionsMap, currentParam.optionsMap)) {
+            // have to reload truth data
+            matsCollections["truth"].update({name: 'truth'}, {
+                $set: {
+                    optionsMap: sourceOptionsMap,
+                    options: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                    default: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][0]
+                }
+            });
+        }
+    }
+
+    const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear];
     var fhrDefault;
     if (fhrOptions.indexOf("24") !== -1) {
         fhrDefault = "24";
@@ -711,7 +835,7 @@ const doCurveParams = function () {
                 type: matsTypes.InputTypes.select,
                 optionsMap: forecastLengthOptionsMap,
                 options: fhrOptions,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin', 'year'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
@@ -832,34 +956,24 @@ const doCurveParams = function () {
             });
     }
 
-    const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
-    var levelDefault;
-    if (levelOptions.indexOf("P500") !== -1) {
-        levelDefault = "P500";
-    } else if (levelOptions.indexOf("SFC") !== -1) {
-        levelDefault = "SFC";
-    } else {
-        levelDefault = levelOptions[0];
-    }
-
     if (matsCollections["level"].findOne({name: 'level'}) == undefined) {
         matsCollections["level"].insert(
             {
                 name: 'level',
                 type: matsTypes.InputTypes.select,
                 optionsMap: levelOptionsMap,
-                options: levelOptions,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                options: levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin', 'year'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: levelDefault,
+                default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
-                controlButtonText: "Level",
+                controlButtonText: "Storm Classification",
                 displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 6,
-                multiple: false
+                multiple: true
             });
     } else {
         // it is defined but check for necessary update
@@ -869,8 +983,8 @@ const doCurveParams = function () {
             matsCollections["level"].update({name: 'level'}, {
                 $set: {
                     optionsMap: levelOptionsMap,
-                    options: levelOptions,
-                    default: levelDefault
+                    options: levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin][defaultYear],
+                    default: matsTypes.InputTypes.unused
                 }
             });
         }
@@ -882,8 +996,8 @@ const doCurveParams = function () {
                 name: 'description',
                 type: matsTypes.InputTypes.select,
                 optionsMap: descrOptionsMap,
-                options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+                options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin'],
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
@@ -902,8 +1016,8 @@ const doCurveParams = function () {
             matsCollections["description"].update({name: 'description'}, {
                 $set: {
                     optionsMap: descrOptionsMap,
-                    options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                    default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+                    options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultBasin],
+                    default: matsTypes.InputTypes.unused
                 }
             });
         }
@@ -913,14 +1027,14 @@ const doCurveParams = function () {
     var defaultDb = matsCollections["database"].findOne({name: "database"}, {default: 1}).default;
     var dbDateRanges = matsCollections["database"].findOne({name: "database"}, {dates: 1}).dates;
     var defaultDataSource = matsCollections["data-source"].findOne({name: "data-source"}, {default: 1}).default;
-    minDate = dbDateRanges[defaultDb][defaultDataSource].minDate;
-    maxDate = dbDateRanges[defaultDb][defaultDataSource].maxDate;
+    minDate = dbDateRanges[defaultDb][defaultDataSource][defaultPlotType][defaultBasin][defaultYear].minDate;
+    maxDate = dbDateRanges[defaultDb][defaultDataSource][defaultPlotType][defaultBasin][defaultYear].maxDate;
 
     // need to turn the raw max and min from the metadata into the last valid month of data
-    const newDateRange = matsParamUtils.getMinMaxDates(minDate, maxDate);
-    const minusMonthMinDate = newDateRange.minDate;
+    const newDateRange = matsParamUtils.getMinMaxDatesTC(minDate, maxDate);
+    minDate = newDateRange.minDate;
     maxDate = newDateRange.maxDate;
-    dstr = moment.utc(minusMonthMinDate).format("MM/DD/YYYY HH:mm") + ' - ' + moment.utc(maxDate).format("MM/DD/YYYY HH:mm");
+    dstr = moment.utc(minDate).format("MM/DD/YYYY HH:mm") + ' - ' + moment.utc(maxDate).format("MM/DD/YYYY HH:mm");
 
     if (matsCollections["curve-dates"].findOne({name: 'curve-dates'}) == undefined) {
         const optionsMap = {
@@ -940,7 +1054,7 @@ const doCurveParams = function () {
                 options: Object.keys(optionsMap).sort(),
                 startDate: minDate,
                 stopDate: maxDate,
-                superiorNames: ['database', 'data-source'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'basin', 'year'],
                 controlButtonCovered: true,
                 unique: false,
                 default: dstr,
@@ -987,17 +1101,19 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ' '],
+                ['', 'basin', ', '],
+                ['', 'year', ' '],
+                ['', 'storm', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
+                ['', 'truth', ', '],
                 ['desc: ', 'description', ' ']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "average", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });
@@ -1007,18 +1123,20 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ' '],
+                ['', 'basin', ', '],
+                ['', 'year', ' '],
+                ['', 'storm', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['', 'dieoff-type', ', '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['start utc: ', 'utc-cycle-start', ', '],
+                ['', 'truth', ', '],
                 ['desc: ', 'description', ' '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1028,16 +1146,18 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ' '],
+                ['', 'basin', ', '],
+                ['', 'year', ' '],
+                ['', 'storm', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
+                ['', 'truth', ', '],
                 ['desc: ', 'description', ' '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1047,72 +1167,19 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ' '],
+                ['', 'basin', ', '],
+                ['', 'year', ' '],
+                ['', 'storm', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
+                ['', 'truth', ', '],
                 ['desc: ', 'description', ' '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "forecast-length", "level", "description", "curve-dates"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.ensembleHistogram,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', ' '],
-                ['', 'curve-dates', '']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description", "curve-dates"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.reliability,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.roc,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1157,24 +1224,6 @@ const doPlotGraph = function () {
             dataFunction: "dataHistogram",
             checked: false
         });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.ensembleHistogram,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataEnsembleHistogram",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.reliability,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataReliability",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.roc,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataROC",
-            checked: false
-        });
     }
 };
 
@@ -1215,14 +1264,14 @@ Meteor.startup(function () {
     }
 
     // create list of tables we need to monitor for update
-    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['ensemble_mats_metadata', 'ensemble_database_groups']);
+    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['tc_mats_metadata', 'tc_database_groups']);
     try {
         matsMethods.resetApp({
             appPools: allPools,
             appMdr: mdr,
             appType: matsTypes.AppTypes.metexpress,
             app: 'met-tc',
-            title: "MET Ensemble",
+            title: "MET TC",
             group: "METexpress"
         });
     } catch (error) {

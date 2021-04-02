@@ -1034,7 +1034,7 @@ const doCurveParams = function () {
                 $set: {
                     optionsMap: descrOptionsMap,
                     options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                    default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+                    default: matsTypes.InputTypes.unused
                 }
             });
         }
