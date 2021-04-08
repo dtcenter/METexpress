@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: '3.6'
       - name: Install dependencies
+        run: |
+          python -m pip install --upgrade python-dateutil requests sphinx \
+          sphinx-gallery Pillow sphinx_rtd_theme
+      - name: Build documentation
+        continue-on-error: true
         run: ./.github/jobs/build_documentation.sh
       - uses: actions/upload-artifact@v2
         with:
