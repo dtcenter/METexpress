@@ -23,25 +23,7 @@ jobs:
         with:
           python-version: '3.6'
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade python-dateutil requests sphinx \
-          sphinx-gallery Pillow sphinx_rtd_theme
-      - name: Build docs
-        continue-on-error: true
-        run: |
-          DOCS_DIR=${GITHUB_WORKSPACE}/docs
-          cd ${DOCS_DIR}
-          make clean html
-          cd ${GITHUB_WORKSPACE}
-          warning_file=${DOCS_DIR}/_build/warnings.log
-          mkdir -p artifact/documentation
-          cp -r ${DOCS_DIR}/_build/html/* artifact/documentation
-          if [ -s $warning_file ]; then
-            cp -r ${DOCS_DIR}/_build/warnings.log artifact/doc_warnings.log
-            cp artifact/doc_warnings.log artifact/documentation
-          else
-            rm ${warning_file}
-          fi
+        run: ./.github/jobs/build_documentation.sh
       - uses: actions/upload-artifact@v2
         with:
           name: documentation
