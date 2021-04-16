@@ -214,7 +214,7 @@ const doCurveParams = function () {
 
     const masterPlotTypeOptionsMap = {
         "line_data_tcmpr": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_probrirw": [matsTypes.PlotTypes.performanceDiagram]
+        "line_data_probrirw": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram]
     };
 
     const masterStatsOptionsMap = {
@@ -247,9 +247,9 @@ const doCurveParams = function () {
             'Model-truth storm direction (deg)': ['precalculated', 'line_data_tcmpr', 'ld.adir-ld.bdir']
         },
         "line_data_probrirw": {
-            'RI start hour': ['precalculated', 'line_data_probrirw', 'ld.ri_beg'],
-            'RI end hour': ['precalculated', 'line_data_probrirw', 'ld.ri_end'],
-            'RI time duration': ['precalculated', 'line_data_probrirw', 'ld.ri_window'],
+            'RI start hour': ['precalculated', 'line_data_probrirw', 'ld.rirw_beg'],
+            'RI end hour': ['precalculated', 'line_data_probrirw', 'ld.rirw_end'],
+            'RI time duration': ['precalculated', 'line_data_probrirw', 'ld.rirw_window'],
             'RI end model max wind speed (kts)': ['precalculated', 'line_data_probrirw', 'ld.awind_end'],
             'RI start truth max wind speed (kts)': ['precalculated', 'line_data_probrirw', 'ld.bwind_beg'],
             'RI end truth max wind speed (kts)': ['precalculated', 'line_data_probrirw', 'ld.bwind_end'],
@@ -1205,24 +1205,6 @@ const doCurveTextPatterns = function () {
             ],
             groupSize: 6
         });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.performanceDiagram,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'variable', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
-            ],
-            groupSize: 6
-        });
     }
 };
 
@@ -1262,12 +1244,6 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.histogram,
             graphFunction: "graphPlotly",
             dataFunction: "dataHistogram",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.performanceDiagram,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataReliability",
             checked: false
         });
     }
