@@ -11,10 +11,10 @@ import {matsDataCurveOpsUtils} from 'meteor/randyp:mats-common';
 import {matsDataProcessUtils} from 'meteor/randyp:mats-common';
 import {moment} from 'meteor/momentjs:moment';
 
-dataEnsembleHistogram = function (plotParams, plotFunction) {
+dataPerformanceDiagram = function (plotParams, plotFunction) {
     // initialize variables common to all curves
     const appParams = {
-        "plotType": matsTypes.PlotTypes.ensembleHistogram,
+        "plotType": matsTypes.PlotTypes.performanceDiagram,
         "matching": plotParams['plotAction'] === matsTypes.PlotActions.matched,
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
@@ -25,6 +25,9 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     var dataFoundForCurve = true;
     var dataFoundForAnyCurve = false;
     var totalProcessingStart = moment();
+    var dateRange = matsDataUtils.getDateRange(plotParams.dates);
+    var fromSecs = dateRange.fromSeconds;
+    var toSecs = dateRange.toSeconds;
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
@@ -35,10 +38,6 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     var xmin = Number.MAX_VALUE;
     var ymin = Number.MAX_VALUE;
 
-    // process user axis customizations
-    const yAxisFormat = plotParams['histogram-yaxis-controls'];
-    const histogramType = plotParams['histogram-type-controls'];
-
     for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
         // initialize variables specific to each curve
         var curve = curves[curveIndex];
@@ -48,28 +47,15 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
         var modelClause = "and h.model = '" + model + "'";
         var selectorPlotType = curve['plot-type'];
-        var statistic;
+        var statistic = 'PerformanceDiagram';
         var statLineType = 'precalculated';
-        var lineDataType;
-        var lineDataSuffix;
-        if (histogramType === 'Rank Histogram') {
-            lineDataType = 'line_data_rhist';
-            lineDataSuffix = 'rank';
-            statistic = "rhist";
-        } else if (histogramType === 'Probability Integral Transform Histogram') {
-            lineDataType = 'line_data_phist';
-            lineDataSuffix = 'bin';
-            statistic = "phist";
-        } else if (histogramType === 'Relative Position Histogram') {
-            lineDataType = 'line_data_relp';
-            lineDataSuffix = 'ens';
-            statistic = "relp";
-        } else {
-            throw new Error("Unrecognized histogram type.");
-        }
-        var statisticClause = "sum(ldr." + lineDataSuffix + "_i) as bin_count, " +
-                "group_concat(distinct ldr." + lineDataSuffix + "_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-        var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld, " + database + "." + lineDataType + "_" + lineDataSuffix + " ldr";
+        var lineDataType = 'line_data_pct';
+        var lineDataSuffix = 'thresh';
+        var statisticClause = "ldt.i_value as bin_number, " +
+                "ldt.thresh_i as threshold, " +
+                "sum(ldt.oy_i) as oy_i, " +
+                "sum(ldt.on_i) as on_i";
+        var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld, " + database + "." + lineDataType + "_" + lineDataSuffix + " ldt";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
         regions = Array.isArray(regions) ? regions : [regions];
         var regionsClause = "";
@@ -104,9 +90,6 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             }).join(',');
             forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
         }
-        var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
-        var fromSecs = dateRange.fromSeconds;
-        var toSecs = dateRange.toSeconds;
         var dateClause = "and unix_timestamp(ld.fcst_valid_beg) >= " + fromSecs + " and unix_timestamp(ld.fcst_valid_beg) <= " + toSecs;
         var levels = (curve['level'] === undefined || curve['level'] === matsTypes.InputTypes.unused) ? [] : curve['level'];
         var levelsClause = "";
@@ -136,16 +119,16 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         }
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
-        // units (axisKey) it will use the same axis.
-        // Histograms should have everything under the same axisKey.
-        var axisKey = yAxisFormat;
+        // variable + statistic (axisKey) it will use the same axis.
+        // The axis number is assigned to the axisKeySet value, which is the axisKey.
+        var axisKey = 'PerformanceDiagram';
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
         var d;
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
-            var statement = "select ldr.i_value as bin, " +
+            var statement = "select unix_timestamp(ld.fcst_valid_beg) as avtime, " +
                 "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
                 "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
                 "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
@@ -162,9 +145,9 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
                 "{{levelsClause}} " +
                 "{{descrsClause}} " +
                 "and h.stat_header_id = ld.stat_header_id " +
-                "and ld.line_data_id = ldr.line_data_id " +
-                "group by bin " +
-                "order by bin" +
+                "and ld.line_data_id = ldt.line_data_id " +
+                "group by avtime, bin_number, threshold " +
+                "order by avtime" +
                 ";";
 
             statement = statement.replace('{{statisticClause}}', statisticClause);
@@ -184,7 +167,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             var finishMoment;
             try {
                 // send the query statement to the query function
-                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, histogramType, appParams, vts);
+                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
                 finishMoment = moment();
                 dataRequests["data retrieval (query) time - " + label] = {
                     begin: startMoment.format(),
@@ -207,7 +190,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
                     // this is an error returned by the mysql database
                     error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
                     if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + histogramType + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
+                        throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
                     } else {
                         throw new Error(error);
                     }
@@ -225,13 +208,8 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            // this is a difference curve
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams);
-            d = diffResult.dataset;
-            xmin = xmin < d.xmin ? xmin : d.xmin;
-            xmax = xmax > d.xmax ? xmax : d.xmax;
-            ymin = ymin < d.ymin ? ymin : d.ymin;
-            ymax = ymax > d.ymax ? ymax : d.ymax;
+            // this is a difference curve -- not supported for ROC plots
+            throw new Error("INFO:  Difference curves are not supported for ROC curves, as they do not feature consistent x or y values across all curves.");
         }
 
         // set curve annotation to be the curve mean -- may be recalculated later
@@ -244,7 +222,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         curve['ymin'] = d.ymin;
         curve['ymax'] = d.ymax;
         curve['axisKey'] = axisKey;
-        const cOptions = matsDataCurveOpsUtils.generateBarChartCurveOptions(curve, curveIndex, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
+        const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(curve, curveIndex, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
         dataset.push(cOptions);
         var postQueryFinishMoment = moment();
         dataRequests["post data retrieval (query) process time - " + label] = {
@@ -257,15 +235,6 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     if (!dataFoundForAnyCurve) {
         // we found no data for any curves so don't bother proceeding
         throw new Error("INFO:  No valid data for any curves.");
-    } else if (appParams.matching) {
-        // make sure each curve has the same number of bins if plotting matched
-        for (curveIndex = 0; curveIndex < curvesLength - 1; curveIndex++) {
-            const theseXBins = dataset[curveIndex].x;
-            const nextXBins = dataset[curveIndex + 1].x;
-            if (theseXBins.length !== 0 && nextXBins.length !== 0 && !matsDataUtils.arraysEqual(theseXBins, nextXBins)) {
-                throw new Error("INFO:  Can't plot matched with these curves because they don't have the same bins. Try setting the histogram type to 'Probability Integral Transform Histogram'.");
-            }
-        }
     }
 
     // process the data returned by the query
@@ -274,11 +243,10 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         "curvesLength": curvesLength,
         "statType": "met-" + statLineType,
         "axisMap": axisMap,
-        "yAxisFormat": yAxisFormat,
         "xmax": xmax,
         "xmin": xmin
     };
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
-    var result = matsDataProcessUtils.processDataEnsembleHistogram(dataset, appParams, curveInfoParams, plotParams, bookkeepingParams);
+    var result = matsDataProcessUtils.processDataPerformanceDiagram(dataset, appParams, curveInfoParams, plotParams, bookkeepingParams);
     plotFunction(result);
 };

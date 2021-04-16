@@ -238,7 +238,7 @@ const doCurveParams = function () {
         "line_data_eclv": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_nbrcnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_rhist": [matsTypes.PlotTypes.ensembleHistogram],
-        "line_data_pct": [matsTypes.PlotTypes.reliability, matsTypes.PlotTypes.roc]
+        "line_data_pct": [matsTypes.PlotTypes.reliability, matsTypes.PlotTypes.roc, matsTypes.PlotTypes.performanceDiagram]
     };
 
     const masterStatsOptionsMap = {
@@ -1159,6 +1159,24 @@ const doCurveTextPatterns = function () {
             ],
             groupSize: 6
         });
+        matsCollections.CurveTextPatterns.insert({
+            plotType: matsTypes.PlotTypes.performanceDiagram,
+            textPattern: [
+                ['', 'label', ': '],
+                ['', 'database', '.'],
+                ['', 'data-source', ' in '],
+                ['', 'region', ', '],
+                ['', 'variable', ', '],
+                ['level: ', 'level', ', '],
+                ['fcst_len: ', 'forecast-length', 'h, '],
+                ['valid-time: ', 'valid-time', ''],
+                ['desc: ', 'description', ' ']
+            ],
+            displayParams: [
+                "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
+            ],
+            groupSize: 6
+        });
     }
 };
 
@@ -1216,6 +1234,12 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.roc,
             graphFunction: "graphPlotly",
             dataFunction: "dataROC",
+            checked: false
+        });
+        matsCollections.PlotGraphFunctions.insert({
+            plotType: matsTypes.PlotTypes.performanceDiagram,
+            graphFunction: "graphPlotly",
+            dataFunction: "dataPerformanceDiagram",
             checked: false
         });
     }
