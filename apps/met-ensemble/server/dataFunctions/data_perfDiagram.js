@@ -209,7 +209,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
             }
         } else {
             // this is a difference curve -- not supported for ROC plots
-            throw new Error("INFO:  Difference curves are not supported for ROC curves, as they do not feature consistent x or y values across all curves.");
+            throw new Error("INFO:  Difference curves are not supported for performance diagrams, as they do not feature consistent x or y values across all curves.");
         }
 
         // set curve annotation to be the curve mean -- may be recalculated later
