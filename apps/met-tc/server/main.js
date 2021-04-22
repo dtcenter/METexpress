@@ -1184,6 +1184,26 @@ const doCurveTextPatterns = function () {
             groupSize: 6
         });
         matsCollections.CurveTextPatterns.insert({
+            plotType: matsTypes.PlotTypes.yearToYear,
+            textPattern: [
+                ['', 'label', ': '],
+                ['', 'database', '.'],
+                ['', 'data-source', ' in '],
+                ['', 'basin', ' '],
+                ['', 'storm', ', '],
+                ['', 'statistic', ', '],
+                ['level: ', 'level', ', '],
+                ['fcst_len: ', 'forecast-length', 'h, '],
+                ['valid-time: ', 'valid-time', ', '],
+                ['', 'truth', ', '],
+                ['desc: ', 'description', '']
+            ],
+            displayParams: [
+                "label", "group", "database", "data-source", "basin", "statistic", "storm", "truth", "valid-time", "forecast-length", "level", "description"
+            ],
+            groupSize: 6
+        });
+        matsCollections.CurveTextPatterns.insert({
             plotType: matsTypes.PlotTypes.histogram,
             textPattern: [
                 ['', 'label', ': '],
@@ -1202,26 +1222,6 @@ const doCurveTextPatterns = function () {
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "forecast-length", "level", "description", "curve-dates"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.yearToYear,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'basin', ' '],
-                ['', 'storm', ', '],
-                ['', 'statistic', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ', '],
-                ['desc: ', 'description', '']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "storm", "truth", "valid-time", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });
@@ -1261,15 +1261,15 @@ const doPlotGraph = function () {
             checked: false
         });
         matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.histogram,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataHistogram",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.yearToYear,
             graphFunction: "graphPlotly",
             dataFunction: "dataYearToYear",
+            checked: false
+        });
+        matsCollections.PlotGraphFunctions.insert({
+            plotType: matsTypes.PlotTypes.histogram,
+            graphFunction: "graphPlotly",
+            dataFunction: "dataHistogram",
             checked: false
         });
     }
