@@ -1132,7 +1132,7 @@ const doCurveTextPatterns = function () {
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
                 ['', 'truth', ', '],
-                ['desc: ', 'description', ' ']
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "average", "forecast-length", "level", "description"
@@ -1154,7 +1154,7 @@ const doCurveTextPatterns = function () {
                 ['valid-time: ', 'valid-time', ', '],
                 ['start utc: ', 'utc-cycle-start', ', '],
                 ['', 'truth', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1175,7 +1175,7 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['', 'truth', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1197,7 +1197,7 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['', 'truth', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1218,7 +1218,7 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['', 'truth', ', '],
-                ['desc: ', 'description', ' ']
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "basin", "statistic", "storm", "truth", "valid-time", "forecast-length", "level", "description"

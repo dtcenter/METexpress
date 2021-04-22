@@ -1037,7 +1037,7 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
-                ['desc: ', 'description', ' ']
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description"
@@ -1057,7 +1057,7 @@ const doCurveTextPatterns = function () {
                 ['', 'dieoff-type', ', '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['start utc: ', 'utc-cycle-start', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1076,7 +1076,7 @@ const doCurveTextPatterns = function () {
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1096,7 +1096,7 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1115,7 +1115,7 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', ' '],
+                ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
@@ -1133,8 +1133,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
+                ['valid-time: ', 'valid-time', ', '],
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1151,8 +1151,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
+                ['valid-time: ', 'valid-time', ', '],
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1169,8 +1169,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ''],
-                ['desc: ', 'description', ' ']
+                ['valid-time: ', 'valid-time', ', '],
+                ['desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
