@@ -15,7 +15,7 @@ The metadata scripts are written in python3, and require a number of python modu
 ## To run the metadata scripts for the first time:
 
 
-- The scripts are located in the METexpress repo [here](https://github.com/dtcenter/METexpress/tree/master/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress). After cloning this repo, link the contents of the `scripts/matsMetaDataForApps/createMetaData/mysql` directory to your preferred run directory (e.g. something like `/home/metexpress/scripts`).
+- The scripts are located in the METexpress repo [here](https://github.com/dtcenter/METexpress/tree/main/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress). After cloning this repo, link the contents of the `scripts/matsMetaDataForApps/createMetaData/mysql` directory to your preferred run directory (e.g. something like `/home/metexpress/scripts`).
 - You will need a .my.cnf file with the login credentials for your mysql database. Remember, the credentials must be for a user with write permissions.
 - cd to your run directory (e.g. `cd /home/metexpress/scripts`). Remember, the contents of this run directory should be identical to the contents of `scripts/matsMetaDataForApps/createMetaData/mysql`. Please note that this is ONE LEVEL ABOVE the directory where the metadata scripts actually are.
 - Set the python path to your run directory (e.g.    `export PYTHONPATH="/home/metexpress/scripts"`).
