@@ -24,7 +24,7 @@ author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
 
 # The stable version, displayed on the front page of the PDF
-version = '3.0.1'
+version = '4.0.0'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
