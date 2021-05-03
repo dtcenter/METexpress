@@ -1319,7 +1319,7 @@ Meteor.startup(function () {
             appMdr: mdr,
             appType: matsTypes.AppTypes.metexpress,
             app: 'met-tc',
-            title: "MET TC (initial test data)",
+            title: "MET TC",
             group: "METexpress"
         });
     } catch (error) {
