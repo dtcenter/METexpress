@@ -90,7 +90,26 @@ Acronyms
 * **HIWPP** - High Impact Weather Predication Project
 * **NGGPS** - Next Generation Global Predicatio System
 * **GSD** - Global Systems Division
-					  
+
+
+Authors
+-------
+
+Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
+To cite this documentation in publications, please refer to the METexpress User's Guide :ref:`Citation Instructions<citations>`.
+
+* Venita Hagerty [#CIRA]_
+* Jeff Hamilton [#CIRA]_
+* Randy Pierce [#CIRA]_
+* Molly B. Smith [#CIRA]_
+* Bonny Strong [#CIRA]_
+
+.. rubric:: Organization
+
+.. [#CIRA] `Cooperative Institute for Research in the Atmosphere at
+       National Oceanic and Atmospheric Administration (NOAA) Earth 
+       System Research Laboratory <https://www.esrl.noaa.gov/>`_
+
 .. toctree::
    :hidden:
    :caption: METexpress
