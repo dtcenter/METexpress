@@ -91,13 +91,12 @@ Acronyms
 * **NGGPS** - Next Generation Global Predicatio System
 * **GSD** - Global Systems Division
 
-author_list = 'Strong, B., Pierce, R., Smith, M.B., Hagerty, V., Hamilton, Jeff'
 
 Authors
 -------
 
 Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
-To cite this documentation in publications, please refer to the METplus User's Guide :ref:`Citation Instructions<citations>`.
+To cite this documentation in publications, please refer to the METexpress User's Guide :ref:`Citation Instructions<citations>`.
 
 * Venita Hagerty [#CIRA]_
 * Jeff Hamilton [#CIRA]_
