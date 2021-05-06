@@ -99,9 +99,9 @@ Many authors, listed below in alphabetical order, have contributed to the docume
 To cite this documentation in publications, please refer to the METexpress User's Guide :ref:`Citation Instructions<citations>`.
 
 * Venita Hagerty [#CIRA]_
-* Jeff Hamilton [#CIRA]_
+* Jeff Hamilton [#CIRES]_
 * Randy Pierce [#CIRA]_
-* Molly B. Smith [#CIRA]_
+* Molly B. Smith [#CIRES]_
 * Bonny Strong [#CIRA]_
 
 .. rubric:: Organization
@@ -109,6 +109,10 @@ To cite this documentation in publications, please refer to the METexpress User'
 .. [#CIRA] `Cooperative Institute for Research in the Atmosphere at
        National Oceanic and Atmospheric Administration (NOAA) Earth 
        System Research Laboratory <https://www.esrl.noaa.gov/>`_
+       
+.. [#CIRES] `Cooperative Institute for Research in Environmental
+       Science at the University of Colorado Boulder
+       <https://cires.colorado.edu/>`_
 
 .. toctree::
    :hidden:
