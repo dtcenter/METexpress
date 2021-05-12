@@ -1283,15 +1283,26 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['ensemble_mats_metadata', 'ensemble_database_groups']);
+    const appCurveParams = [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "plot-type",
+        "region",
+        "statistic",
+        "variable",
+        "forecast-length",
+        "dieoff-type",
+        "valid-time",
+        "utc-cycle-start",
+        "average",
+        "level",
+        "description",
+        "curve-dates"
+    ];
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-ensemble',
-            title: "MET Ensemble",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-ensemble', title: "MET Ensemble", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }

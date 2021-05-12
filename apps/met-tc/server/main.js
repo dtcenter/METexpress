@@ -1313,15 +1313,28 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['tc_mats_metadata', 'tc_database_groups']);
+    const appCurveParams = [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "plot-type",
+        "basin",
+        "statistic",
+        "year",
+        "storm",
+        "truth",
+        "forecast-length",
+        "dieoff-type",
+        "valid-time",
+        "utc-cycle-start",
+        "average",
+        "level",
+        "description",
+        "curve-dates"
+    ];
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-tc',
-            title: "MET TC",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-tc', title: "MET TC", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }
