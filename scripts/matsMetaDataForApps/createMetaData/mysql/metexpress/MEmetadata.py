@@ -519,9 +519,7 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table][basin] = {}
                         for storm in model_var_line['storms'].split(','):
                             storm_id = storm.split(" - ")[0]
-                            print("storm_id is " + storm_id)
                             year = storm_id[-4:]
-                            print("year is " + year)
                             if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
                             else:
@@ -802,7 +800,7 @@ class ParentMetadata:
         cnf_file = None
         db = None
         metexpress_base_url = None
-        metadata_database = "new_mats_metadata"
+        metadata_database = "mats_metadata"
         data_table_stat_header_id_limit = None
         try:
             opts, args = getopt.getopt(args[1:], "c:d:u:m:D:u:", usage)

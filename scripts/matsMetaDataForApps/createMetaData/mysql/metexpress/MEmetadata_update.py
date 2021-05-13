@@ -224,7 +224,7 @@ class metadataUpdate:
         db_name = None
         metexpress_base_url = None
         app_reference = None
-        metadata_database = "new_mats_metadata"
+        metadata_database = "mats_metadata"
         try:
             opts, args = getopt.getopt(args[1:], "c:d:u:a:m:", usage)
         except getopt.GetoptError as err:
