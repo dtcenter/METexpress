@@ -1190,7 +1190,6 @@ const doCurveTextPatterns = function () {
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
                 ['', 'basin', ' '],
-                ['', 'storm', ', '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
@@ -1199,7 +1198,7 @@ const doCurveTextPatterns = function () {
                 ['desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "storm", "truth", "valid-time", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "basin", "statistic", "truth", "valid-time", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });
