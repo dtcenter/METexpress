@@ -119,7 +119,7 @@ dataYearToYear = function (plotParams, plotFunction) {
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
-            var statement = "select substring(h.storm_id, 5) as year, " +
+            var statement = "select substring(h.storm_id, -4) as year, " +
                 "count(distinct unix_timestamp(ld.fcst_valid)) as N_times, " +
                 "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
                 "max(unix_timestamp(ld.fcst_valid)) as max_secs, " +
