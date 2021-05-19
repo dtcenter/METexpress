@@ -1036,8 +1036,8 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['avg: ', 'average', ', '],
-                ['desc: ', 'description', '']
+                ['avg: ', 'average', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description"
@@ -1133,8 +1133,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1151,8 +1151,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1169,8 +1169,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"

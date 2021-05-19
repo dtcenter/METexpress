@@ -297,6 +297,108 @@ const doCurveParams = function () {
         },
     };
 
+    const modelAcronymDecoder = {
+        "OFCL": "Official NHC/CPHC Forecast",
+        "OFCI": "Prev Official NHC/CPHC Forecast Interpolated Ahead 6 hr",
+        "OHPC": "Official WPC Forecast",
+        "OOPC": "Official OPC Forecast",
+        "AVNO": "GFS (AVNO)",
+        "GFSO": "GFS (GFSO)",
+        "AVNI": "Prev GFS Forecast Interpolated Ahead 6 hr (AVNI)",
+        "GFSI": "Prev GFS Forecast Interpolated Ahead 6 hr (GFSI)",
+        "AC00": "GFS Ensemble Control Forecast",
+        "AEMN": "GFS Ensemble Mean Forecast",
+        "AEMI": "Prev GFS Ensemble Mean Forecast Interpolated Ahead 6 hr",
+        "CMC": "Canadian Global Model (CMC)",
+        "CMCI": "Prev Canadian Global Model (CMC) Forecast Interpolated Ahead 6 hr",
+        "CC00": "Canadian Ensemble Control Forecast",
+        "CEMN": "Canadian Ensemble Mean Forecast",
+        "CEMI": "Prev Canadian Ensemble Mean Forecast Interpolated Ahead 6 hr",
+        "COTC": "US Navy COAMPS-TC",
+        "COTI": "Prev US Navy COAMPS-TC Forecast Interpolated Ahead 6 hr",
+        "COAL": "US Navy COAMPS-TC, Atlantic Basin",
+        "COAI": "Prev US Navy COAMPS-TC Atlantic Forecast Interpolated Ahead 6 hr",
+        "COCE": "US Navy COAMPS-TC, E Pacific Basin",
+        "COEI": "Prev US Navy COAMPS-TC E Pacific Forecast Interpolated Ahead 6 hr",
+        "EGRR": "UKMET (EGRR)",
+        "UKX": "UKMET (UKX)",
+        "EGRI": "Prev UKMET Forecast Interpolated Ahead 6 hr (EGRI)",
+        "UKXI": "Prev UKMET Forecast Interpolated Ahead 6 hr (UKXI)",
+        "EMX": "ECMWF (EMX)",
+        "ECMF": "ECMWF (ECMF)",
+        "EMXI": "Prev ECMWF Forecast Interpolated Ahead 6 hr (EMXI)",
+        "ECMI": "Prev ECMWF Forecast Interpolated Ahead 6 hr (ECMI)",
+        "JGSM": "Japanese Global Spectral Model",
+        "JGSI": "Prev Japanese Global Spectral Model Forecast Interpolated Ahead 6 hr",
+        "NAM": "North American Mesoscale (NAM)",
+        "NAMI": "Prev North American Mesoscale (NAM) Forecast Interpolated Ahead 6 hr",
+        "NGPS": "US Navy NOGAPS (NGPS)",
+        "NGX": "US Navy NOGAPS (NGX)",
+        "NGPI": "Prev US Navy NOGAPS Forecast Interpolated Ahead 6 hr (NGPI)",
+        "NGXI": "Prev US Navy NOGAPS Forecast Interpolated Ahead 6 hr (NGXI)",
+        "NVGM": "US Navy NAVGEM",
+        "NVGI": "Prev US Navy NAVGEM Forecast Interpolated Ahead 6 hr",
+        "HMON": "HMON Hurricane Model",
+        "HMNI": "Prev HMON Hurricane Model Forecast Interpolated Ahead 6 hr",
+        "HWRF": "HWRF Hurricane Model",
+        "HWFI": "Prev HWRF Hurricane Model Forecast Interpolated Ahead 6 hr",
+        "IVCN": "IVCN Consensus",
+        "GUNA": "GUNA Consensus",
+        "CGUN": "CGUN Consensus",
+        "TCON": "TCON Consensus",
+        "TCOE": "TCOE Consensus",
+        "TCOA": "TCOA Consensus",
+        "TCCN": "TCCN Consensus",
+        "TVCN": "TVCN Consensus",
+        "TVCE": "TVCE Consensus",
+        "TVCA": "TVCA Consensus",
+        "TVCC": "TVCC Consensus",
+        "TVCP": "TVCP Consensus",
+        "TVCX": "TVCX Consensus",
+        "TVCY": "TVCY Consensus",
+        "RYOC": "RYOC Consensus",
+        "MYOC": "MYOC Consensus",
+        "BAMD": "Deep-Layer Beta and Advection Model",
+        "TABD": "Deep-Layer Trajectory and Beta Model",
+        "BAMM": "Medium-Layer Beta and Advection Model",
+        "TABM": "Medium-Layer Trajectory and Beta Model",
+        "BAMS": "Shallow-Layer Beta and Advection Model",
+        "TABS": "Shallow-Layer Trajectory and Beta Model",
+        "CLIP": "72-hr Climatology and Persistence",
+        "CLP5": "120-hr Climatology and Persistence",
+        "TCLP": "168-hr Trajectory Climatology and Persistence",
+        "LBAR": "Limited Area Barotropic Model",
+        "LGEM": "Logistical Growth Error Model",
+        "SHFR": "72-hr SHIFOR Model",
+        "SHF5": "120-hr SHIFOR Model",
+        "DSHF": "120-hr Decay SHIFOR Model",
+        "SHIP": "SHIPS Model",
+        "DSHP": "Decay SHIPS Model",
+        "OCD5": "Operational CLP5 and DSHF Blended Model",
+        "DRCL": "DeMaria Climatology and Persistence Model",
+        "MRCL": "McAdie Climatology and Persistence Model",
+        "APSU": "Penn St WRF-ARW Model",
+        "APSI": "Prev Penn St WRF-ARW Forecast Interpolated Ahead 6 hr",
+        "FIM9": "Finite-Volume Icosahedral Model (FIM9)",
+        "FM9I": "Prev Finite-Volume Icosahedral Model (FIM9) Forecast Interpolated Ahead 6 hr",
+        "CTCX": "Experimental US Navy COAMPS-TC",
+        "CTCI": "Prev Experimental US Navy COAMPS-TC Forecast Interpolated Ahead 6 hr",
+        "HWFH": "Experimental NOAA/HRD HWRF",
+        "HWHI": "Prev Experimental NOAA/HRD HWRF Forecast Interpolated Ahead 6 hr",
+        "GPMN": "GFDL Ensemble Mean Forecast",
+        "GPMI": "Prev GFDL Ensemble Mean Forecast Interpolated Ahead 6 hr",
+        "HHYC": "HWRF with HYCOM Ocean Model",
+        "HHYI": "Prev HWRF with HYCOM Ocean Model Forecast Interpolated Ahead 6 hr",
+        "HWMN": "HWRF Ensemble Mean Forecast",
+        "HWMI": "Prev HWRF Ensemble Mean Forecast Interpolated Ahead 6 hr",
+        "UWN4": "University of Wisconsin-Madison NMS Model",
+        "UW4I": "Prev University of Wisconsin-Madison NMS Forecast Interpolated Ahead 6 hr",
+        "TV15": "HFIP Stream 1_5 Model Consensus",
+        "MMSE": "FSU Multimodel Superensemble",
+        "SPC3": "Statistical Prediction of Intensity",
+        "BEST": "Best Track",
+    };
+
     var masterStatsValuesMap = {};
     const lineTypes = Object.keys(masterStatsOptionsMap);
     for (var si = 0; si < lineTypes.length; si++) {
@@ -366,7 +468,22 @@ const doCurveParams = function () {
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
-                var model = rows[i].display_text.trim();
+                var model;
+                if (Object.keys(modelAcronymDecoder).includes(model_value)) {
+                    model = modelAcronymDecoder[model_value];
+                } else if (model_value.match(/AP\d\d/)) {
+                    model = "GFS Ensemble Member " + model_value.slice(-2);
+                } else if (model_value.match(/CP\d\d/)) {
+                    model = "Canadian Ensemble Member " + model_value.slice(-2);
+                } else if (model_value.match(/RI\d\d/)) {
+                    model = "Rapid Intensification Aid " + model_value.slice(-2);
+                } else if (model_value.match(/GP\d\d/)) {
+                    model = "GFDL Ensemble Member " + model_value.slice(-2);
+                } else if (model_value.match(/HW\d\d/)) {
+                    model = "HWRF Ensemble Member " + model_value.slice(-2);
+                } else {
+                    model = model_value;
+                }
                 modelOptionsMap[thisDB][model] = [model_value];
 
                 var rowMinDate = moment.utc(rows[i].mindate * 1000).format("MM/DD/YYYY HH:mm");
@@ -390,6 +507,12 @@ const doCurveParams = function () {
                 var sourceArr = sources.split(',').map(Function.prototype.call, String.prototype.trim);
                 for (var j = 0; j < sourceArr.length; j++) {
                     sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
+                    if (Object.keys(modelAcronymDecoder).includes(sourceArr[j])) {
+                        sourceArr[j] = modelAcronymDecoder[sourceArr[j]];
+                    } else {
+                        modelAcronymDecoder[sourceArr[j]] = sourceArr[j];
+                    }
+
                 }
 
                 var forecastLengths = rows[i].fcst_orig;
@@ -815,6 +938,7 @@ const doCurveParams = function () {
                 type: matsTypes.InputTypes.select,
                 optionsMap: sourceOptionsMap,
                 options: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin],
+                valuesMap: modelAcronymDecoder,
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'basin'],
                 controlButtonCovered: true,
                 unique: false,
@@ -1131,8 +1255,8 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
-                ['', 'truth', ', '],
-                ['desc: ', 'description', '']
+                ['', 'truth', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "average", "forecast-length", "level", "description"
@@ -1194,8 +1318,8 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ', '],
-                ['desc: ', 'description', '']
+                ['', 'truth', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "basin", "statistic", "truth", "valid-time", "forecast-length", "level", "description"

@@ -58,7 +58,8 @@ dataYearToYear = function (plotParams, plotFunction) {
         var queryTableClause = "from " + database + ".tcst_header h, " + database + "." + lineDataType + " ld";
         var basin = curve['basin'];
         var stormClause = "and h.basin = '" + basin + "'";
-        var truth = curve['truth'];
+        var truthStr = curve['truth'];
+        var truth = Object.keys(matsCollections['truth'].findOne({name: 'truth'}).valuesMap).find(key => matsCollections['truth'].findOne({name: 'truth'}).valuesMap[key] === truthStr);
         var truthClause = "and h.bmodel = '" + truth + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
