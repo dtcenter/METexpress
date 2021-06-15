@@ -1155,8 +1155,8 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['avg: ', 'average', ', '],
-                ['desc: ', 'description', '']
+                ['avg: ', 'average', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description"
@@ -1263,8 +1263,8 @@ const doCurveTextPatterns = function () {
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "x-axis-parameter", "y-axis-parameter"
@@ -1365,15 +1365,30 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['upperair_mats_metadata', 'upperair_database_groups']);
+    const appCurveParams = [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "plot-type",
+        "region",
+        "statistic",
+        "variable",
+        "interp-method",
+        "scale",
+        "forecast-length",
+        "dieoff-type",
+        "valid-time",
+        "utc-cycle-start",
+        "average",
+        "level",
+        "description",
+        "x-axis-parameter",
+        "y-axis-parameter",
+        "curve-dates"
+    ];
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-upperair',
-            title: "MET Upper Air",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-upperair', title: "MET Upper Air", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }

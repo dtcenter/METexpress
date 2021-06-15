@@ -1180,7 +1180,8 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
-                ['desc: ', 'description', '']
+                ['', 'truth', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description"
@@ -1293,7 +1294,8 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['', 'truth', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "x-axis-parameter", "y-axis-parameter"
@@ -1394,15 +1396,31 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['airquality_mats_metadata', 'airquality_database_groups']);
+    const appCurveParams = [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "plot-type",
+        "region",
+        "statistic",
+        "variable",
+        "threshold",
+        "interp-method",
+        "scale",
+        "forecast-length",
+        "dieoff-type",
+        "valid-time",
+        "utc-cycle-start",
+        "average",
+        "level",
+        "description",
+        "x-axis-parameter",
+        "y-axis-parameter",
+        "curve-dates"
+    ];
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-airquality',
-            title: "MET Air Quality",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-airquality', title: "MET Air Quality", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }

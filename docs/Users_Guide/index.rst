@@ -21,9 +21,6 @@ contribution.  Please send an email to: `mats.gsl@noaa.gov <mailto:>`__.
 We will then determine if we will be able to include the contribution in a
 future version.
 
-This User's Guide was prepared by the developers of METexpress, including
-Bonny Strong, Randy Pierce, Molly B. Smith, Venita Hagerty, and Jeff Hamilton.
-
 **Model Evaluation Tools Express (METexpress)  TERMS OF USE - IMPORTANT!**
 
 Copyright |copyright|
@@ -41,11 +38,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+.. _citations:
+
 **Citations**
 
 |author_list|, |release_year|: The METexpress Version |version| User's Guide.
 Developmental Testbed Center.
-Available at: `METexpress releases <https://github.com/dtcenter/METexpress/releases>`_
+Available at: https://github.com/dtcenter/METexpress/releases
 
 **Acknowledgments**
 

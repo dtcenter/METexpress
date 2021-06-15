@@ -518,7 +518,8 @@ class ParentMetadata:
                         basin = model_var_line['basin']
                         per_mvdb[mvdb][model][line_data_table][basin] = {}
                         for storm in model_var_line['storms'].split(','):
-                            year = storm[4:8]
+                            storm_id = storm.split(" - ")[0]
+                            year = storm_id[-4:]
                             if year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                                 per_mvdb[mvdb][model][line_data_table][basin][year]['storms'].append(storm)
                             else:

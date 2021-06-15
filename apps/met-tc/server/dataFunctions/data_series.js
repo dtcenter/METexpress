@@ -64,11 +64,12 @@ dataSeries = function (plotParams, plotFunction) {
         var storm = curve['storm'];
         var stormClause;
         if (storm === "All storms") {
-            stormClause = "and h.storm_id regexp '^" + basin + ".." + year.toString() + "'";
+            stormClause = "and h.storm_id like '" + basin + "%" + year.toString() + "'";
         } else {
-            stormClause = "and h.storm_id = '" + storm.substring(0,8) + "'";
+            stormClause = "and h.storm_id = '" + storm.split(" - ")[0] + "'";
         }
-        var truth = curve['truth'];
+        var truthStr = curve['truth'];
+        var truth = Object.keys(matsCollections['truth'].findOne({name: 'truth'}).valuesMap).find(key => matsCollections['truth'].findOne({name: 'truth'}).valuesMap[key] === truthStr);
         var truthClause = "and h.bmodel = '" + truth + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";

@@ -1036,8 +1036,8 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['avg: ', 'average', ', '],
-                ['desc: ', 'description', '']
+                ['avg: ', 'average', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description"
@@ -1133,8 +1133,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1151,8 +1151,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1169,8 +1169,8 @@ const doCurveTextPatterns = function () {
                 ['', 'variable', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', '']
+                ['valid-time: ', 'valid-time', ''],
+                [', desc: ', 'description', '']
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "variable", "valid-time", "forecast-length", "level", "description"
@@ -1283,15 +1283,26 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['ensemble_mats_metadata', 'ensemble_database_groups']);
+    const appCurveParams = [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "plot-type",
+        "region",
+        "statistic",
+        "variable",
+        "forecast-length",
+        "dieoff-type",
+        "valid-time",
+        "utc-cycle-start",
+        "average",
+        "level",
+        "description",
+        "curve-dates"
+    ];
     try {
-        matsMethods.resetApp({
-            appPools: allPools,
-            appMdr: mdr,
-            appType: matsTypes.AppTypes.metexpress,
-            app: 'met-ensemble',
-            title: "MET Ensemble",
-            group: "METexpress"
-        });
+        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-ensemble', title: "MET Ensemble", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }
