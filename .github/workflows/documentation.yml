@@ -1,4 +1,4 @@
-name: METexpress CI/CD Workflow
+name: Documentation
 on:
   push:
     branches:
@@ -10,6 +10,8 @@ on:
       - v4.0.*
       - feature_*
       - bugfix_*
+    paths:
+      - docs/**
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -27,13 +29,14 @@ jobs:
           python -m pip install --upgrade python-dateutil requests sphinx \
           sphinx-gallery Pillow sphinx_rtd_theme
       - name: Build documentation
-        continue-on-error: true
         run: ./.github/jobs/build_documentation.sh
       - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: documentation
           path: artifact/documentation
       - uses: actions/upload-artifact@v2
+        if: failure()
         with:
           name: documentation_warnings.log
           path: artifact/doc_warnings.log
