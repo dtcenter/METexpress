@@ -11,7 +11,7 @@ Feature: Add Remove DieOff Curve
 
     Background:
         Given I load the app "/met-tc"
-        Then I expect the app title to be "MET TC"
+        Then I expect the app title to be "MET Cyclone"
 
     @watch
     Scenario: addRemoveDieOffCurve

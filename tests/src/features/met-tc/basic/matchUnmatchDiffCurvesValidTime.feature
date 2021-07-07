@@ -9,7 +9,7 @@ Feature: Match Unmatch Diff Curves Valid Time
 
     Background:
         Given I load the app "/met-tc"
-        Then I expect the app title to be "MET TC"
+        Then I expect the app title to be "MET Cyclone"
 
     @watch
     Scenario: matchUnmatchDiffCurvesValidTime
