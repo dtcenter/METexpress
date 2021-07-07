@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script creates the metadata tables required for a METexpress TC app. It parses the required fields from any
+This script creates the metadata tables required for a METexpress Cyclone app. It parses the required fields from any
 databases that begin with 'mv_' in a mysql instance.
 
 Usage: ["(c)nf_file=", "[(m)ats_metadata_database_name]",
@@ -20,7 +20,7 @@ from datetime import datetime
 from metexpress.MEmetadata import ParentMetadata
 
 
-class METc(ParentMetadata):
+class MECyclone(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
@@ -28,13 +28,13 @@ class METc(ParentMetadata):
         options['line_data_table'] = ["line_data_tcmpr",        # used for ?? stats on ?? plot types
                                       "line_data_probrirw"]     # used for ?? stats on ?? plot types
         options['metadata_table'] = "tc_mats_metadata"
-        options['app_reference'] = "met-tc"
+        options['app_reference'] = "met-cyclone"
         options['database_groups'] = "tc_database_groups"
         super().__init__(options)
 
     @staticmethod
     def get_app_reference():
-        return "met-tc"
+        return "met-cyclone"
 
     def strip_level(self, elem):
         # helper function for sorting levels
@@ -90,10 +90,10 @@ class METc(ParentMetadata):
 
 
 if __name__ == '__main__':
-    options = METc.get_options(sys.argv)
+    options = MECyclone.get_options(sys.argv)
     start = str(datetime.now())
     print('TC MATS FOR MET METADATA START: ' + start)
-    me_dbcreator = METc(options)
+    me_dbcreator = MECyclone(options)
     me_dbcreator.main()
     print('TC MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

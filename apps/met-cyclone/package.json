@@ -1,5 +1,5 @@
 {
-  "name": "met-tc",
+  "name": "met-cyclone",
   "private": true,
   "scripts": {
     "start": "meteor run"

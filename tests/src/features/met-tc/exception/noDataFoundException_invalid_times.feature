@@ -12,7 +12,7 @@ Feature: No Data Found Exception: invalid_times
     and the plot buttons and add curve buttons are enabled.
 
     Background:
-        Given I load the app "/met-tc"
+        Given I load the app "/met-cyclone"
         Then I expect the app title to be "MET Cyclone"
 
     @watch

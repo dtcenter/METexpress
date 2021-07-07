@@ -7,7 +7,7 @@ Feature: Reload Reset To Defaults
     then I compare the default parameter values to the reloaded parameter values
 
     Background:
-        Given I load the app "/met-tc"
+        Given I load the app "/met-cyclone"
         Then I expect the app title to be "MET Cyclone"
 
     @watch
@@ -31,7 +31,7 @@ Feature: Reload Reset To Defaults
         Then I should have 0 curves
 
         When I refresh the browser
-        And I load the app "/met-tc"
+        And I load the app "/met-cyclone"
         And I click the "Add Curve" button
         Then "Curve0" is added
         Then I click the "Remove Curve0" button

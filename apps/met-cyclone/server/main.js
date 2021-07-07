@@ -1693,7 +1693,7 @@ Meteor.startup(function () {
         "curve-dates"
     ];
     try {
-        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-tc', title: "MET Cyclone", group: "METexpress"});
+        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-cyclone', title: "MET Cyclone", group: "METexpress"});
     } catch (error) {
         console.log(error.message);
     }
