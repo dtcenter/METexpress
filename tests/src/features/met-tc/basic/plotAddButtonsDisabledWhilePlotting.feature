@@ -8,7 +8,7 @@ Feature: Plot and Add buttons are disabled while plotting
     The app should disable the add button while it is adding the first curve
 
     Background:
-        Given I load the app "/met-tc"
+        Given I load the app "/met-cyclone"
         Then I expect the app title to be "MET Cyclone"
 
     @watch
