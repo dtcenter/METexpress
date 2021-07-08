@@ -646,7 +646,7 @@ const doCurveParams = function () {
     var dbs;
     var dbArr;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select * from tc_database_groups order by db_group;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select * from cyclone_database_groups order by db_group;");
         for (var i = 0; i < rows.length; i++) {
             thisGroup = rows[i].db_group.trim();
             dbs = rows[i].dbs;
@@ -662,7 +662,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from tc_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from cyclone_mats_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -686,7 +686,7 @@ const doCurveParams = function () {
             sourceOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from tc_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from cyclone_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -1671,7 +1671,7 @@ Meteor.startup(function () {
     }
 
     // create list of tables we need to monitor for update
-    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['tc_mats_metadata', 'tc_database_groups']);
+    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['cyclone_mats_metadata', 'cyclone_database_groups']);
     const appCurveParams = [
         "label",
         "group",
