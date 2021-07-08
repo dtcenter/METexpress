@@ -27,9 +27,9 @@ class MECyclone(ParentMetadata):
         options['statHeaderType'] = 'tcst_header'
         options['line_data_table'] = ["line_data_tcmpr",        # used for ?? stats on ?? plot types
                                       "line_data_probrirw"]     # used for ?? stats on ?? plot types
-        options['metadata_table'] = "tc_mats_metadata"
+        options['metadata_table'] = "cyclone_mats_metadata"
         options['app_reference'] = "met-cyclone"
-        options['database_groups'] = "tc_database_groups"
+        options['database_groups'] = "cyclone_database_groups"
         super().__init__(options)
 
     @staticmethod
@@ -92,8 +92,8 @@ class MECyclone(ParentMetadata):
 if __name__ == '__main__':
     options = MECyclone.get_options(sys.argv)
     start = str(datetime.now())
-    print('TC MATS FOR MET METADATA START: ' + start)
+    print('CYCLONE MATS FOR MET METADATA START: ' + start)
     me_dbcreator = MECyclone(options)
     me_dbcreator.main()
-    print('TC MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('CYCLONE MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)
