@@ -12,6 +12,7 @@ The current list of apps includes:
 * MET Air Quality
 * MET Ensemble
 * MET Precipitation
+* MET Cyclone
 
 Future development of METexpress is likely to add more apps.
 
@@ -383,6 +384,11 @@ the entry for each curve in the plot legend.
 The **Edit Legend** button allows users to customize the legend text for each
 curve. By default, the legend displays the curve label, followed by each
 of the curve parameters contributing to that plot trace.
+
+The **Filter Points** button allows users to hide certain points on the graph,
+for quality control, to increase the time interval between each point, etc.
+Users uncheck independent variable values that they wish to hide when the
+Filter Points Modal appears.
 
 The **Re-sample** button allows users to change the zoom level of the x-axis
 and then re-query the database with the new x-axis limits. This has two

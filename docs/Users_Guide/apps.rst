@@ -8,6 +8,9 @@ This section includes a description of the unique feature of each app.
 Upper Air App
 _____________
 
+The Upper Air app is designed for plotting scalar and contingency table
+statistics at different pressure levels in the atmosphere.
+
 The user interface for Upper Air follows the general description from
 above.  Choices specific to this app are shown below.
 
@@ -195,6 +198,9 @@ the x-axis (e.g. forecast lead time), and which to place on the y-axis
 Anomaly Correlation App
 _______________________
 
+The Anomaly Correlation app is designed for plotting anomaly correlations
+at different pressure levels in the atmosphere, and at different heights above the ground.
+
 An example of the Anomaly Correlation app user interface is shown in :numref:`apps_interface_anom_corr`
 This interface is similar to the one for Upper Air but has fewer selectable parameters.
 
@@ -246,6 +252,9 @@ A sample anomaly correlation plot is shown in :numref:`apps_anom_corr_sample_plo
  
 Surface App
 ___________
+
+The Surface app is designed for plotting scalar and contingency table 
+statistics at different heights above the ground. 
 
 The user interface for the Surface app is shown in :numref:`apps_interface_surface`.
 
@@ -325,6 +334,9 @@ is shown in :numref:`apps_surface_plot`.
 Air Quality App
 _______________
 
+Similarly to the Surface app, the Air Quality app is designed for plotting scalar and contingency table 
+statistics at different heights above the ground, but with a focus on variables related to air quality. 
+
 For this app, the following parameters have choices derived from the data.
 
 * Group
@@ -392,6 +404,9 @@ of the selected parameter on the y-axis.
 Ensemble App
 ____________
 
+The Ensemble app is designed for plotting scalar and contingency table 
+statistics, as well as ensemble metrics, for multi-member ensemble model runs. 
+
 For this app, the following parameters have choices derived from the data.
 
 * Group
@@ -438,12 +453,13 @@ Plot types available include
 * Ensemble Histogram
 * Reliability
 * ROC
+* Performance Diagram
 
 Plots in the Ensemble app for Time Series, DieOff, ValidTime, and
 Histogram are the same as in Upper Air. 
 
-Three plot types are specific to this app: Ensemble Histogram,
-Reliability, and ROC. 
+Four plot types are specific to this app: Ensemble Histogram,
+Reliability, ROC, and Performance Diagram.
 
 Ensemble Histograms are controlled by the Histogram type selector
 that appears at the bottom of the main app page when the plot type
@@ -465,6 +481,11 @@ ROC plots can display multiple curves (probabilistic variables only),
 with False Alarm Rate on the x-axis, and Probability of Detection on
 the y-axis. An additional diagonal line will be displayed on the graph,
 denoting no skill.
+
+Performance Diagrams can also display multiple curves (probabilistic variables only),
+with Success Ratio (1-FAR) on the x-axis, and Probability of Detection on
+the y-axis. Additional solid black curves are displayed on the graph to denote lines of constant bias,
+and additional dashed black curves are displayed on the graph to denote lines of constant CSI.
 
 :numref:`apps_interface_ens_hist` shows the user interface for defining an Ensemble
 Histogram and :numref:`apps_ens_hist_plot_rank_hist` through :numref:`apps_ens_hist_plot_rel_pos_hist` show
@@ -499,16 +520,16 @@ examples of the 3 types of Ensemble Histograms.
 	    Ensemble Histogram plot type with Histogram
 	    Type of Relative Position Histogram
 
-:numref:`apps_ens_reliability_plot` shows an example Reliability plot and
-:numref:`apps_ens_roc_plot` shows an example ROC plot,
-both for the same data set.
+:numref:`apps_ens_reliability_plot` shows an example Reliability plot,
+:numref:`apps_ens_roc_plot` shows an example ROC plot, and
+:numref:`apps_ens_perf_diag` shows an example Performance Diagram,
+all for the same data set.
 
 .. _apps_ens_reliability_plot:
 
 .. figure:: figure/apps_ens_reliability_plot.png
 
-	    Ensemble App Reliability Plot for data defined
-	    in :numref:`apps_interface_ens_hist`.
+	    Ensemble app Reliability plot.
 	    The 1:1 diagonal gray line represents
 	    perfect skill between forecast probability and observation
 	    frequency. The diagonal line with the lower slope indicates
@@ -521,10 +542,20 @@ both for the same data set.
 .. figure:: figure/apps_ens_roc_plot.png
 
 	    Ensemble app ROC plot for the same data
-	    set defined in :numref:`apps_interface_ens_hist`.
+	    set defined in :numref:`apps_ens_reliability_plot`.
+
+.. apps_ens_perf_diag:
+
+.. figure:: figure/apps_ens_perf_diag.png
+
+	    Ensemble app Performance Diagram for the same data
+	    set defined in :numref:`apps_ens_reliability_plot`.
 
 Precipitation App
 _________________
+
+The Precipitation app is designed for plotting scalar and contingency table
+statistics for variables relating to precipitation.
 
 For this app, the following parameters have choices derived from the data.
 
@@ -614,3 +645,94 @@ Precipitation app, :numref:`apps_thresh_plot_precip` shows an example Threshold 
 	    GridScale plot in the Precipitation app
 	    produced from selections in :numref:`apps_interface_thresh_precip` 
  
+Cyclone App
+_________________
+
+The Cyclone app is designed for plotting track and intensity verification
+statistics for both tropical and extratropical cyclones.
+
+For this app, the following parameters have choices derived from the data.
+
+* Group
+* Database
+* Data-source
+* Basin
+* Statistic
+* Year
+* Storm
+* Truth
+* Forecast lead time
+* Storm classification
+* Description
+* Dates
+* Curve-dates
+
+The selector for the Statistic has these possible choices (depending on available MET line types):
+
+* Track error
+* X error
+* Y error
+* Along track error
+* Cross track error
+* Model distance to land
+* Truth distance to land
+* Model-truth distance to land
+* Model MSLP
+* Truth MSLP
+* Model-truth MSLP
+* Model maximum wind speed
+* Truth maximum wind speed
+* Model-truth maximum wind speed
+* Model radius of maximum winds
+* Truth radius of maximum winds
+* Model-truth radius of maximum winds
+* Model eye diameter
+* Truth eye diameter
+* Model-truth eye diameter
+* Model storm speed
+* Truth storm speed
+* Model-truth storm speed
+* Model storm direction
+* Truth storm direction
+* Model-truth storm direction
+* RI start hour
+* RI end hour
+* RI time duration
+* RI end model max wind speed
+* RI start truth max wind speed
+* RI end truth max wind speed
+* RI truth start to end change in max wind speed
+* RI truth maximum change in max wind speed
+
+Plot types available include
+
+* Time Series
+* DieOff
+* ValidTime
+* YearToYear
+* Histogram
+
+Plots in the Precipitation app for Time Series, DieOff,
+ValidTime, and Histogram are the same as in Upper Air.
+
+A different plot type, YearToYear, is present in this app. YearToYear
+plots display individual years on the x-axis, and the mean value of the
+selected statistic for each year on the y-axis. This is useful for seeing
+how forecast quality has changed from year to year for each ocean basin.
+
+:numref:`apps_interface_year_cyclone` shows an example of the user interface for the
+Cyclone app, and :numref:`apps_year_plot_cyclone` shows an example YearToYear plot.
+
+.. apps_interface_year_cyclone:
+
+.. figure:: figure/apps_interface_year_cyclone.png
+
+	    User interface screen for a YearToYear plot
+	    in the Cyclone app
+
+.. apps_year_plot_cyclone:
+
+.. figure:: figure/apps_year_plot_cyclone.png
+
+	    YearToYear plot in the Cyclone
+	    app produced from selections in :numref:`apps_interface_year_cyclone`
