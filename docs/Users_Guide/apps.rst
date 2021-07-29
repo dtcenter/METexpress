@@ -544,7 +544,7 @@ all for the same data set.
 	    Ensemble app ROC plot for the same data
 	    set defined in :numref:`apps_ens_reliability_plot`.
 
-.. apps_ens_perf_diag:
+.. _apps_ens_perf_diag:
 
 .. figure:: figure/apps_ens_perf_diag.png
 
