@@ -723,16 +723,17 @@ how forecast quality has changed from year to year for each ocean basin.
 :numref:`apps_interface_year_cyclone` shows an example of the user interface for the
 Cyclone app, and :numref:`apps_year_plot_cyclone` shows an example YearToYear plot.
 
-.. apps_interface_year_cyclone:
+.. _apps_interface_year_cyclone:
 
 .. figure:: figure/apps_interface_year_cyclone.png
 
 	    User interface screen for a YearToYear plot
 	    in the Cyclone app
 
-.. apps_year_plot_cyclone:
+.. _apps_year_plot_cyclone:
 
 .. figure:: figure/apps_year_plot_cyclone.png
 
 	    YearToYear plot in the Cyclone
 	    app produced from selections in :numref:`apps_interface_year_cyclone`
+
