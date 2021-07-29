@@ -3,7 +3,7 @@
 METexpress Apps
 ===============
 
-This section includes a description of the unique feature of each app.
+This section includes a description of the unique features of each app.
 
 Upper Air App
 _____________
