@@ -887,9 +887,19 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("mollytc") !== -1) ? "mollytc" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_testtc") !== -1) ? "mv_testtc" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("AEMI: GFS Ensemble Mean") !== -1) ? "AEMI: GFS Ensemble Mean" : Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf("realtime_tc_verif") !== -1) ? "realtime_tc_verif" : Object.keys(dbGroupMap)[0];
+    var defaultDB;
+    var defaultModel;
+    if (dbGroupMap[defaultGroup].indexOf("mv_gsl_tcmet_post") !== -1) {
+        defaultDB = "mv_gsl_tcmet_post";
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GF16") !== -1) ? "GF16" : Object.keys(modelOptionsMap[defaultDB])[0];
+    } else if (dbGroupMap[defaultGroup].indexOf("mv_nhc_tcmet_post") !== -1) {
+        defaultDB = "mv_nhc_tcmet_post";
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GFSO: GFS") !== -1) ? "GFSO: GFS" : Object.keys(modelOptionsMap[defaultDB])[0];
+    } else {
+        defaultDB = dbGroupMap[defaultGroup][0];
+        defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
+    }
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
