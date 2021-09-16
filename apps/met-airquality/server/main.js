@@ -481,9 +481,16 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("Test12") !== -1) ? "Test12" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_cmaq_g2o") !== -1) ? "mv_cmaq_g2o" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("CMAQ5X/148") !== -1) ? "CMAQ5X/148" : Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup;
+    if (Object.keys(dbGroupMap).indexOf("pshafran") !== -1) {
+        // special default parameters for the NWS METexpress
+        defaultGroup = "pshafran";
+    } else {
+        // default to the GSL test database if it exists. Currently a placeholder for GSL.
+        defaultGroup = (Object.keys(dbGroupMap).indexOf("Test12") !== -1) ? "Test12" : Object.keys(dbGroupMap)[0];
+    }
+    var defaultDB = dbGroupMap[defaultGroup][0];
+    var defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -626,6 +633,8 @@ const doCurveParams = function () {
     var regionDefault;
     if (regionOptions.indexOf("FULL") !== -1) {
         regionDefault = "FULL";
+    } else if (regionOptions.indexOf("G002") !== -1) {
+        regionDefault = "G002";
     } else if (regionOptions.indexOf("CONUS") !== -1) {
         regionDefault = "CONUS";
     } else {
@@ -965,10 +974,12 @@ const doCurveParams = function () {
 
     const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var levelDefault;
-    if (levelOptions.indexOf("P500") !== -1) {
-        levelDefault = "P500";
-    } else if (levelOptions.indexOf("SFC") !== -1) {
+    if (levelOptions.indexOf("SFC") !== -1) {
         levelDefault = "SFC";
+    } else if (levelOptions.indexOf("Z0") !== -1) {
+        levelDefault = "Z0";
+    } else if (levelOptions.indexOf("L0") !== -1) {
+        levelDefault = "L0";
     } else {
         levelDefault = levelOptions[0];
     }
