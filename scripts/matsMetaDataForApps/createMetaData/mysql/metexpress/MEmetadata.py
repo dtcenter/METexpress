@@ -266,10 +266,13 @@ class ParentMetadata:
                     'select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
                         **d))
                 # does it exist in the metadata_dev table?
+                last_update = int(d['updated'])
+                now = int(datetime.utcnow().timestamp())
+                print("last_updated: " + str(last_update))
+                print("now: " + str(now))
+                print("removing: " + str((now - last_update > 3600 * 48)))
                 if self.cursor.rowcount == 0:
                     # no - has the metadata been updated in the last two days (maybe by a competing script)?
-                    last_update = int(d['updated'])
-                    now = int(datetime.utcnow().timestamp())
                     if now - last_update > 3600 * 48:
                         # no - then delete the entry from tmp_metadata table
                         self.cursor.execute(
@@ -283,10 +286,13 @@ class ParentMetadata:
                     'select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
                         **d))
                 # does it exist in the metadata_dev table?
+                last_update = int(d['updated'])
+                now = int(datetime.utcnow().timestamp())
+                print("last_updated: " + str(last_update))
+                print("now: " + str(now))
+                print("removing: " + str((now - last_update > 3600 * 48)))
                 if self.cursor.rowcount == 0:
                     # no - has the metadata been updated in the last two days (maybe by a competing script)?
-                    last_update = int(d['updated'])
-                    now = int(datetime.utcnow().timestamp())
                     if now - last_update > 3600 * 48:
                         # no - then delete the entry from tmp_metadata table
                         self.cursor.execute(
