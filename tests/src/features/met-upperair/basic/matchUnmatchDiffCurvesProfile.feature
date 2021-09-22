@@ -21,6 +21,8 @@ Feature: Match Unmatch Diff Curves Profile
         Then the "database" parameter value matches "mv_gsd"
         When I change the "data-source" parameter to "GFS"
         Then the "data-source" parameter value matches "GFS"
+        When I change the "forecast-length" parameter to "120"
+        Then the "forecast-length" parameter value matches "120"
         When I set the curve-dates to "11/01/2018 0:00 - 11/11/2018 0:00"
         Then the curve-dates value is "11/01/2018 0:00 - 11/11/2018 0:00"
         When I click the "Add Curve" button

@@ -512,10 +512,10 @@ const doCurveParams = function () {
         defaultDB = "mv_gfs_precip_metplus";
         defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("gfs") !== -1) ? "gfs" : Object.keys(modelOptionsMap[defaultDB])[0];
     } else {
-        // default to the Ying Lin's precip database if it exists. Currently a placeholder for GSL.
-        defaultGroup = (Object.keys(dbGroupMap).indexOf("NCEP_ylin") !== -1) ? "NCEP_ylin" : Object.keys(dbGroupMap)[0];
-        defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_ylin_pcp") !== -1) ? "mv_ylin_pcp" : dbGroupMap[defaultGroup][0];
-        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("CONUSNEST") !== -1) ? "CONUSNEST" : Object.keys(modelOptionsMap[defaultDB])[0];
+        // default to the 2018 HWT precip database if it exists. Currently a placeholder for GSL.
+        defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
+        defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_hwt_2018") !== -1) ? "mv_hwt_2018" : dbGroupMap[defaultGroup][0];
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("HRRR") !== -1) ? "HRRR" : Object.keys(modelOptionsMap[defaultDB])[0];
     }
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
