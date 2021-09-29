@@ -28,8 +28,6 @@ Feature: Add Remove Grid Scale Curve
         Then the "statistic" parameter value matches "FSS"
         When I change the "variable" parameter to "APCP_03"
         Then the "variable" parameter value matches "APCP_03"
-        When I change the "level" parameter to "A3"
-        Then the "level" parameter value matches "A3"
         When I set the curve-dates to "02/03/2018 0:00 - 06/03/2019 0:00"
         Then the curve-dates value is "02/03/2018 0:00 - 06/03/2019 0:00"
         Then I click the "Add Curve" button

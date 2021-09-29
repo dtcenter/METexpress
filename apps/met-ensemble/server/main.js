@@ -478,9 +478,20 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsd_ensemble_test") !== -1) ? "mv_gsd_ensemble_test" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("HREF") !== -1) ? "HREF" : Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup;
+    var defaultDB;
+    var defaultModel;
+    if (Object.keys(dbGroupMap).indexOf("NCEP Binbin") !== -1 && dbGroupMap["NCEP Binbin"].indexOf("mv_met_g2o_gefs") !== -1) {
+        // special default parameters for the NWS METexpress
+        defaultGroup = "NCEP Binbin";
+        defaultDB = "mv_met_g2o_gefs";
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GEFS") !== -1) ? "GEFS" : Object.keys(modelOptionsMap[defaultDB])[0];
+    } else {
+        // default to the GSL realtime ensemble database if it exists, otherwise default to whatever is first alphabetically
+        defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
+        defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsd_ensemble_realtime") !== -1) ? "mv_gsd_ensemble_realtime" : dbGroupMap[defaultGroup][0];
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("RRFSE") !== -1) ? "RRFSE" : Object.keys(modelOptionsMap[defaultDB])[0];
+    }
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -623,6 +634,8 @@ const doCurveParams = function () {
     var regionDefault;
     if (regionOptions.indexOf("FULL") !== -1) {
         regionDefault = "FULL";
+    } else if (regionOptions.indexOf("G002") !== -1) {
+        regionDefault = "G002";
     } else if (regionOptions.indexOf("CONUS") !== -1) {
         regionDefault = "CONUS";
     } else {
@@ -696,8 +709,8 @@ const doCurveParams = function () {
 
     const variableOptions = variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType];
     var variableDefault;
-    if (variableOptions.indexOf("REFC") !== -1) {
-        variableDefault = "REFC";
+    if (variableOptions.indexOf("PROB(APCP_06>12_700)") !== -1) {
+        variableDefault = "PROB(APCP_06>12_700)";
     } else {
         variableDefault = variableOptions[0];
     }
@@ -877,10 +890,8 @@ const doCurveParams = function () {
 
     const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var levelDefault;
-    if (levelOptions.indexOf("P500") !== -1) {
-        levelDefault = "P500";
-    } else if (levelOptions.indexOf("SFC") !== -1) {
-        levelDefault = "SFC";
+    if (levelOptions.indexOf("A06") !== -1) {
+        levelDefault = "A06";
     } else {
         levelDefault = levelOptions[0];
     }
@@ -1198,7 +1209,7 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.timeSeries,
             graphFunction: "graphPlotly",
             dataFunction: "dataSeries",
-            checked: true
+            checked: false
         });
         matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.dieoff,
@@ -1228,7 +1239,7 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.reliability,
             graphFunction: "graphPlotly",
             dataFunction: "dataReliability",
-            checked: false
+            checked: true
         });
         matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.roc,

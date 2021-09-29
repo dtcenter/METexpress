@@ -503,9 +503,20 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("NCEP_ylin") !== -1) ? "NCEP_ylin" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_ylin_pcp") !== -1) ? "mv_ylin_pcp" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("CONUSNEST") !== -1) ? "CONUSNEST" : Object.keys(modelOptionsMap[defaultDB])[0];
+    var defaultGroup;
+    var defaultDB;
+    var defaultModel;
+    if (Object.keys(dbGroupMap).indexOf("NOAA NCEP") !== -1 && dbGroupMap["NOAA NCEP"].indexOf("mv_gfs_precip_metplus") !== -1) {
+        // special default parameters for the NWS METexpress
+        defaultGroup = "NOAA NCEP";
+        defaultDB = "mv_gfs_precip_metplus";
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("gfs") !== -1) ? "gfs" : Object.keys(modelOptionsMap[defaultDB])[0];
+    } else {
+        // default to the 2018 HWT precip database if it exists. Currently a placeholder for GSL.
+        defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
+        defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_hwt_2018") !== -1) ? "mv_hwt_2018" : dbGroupMap[defaultGroup][0];
+        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("HRRR") !== -1) ? "HRRR" : Object.keys(modelOptionsMap[defaultDB])[0];
+    }
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -646,7 +657,13 @@ const doCurveParams = function () {
 
     const regionOptions = regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var regionDefault;
-    if (regionOptions.indexOf("G218/APL") !== -1) {
+    if (regionOptions.indexOf("FULL") !== -1) {
+        regionDefault = "FULL";
+    } else if (regionOptions.indexOf("G002") !== -1) {
+        regionDefault = "G002";
+    } else if (regionOptions.indexOf("CONUS") !== -1) {
+        regionDefault = "CONUS";
+    } else if (regionOptions.indexOf("G218/APL") !== -1) {
         regionDefault = "G218/APL";
     } else {
         regionDefault = regionOptions[0];
@@ -1017,10 +1034,14 @@ const doCurveParams = function () {
 
     const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var levelDefault;
-    if (levelOptions.indexOf("P500") !== -1) {
-        levelDefault = "P500";
-    } else if (levelOptions.indexOf("SFC") !== -1) {
-        levelDefault = "SFC";
+    if (levelOptions.indexOf("L0") !== -1) {
+        levelDefault = "L0";
+    } else if (levelOptions.indexOf("A24") !== -1) {
+        levelDefault = "A24";
+    } else if (levelOptions.indexOf("A06") !== -1) {
+        levelDefault = "A06";
+    } else if (levelOptions.indexOf("A03") !== -1) {
+        levelDefault = "A03";
     } else {
         levelDefault = levelOptions[0];
     }

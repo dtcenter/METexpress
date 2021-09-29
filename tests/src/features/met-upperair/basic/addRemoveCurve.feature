@@ -21,6 +21,10 @@ Feature: Add Remove Curve
         Then the "database" parameter value matches "mv_gsd"
         When I change the "data-source" parameter to "GFS"
         Then the "data-source" parameter value matches "GFS"
+        When I change the "forecast-length" parameter to "120"
+        Then the "forecast-length" parameter value matches "120"
+        When I change the "level" parameter to "P500"
+        Then the "level" parameter value matches "P500"
         When I set the dates to "11/01/2018 0:00 - 11/11/2018 0:00"
         Then the dates value is "11/01/2018 0:00 - 11/11/2018 0:00"
         Then I click the "Add Curve" button

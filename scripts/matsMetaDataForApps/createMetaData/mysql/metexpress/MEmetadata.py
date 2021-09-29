@@ -247,9 +247,62 @@ class ParentMetadata:
         self.cursor.execute("create table {mdt_tmp} like {mdt_dev};".format(**d))
         self.cnx.commit()
         # since we processed the entire database we assume that what is in the dev metadata table is correct.
-        # copy the metadata data to the tmp_metadata table
+        # copy the old metadata data to the tmp_metadata table
         self.cursor.execute("insert into {mdt_tmp} select * from {mdt};".format(**d))
         self.cnx.commit()
+
+        # identify rows which are in mdt_tmp but not mdt_dev as candidates for deletion.
+        # we will check to make sure they are old before we remove them.
+        self.cursor.execute("select * from {mdt_tmp};".format(**d))
+        tmp_rows = self.cursor.fetchall()
+        for tmp_row in tmp_rows:
+            d['db'] = tmp_row['db']
+            d['model'] = tmp_row['model']
+            d['line_data_table'] = tmp_row['line_data_table']
+            d['updated'] = tmp_row['updated']
+            if self.statHeaderType == "stat_header":
+                d['variable'] = tmp_row['variable']
+                self.cursor.execute(
+                    'select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                        **d))
+                # does it exist in the metadata_dev table?
+                if self.cursor.rowcount == 0:
+                    # no - has the metadata been updated in the last two days (maybe by a competing script)?
+                    last_update = int(d['updated'])
+                    now = int(datetime.utcnow().timestamp())
+                    if now - last_update > 3600 * 48:
+                        # no - then delete the entry from tmp_metadata table
+                        self.cursor.execute(
+                            'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
+                                **d))
+                        self.cnx.commit()
+            else:
+                d['basin'] = tmp_row['basin']
+                d['year'] = tmp_row['year']
+                self.cursor.execute(
+                    'select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
+                        **d))
+                # does it exist in the metadata_dev table?
+                if self.cursor.rowcount == 0:
+                    # no - has the metadata been updated in the last two days (maybe by a competing script)?
+                    last_update = int(d['updated'])
+                    now = int(datetime.utcnow().timestamp())
+                    if now - last_update > 3600 * 48:
+                        # no - then delete the entry from tmp_metadata table
+                        self.cursor.execute(
+                            'delete from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and basin = "{basin}" and year = "{year}";'.format(
+                                **d))
+                        self.cnx.commit()
+            d['db'] = ""
+            d['model'] = ""
+            d['line_data_table'] = ""
+            d['updated'] = ""
+            if self.statHeaderType == "stat_header":
+                d['variable'] = ""
+            else:
+                d['basin'] = ""
+                d['year'] = ""
+
         # iterate the db model pairs in the metadata_dev table
         self.cursor.execute("select * from {mdt_dev};".format(**d))
         dev_rows = self.cursor.fetchall()
