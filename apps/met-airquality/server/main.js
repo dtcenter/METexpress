@@ -481,16 +481,12 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup;
-    if (Object.keys(dbGroupMap).indexOf("pshafran") !== -1) {
-        // special default parameters for the NWS METexpress
-        defaultGroup = "pshafran";
-    } else {
-        // default to the GSL test database if it exists. Currently a placeholder for GSL.
-        defaultGroup = (Object.keys(dbGroupMap).indexOf("Test12") !== -1) ? "Test12" : Object.keys(dbGroupMap)[0];
-    }
-    var defaultDB = dbGroupMap[defaultGroup][0];
-    var defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
+    var requestedGroup = matsCollections.Settings.findOne({}).appDefaultGroup;
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1) ? requestedGroup : Object.keys(dbGroupMap)[0];
+    var requestedDB = matsCollections.Settings.findOne({}).appDefaultDB;
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1) ? requestedDB : dbGroupMap[defaultGroup][0];
+    var requestedModel = matsCollections.Settings.findOne({}).appDefaultModel;
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1) ? requestedModel : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -1407,31 +1403,8 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['airquality_mats_metadata', 'airquality_database_groups']);
-    const appCurveParams = [
-        "label",
-        "group",
-        "database",
-        "data-source",
-        "plot-type",
-        "region",
-        "statistic",
-        "variable",
-        "threshold",
-        "interp-method",
-        "scale",
-        "forecast-length",
-        "dieoff-type",
-        "valid-time",
-        "utc-cycle-start",
-        "average",
-        "level",
-        "description",
-        "x-axis-parameter",
-        "y-axis-parameter",
-        "curve-dates"
-    ];
     try {
-        matsMethods.resetApp({appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-airquality', title: "MET Air Quality", group: "METexpress"});
+        matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
         console.log(error.message);
     }

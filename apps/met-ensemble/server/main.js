@@ -478,20 +478,12 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup;
-    var defaultDB;
-    var defaultModel;
-    if (Object.keys(dbGroupMap).indexOf("NCEP Binbin") !== -1 && dbGroupMap["NCEP Binbin"].indexOf("mv_met_g2o_gefs") !== -1) {
-        // special default parameters for the NWS METexpress
-        defaultGroup = "NCEP Binbin";
-        defaultDB = "mv_met_g2o_gefs";
-        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GEFS") !== -1) ? "GEFS" : Object.keys(modelOptionsMap[defaultDB])[0];
-    } else {
-        // default to the GSL realtime ensemble database if it exists, otherwise default to whatever is first alphabetically
-        defaultGroup = (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1) ? "NO GROUP" : Object.keys(dbGroupMap)[0];
-        defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_gsd_ensemble_realtime") !== -1) ? "mv_gsd_ensemble_realtime" : dbGroupMap[defaultGroup][0];
-        defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("RRFSE") !== -1) ? "RRFSE" : Object.keys(modelOptionsMap[defaultDB])[0];
-    }
+    var requestedGroup = matsCollections.Settings.findOne({}).appDefaultGroup;
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1) ? requestedGroup : Object.keys(dbGroupMap)[0];
+    var requestedDB = matsCollections.Settings.findOne({}).appDefaultDB;
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1) ? requestedDB : dbGroupMap[defaultGroup][0];
+    var requestedModel = matsCollections.Settings.findOne({}).appDefaultModel;
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1) ? requestedModel : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -1294,26 +1286,8 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['ensemble_mats_metadata', 'ensemble_database_groups']);
-    const appCurveParams = [
-        "label",
-        "group",
-        "database",
-        "data-source",
-        "plot-type",
-        "region",
-        "statistic",
-        "variable",
-        "forecast-length",
-        "dieoff-type",
-        "valid-time",
-        "utc-cycle-start",
-        "average",
-        "level",
-        "description",
-        "curve-dates"
-    ];
     try {
-        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-ensemble', title: "MET Ensemble", group: "METexpress"});
+        matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
         console.log(error.message);
     }

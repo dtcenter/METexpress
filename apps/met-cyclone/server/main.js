@@ -887,28 +887,12 @@ const doCurveParams = function () {
         );
     }
 
-    var defaultGroup;
-    var defaultDB;
-    var defaultModel;
-    if (Object.keys(dbGroupMap).indexOf("NO GROUP") !== -1 && dbGroupMap["NO GROUP"].indexOf("mv_dev_python") !== -1) {
-        // special default parameters for the NWS METexpress -- placeholder until someone loads something better
-        defaultGroup = "NO GROUP";
-        defaultDB = "mv_dev_python";
-        defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
-    } else {
-        // default to the GSL realtime TC database if it exists, otherwise default to whatever is first alphabetically
-        defaultGroup = (Object.keys(dbGroupMap).indexOf("realtime_tc_verif") !== -1) ? "realtime_tc_verif" : Object.keys(dbGroupMap)[0];
-        if (dbGroupMap[defaultGroup].indexOf("mv_gsl_tcmet_post") !== -1) {
-            defaultDB = "mv_gsl_tcmet_post";
-            defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GF16") !== -1) ? "GF16" : Object.keys(modelOptionsMap[defaultDB])[0];
-        } else if (dbGroupMap[defaultGroup].indexOf("mv_nhc_tcmet_post") !== -1) {
-            defaultDB = "mv_nhc_tcmet_post";
-            defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("GFSO: GFS") !== -1) ? "GFSO: GFS" : Object.keys(modelOptionsMap[defaultDB])[0];
-        } else {
-            defaultDB = dbGroupMap[defaultGroup][0];
-            defaultModel = Object.keys(modelOptionsMap[defaultDB])[0];
-        }
-    }
+    var requestedGroup = matsCollections.Settings.findOne({}).appDefaultGroup;
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1) ? requestedGroup : Object.keys(dbGroupMap)[0];
+    var requestedDB = matsCollections.Settings.findOne({}).appDefaultDB;
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1) ? requestedDB : dbGroupMap[defaultGroup][0];
+    var requestedModel = matsCollections.Settings.findOne({}).appDefaultModel;
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1) ? requestedModel : Object.keys(modelOptionsMap[defaultDB])[0];
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -1692,28 +1676,8 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['cyclone_mats_metadata', 'cyclone_database_groups']);
-    const appCurveParams = [
-        "label",
-        "group",
-        "database",
-        "data-source",
-        "plot-type",
-        "basin",
-        "statistic",
-        "year",
-        "storm",
-        "truth",
-        "forecast-length",
-        "dieoff-type",
-        "valid-time",
-        "utc-cycle-start",
-        "average",
-        "level",
-        "description",
-        "curve-dates"
-    ];
     try {
-        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-cyclone', title: "MET Cyclone", group: "METexpress"});
+        matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
         console.log(error.message);
     }
