@@ -477,13 +477,16 @@ const doCurveParams = function () {
             }
         );
     }
-
+    // get the default group, db, and model that were specified in the settings file. If none exist, take
+    // the first available option for each in the selector.
     var requestedGroup = matsCollections.Settings.findOne({}).appDefaultGroup;
     var defaultGroup = (Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1) ? requestedGroup : Object.keys(dbGroupMap)[0];
     var requestedDB = matsCollections.Settings.findOne({}).appDefaultDB;
     var defaultDB = (dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1) ? requestedDB : dbGroupMap[defaultGroup][0];
     var requestedModel = matsCollections.Settings.findOne({}).appDefaultModel;
     var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1) ? requestedModel : Object.keys(modelOptionsMap[defaultDB])[0];
+
+    // these defaults are app-specific and not controlled by the user
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -622,6 +625,7 @@ const doCurveParams = function () {
         }
     }
 
+    // these defaults are app-specific and not controlled by the user
     const regionOptions = regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var regionDefault;
     if (regionOptions.indexOf("FULL") !== -1) {
@@ -699,6 +703,7 @@ const doCurveParams = function () {
         }
     }
 
+    // these defaults are app-specific and not controlled by the user
     const variableOptions = variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType];
     var variableDefault;
     if (variableOptions.indexOf("PROB(APCP_06>12_700)") !== -1) {
@@ -742,6 +747,7 @@ const doCurveParams = function () {
         }
     }
 
+    // these defaults are app-specific and not controlled by the user
     const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var fhrDefault;
     if (fhrOptions.indexOf("24") !== -1) {
@@ -880,6 +886,7 @@ const doCurveParams = function () {
             });
     }
 
+    // these defaults are app-specific and not controlled by the user
     const levelOptions = levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(levelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var levelDefault;
     if (levelOptions.indexOf("A06") !== -1) {
@@ -956,6 +963,7 @@ const doCurveParams = function () {
     }
 
     // determine date defaults for dates and curveDates
+    // these defaults are app-specific and not controlled by the user
     var defaultDb = matsCollections["database"].findOne({name: "database"}, {default: 1}).default;
     var dbDateRanges = matsCollections["database"].findOne({name: "database"}, {dates: 1}).dates;
     var defaultDataSource = matsCollections["data-source"].findOne({name: "data-source"}, {default: 1}).default;
