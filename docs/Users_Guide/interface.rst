@@ -361,6 +361,15 @@ The **Y Linear/Log** button appears for profile plots, and allows users to
 toggle between having a linear vertical scale (the default), and a
 logarithmic one.
 
+The **Merge Y Axes** button appears for all types of line plots that can
+have more than one Y axis, and allows users to condense all curves on those
+plots onto one Y axis. Clicking the button again will revert the graph to
+its default Y axes.
+
+The **Merge X Axes** button appears for profile plots, and allows users to
+condense all curves on those plots onto one X axis. Clicking the button
+again will revert the graph to its default X axes.
+
 The **Equi-space X** button appears for threshold plots, and allows users to
 toggle between having a linear x-axis scale (the default), and equally
 spacing all of the returned threshold values.

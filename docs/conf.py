@@ -20,16 +20,16 @@ print(sys.path)
 
 project = 'METexpress'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Smith, M.B., V. Hagerty, J. Hamilton, B. Strong, R. Pierce'
+author_list = 'Hagerty, V., J. Hamilton, B. Strong, R. Pierce, M.B. Smith, I. McGinnis, K. Searight'
 
 # The stable version, displayed on the front page of the PDF
-version = '4.1.2'
+version = '4.2.0'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 release_year = '2021'
-release_date = f'{release_year}0806'
+release_date = f'{release_year}1008'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
