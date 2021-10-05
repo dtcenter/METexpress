@@ -686,7 +686,7 @@ const doCurveParams = function () {
             sourceOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from cyclone_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from cyclone_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year desc;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -886,10 +886,16 @@ const doCurveParams = function () {
             }
         );
     }
+    // get the default group, db, and model that were specified in the settings file. If none exist, take
+    // the first available option for each in the selector.
+    var requestedGroup = matsCollections.Settings.findOne({}).appDefaultGroup;
+    var defaultGroup = (Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1) ? requestedGroup : Object.keys(dbGroupMap)[0];
+    var requestedDB = matsCollections.Settings.findOne({}).appDefaultDB;
+    var defaultDB = (dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1) ? requestedDB : dbGroupMap[defaultGroup][0];
+    var requestedModel = matsCollections.Settings.findOne({}).appDefaultModel;
+    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1) ? requestedModel : Object.keys(modelOptionsMap[defaultDB])[0];
 
-    var defaultGroup = (Object.keys(dbGroupMap).indexOf("mollytc") !== -1) ? "mollytc" : Object.keys(dbGroupMap)[0];
-    var defaultDB = (dbGroupMap[defaultGroup].indexOf("mv_testtc") !== -1) ? "mv_testtc" : dbGroupMap[defaultGroup][0];
-    var defaultModel = (Object.keys(modelOptionsMap[defaultDB]).indexOf("AEMI: GFS Ensemble Mean") !== -1) ? "AEMI: GFS Ensemble Mean" : Object.keys(modelOptionsMap[defaultDB])[0];
+    // these defaults are app-specific and not controlled by the user
     var defaultPlotType = matsTypes.PlotTypes.timeSeries;
     var defaultStatistic = Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType])[0];
     var defaultStatType = masterStatsValuesMap[defaultStatistic][0];
@@ -1028,6 +1034,7 @@ const doCurveParams = function () {
         }
     }
 
+    // these defaults are app-specific and not controlled by the user
     const basinOptions = basinOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType];
     var defaultBasin;
     if (basinOptions.indexOf("AL") !== -1) {
@@ -1101,6 +1108,8 @@ const doCurveParams = function () {
         }
     }
 
+    // display most recent year as default
+    // these defaults are app-specific and not controlled by the user
     const defaultYear = yearOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][0];
     
     if (matsCollections["year"].findOne({name: 'year'}) == undefined) {
@@ -1199,6 +1208,7 @@ const doCurveParams = function () {
         }
     }
 
+    // these defaults are app-specific and not controlled by the user
     const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear];
     var fhrDefault;
     if (fhrOptions.indexOf("24") !== -1) {
@@ -1406,6 +1416,7 @@ const doCurveParams = function () {
     }
 
     // determine date defaults for dates and curveDates
+    // these defaults are app-specific and not controlled by the user
     var defaultDb = matsCollections["database"].findOne({name: "database"}, {default: 1}).default;
     var dbDateRanges = matsCollections["database"].findOne({name: "database"}, {dates: 1}).dates;
     var defaultDataSource = matsCollections["data-source"].findOne({name: "data-source"}, {default: 1}).default;
@@ -1672,28 +1683,8 @@ Meteor.startup(function () {
 
     // create list of tables we need to monitor for update
     const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['cyclone_mats_metadata', 'cyclone_database_groups']);
-    const appCurveParams = [
-        "label",
-        "group",
-        "database",
-        "data-source",
-        "plot-type",
-        "basin",
-        "statistic",
-        "year",
-        "storm",
-        "truth",
-        "forecast-length",
-        "dieoff-type",
-        "valid-time",
-        "utc-cycle-start",
-        "average",
-        "level",
-        "description",
-        "curve-dates"
-    ];
     try {
-        matsMethods.resetApp({ appPools: allPools, appCurveParams: appCurveParams, appMdr: mdr, appType: matsTypes.AppTypes.metexpress, app: 'met-cyclone', title: "MET Cyclone", group: "METexpress"});
+        matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
         console.log(error.message);
     }
