@@ -1,0 +1,36 @@
+name: Cleanup PR images
+
+on: 
+  pull_request:
+    types: [closed]
+
+jobs:
+  purge-images:
+    name: Cleanup PR images from ghcr.io
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: 
+          - met-airquality
+          - met-anomalycor
+          - met-cyclone
+          - met-ensemble
+          - met-precip
+          - met-surface
+          - met-upperair
+    steps:
+      - name: Get tag & appname
+        env: 
+          APP: '${{ matrix.app }}'
+        run: |
+          echo "BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          echo "APP_LOWERCASE=${APP,,}" >> $GITHUB_ENV
+      - name: Cleanup images
+        if: ${{ env.BRANCH }} != "development" # don't prune images from the development branch
+        uses: bots-house/ghcr-delete-image-action@v1.0.1
+        with:
+          owner: dtcenter 
+          name: metexpress/development/${{ env.APP_LOWERCASE }}
+          token: ${{ secrets.GHCR_CLEANUP_PAT }}
+          tag: ${{ env.BRANCH }}
