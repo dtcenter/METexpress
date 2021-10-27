@@ -13,7 +13,7 @@ apps=(
 )
 branch=$(git branch --show-current)
 commit=$(git rev-parse HEAD)
-version=$(git describe --exact-match --tags HEAD) # Store the git tag if it points to current sha
+version=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "") # Store the git tag if it points to current sha. Otherwise, don't set the variable.
 
 # For each app, build the container
 for app in "${apps[@]}"; do
@@ -23,7 +23,7 @@ for app in "${apps[@]}"; do
         --build-arg BUILDVER="${version:-"dev"}" \
         --build-arg COMMITBRANCH="${branch}" \
         --build-arg COMMITSHA="${commit}" \
-        -t mats-meteor-base:"${app}" \
+        -t metexpress/development/"${app}":"${version:-"dev"}" \
         .
     echo "Info - Built: ${app}"
 done
