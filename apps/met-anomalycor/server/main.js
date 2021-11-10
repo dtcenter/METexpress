@@ -1244,7 +1244,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "x-axis-parameter", "y-axis-parameter"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });

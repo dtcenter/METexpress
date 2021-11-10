@@ -131,6 +131,7 @@ dataProfile = function (plotParams, plotFunction) {
             }).join(',');
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
+        var statType = "met-" + statLineType;
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -233,7 +234,7 @@ dataProfile = function (plotParams, plotFunction) {
             }
         } else {
             // this is a difference curve
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams, statType === "ctc");
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -271,7 +272,7 @@ dataProfile = function (plotParams, plotFunction) {
         "curves": curves,
         "curvesLength": curvesLength,
         "idealValues": idealValues,
-        "statType": "met-" + statLineType,
+        "statType": statType,
         "axisMap": axisMap
     };
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
