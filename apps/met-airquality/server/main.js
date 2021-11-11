@@ -186,7 +186,7 @@ const doPlotParams = function () {
                 displayGroup: 2
             });
 
-        var optionsMap = {
+        const xOptionsMap = {
             'Fcst lead time': "select ld.fcst_lead as xVal, ",
             'Threshold': "select h.fcst_thresh as xVal, ",
             'Valid UTC hour': "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
@@ -199,19 +199,19 @@ const doPlotParams = function () {
             {
                 name: 'x-axis-parameter',
                 type: matsTypes.InputTypes.select,
-                options: Object.keys(optionsMap),
-                optionsMap: optionsMap,
+                options: Object.keys(xOptionsMap),
+                optionsMap: xOptionsMap,
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: Object.keys(optionsMap)[4],
+                default: Object.keys(xOptionsMap)[4],
                 controlButtonVisibility: 'block',
                 displayOrder: 9,
                 displayPriority: 1,
                 displayGroup: 2,
             });
 
-        optionsMap = {
+        const yOptionsMap = {
             'Fcst lead time': "ld.fcst_lead as yVal, ",
             'Threshold': "h.fcst_thresh as yVal, ",
             'Valid UTC hour': "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
@@ -224,12 +224,12 @@ const doPlotParams = function () {
             {
                 name: 'y-axis-parameter',
                 type: matsTypes.InputTypes.select,
-                options: Object.keys(optionsMap),
-                optionsMap: optionsMap,
+                options: Object.keys(yOptionsMap),
+                optionsMap: yOptionsMap,
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: Object.keys(optionsMap)[0],
+                default: Object.keys(yOptionsMap)[0],
                 controlButtonVisibility: 'block',
                 displayOrder: 10,
                 displayPriority: 1,
