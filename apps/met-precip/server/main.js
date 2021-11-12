@@ -185,6 +185,54 @@ const doPlotParams = function () {
                 displayPriority: 1,
                 displayGroup: 2
             });
+
+        const xOptionsMap = {
+            'Fcst lead time': "select ld.fcst_lead as xVal, ",
+            'Valid UTC hour': "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
+            'Init UTC hour': "select unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as xVal, ",
+            'Valid Date': "select unix_timestamp(ld.fcst_valid_beg) as xVal, ",
+            'Init Date': "select unix_timestamp(ld.fcst_init_beg) as xVal, "
+        };
+
+        matsCollections.PlotParams.insert(
+            {
+                name: 'x-axis-parameter',
+                type: matsTypes.InputTypes.select,
+                options: Object.keys(xOptionsMap),
+                optionsMap: xOptionsMap,
+                selected: '',
+                controlButtonCovered: true,
+                unique: false,
+                default: Object.keys(xOptionsMap)[2],
+                controlButtonVisibility: 'block',
+                displayOrder: 9,
+                displayPriority: 1,
+                displayGroup: 2,
+            });
+
+        const yOptionsMap = {
+            'Fcst lead time': "ld.fcst_lead as yVal, ",
+            'Valid UTC hour': "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
+            'Init UTC hour': "unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as yVal, ",
+            'Valid Date': "unix_timestamp(ld.fcst_valid_beg) as yVal, ",
+            'Init Date': "unix_timestamp(ld.fcst_init_beg) as yVal, "
+        };
+
+        matsCollections.PlotParams.insert(
+            {
+                name: 'y-axis-parameter',
+                type: matsTypes.InputTypes.select,
+                options: Object.keys(yOptionsMap),
+                optionsMap: yOptionsMap,
+                selected: '',
+                controlButtonCovered: true,
+                unique: false,
+                default: Object.keys(yOptionsMap)[0],
+                controlButtonVisibility: 'block',
+                displayOrder: 10,
+                displayPriority: 1,
+                displayGroup: 2,
+            });
     } else {
         // need to update the dates selector if the metadata has changed
         var currentParam = matsCollections.PlotParams.findOne({name: 'dates'});
@@ -1111,56 +1159,6 @@ const doCurveParams = function () {
         }
     }
 
-    if (matsCollections["x-axis-parameter"].findOne({name: 'x-axis-parameter'}) == undefined) {
-        const optionsMap = {
-            'Fcst lead time': "select ld.fcst_lead as xVal, ",
-            'Valid UTC hour': "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
-            'Init UTC hour': "select unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as xVal, ",
-            'Valid Date': "select unix_timestamp(ld.fcst_valid_beg) as xVal, ",
-            'Init Date': "select unix_timestamp(ld.fcst_init_beg) as xVal, "
-        };
-
-        matsCollections["x-axis-parameter"].insert(
-            {
-                name: 'x-axis-parameter',
-                type: matsTypes.InputTypes.select,
-                options: Object.keys(optionsMap),
-                optionsMap: optionsMap,
-                controlButtonCovered: true,
-                unique: false,
-                default: Object.keys(optionsMap)[2],
-                controlButtonVisibility: 'block',
-                displayOrder: 1,
-                displayPriority: 1,
-                displayGroup: 7,
-            });
-    }
-
-    if (matsCollections["y-axis-parameter"].findOne({name: 'y-axis-parameter'}) == undefined) {
-        const optionsMap = {
-            'Fcst lead time': "ld.fcst_lead as yVal, ",
-            'Valid UTC hour': "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
-            'Init UTC hour': "unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as yVal, ",
-            'Valid Date': "unix_timestamp(ld.fcst_valid_beg) as yVal, ",
-            'Init Date': "unix_timestamp(ld.fcst_init_beg) as yVal, "
-        };
-
-        matsCollections["y-axis-parameter"].insert(
-            {
-                name: 'y-axis-parameter',
-                type: matsTypes.InputTypes.select,
-                options: Object.keys(optionsMap),
-                optionsMap: optionsMap,
-                controlButtonCovered: true,
-                unique: false,
-                default: Object.keys(optionsMap)[0],
-                controlButtonVisibility: 'block',
-                displayOrder: 2,
-                displayPriority: 1,
-                displayGroup: 7,
-            });
-    }
-
     // determine date defaults for dates and curveDates
     // these defaults are app-specific and not controlled by the user
     var defaultDb = matsCollections["database"].findOne({name: "database"}, {default: 1}).default;
@@ -1395,7 +1393,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "truth", "description", "x-axis-parameter", "y-axis-parameter"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "truth", "description"
             ],
             groupSize: 6
         });

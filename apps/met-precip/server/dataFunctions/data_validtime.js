@@ -144,6 +144,7 @@ dataValidTime = function (plotParams, plotFunction) {
             }).join(',');
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
+        var statType = "met-" + statLineType;
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -241,7 +242,7 @@ dataValidTime = function (plotParams, plotFunction) {
             }
         } else {
             // this is a difference curve
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams, statType === "ctc");
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -280,7 +281,7 @@ dataValidTime = function (plotParams, plotFunction) {
         "curvesLength": curvesLength,
         "idealValues": idealValues,
         "utcCycleStarts": utcCycleStarts,
-        "statType": "met-" + statLineType,
+        "statType": statType,
         "axisMap": axisMap,
         "xmax": xmax,
         "xmin": xmin

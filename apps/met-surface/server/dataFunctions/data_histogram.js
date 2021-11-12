@@ -144,6 +144,7 @@ dataHistogram = function (plotParams, plotFunction) {
             }).join(',');
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
+        var statType = "met-" + statLineType;
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable (axisKey) it will use the same axis.
@@ -243,11 +244,12 @@ dataHistogram = function (plotParams, plotFunction) {
         throw new Error("INFO:  No valid data for any curves.");
     }
 
+    // process the data returned by the query
     const curveInfoParams = {
         "curves": curves,
         "curvesLength": curvesLength,
         "dataFoundForCurve": dataFoundForCurve,
-        "statType": "met-" + statLineType,
+        "statType": statType,
         "axisMap": axisMap,
         "yAxisFormat": yAxisFormat
     };
