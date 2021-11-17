@@ -653,8 +653,6 @@ const doCurveParams = function () {
         regionDefault = "FULL";
     } else if (regionOptions.indexOf("G002") !== -1) {
         regionDefault = "G002";
-    } else if (regionOptions.indexOf("CONUS") !== -1) {
-        regionDefault = "CONUS";
     } else {
         regionDefault = regionOptions[0];
     }
