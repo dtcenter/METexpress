@@ -26,6 +26,10 @@ dataContour = function (plotParams, plotFunction) {
     var dateRange = matsDataUtils.getDateRange(plotParams.dates);
     var fromSecs = dateRange.fromSeconds;
     var toSecs = dateRange.toSeconds;
+    var xAxisParam = plotParams['x-axis-parameter'];
+    var yAxisParam = plotParams['y-axis-parameter'];
+    var xValClause = matsCollections.PlotParams.findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
+    var yValClause = matsCollections.PlotParams.findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     if (curves.length > 1) {
@@ -37,10 +41,6 @@ dataContour = function (plotParams, plotFunction) {
     // initialize variables specific to the curve
     var curve = curves[0];
     var label = curve['label'];
-    var xAxisParam = curve['x-axis-parameter'];
-    var yAxisParam = curve['y-axis-parameter'];
-    var xValClause = matsCollections['x-axis-parameter'].findOne({name: 'x-axis-parameter'}).optionsMap[xAxisParam];
-    var yValClause = matsCollections['y-axis-parameter'].findOne({name: 'y-axis-parameter'}).optionsMap[yAxisParam];
     var database = curve['database'];
     var model = matsCollections['data-source'].findOne({name: 'data-source'}).optionsMap[database][curve['data-source']][0];
     var modelClause = "and h.model = '" + model + "'";
@@ -159,6 +159,7 @@ dataContour = function (plotParams, plotFunction) {
         }).join(',');
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
+    var statType = "met-" + statLineType;
     // For contours, this functions as the colorbar label.
     var unitKey;
     if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
@@ -252,7 +253,7 @@ dataContour = function (plotParams, plotFunction) {
     // set curve annotation to be the curve mean -- may be recalculated later
     // also pass previously calculated axis stats to curve options
     const mean = d.glob_stats.mean;
-    const annotation = mean === undefined ? label + "- mean = NaN" : label + "- mean = " + mean.toPrecision(4);
+    const annotation = mean === undefined ? label + "- mean = NoData" : label + "- mean = " + mean.toPrecision(4);
     curve['annotation'] = annotation;
     curve['xmin'] = d.xmin;
     curve['xmax'] = d.xmax;
@@ -272,7 +273,7 @@ dataContour = function (plotParams, plotFunction) {
     };
 
     // process the data returned by the query
-    const curveInfoParams = {"curve": curves, "statType": "met-" + statLineType, "axisMap": axisMap};
+    const curveInfoParams = {"curve": curves, "statType": statType, "axisMap": axisMap};
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataContour(dataset, curveInfoParams, plotParams, bookkeepingParams);
     plotFunction(result);

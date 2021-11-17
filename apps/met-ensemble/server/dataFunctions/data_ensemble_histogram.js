@@ -134,6 +134,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             }).join(',');
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
+        var statType = "met-" + statLineType;
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // units (axisKey) it will use the same axis.
@@ -272,7 +273,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     const curveInfoParams = {
         "curves": curves,
         "curvesLength": curvesLength,
-        "statType": "met-" + statLineType,
+        "statType": statType,
         "axisMap": axisMap,
         "yAxisFormat": yAxisFormat,
         "xmax": xmax,
