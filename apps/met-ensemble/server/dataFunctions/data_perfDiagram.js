@@ -25,9 +25,6 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
     var dataFoundForCurve = true;
     var dataFoundForAnyCurve = false;
     var totalProcessingStart = moment();
-    var dateRange = matsDataUtils.getDateRange(plotParams.dates);
-    var fromSecs = dateRange.fromSeconds;
-    var toSecs = dateRange.toSeconds;
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
@@ -70,6 +67,9 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
+        var dateRange = matsDataUtils.getDateRange(curve['curve-dates']);
+        var fromSecs = dateRange.fromSeconds;
+        var toSecs = dateRange.toSeconds;
         if (curve['valid-time'] !== undefined && curve['valid-time'] !== matsTypes.InputTypes.unused) {
             vts = curve['valid-time'];
             vts = Array.isArray(vts) ? vts : [vts];
