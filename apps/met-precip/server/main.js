@@ -274,6 +274,7 @@ const doCurveParams = function () {
             'MSE': ['scalar'],
             'Bias-corrected MSE': ['scalar'],
             'ME (Additive bias)': ['scalar'],
+            'Fractional Error': ['scalar'],
             'Multiplicative bias': ['scalar'],
             'Forecast mean': ['scalar'],
             'Observed mean': ['scalar'],
