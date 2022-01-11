@@ -79,7 +79,7 @@ ENV COMMIT=${COMMITSHA}
 COPY --from=native-builder ${SCRIPTS_FOLDER} ${SCRIPTS_FOLDER}/
 
 # Copy in app bundle with the built and installed dependencies from the previous image
-COPY --from=native-builder /opt/bundle ${APP_BUNDLE_FOLDER}/
+COPY --from=native-builder ${APP_BUNDLE_FOLDER} ${APP_BUNDLE_FOLDER}/
 
 # Copy in our launcher script
 COPY container-scripts/run_app.sh ${APP_FOLDER}/
