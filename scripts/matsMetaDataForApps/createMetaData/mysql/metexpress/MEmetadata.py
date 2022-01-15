@@ -523,10 +523,10 @@ class ParentMetadata:
                                 cursor3.execute(get_stats)
                                 data = cursor3.fetchone()
                                 if data:
-                                    mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                        'mindate']
-                                    maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                        'maxdate']
+                                    mindate = mindate if data['mindate'] is None or data['mindate'] is "NULL" \
+                                        or mindate < data['mindate'] else data['mindate']
+                                    maxdate = maxdate if data['maxdate'] is None or data['maxdate'] is "NULL" \
+                                        or maxdate > data['maxdate'] else data['maxdate']
                                     num_recs = num_recs + data['numrecs']
                             except pymysql.Error as e:
                                 continue
@@ -658,10 +658,10 @@ class ParentMetadata:
                                         cursor3.execute(get_stats)
                                         data = cursor3.fetchone()
                                         if data:
-                                            mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                                'mindate']
-                                            maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                                'maxdate']
+                                            mindate = mindate if data['mindate'] is None or data['mindate'] is "NULL" \
+                                                or mindate < data['mindate'] else data['mindate']
+                                            maxdate = maxdate if data['maxdate'] is None or data['maxdate'] is "NULL" \
+                                                or maxdate > data['maxdate'] else data['maxdate']
                                             num_recs = num_recs + data['numrecs']
                                     except pymysql.Error as e:
                                         continue
