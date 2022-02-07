@@ -29,7 +29,7 @@ class MEPrecip(ParentMetadata):
                                       "line_data_ctc",      # used for ctc stats on all plot types
                                       "line_data_eclv",     # used for EV on all plot types
                                       "line_data_nbrcnt"]   # used for FSS on all plot types
-        options['metadata_table'] = "precip_mats_metadata"
+        options['metadata_table'] = "precip_metexpress_metadata"
         options['app_reference'] = "met-precip"
         options['database_groups'] = "precip_database_groups"
         super().__init__(options)
@@ -87,8 +87,8 @@ class MEPrecip(ParentMetadata):
 if __name__ == '__main__':
     options = MEPrecip.get_options(sys.argv)
     start = str(datetime.now())
-    print('PRECIPITATION MATS FOR MET METADATA START: ' + start)
+    print('PRECIPITATION METEXPRESS METADATA START: ' + start)
     me_dbcreator = MEPrecip(options)
     me_dbcreator.main()
-    print('PRECIPITATION MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('PRECIPITATION METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

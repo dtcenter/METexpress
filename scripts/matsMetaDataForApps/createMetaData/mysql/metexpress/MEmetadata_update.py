@@ -8,15 +8,15 @@ Arguments: mv_database_name - the database that was specified in an mv_load oper
 Usage: MEmetedata_update.py mv_gsd, https://metexpress.nws.noaa.gov
 Outputs: return code 0 success, 1 error
 Transformations:
-1) The script will retrieve the latest run_finish_time from the mats_metadata.run_stats
+1) The script will retrieve the latest run_finish_time from the metexpress_metadata.run_stats
 table with a status of 0 (success).
 SQL:
-select distinct run_finish_time from mats_metadata.run_stats where database_name = 'mv_gsd'
+select distinct run_finish_time from metexpress_metadata.run_stats where database_name = 'mv_gsd'
     and status = 0 order by run_finish_time desc limit 1;
 
 If the table does not exist it will be created by ...
 SQL:
-create table mats_metadata.run_stats
+create table metexpress_metadata.run_stats
 (
   run_start_time  datetime    null,
   run_finish_time datetime    null,
@@ -29,9 +29,9 @@ and the retrieved run_finish_time will be the initial epoch, 0 i.e. Thu, 1 Jan 1
 2) The script will retrieve the selective_update classes from the metexpress module
 using inspect, and the apprefs and associated data_table_patterns
 (there may be more than one in a comma separated list) from getters in each update class,
-and populate the mats_metadata.metadata_script_info table.
+and populate the metexpress_metadata.metadata_script_info table.
 SQL:
-select * from mats_metadata.metadata_script_info
+select * from metexpress_metadata.metadata_script_info
 If the table does not exist it will be created by
 create table metadata_script_info
 (
@@ -39,11 +39,11 @@ create table metadata_script_info
   running                 BOOLEAN      False
 );
 and populated with ...
-INSERT INTO mats_metadata.metadata_script_info (apref,  running)
+INSERT INTO metexpress_metadata.metadata_script_info (apref,  running)
     VALUES ('met-anomalycor', False);
-INSERT INTO mats_metadata.metadata_script_info (apref, data_table_pattern_list, app_reference, running)
+INSERT INTO metexpress_metadata.metadata_script_info (apref, data_table_pattern_list, app_reference, running)
     VALUES ('met-surface', False);
-INSERT INTO mats_metadata.metadata_script_info (apref, data_table_pattern_list, app_reference, running)
+INSERT INTO metexpress_metadata.metadata_script_info (apref, data_table_pattern_list, app_reference, running)
     VALUES ('met-upperair', False);
 NOTE: The import and inspect mechanisms will depend on the metexpress module being updated
 whenever a new app and metadata script are added.
@@ -70,7 +70,7 @@ This query should return the models that have been modified in the given databas
 since the last time the metadata update was successfully run.
 The script will create a list of db, model pairs that can be used with each of the selective_update_MExxxx scripts.
 
-5) The script will then call each of the selective_update_MExxxx scripts (from mats_metadata.metadata_script_info table)
+5) The script will then call each of the selective_update_MExxxx scripts (from metexpress_metadata.metadata_script_info table)
 with the usage: ./selective_update_MEanomalycor.py path_to_file.cnf refresh_metadata_url db.model1,db.model2,...
 The refresh_metadata_url is derived from the metexpress_base_url and the appref.
 e.g. https://metexpress.nws.noaa.gov/met-upperair/refreshMetadata
@@ -98,7 +98,7 @@ import metexpress
 
 class metadataUpdate:
     def __init__(self, options):
-        print('MATS METADATA UPDATE FOR MET OPTIONS: ' + str(options))
+        print('METEXPRESS METADATA UPDATE FOR MET OPTIONS: ' + str(options))
         self.metadata_database = options['metadata_database']
         self.updater_list = []
         self.cnf_file = options['cnf_file']
@@ -188,7 +188,7 @@ class metadataUpdate:
         self.updater_list = updaterList
 
     def update(self):
-        print('MATS METADATA UPDATE FOR MET START: ' + str(datetime.utcnow()))
+        print('METEXPRESS METADATA UPDATE FOR MET START: ' + str(datetime.utcnow()))
         for elem in self.updater_list:
             try:
                 me_updater = elem['updater']
@@ -205,7 +205,7 @@ class metadataUpdate:
             except Exception as uex:
                 print("Exception running update for: " + elem['app_reference'] + " : " + str(uex))
                 traceback.print_stack()
-        print('MATS METADATA UPDATE FOR MET END: ' + str(datetime.utcnow()))
+        print('METEXPRESS METADATA UPDATE FOR MET END: ' + str(datetime.utcnow()))
 
     # process 'c' style options - using getopt - usage describes options
     # options like {'cnf_file':cnf_file, 'mv_database_name:mv_database_name',
@@ -215,16 +215,16 @@ class metadataUpdate:
     # mv_database_name - name of mv_something,
     # metexpress_base_url - metexpress address
     # app_reference - is optional and is used to limit running to only one app
-    # (m)ats_metadata_database_name] override the default metadata database name (mats_metadata) with something
+    # (m)etexpress_metadata_database_name] allows to override the default metadata databasename (metexpress_metadata) with something
     @classmethod
     def get_options(self, args):
         usage = ["(c)= cnf_file", "(d)= db_name", "(u)= metexpress_base_url",
-                 "[(a)=app_reference, (m)= mats_metadata_database_name]"]
+                 "[(a)=app_reference, (m)= metexpress_metadata_database_name]"]
         cnf_file = None
         db_name = None
         metexpress_base_url = None
         app_reference = None
-        metadata_database = "mats_metadata"
+        metadata_database = "metexpress_metadata"
         try:
             opts, args = getopt.getopt(args[1:], "c:d:u:a:m:", usage)
         except getopt.GetoptError as err:

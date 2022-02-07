@@ -27,7 +27,7 @@ class MESurface(ParentMetadata):
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_vl1l2"]    # used for vector stats on all plot types
-        options['metadata_table'] = "surface_mats_metadata"
+        options['metadata_table'] = "surface_metexpress_metadata"
         options['app_reference'] = "met-surface"
         options['database_groups'] = "surface_database_groups"
         super().__init__(options)
@@ -85,8 +85,8 @@ class MESurface(ParentMetadata):
 if __name__ == '__main__':
     options = MESurface.get_options(sys.argv)
     start = str(datetime.now())
-    print('SURFACE MATS FOR MET METADATA START: ' + start)
+    print('SURFACE METEXPRESS METADATA START: ' + start)
     me_dbcreator = MESurface(options)
     me_dbcreator.main()
-    print('SURFACE MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('SURFACE METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

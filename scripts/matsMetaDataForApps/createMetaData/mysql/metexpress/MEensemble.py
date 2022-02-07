@@ -32,7 +32,7 @@ class MEEnsemble(ParentMetadata):
                                       "line_data_nbrcnt",   # used for FSS on timeseries/dieoff/validtime/hist
                                       "line_data_pct",      # used for reliability and ROC plot types
                                       "line_data_rhist"]    # used for ensemble histogram plot types
-        options['metadata_table'] = "ensemble_mats_metadata"
+        options['metadata_table'] = "ensemble_metexpress_metadata"
         options['app_reference'] = "met-ensemble"
         options['database_groups'] = "ensemble_database_groups"
         super().__init__(options)
@@ -97,8 +97,8 @@ class MEEnsemble(ParentMetadata):
 if __name__ == '__main__':
     options = MEEnsemble.get_options(sys.argv)
     start = str(datetime.now())
-    print('ENSEMBLE MATS FOR MET METADATA START: ' + start)
+    print('ENSEMBLE METEXPRESS METADATA START: ' + start)
     me_dbcreator = MEEnsemble(options)
     me_dbcreator.main()
-    print('ENSEMBLE MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('ENSEMBLE METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

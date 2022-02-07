@@ -842,7 +842,7 @@ class ParentMetadata:
     @classmethod
     # process 'c' style options - using getopt - usage describes options
     # cnf_file - mysql cnf file, db - prescribed db to process, metexpress_base_url - metexpress address
-    # (m)ats_metadata_database_name] allows to override the default metadata databasename (mats_metadata) with something
+    # (m)etexpress_metadata_database_name] allows to override the default metadata databasename (metexpress_metadata) with something
     # db is a prescribed database to process (selective mode) used by mv_load, if it is missing then all databases will be processed
     # (D)ata_table_stat_header_id_limit, (d)atabase name, (u)=metexpress_base_url are all optional for selective mode
 
@@ -853,7 +853,7 @@ class ParentMetadata:
         cnf_file = None
         db = None
         metexpress_base_url = None
-        metadata_database = "mats_metadata"
+        metadata_database = "metexpress_metadata"
         data_table_stat_header_id_limit = None
         try:
             opts, args = getopt.getopt(args[1:], "c:d:u:m:D:u:", usage)
