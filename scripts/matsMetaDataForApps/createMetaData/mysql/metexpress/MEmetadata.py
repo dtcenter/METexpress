@@ -568,7 +568,7 @@ class ParentMetadata:
                                 'max(fcst_valid) as maxdate, ' \
                                 'sum(n_valid) as numrecs ' \
                                 'from mode_header' \
-                                + where_query + ' group by model, fcst_var;'
+                                + where_query + ' group by model, fcst_var, version;'
                 cursor2.execute(get_val_lists)
                 result2 = cursor2.fetchall()
 
