@@ -556,7 +556,7 @@ class ParentMetadata:
                     test_result = cursor2.fetchall()
 
                 # Get the additional data in the stat header for model var pairs
-                get_val_lists = 'select model, fcst_var, ' \
+                get_val_lists = 'select model, fcst_var, version, ' \
                                 'group_concat(distinct fcst_lev) as levels, ' \
                                 'group_concat(distinct fcst_lead) as fcst_lens, ' \
                                 'group_concat(distinct fcst_accum) as fcst_accums, ' \
@@ -575,6 +575,9 @@ class ParentMetadata:
                 for line_data_table in self.line_data_table:
                     for model_var_line in result2:
                         model = model_var_line['model']
+                        version = int(model_var_line['version'][1])
+                        if version < 9:
+                            continue
                         per_mvdb[mvdb][model] = {}
                         fvar = model_var_line['fcst_var']
                         per_mvdb[mvdb][model][fvar] = {}
