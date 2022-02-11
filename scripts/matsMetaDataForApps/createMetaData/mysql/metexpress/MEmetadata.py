@@ -131,13 +131,13 @@ class ParentMetadata:
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
             if self.statHeaderType == "stat_header":
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             elif self.statHeaderType == "mode_header":
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), levels varchar(4095), fcst_lens varchar(4095), fcst_accums varchar(4095), trshs varchar(4095), radii varchar(4095), gridpoints varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), accum_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), levels varchar(4095), fcst_lens varchar(4095), fcst_accums varchar(4095), trshs varchar(4095), radii varchar(4095), gridpoints varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), accum_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             else:
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
