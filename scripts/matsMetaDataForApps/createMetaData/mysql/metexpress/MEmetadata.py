@@ -611,9 +611,9 @@ class ParentMetadata:
                             isinstance(model_var_line['mindate'], str) else model_var_line['mindate']
                         maxdate = datetime.utcnow() if model_var_line['maxdate'] is None or model_var_line['maxdate'] is "NULL" or \
                             isinstance(model_var_line['maxdate'], str) else model_var_line['maxdate']
-                        per_mvdb[mvdb][model]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
-                        per_mvdb[mvdb][model]['numrecs'] = num_recs
+                        per_mvdb[mvdb][model][fvar]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][fvar]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][fvar]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
                             print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
