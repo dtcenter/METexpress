@@ -542,10 +542,10 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table][fvar]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
                             self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
                         else:
-                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
             if self.statHeaderType == "mode_header":
                 # check if mode_header table exists
                 mode_header_check = "show tables like 'mode_header';"
@@ -560,12 +560,12 @@ class ParentMetadata:
                                 'group_concat(distinct fcst_lev) as levels, ' \
                                 'group_concat(distinct fcst_lead) as fcst_lens, ' \
                                 'group_concat(distinct fcst_accum) as fcst_accums, ' \
-                                'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
+                                'group_concat(distinct fcst_thr separator "$") as trshs, ' \
                                 'group_concat(distinct fcst_rad) as radii, ' \
                                 'group_concat(distinct grid_res) as gridpoints, ' \
-                                'group_concat(distinct descr) as descrs ' \
-                                'min(fcst_valid) as mindate ' \
-                                'max(fcst_valid) as maxdate ' \
+                                'group_concat(distinct descr) as descrs, ' \
+                                'min(fcst_valid) as mindate, ' \
+                                'max(fcst_valid) as maxdate, ' \
                                 'sum(n_valid) as numrecs ' \
                                 'from mode_header' \
                                 + where_query + ' group by model, fcst_var;'
@@ -616,14 +616,10 @@ class ParentMetadata:
                         per_mvdb[mvdb][model]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " +
-                                  fvar + ", and line_type " + line_data_table)
-                            self.add_model_to_metadata_table_mode(cnx3, cursor3, mvdb, model, line_data_table, fvar,
-                                                             per_mvdb[mvdb][model][fvar])
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
+                            self.add_model_to_metadata_table_mode(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][fvar])
                         else:
-                            print(
-                                "\n" + self.script_name + " - No valid metadata for model " + model + ", variable " +
-                                fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
             elif self.statHeaderType == "tcst_header":
                 # check if tcst_header table exists
                 tcst_header_check = "show tables like 'tcst_header';"
@@ -759,13 +755,10 @@ class ParentMetadata:
                             db_has_valid_data = True
                         for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                             if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
-                                print(
-                                    "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
-                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
-                                                                    basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
+                                print("\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table + "\n")
+                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
                             else:
-                                print(
-                                    "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
+                                print("\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table + "\n")
             else:
                 continue
 
