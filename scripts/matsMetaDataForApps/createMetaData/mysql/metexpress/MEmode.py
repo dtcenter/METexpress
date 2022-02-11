@@ -24,9 +24,8 @@ class MEMode(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
-        options['statHeaderType'] = 'mode_header'
-        options['line_data_table'] = ["mode_obj_pair",    # used for scalar stats on all plot types
-                                      "mode_obj_single"]   # used for FSS on all plot types
+        options['statHeaderType'] = 'mode_header'           # all the important MODE metadata is in the header table,
+        options['line_data_table'] = ["mode_obj_pair"]      # so only list one line type or we'll get redundancy
         options['metadata_table'] = "mode_metexpress_metadata"
         options['app_reference'] = "met-mode"
         options['database_groups'] = "mode_database_groups"
@@ -51,30 +50,31 @@ class MEMode(ParentMetadata):
 
     def strip_trsh(self, elem):
         # helper function for sorting thresholds
-        if elem[0] == '>':
+        if elem[0:2] == '>=':
             try:
-                return 1000 + int(float(elem[1:])) * 10000
+                return 10000 + int(float(elem[2:]) * 10000.)
             except ValueError:
-                try:
-                    return 1000.0001 + int(float(elem[2:])) * 10000
-                except ValueError:
-                    return 3000
+                return 100000
+        elif elem[0] == '>':
+            try:
+                return 10000 + int(float(elem[1:]) * 10000.)
+            except ValueError:
+                return 100000
+        elif elem[0:2] == '<=':
+            try:
+                return 20000 + int(float(elem[2:]) * 10000.)
+            except ValueError:
+                return 200000
         elif elem[0] == '<':
             try:
-                return 4000 + int(float(elem[1:])) * 10000
+                return 20000 + int(float(elem[1:]) * 10000.)
             except ValueError:
-                try:
-                    return 4000.0001 + int(float(elem[2:])) * 10000
-                except ValueError:
-                    return 6000
+                return 200000
         elif elem[0] == '=':
             try:
-                return 7000 + int(float(elem[1:])) * 10000
+                return 30000 + int(float(elem[1:]) * 10000.)
             except ValueError:
-                try:
-                    return 70000.0001 + int(float(elem[2:])) * 10000
-                except ValueError:
-                    return 90000
+                return 300000
         else:
             try:
                 return int(float(elem))
