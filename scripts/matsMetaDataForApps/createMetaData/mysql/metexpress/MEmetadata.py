@@ -607,10 +607,10 @@ class ParentMetadata:
                             else:
                                 per_mvdb[mvdb][model][fvar]['accums'].append(str(int(accum_orig)))
                         num_recs = int(model_var_line['numrecs'])
-                        mindate = datetime.utcnow() if data['mindate'] is None or data['mindate'] is "NULL" or \
-                            isinstance(data['mindate'], str) else data['mindate']
-                        maxdate = datetime.utcnow() if data['maxdate'] is None or data['maxdate'] is "NULL" or \
-                            isinstance(data['maxdate'], str) else data['maxdate']
+                        mindate = datetime.utcnow() if model_var_line['mindate'] is None or model_var_line['mindate'] is "NULL" or \
+                            isinstance(model_var_line['mindate'], str) else model_var_line['mindate']
+                        maxdate = datetime.utcnow() if model_var_line['maxdate'] is None or model_var_line['maxdate'] is "NULL" or \
+                            isinstance(model_var_line['maxdate'], str) else model_var_line['maxdate']
                         per_mvdb[mvdb][model]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
                         per_mvdb[mvdb][model]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
                         per_mvdb[mvdb][model]['numrecs'] = num_recs
