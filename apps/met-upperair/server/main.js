@@ -351,7 +351,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from upperair_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from upperair_metexpress_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -376,7 +376,7 @@ const doCurveParams = function () {
             scaleOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate from upperair_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate from upperair_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -1376,7 +1376,7 @@ Meteor.startup(function () {
     }
 
     // create list of tables we need to monitor for update
-    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['upperair_mats_metadata', 'upperair_database_groups']);
+    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "metexpress_metadata", ['upperair_metexpress_metadata', 'upperair_database_groups']);
     try {
         matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {

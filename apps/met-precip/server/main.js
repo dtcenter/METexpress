@@ -345,7 +345,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from precip_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from precip_metexpress_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -372,7 +372,7 @@ const doCurveParams = function () {
             sourceOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from precip_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_lens,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from precip_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_lens,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -1497,7 +1497,7 @@ Meteor.startup(function () {
     }
 
     // create list of tables we need to monitor for update
-    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['precip_mats_metadata', 'precip_database_groups']);
+    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "metexpress_metadata", ['precip_metexpress_metadata', 'precip_database_groups']);
     try {
         matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
