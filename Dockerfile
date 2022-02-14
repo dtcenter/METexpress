@@ -3,7 +3,7 @@ FROM geoffreybooth/meteor-base:2.5 AS meteor-builder
 
 ARG APPNAME
 
-# Make MATScommon discoverable
+# Make MATScommon discoverable by Meteor
 ENV METEOR_PACKAGE_DIRS=/MATScommon/meteor_packages
 
 # Assume we're passed the repo root as build context
@@ -16,7 +16,6 @@ COPY apps/${APPNAME} ${APP_SOURCE_FOLDER}/
 COPY MATScommon /MATScommon
 
 RUN bash ${SCRIPTS_FOLDER}/build-meteor-bundle.sh
-
 
 # Install OS build dependencies
 FROM node:14.18-alpine3.15 AS native-builder
