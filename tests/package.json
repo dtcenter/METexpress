@@ -1,14 +1,14 @@
 {
   "private": true,
-  "name": "mats-testing",
+  "name": "metexpress-testing",
   "description": "Boilerplate project to run WebdriverIO tests with Cucumber",
   "homepage": "https://esrl.noaa.gov/gsd/mats",
   "repository": {
     "type": "git",
-    "getUrl": "https://vlab.ncep.noaa.gov/git/mats-testing"
+    "getUrl": "https://github.com/dtcenter/METexpress"
   },
   "bugs": {
-    "getUrl": "https://vlab.ncep.noaa.gov/redmine/projects/emb-mats"
+    "getUrl": "https://github.com/dtcenter/METexpress/issues"
   },
   "scripts": {
     "clean-logs": "rm -rf logs/*",
