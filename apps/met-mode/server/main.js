@@ -186,53 +186,6 @@ const doPlotParams = function () {
                 displayGroup: 2
             });
 
-        const xOptionsMap = {
-            'Fcst lead time': "select ld.fcst_lead as xVal, ",
-            'Valid UTC hour': "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
-            'Init UTC hour': "select unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as xVal, ",
-            'Valid Date': "select unix_timestamp(ld.fcst_valid_beg) as xVal, ",
-            'Init Date': "select unix_timestamp(ld.fcst_init_beg) as xVal, "
-        };
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'x-axis-parameter',
-                type: matsTypes.InputTypes.select,
-                options: Object.keys(xOptionsMap),
-                optionsMap: xOptionsMap,
-                selected: '',
-                controlButtonCovered: true,
-                unique: false,
-                default: Object.keys(xOptionsMap)[2],
-                controlButtonVisibility: 'block',
-                displayOrder: 9,
-                displayPriority: 1,
-                displayGroup: 2,
-            });
-
-        const yOptionsMap = {
-            'Fcst lead time': "ld.fcst_lead as yVal, ",
-            'Valid UTC hour': "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
-            'Init UTC hour': "unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as yVal, ",
-            'Valid Date': "unix_timestamp(ld.fcst_valid_beg) as yVal, ",
-            'Init Date': "unix_timestamp(ld.fcst_init_beg) as yVal, "
-        };
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'y-axis-parameter',
-                type: matsTypes.InputTypes.select,
-                options: Object.keys(yOptionsMap),
-                optionsMap: yOptionsMap,
-                selected: '',
-                controlButtonCovered: true,
-                unique: false,
-                default: Object.keys(yOptionsMap)[0],
-                controlButtonVisibility: 'block',
-                displayOrder: 10,
-                displayPriority: 1,
-                displayGroup: 2,
-            });
     } else {
         // need to update the dates selector if the metadata has changed
         var currentParam = matsCollections.PlotParams.findOne({name: 'dates'});
@@ -261,24 +214,23 @@ const doCurveParams = function () {
     }
 
     const masterPlotTypeOptionsMap = {
-        "mode_obj_pair": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
+        "mode_obj_pair": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram]
     };
 
     const masterStatsOptionsMap = {
         "mode_obj_pair": {
-            'RMSE': ['scalar'],
-            'Bias-corrected RMSE': ['scalar'],
-            'MSE': ['scalar'],
-            'Bias-corrected MSE': ['scalar'],
-            'ME (Additive bias)': ['scalar'],
-            'Fractional Error': ['scalar'],
-            'Multiplicative bias': ['scalar'],
-            'Forecast mean': ['scalar'],
-            'Observed mean': ['scalar'],
-            'Forecast stdev': ['scalar'],
-            'Observed stdev': ['scalar'],
-            'Error stdev': ['scalar'],
-            'Pearson correlation': ['scalar']
+            'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
+            'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
+            'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
+            'Model/obs area ratio': ['precalculated', 'mode_obj_pair', 'ld.area_ratio'],
+            'Model/obs intersection area': ['precalculated', 'mode_obj_pair', 'ld.intersection_area'],
+            'Model/obs union area': ['precalculated', 'mode_obj_pair', 'ld.union'],
+            'Model/obs symmetric difference area': ['precalculated', 'mode_obj_pair', 'ld.union'],
+            'Model/obs consumption ratio': ['precalculated', 'mode_obj_pair', 'ld.intersection_over_area'],
+            'Model/obs curvature ratio': ['precalculated', 'mode_obj_pair', 'ld.curvature_ratio'],
+            'Model/obs complexity ratio': ['precalculated', 'mode_obj_pair', 'ld.complexity_ratio'],
+            'Model/obs percentile intensity ratio': ['precalculated', 'mode_obj_pair', 'ld.percentile_intensity_ratio'],
+            'Model/obs interest': ['precalculated', 'mode_obj_pair', 'ld.interest'],
         }
     };
 
@@ -972,18 +924,18 @@ const doCurveParams = function () {
 
     if (matsCollections["average"].findOne({name: 'average'}) == undefined) {
         const optionsMap = {
-            'None': ['unix_timestamp(ld.fcst_valid_beg)'],
-            '1hr': ['ceil(' + 3600 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 + '/2)/' + 3600 + '))'],
-            '3hr': ['ceil(' + 3600 * 3 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 3 + '/2)/' + 3600 * 3 + '))'],
-            '6hr': ['ceil(' + 3600 * 6 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 6 + '/2)/' + 3600 * 6 + '))'],
-            '12hr': ['ceil(' + 3600 * 12 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 12 + '/2)/' + 3600 * 12 + '))'],
-            '1D': ['ceil(' + 3600 * 24 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 + '/2)/' + 3600 * 24 + '))'],
-            '3D': ['ceil(' + 3600 * 24 * 3 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 3 + '/2)/' + 3600 * 24 * 3 + '))'],
-            '7D': ['ceil(' + 3600 * 24 * 7 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 7 + '/2)/' + 3600 * 24 * 7 + '))'],
-            '30D': ['ceil(' + 3600 * 24 * 30 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 30 + '/2)/' + 3600 * 24 * 30 + '))'],
-            '60D': ['ceil(' + 3600 * 24 * 60 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 60 + '/2)/' + 3600 * 24 * 60 + '))'],
-            '90D': ['ceil(' + 3600 * 24 * 90 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 90 + '/2)/' + 3600 * 24 * 90 + '))'],
-            '180D': ['ceil(' + 3600 * 24 * 180 + '*floor(((unix_timestamp(ld.fcst_valid_beg))+' + 3600 * 24 * 180 + '/2)/' + 3600 * 24 * 180 + '))'],
+            'None': ['unix_timestamp(h.fcst_valid)'],
+            '1hr': ['ceil(' + 3600 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 + '/2)/' + 3600 + '))'],
+            '3hr': ['ceil(' + 3600 * 3 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 3 + '/2)/' + 3600 * 3 + '))'],
+            '6hr': ['ceil(' + 3600 * 6 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 6 + '/2)/' + 3600 * 6 + '))'],
+            '12hr': ['ceil(' + 3600 * 12 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 12 + '/2)/' + 3600 * 12 + '))'],
+            '1D': ['ceil(' + 3600 * 24 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 + '/2)/' + 3600 * 24 + '))'],
+            '3D': ['ceil(' + 3600 * 24 * 3 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 3 + '/2)/' + 3600 * 24 * 3 + '))'],
+            '7D': ['ceil(' + 3600 * 24 * 7 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 7 + '/2)/' + 3600 * 24 * 7 + '))'],
+            '30D': ['ceil(' + 3600 * 24 * 30 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 30 + '/2)/' + 3600 * 24 * 30 + '))'],
+            '60D': ['ceil(' + 3600 * 24 * 60 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 60 + '/2)/' + 3600 * 24 * 60 + '))'],
+            '90D': ['ceil(' + 3600 * 24 * 90 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 90 + '/2)/' + 3600 * 24 * 90 + '))'],
+            '180D': ['ceil(' + 3600 * 24 * 180 + '*floor(((unix_timestamp(h.fcst_valid))+' + 3600 * 24 * 180 + '/2)/' + 3600 * 24 * 180 + '))'],
         };
         matsCollections["average"].insert(
             {
@@ -1252,29 +1204,6 @@ const doCurveTextPatterns = function () {
             groupSize: 6
         });
         matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.gridscale,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'threshold', ', '],
-                ['', 'interp-method', ', '],
-                ['', 'variable', ' '],
-                ['', 'statistic', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ', '],
-                ['desc: ', 'description', ', '],
-                ['', 'curve-dates', '']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "valid-time", "forecast-length", "level", "truth", "description", "curve-dates"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
             plotType: matsTypes.PlotTypes.histogram,
             textPattern: [
                 ['', 'label', ': '],
@@ -1295,29 +1224,6 @@ const doCurveTextPatterns = function () {
             ],
             displayParams: [
                 "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "truth", "description", "curve-dates"
-            ],
-            groupSize: 6
-        });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.contour,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'threshold', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
-                ['', 'variable', ' '],
-                ['', 'statistic', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ''],
-                [', desc: ', 'description', '']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "truth", "description"
             ],
             groupSize: 6
         });
@@ -1363,21 +1269,9 @@ const doPlotGraph = function () {
             checked: false
         });
         matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.gridscale,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataGridScale",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.histogram,
             graphFunction: "graphPlotly",
             dataFunction: "dataHistogram",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.contour,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataContour",
             checked: false
         });
     }

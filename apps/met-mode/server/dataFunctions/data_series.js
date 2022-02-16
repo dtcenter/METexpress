@@ -19,7 +19,7 @@ dataSeries = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
-        "hasLevels": true
+        "hasLevels": false
     };
     var dataRequests = {}; // used to store data queries
     var dataFoundForCurve = true;
@@ -54,56 +54,24 @@ dataSeries = function (plotParams, plotFunction) {
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
         var lineDataType = "";
-        if (statLineType === 'scalar') {
-            statisticClause = "avg(ld.fbar) as fbar, " +
-                "avg(ld.obar) as obar, " +
-                "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-                "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-            lineDataType = "line_data_sl1l2";
-        } else if (statLineType === 'ctc') {
-            statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "avg(ld.fy_on) as fy_on, " +
-                "avg(ld.fn_oy) as fn_oy, " +
-                "avg(ld.fn_on) as fn_on, " +
-                "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-            lineDataType = "line_data_ctc";
-        } else if (statLineType === 'precalculated') {
-            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        if (statLineType === 'precalculated') {
+            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', 9999, ';', unix_timestamp(h.fcst_valid) order by unix_timestamp(h.fcst_valid)) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
         }
-        var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
-        var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
-        regions = Array.isArray(regions) ? regions : [regions];
-        var regionsClause = "";
-        if (regions.length > 0) {
-            regions = regions.map(function (r) {
-                return "'" + r + "'";
-            }).join(',');
-            regionsClause = "and h.vx_mask IN(" + regions + ")";
-        }
+        var queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
         var scale = curve['scale'];
         var scaleClause = "";
         if (scale !== 'All scales') {
-            scaleClause = "and h.interp_pnts = '" + scale + "'";
+            scaleClause = "and h.grid_res = '" + scale + "'";
         }
-        var im = curve['interp-method'];
-        var imClause = "";
-        if (im !== 'All methods') {
-            imClause = "and h.interp_mthd = '" + im + "'";
+        var radius = curve['radius'];
+        var radiusClause = "";
+        if (radius !== 'All radii') {
+            radiusClause = "and h.fcst_rad = '" + radius + "'";
         }
         var variable = curve['variable'];
         var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
-        var truth = curve['truth'];
-        var truthClause = "";
-        if (truth !== 'Any obs type') {
-            truthClause = "and h.obtype = '" + truth + "'";
-        }
-        var threshold = curve['threshold'];
-        var thresholdClause = "";
-        if (threshold !== 'All thresholds') {
-            thresholdClause = "and h.fcst_thresh = '" + threshold + "'"
-        }
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
         if (curve['valid-time'] !== undefined && curve['valid-time'] !== matsTypes.InputTypes.unused) {
@@ -112,7 +80,7 @@ dataSeries = function (plotParams, plotFunction) {
             vts = vts.map(function (vt) {
                 return "'" + vt + "'";
             }).join(',');
-            validTimeClause = "and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(" + vts + ")";
+            validTimeClause = "and unix_timestamp(h.fcst_valid)%(24*3600)/3600 IN(" + vts + ")";
         }
         // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
         // have been sanitized for display purposes in the forecastValueMap.
@@ -124,9 +92,9 @@ dataSeries = function (plotParams, plotFunction) {
             fcsts = fcsts.map(function (fl) {
                 return "'" + fl + "','" + fl + "0000'";
             }).join(',');
-            forecastLengthsClause = "and ld.fcst_lead IN(" + fcsts + ")";
+            forecastLengthsClause = "and h.fcst_lead IN(" + fcsts + ")";
         }
-        var dateClause = "and unix_timestamp(ld.fcst_valid_beg) >= " + fromSecs + " and unix_timestamp(ld.fcst_valid_beg) <= " + toSecs;
+        var dateClause = "and unix_timestamp(h.fcst_valid) >= " + fromSecs + " and unix_timestamp(h.fcst_valid) <= " + toSecs;
         var levels = (curve['level'] === undefined || curve['level'] === matsTypes.InputTypes.unused) ? [] : curve['level'];
         var levelsClause = "";
         levels = Array.isArray(levels) ? levels : [levels];
@@ -161,7 +129,7 @@ dataSeries = function (plotParams, plotFunction) {
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
         // The axis number is assigned to the axisKeySet value, which is the axisKey.
-        var axisKey = variable + " " + statistic;
+        var axisKey = statistic;
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
         var d;
@@ -169,26 +137,22 @@ dataSeries = function (plotParams, plotFunction) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
             var statement = "select {{average}} as avtime, " +
-                "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
-                "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
-                "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
-                "sum(ld.total) as N0, " +
+                "count(distinct unix_timestamp(h.fcst_valid)) as N_times, " +
+                "min(unix_timestamp(h.fcst_valid)) as min_secs, " +
+                "max(unix_timestamp(h.fcst_valid)) as max_secs, " +
                 "{{statisticClause}} " +
                 "{{queryTableClause}} " +
                 "where 1=1 " +
                 "{{dateClause}} " +
                 "{{modelClause}} " +
-                "{{regionsClause}} " +
-                "{{imClause}} " +
+                "{{radiusClause}} " +
                 "{{scaleClause}} " +
                 "{{variableClause}} " +
-                "{{truthClause}} " +
-                "{{thresholdClause}} " +
                 "{{validTimeClause}} " +
                 "{{forecastLengthsClause}} " +
                 "{{levelsClause}} " +
                 "{{descrsClause}} " +
-                "and h.stat_header_id = ld.stat_header_id " +
+                "and h.mode_header_id = ld.mode_header_id " +
                 "group by avtime " +
                 "order by avtime" +
                 ";";
@@ -197,19 +161,16 @@ dataSeries = function (plotParams, plotFunction) {
             statement = statement.replace('{{statisticClause}}', statisticClause);
             statement = statement.replace('{{queryTableClause}}', queryTableClause);
             statement = statement.replace('{{modelClause}}', modelClause);
-            statement = statement.replace('{{regionsClause}}', regionsClause);
-            statement = statement.replace('{{imClause}}', imClause);
+            statement = statement.replace('{{radiusClause}}', radiusClause);
             statement = statement.replace('{{scaleClause}}', scaleClause);
             statement = statement.replace('{{variableClause}}', variableClause);
-            statement = statement.replace('{{truthClause}}', truthClause);
-            statement = statement.replace('{{thresholdClause}}', thresholdClause);
             statement = statement.replace('{{validTimeClause}}', validTimeClause);
             statement = statement.replace('{{forecastLengthsClause}}', forecastLengthsClause);
             statement = statement.replace('{{levelsClause}}', levelsClause);
             statement = statement.replace('{{descrsClause}}', descrsClause);
             statement = statement.replace('{{dateClause}}', dateClause);
             dataRequests[label] = statement;
-
+            debugger;
             var queryResult;
             var startMoment = moment();
             var finishMoment;
@@ -237,11 +198,6 @@ dataSeries = function (plotParams, plotFunction) {
                 } else {
                     // this is an error returned by the mysql database
                     error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-                    if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-                    } else {
-                        throw new Error(error);
-                    }
                 }
             } else {
                 dataFoundForAnyCurve = true;
