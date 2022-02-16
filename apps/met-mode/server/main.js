@@ -261,14 +261,11 @@ const doCurveParams = function () {
     }
 
     const masterPlotTypeOptionsMap = {
-        "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
-        "line_data_ctc": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
-        "line_data_eclv": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
-        "line_data_nbrcnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
+        "mode_obj_pair": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
     };
 
     const masterStatsOptionsMap = {
-        "line_data_sl1l2": {
+        "mode_obj_pair": {
             'RMSE': ['scalar'],
             'Bias-corrected RMSE': ['scalar'],
             'MSE': ['scalar'],
@@ -282,22 +279,6 @@ const doCurveParams = function () {
             'Observed stdev': ['scalar'],
             'Error stdev': ['scalar'],
             'Pearson correlation': ['scalar']
-        },
-        "line_data_ctc": {
-            'CSI': ['ctc'],
-            'FAR': ['ctc'],
-            'FBIAS': ['ctc'],
-            'GSS': ['ctc'],
-            'HSS': ['ctc'],
-            'PODy': ['ctc'],
-            'PODn': ['ctc'],
-            'POFD': ['ctc']
-        },
-        "line_data_eclv": {
-            'EV': ['precalculated', 'line_data_eclv', 'ld.value_baser']
-        },
-        "line_data_nbrcnt": {
-            'FSS': ['precalculated', 'line_data_nbrcnt', 'ld.fss']
         }
     };
 
@@ -315,13 +296,12 @@ const doCurveParams = function () {
     var statisticOptionsMap = {};
     var variableOptionsMap = {};
     var variableValuesMap = {};
-    var regionModelOptionsMap = {};
     var forecastLengthOptionsMap = {};
+    var accumulationLengthOptionsMap = {};
     var levelOptionsMap = {};
     var thresholdOptionsMap = {};
-    var imOptionsMap = {};
+    var radiiOptionsMap = {};
     var scaleOptionsMap = {};
-    var sourceOptionsMap = {};
     var descrOptionsMap = {};
 
     var rows;
@@ -363,16 +343,15 @@ const doCurveParams = function () {
             statisticOptionsMap[thisDB] = {};
             variableOptionsMap[thisDB] = {};
             variableValuesMap[thisDB] = {};
-            regionModelOptionsMap[thisDB] = {};
             forecastLengthOptionsMap[thisDB] = {};
+            accumulationLengthOptionsMap[thisDB] = {};
             levelOptionsMap[thisDB] = {};
             thresholdOptionsMap[thisDB] = {};
-            imOptionsMap[thisDB] = {};
+            radiiOptionsMap[thisDB] = {};
             scaleOptionsMap[thisDB] = {};
-            sourceOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from mode_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_lens,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,levels,descrs,fcst_orig,accum_orig,trshs,radii,gridpoints,mindate,maxdate from mode_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,levels,descrs,fcst_orig,accum_orig,trshs,radii,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -394,23 +373,16 @@ const doCurveParams = function () {
                 var validStats = masterStatsOptionsMap[line_data_table];
                 var variable = rows[i].variable.trim();
 
-                var regions = rows[i].regions;
-                var regionsArr = regions.split(',').map(Function.prototype.call, String.prototype.trim);
-                for (var j = 0; j < regionsArr.length; j++) {
-                    regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
-                }
-
-                var sources = rows[i].truths;
-                var sourceArr = sources.split(',').map(Function.prototype.call, String.prototype.trim);
-                for (var j = 0; j < sourceArr.length; j++) {
-                    sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
-                }
-                sourceArr.unshift('Any obs type');
-
                 var forecastLengths = rows[i].fcst_orig;
                 var forecastLengthArr = forecastLengths.split(',').map(Function.prototype.call, String.prototype.trim);
                 for (var j = 0; j < forecastLengthArr.length; j++) {
                     forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]|0000/g, "");
+                }
+
+                var accumLengths = rows[i].accum_orig;
+                var accumLengthArr = accumLengths.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < accumLengthArr.length; j++) {
+                    accumLengthArr[j] = accumLengthArr[j].replace(/'|\[|\]|0000/g, "");
                 }
 
                 var levels = rows[i].levels;
@@ -432,12 +404,12 @@ const doCurveParams = function () {
                 }
                 trshArr.unshift('All thresholds');
 
-                var ims = rows[i].interp_mthds;
-                var imsArr = ims.split(',').map(Function.prototype.call, String.prototype.trim);
-                for (var j = 0; j < imsArr.length; j++) {
-                    imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
+                var radii = rows[i].radii;
+                var radiiArr = radii.split(',').map(Function.prototype.call, String.prototype.trim);
+                for (var j = 0; j < radiiArr.length; j++) {
+                    radiiArr[j] = radiiArr[j].replace(/'|\[|\]/g, "");
                 }
-                imsArr.unshift('All methods');
+                radiiArr.unshift('All radii');
 
                 var scales = rows[i].gridpoints;
                 var scalesArr = scales.split(',').map(Function.prototype.call, String.prototype.trim);
@@ -455,13 +427,12 @@ const doCurveParams = function () {
                 statisticOptionsMap[thisDB][model] = statisticOptionsMap[thisDB][model] === undefined ? {} : statisticOptionsMap[thisDB][model];
                 variableOptionsMap[thisDB][model] = variableOptionsMap[thisDB][model] === undefined ? {} : variableOptionsMap[thisDB][model];
                 variableValuesMap[thisDB][model] = variableValuesMap[thisDB][model] === undefined ? {} : variableValuesMap[thisDB][model];
-                regionModelOptionsMap[thisDB][model] = regionModelOptionsMap[thisDB][model] === undefined ? {} : regionModelOptionsMap[thisDB][model];
                 forecastLengthOptionsMap[thisDB][model] = forecastLengthOptionsMap[thisDB][model] === undefined ? {} : forecastLengthOptionsMap[thisDB][model];
+                accumulationLengthOptionsMap[thisDB][model] = accumulationLengthOptionsMap[thisDB][model] === undefined ? {} : accumulationLengthOptionsMap[thisDB][model];
                 levelOptionsMap[thisDB][model] = levelOptionsMap[thisDB][model] === undefined ? {} : levelOptionsMap[thisDB][model];
                 thresholdOptionsMap[thisDB][model] = thresholdOptionsMap[thisDB][model] === undefined ? {} : thresholdOptionsMap[thisDB][model];
-                imOptionsMap[thisDB][model] = imOptionsMap[thisDB][model] === undefined ? {} : imOptionsMap[thisDB][model];
+                radiiOptionsMap[thisDB][model] = radiiOptionsMap[thisDB][model] === undefined ? {} : radiiOptionsMap[thisDB][model];
                 scaleOptionsMap[thisDB][model] = scaleOptionsMap[thisDB][model] === undefined ? {} : scaleOptionsMap[thisDB][model];
-                sourceOptionsMap[thisDB][model] = sourceOptionsMap[thisDB][model] === undefined ? {} : sourceOptionsMap[thisDB][model];
                 descrOptionsMap[thisDB][model] = descrOptionsMap[thisDB][model] === undefined ? {} : descrOptionsMap[thisDB][model];
 
                 var thisPlotType;
@@ -472,13 +443,12 @@ const doCurveParams = function () {
                         statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
                         variableOptionsMap[thisDB][model][thisPlotType] = {};
                         variableValuesMap[thisDB][model][thisPlotType] = {};
-                        regionModelOptionsMap[thisDB][model][thisPlotType] = {};
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
+                        accumulationLengthOptionsMap[thisDB][model][thisPlotType] = {};
                         levelOptionsMap[thisDB][model][thisPlotType] = {};
                         thresholdOptionsMap[thisDB][model][thisPlotType] = {};
-                        imOptionsMap[thisDB][model][thisPlotType] = {};
+                        radiiOptionsMap[thisDB][model][thisPlotType] = {};
                         scaleOptionsMap[thisDB][model][thisPlotType] = {};
-                        sourceOptionsMap[thisDB][model][thisPlotType] = {};
                         descrOptionsMap[thisDB][model][thisPlotType] = {};
                     } else {
                         // if we have encountered this plot type for this model, add in any new stats
@@ -493,36 +463,33 @@ const doCurveParams = function () {
                             // if we haven't encountered this variable for this stat yet, initialize everything
                             variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
                             variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                            radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                         }
                         if (variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] === undefined) {
                             // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
                             variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(jsonFriendlyVariable);
                             variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = variable;
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = regionsArr;
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = forecastLengthArr;
+                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = accumLengthArr;
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = levelsArr;
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = trshArr;
-                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = imsArr;
+                            radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = radiiArr;
                             scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = scalesArr;
-                            sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = sourceArr;
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = descrsArr;
                         } else {
                             // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                            regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], regionsArr);
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
+                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], accumLengthArr);
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], levelsArr);
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], trshArr);
-                            imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], imsArr);
+                            radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], radiiArr);
                             scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], scalesArr);
-                            sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], sourceArr);
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], descrsArr);
                         }
                     }
@@ -699,53 +666,6 @@ const doCurveParams = function () {
         }
     }
 
-    // these defaults are app-specific and not controlled by the user
-    const regionOptions = regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
-    var regionDefault;
-    if (regionOptions.indexOf("FULL") !== -1) {
-        regionDefault = "FULL";
-    } else if (regionOptions.indexOf("G002") !== -1) {
-        regionDefault = "G002";
-    } else if (regionOptions.indexOf("CONUS") !== -1) {
-        regionDefault = "CONUS";
-    } else if (regionOptions.indexOf("G218/APL") !== -1) {
-        regionDefault = "G218/APL";
-    } else {
-        regionDefault = regionOptions[0];
-    }
-
-    if (matsCollections["region"].findOne({name: 'region'}) == undefined) {
-        matsCollections["region"].insert(
-            {
-                name: 'region',
-                type: matsTypes.InputTypes.select,
-                optionsMap: regionModelOptionsMap,
-                options: regionOptions,
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
-                controlButtonCovered: true,
-                unique: false,
-                default: regionDefault,
-                controlButtonVisibility: 'block',
-                displayOrder: 1,
-                displayPriority: 1,
-                displayGroup: 3,
-                help: 'region.html'
-            });
-    } else {
-        // it is defined but check for necessary update
-        var currentParam = matsCollections["region"].findOne({name: 'region'});
-        if (!matsDataUtils.areObjectsEqual(regionModelOptionsMap, currentParam.optionsMap)) {
-            // have to reload region data
-            matsCollections["region"].update({name: 'region'}, {
-                $set: {
-                    optionsMap: regionModelOptionsMap,
-                    options: regionOptions,
-                    default: regionDefault
-                }
-            });
-        }
-    }
-
     if (matsCollections["statistic"].findOne({name: 'statistic'}) == undefined) {
         matsCollections["statistic"].insert(
             {
@@ -788,7 +708,7 @@ const doCurveParams = function () {
                 options: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType],
                 valuesMap: variableValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic'],
-                dependentNames: ["region", "forecast-length", "level", "threshold", "interp-method", "scale", "truth", "description"],
+                dependentNames: ["forecast-length", "level", "threshold", "radius", "scale", "description"],
                 controlButtonCovered: true,
                 unique: false,
                 default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][0],
@@ -845,17 +765,17 @@ const doCurveParams = function () {
         }
     }
 
-    if (matsCollections["interp-method"].findOne({name: 'interp-method'}) == undefined) {
-        matsCollections["interp-method"].insert(
+    if (matsCollections["radius"].findOne({name: 'radius'}) == undefined) {
+        matsCollections["radius"].insert(
             {
-                name: 'interp-method',
+                name: 'radius',
                 type: matsTypes.InputTypes.select,
-                optionsMap: imOptionsMap,
-                options: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                optionsMap: radiiOptionsMap,
+                options: radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
                 controlButtonCovered: true,
                 unique: false,
-                default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
+                default: radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
                 controlButtonVisibility: 'block',
                 displayOrder: 2,
                 displayPriority: 1,
@@ -863,14 +783,14 @@ const doCurveParams = function () {
             });
     } else {
         // it is defined but check for necessary update
-        var currentParam = matsCollections["interp-method"].findOne({name: 'interp-method'});
-        if (!matsDataUtils.areObjectsEqual(imOptionsMap, currentParam.optionsMap)) {
+        var currentParam = matsCollections["radius"].findOne({name: 'radius'});
+        if (!matsDataUtils.areObjectsEqual(radiiOptionsMap, currentParam.optionsMap)) {
             // have to reload im data
-            matsCollections["interp-method"].update({name: 'interp-method'}, {
+            matsCollections["radius"].update({name: 'radius'}, {
                 $set: {
-                    optionsMap: imOptionsMap,
-                    options: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                    default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+                    optionsMap: radiiOptionsMap,
+                    options: radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+                    default: radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(radiiOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
                 }
             });
         }
@@ -902,38 +822,6 @@ const doCurveParams = function () {
                     optionsMap: scaleOptionsMap,
                     options: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
                     default: scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
-                }
-            });
-        }
-    }
-
-    if (matsCollections["truth"].findOne({name: 'truth'}) == undefined) {
-        matsCollections["truth"].insert(
-            {
-                name: 'truth',
-                type: matsTypes.InputTypes.select,
-                optionsMap: sourceOptionsMap,
-                options: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
-                controlButtonCovered: true,
-                unique: false,
-                default: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
-                controlButtonVisibility: 'block',
-                controlButtonText: "obs type",
-                displayOrder: 4,
-                displayPriority: 1,
-                displayGroup: 4
-            });
-    } else {
-        // it is defined but check for necessary update
-        var currentParam = matsCollections["truth"].findOne({name: 'truth'});
-        if (!matsDataUtils.areObjectsEqual(sourceOptionsMap, currentParam.optionsMap)) {
-            // have to reload truth data
-            matsCollections["truth"].update({name: 'truth'}, {
-                $set: {
-                    optionsMap: sourceOptionsMap,
-                    options: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                    default: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
                 }
             });
         }
@@ -983,6 +871,41 @@ const doCurveParams = function () {
             });
         }
     }
+
+    // Might be redundant since accumulation length seems to be in both var name and level
+    // if (matsCollections["accumulation-length"].findOne({name: 'accumulation-length'}) == undefined) {
+    //     matsCollections["accumulation-length"].insert(
+    //         {
+    //             name: 'accumulation-length',
+    //             type: matsTypes.InputTypes.select,
+    //             optionsMap: accumulationLengthOptionsMap,
+    //             options: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+    //             superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
+    //             selected: '',
+    //             controlButtonCovered: true,
+    //             unique: false,
+    //             default: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
+    //             controlButtonVisibility: 'block',
+    //             controlButtonText: "accumulation length",
+    //             multiple: true,
+    //             displayOrder: 4,
+    //             displayPriority: 1,
+    //             displayGroup: 4
+    //         });
+    // } else {
+    //     // it is defined but check for necessary update
+    //     var currentParam = matsCollections["accumulation-length"].findOne({name: 'accumulation-length'});
+    //     if ((!matsDataUtils.areObjectsEqual(currentParam.optionsMap, accumulationLengthOptionsMap))) {
+    //         // have to reload forecast length data
+    //         matsCollections["accumulation-length"].update({name: 'accumulation-length'}, {
+    //             $set: {
+    //                 optionsMap: accumulationLengthOptionsMap,
+    //                 options: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
+    //                 default: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
+    //             }
+    //         });
+    //     }
+    // }
 
     if (matsCollections["dieoff-type"].findOne({name: 'dieoff-type'}) == undefined) {
         var dieoffOptionsMap = {
