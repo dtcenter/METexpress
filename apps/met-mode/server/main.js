@@ -1114,21 +1114,19 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
                 ['', 'threshold', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
+                ['rad: ', 'raduis', ', '],
+                ['', 'scale', 'km, '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
-                ['', 'truth', ''],
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "truth", "description"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "average", "forecast-length", "level", "description"
             ],
             groupSize: 6
         });
@@ -1138,22 +1136,20 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
                 ['', 'threshold', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
+                ['rad: ', 'raduis', ', '],
+                ['', 'scale', 'km, '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['', 'dieoff-type', ', '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['start utc: ', 'utc-cycle-start', ', '],
-                ['', 'truth', ', '],
                 ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "truth", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1163,20 +1159,18 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
+                ['rad: ', 'raduis', ', '],
+                ['', 'scale', 'km, '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ', '],
                 ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "valid-time", "level", "truth", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "radius", "scale", "forecast-length", "valid-time", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1186,20 +1180,18 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
                 ['', 'threshold', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
+                ['rad: ', 'raduis', ', '],
+                ['', 'scale', 'km, '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
-                ['', 'truth', ', '],
                 ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "forecast-length", "level", "truth", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1209,21 +1201,19 @@ const doCurveTextPatterns = function () {
                 ['', 'label', ': '],
                 ['', 'database', '.'],
                 ['', 'data-source', ' in '],
-                ['', 'region', ', '],
                 ['', 'threshold', ', '],
-                ['', 'interp-method', ' '],
-                ['', 'scale', ', '],
+                ['rad: ', 'raduis', ', '],
+                ['', 'scale', 'km, '],
                 ['', 'variable', ' '],
                 ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
-                ['', 'truth', ', '],
                 ['desc: ', 'description', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "truth", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });

@@ -72,6 +72,11 @@ dataSeries = function (plotParams, plotFunction) {
         var variable = curve['variable'];
         var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
+        var threshold = curve['threshold'];
+        var thresholdClause = "";
+        if (threshold !== 'All thresholds') {
+            thresholdClause = "and h.fcst_thr = '" + threshold + "'"
+        }
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
         if (curve['valid-time'] !== undefined && curve['valid-time'] !== matsTypes.InputTypes.unused) {
@@ -148,6 +153,7 @@ dataSeries = function (plotParams, plotFunction) {
                 "{{radiusClause}} " +
                 "{{scaleClause}} " +
                 "{{variableClause}} " +
+                "{{thresholdClause}} " +
                 "{{validTimeClause}} " +
                 "{{forecastLengthsClause}} " +
                 "{{levelsClause}} " +
@@ -164,13 +170,14 @@ dataSeries = function (plotParams, plotFunction) {
             statement = statement.replace('{{radiusClause}}', radiusClause);
             statement = statement.replace('{{scaleClause}}', scaleClause);
             statement = statement.replace('{{variableClause}}', variableClause);
+            statement = statement.replace('{{thresholdClause}}', thresholdClause);
             statement = statement.replace('{{validTimeClause}}', validTimeClause);
             statement = statement.replace('{{forecastLengthsClause}}', forecastLengthsClause);
             statement = statement.replace('{{levelsClause}}', levelsClause);
             statement = statement.replace('{{descrsClause}}', descrsClause);
             statement = statement.replace('{{dateClause}}', dateClause);
             dataRequests[label] = statement;
-            debugger;
+
             var queryResult;
             var startMoment = moment();
             var finishMoment;
