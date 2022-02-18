@@ -231,6 +231,7 @@ const doCurveParams = function () {
             'Model/obs complexity ratio': ['precalculated', 'mode_obj_pair', 'ld.complexity_ratio'],
             'Model/obs percentile intensity ratio': ['precalculated', 'mode_obj_pair', 'ld.percentile_intensity_ratio'],
             'Model/obs interest': ['precalculated', 'mode_obj_pair', 'ld.interest'],
+            'Object Threat Score': ['mode_pair'],
         }
     };
 
@@ -1013,12 +1014,12 @@ const doCurveParams = function () {
                 selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: matsTypes.InputTypes.unused,
+                default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
                 controlButtonVisibility: 'block',
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 6,
-                multiple: true
+                multiple: false
             });
     } else {
         // it is defined but check for necessary update
@@ -1029,7 +1030,7 @@ const doCurveParams = function () {
                 $set: {
                     optionsMap: descrOptionsMap,
                     options: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-                    default: matsTypes.InputTypes.unused
+                    default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
                 }
             });
         }
