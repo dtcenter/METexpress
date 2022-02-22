@@ -546,7 +546,7 @@ class ParentMetadata:
                             self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
                         else:
                             print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
-            if self.statHeaderType == "mode_header":
+            elif self.statHeaderType == "mode_header":
                 # check if mode_header table exists
                 mode_header_check = "show tables like 'mode_header';"
                 cursor2.execute(mode_header_check)
