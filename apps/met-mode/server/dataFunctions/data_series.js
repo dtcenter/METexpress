@@ -57,6 +57,10 @@ dataSeries = function (plotParams, plotFunction) {
         if (statLineType === 'precalculated') {
             statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', 9999, ';', unix_timestamp(h.fcst_valid) order by unix_timestamp(h.fcst_valid)) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
+        } else if (statLineType === 'mode_pair') {
+            statisticClause = "avg(ld.interest) as interest, " +
+                "group_concat(distinct ld.interest, ';', ld.object_id, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_ctc";
         }
         var queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
         var scale = curve['scale'];
