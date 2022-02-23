@@ -60,10 +60,10 @@ dataHistogram = function (plotParams, plotFunction) {
                 "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_sl1l2";
         } else if (statLineType === 'ctc') {
-            statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "avg(ld.fy_on) as fy_on, " +
-                "avg(ld.fn_oy) as fn_oy, " +
-                "avg(ld.fn_on) as fn_on, " +
+            statisticClause = "sum(ld.fy_oy) as fy_oy, " +
+                "sum(ld.fy_on) as fy_on, " +
+                "sum(ld.fn_oy) as fn_oy, " +
+                "sum(ld.fn_on) as fn_on, " +
                 "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_ctc";
         } else if (statLineType === 'precalculated') {
