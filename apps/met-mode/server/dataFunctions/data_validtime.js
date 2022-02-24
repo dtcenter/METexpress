@@ -58,7 +58,7 @@ dataValidTime = function (plotParams, plotFunction) {
         var headerIdClause = "";
         var headerIdClause2 = "";
         if (statLineType === 'precalculated') {
-            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', h.n_valid, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
         } else if (statLineType === 'mode_pair') {
             statisticClause = "avg(ld.interest) as interest, " +
