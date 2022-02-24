@@ -19,7 +19,7 @@ dataSeries = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
-        "hasLevels": false
+        "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
     var dataFoundForCurve = true;
@@ -53,16 +53,30 @@ dataSeries = function (plotParams, plotFunction) {
         var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
+        var statisticClause2 = "";
         var lineDataType = "";
+        var lineDataType2 = "";
+        var queryTableClause = "";
+        var queryTableClause2 = "";
+        var headerIdClause = "";
+        var headerIdClause2 = "";
         if (statLineType === 'precalculated') {
-            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', 9999, ';', unix_timestamp(h.fcst_valid) order by unix_timestamp(h.fcst_valid)) as sub_data";
+            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
         } else if (statLineType === 'mode_pair') {
             statisticClause = "avg(ld.interest) as interest, " +
-                "group_concat(distinct ld.interest, ';', ld.object_id, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-            lineDataType = "line_data_ctc";
+                "group_concat(distinct ld.interest, ';', ld.object_id, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+            statisticClause2 = "avg(ld2.area) as area, " +
+                "group_concat(distinct ld2.object_id, ';', ld2.area, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
+            lineDataType = "mode_obj_pair";
+            lineDataType2 = "mode_obj_single";
         }
-        var queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
+        queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
+        headerIdClause = "and h.mode_header_id = ld.mode_header_id";
+        if (lineDataType2 !== "") {
+            queryTableClause2 = "from " + database + ".mode_header h, " + database + "." + lineDataType2 + " ld2";
+            headerIdClause2 = "and h.mode_header_id = ld2.mode_header_id";
+        }
         var scale = curve['scale'];
         var scaleClause = "";
         if (scale !== 'All scales') {
@@ -145,6 +159,8 @@ dataSeries = function (plotParams, plotFunction) {
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
+            var statement1 = "";    // some mode statistics require two queries
+            var statement2 = "";
             var statement = "select {{average}} as avtime, " +
                 "count(distinct unix_timestamp(h.fcst_valid)) as N_times, " +
                 "min(unix_timestamp(h.fcst_valid)) as min_secs, " +
@@ -162,14 +178,12 @@ dataSeries = function (plotParams, plotFunction) {
                 "{{forecastLengthsClause}} " +
                 "{{levelsClause}} " +
                 "{{descrsClause}} " +
-                "and h.mode_header_id = ld.mode_header_id " +
+                "{{headerIdClause}} " +
                 "group by avtime " +
                 "order by avtime" +
                 ";";
 
             statement = statement.replace('{{average}}', average);
-            statement = statement.replace('{{statisticClause}}', statisticClause);
-            statement = statement.replace('{{queryTableClause}}', queryTableClause);
             statement = statement.replace('{{modelClause}}', modelClause);
             statement = statement.replace('{{radiusClause}}', radiusClause);
             statement = statement.replace('{{scaleClause}}', scaleClause);
@@ -180,6 +194,19 @@ dataSeries = function (plotParams, plotFunction) {
             statement = statement.replace('{{levelsClause}}', levelsClause);
             statement = statement.replace('{{descrsClause}}', descrsClause);
             statement = statement.replace('{{dateClause}}', dateClause);
+
+            statement1 = statement.replace('{{statisticClause}}', statisticClause);
+            statement1 = statement1.replace('{{queryTableClause}}', queryTableClause);
+            statement1 = statement1.replace('{{headerIdClause}}', headerIdClause);
+
+            if (lineDataType2 !== "") {
+                statement2 = statement.replace('{{statisticClause}}', statisticClause2);
+                statement2 = statement2.replace('{{queryTableClause}}', queryTableClause2);
+                statement2 = statement2.replace('{{headerIdClause}}', headerIdClause2);
+                statement = statement1 + " ||| " + statement2;
+            } else {
+                statement = statement1
+            }
             dataRequests[label] = statement;
 
             var queryResult;
