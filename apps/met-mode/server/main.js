@@ -825,41 +825,6 @@ const doCurveParams = function () {
         }
     }
 
-    // Might be redundant since accumulation length seems to be in both var name and level
-    // if (matsCollections["accumulation-length"].findOne({name: 'accumulation-length'}) == undefined) {
-    //     matsCollections["accumulation-length"].insert(
-    //         {
-    //             name: 'accumulation-length',
-    //             type: matsTypes.InputTypes.select,
-    //             optionsMap: accumulationLengthOptionsMap,
-    //             options: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-    //             superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
-    //             selected: '',
-    //             controlButtonCovered: true,
-    //             unique: false,
-    //             default: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
-    //             controlButtonVisibility: 'block',
-    //             controlButtonText: "accumulation length",
-    //             multiple: true,
-    //             displayOrder: 4,
-    //             displayPriority: 1,
-    //             displayGroup: 4
-    //         });
-    // } else {
-    //     // it is defined but check for necessary update
-    //     var currentParam = matsCollections["accumulation-length"].findOne({name: 'accumulation-length'});
-    //     if ((!matsDataUtils.areObjectsEqual(currentParam.optionsMap, accumulationLengthOptionsMap))) {
-    //         // have to reload forecast length data
-    //         matsCollections["accumulation-length"].update({name: 'accumulation-length'}, {
-    //             $set: {
-    //                 optionsMap: accumulationLengthOptionsMap,
-    //                 options: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]],
-    //                 default: accumulationLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(scaleOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0]
-    //             }
-    //         });
-    //     }
-    // }
-
     if (matsCollections["dieoff-type"].findOne({name: 'dieoff-type'}) == undefined) {
         var dieoffOptionsMap = {
             "Dieoff": [matsTypes.ForecastTypes.dieoff],
@@ -1035,6 +1000,40 @@ const doCurveParams = function () {
             });
         }
     }
+
+    // if (matsCollections["forecast-classification"].findOne({name: 'forecast-classification'}) == undefined) {
+    //     matsCollections["forecast-classification"].insert(
+    //         {
+    //             name: 'forecast-classification',
+    //             type: matsTypes.InputTypes.select,
+    //             options: ['All object types', 'Cellular', 'Linear, non-bow echo', 'Linear, bow-echo', 'Non-linear convective', 'Non-cellular convective', 'Non-convective'],
+    //             controlButtonCovered: true,
+    //             unique: false,
+    //             default: 'All object types',
+    //             controlButtonVisibility: 'block',
+    //             controlButtonText: "forecast classification",
+    //             displayOrder: 1,
+    //             displayPriority: 1,
+    //             displayGroup: 7,
+    //         });
+    // }
+    //
+    // if (matsCollections["observed-classification"].findOne({name: 'observed-classification'}) == undefined) {
+    //     matsCollections["observed-classification"].insert(
+    //         {
+    //             name: 'observed-classification',
+    //             type: matsTypes.InputTypes.select,
+    //             options: ['All object types', 'Cellular', 'Linear, non-bow echo', 'Linear, bow-echo', 'Non-linear convective', 'Non-cellular convective', 'Non-convective'],
+    //             controlButtonCovered: true,
+    //             unique: false,
+    //             default: 'All object types',
+    //             controlButtonVisibility: 'block',
+    //             controlButtonText: "observed classification",
+    //             displayOrder: 2,
+    //             displayPriority: 1,
+    //             displayGroup: 7,
+    //         });
+    // }
 
     // determine date defaults for dates and curveDates
     // these defaults are app-specific and not controlled by the user
