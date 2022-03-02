@@ -219,6 +219,7 @@ const doCurveParams = function () {
 
     const masterStatsOptionsMap = {
         "mode_obj_pair": {
+            'OTS': ['mode_pair'],
             'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
             'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
             'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
@@ -231,7 +232,6 @@ const doCurveParams = function () {
             'Model/obs complexity ratio': ['precalculated', 'mode_obj_pair', 'ld.complexity_ratio'],
             'Model/obs percentile intensity ratio': ['precalculated', 'mode_obj_pair', 'ld.percentile_intensity_ratio'],
             'Model/obs interest': ['precalculated', 'mode_obj_pair', 'ld.interest'],
-            'Object Threat Score': ['mode_pair'],
         }
     };
 
