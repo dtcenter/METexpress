@@ -87,7 +87,7 @@ dataThreshold = function (plotParams, plotFunction) {
         var variable = curve['variable'];
         var variableValuesMap = matsCollections['variable'].findOne({name: 'variable'}, {valuesMap: 1})['valuesMap'][database][curve['data-source']][selectorPlotType][statLineType];
         var variableClause = "and h.fcst_var = '" + variableValuesMap[variable] + "'";
-        var thresholdClause = "and h.fcst_thresh != 'NA'";
+        var thresholdClause = "and h.fcst_thr != 'NA'";
         var vts = "";   // start with an empty string that we can pass to the python script if there aren't vts.
         var validTimeClause = "";
         if (curve['valid-time'] !== undefined && curve['valid-time'] !== matsTypes.InputTypes.unused) {
