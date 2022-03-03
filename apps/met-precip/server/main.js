@@ -284,14 +284,14 @@ const doCurveParams = function () {
             'Pearson correlation': ['scalar']
         },
         "line_data_ctc": {
-            'CSI': ['ctc'],
-            'FAR': ['ctc'],
-            'FBIAS': ['ctc'],
-            'GSS': ['ctc'],
-            'HSS': ['ctc'],
-            'PODy': ['ctc'],
-            'PODn': ['ctc'],
-            'POFD': ['ctc']
+            'CSI (Critical Success Index)': ['ctc'],
+            'FAR (False Alarm Ratio)': ['ctc'],
+            'FBIAS (Frequency Bias)': ['ctc'],
+            'GSS (Gilbert Skill Score)': ['ctc'],
+            'HSS (Heidke Skill Score)': ['ctc'],
+            'PODy (Probability of positive detection)': ['ctc'],
+            'PODn (Probability of negative detection)': ['ctc'],
+            'POFD (Probability of false detection)': ['ctc'],
         },
         "line_data_eclv": {
             'EV': ['precalculated', 'line_data_eclv', 'ld.value_baser']

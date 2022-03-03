@@ -219,7 +219,16 @@ const doCurveParams = function () {
 
     const masterStatsOptionsMap = {
         "mode_obj_pair": {
-            'OTS': ['mode_pair'],
+            'OTS (Object Threat Score)': ['mode_pair'],
+            'MMI (Median of Maximum Interest)': ['mode_pair'],
+            'CSI (Critical Success Index)': ['mode_pair'],
+            'FAR (False Alarm Ratio)': ['mode_pair'],
+            'FBIAS (Frequency Bias)': ['mode_pair'],
+            'GSS (Gilbert Skill Score)': ['mode_pair'],
+            'HSS (Heidke Skill Score)': ['mode_pair'],
+            'PODy (Probability of positive detection)': ['mode_pair'],
+            'PODn (Probability of negative detection)': ['mode_pair'],
+            'POFD (Probability of false detection)': ['mode_pair'],
             'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
             'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
             'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
