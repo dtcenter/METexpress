@@ -240,11 +240,7 @@ dataContour = function (plotParams, plotFunction) {
         } else {
             // this is an error returned by the mysql database
             error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-            if (error.includes('Unknown column')) {
-                throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-            } else {
-                throw new Error(error);
-            }
+            throw new Error(error);
         }
     }
 

@@ -22,6 +22,8 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
+    var queryArray = [];
+    var differenceArray = [];
     var dataFoundForCurve = true;
     var dataFoundForAnyCurve = false;
     var totalProcessingStart = moment();
@@ -68,7 +70,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             throw new Error("Unrecognized histogram type.");
         }
         var statisticClause = "sum(ldr." + lineDataSuffix + "_i) as bin_count, " +
-                "group_concat(distinct ldr." + lineDataSuffix + "_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            "group_concat(distinct ldr." + lineDataSuffix + "_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld, " + database + "." + lineDataType + "_" + lineDataSuffix + " ldr";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
         regions = Array.isArray(regions) ? regions : [regions];
@@ -142,7 +144,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         var axisKey = yAxisFormat;
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
-        var d;
+        var dReturn;
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
@@ -180,45 +182,71 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
             statement = statement.replace('{{dateClause}}', dateClause);
             dataRequests[label] = statement;
 
-            var queryResult;
-            var startMoment = moment();
-            var finishMoment;
-            try {
-                // send the query statement to the query function
-                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, histogramType, appParams, vts);
-                finishMoment = moment();
-                dataRequests["data retrieval (query) time - " + label] = {
-                    begin: startMoment.format(),
-                    finish: finishMoment.format(),
-                    duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-                    recordCount: queryResult.data.x.length
-                };
-                // get the data back from the query
-                d = queryResult.data;
-            } catch (e) {
-                // this is an error produced by a bug in the query function, not an error returned by the mysql database
-                e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
-                throw new Error(e.message);
-            }
-            if (queryResult.error !== undefined && queryResult.error !== "") {
-                if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
-                    // this is NOT an error just a no data condition
-                    dataFoundForCurve = false;
-                } else {
-                    // this is an error returned by the mysql database
-                    error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-                    if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + histogramType + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-                    } else {
-                        throw new Error(error);
-                    }
-                }
-            } else {
-                dataFoundForAnyCurve = true;
-            }
+            queryArray.push({
+                "statement": statement,
+                "statLineType": statLineType,
+                "statistic": statistic,
+                "appParams": appParams,
+                "vts": vts
+            });
 
+        } else {
+            // this is a difference curve
+            differenceArray.push({
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": appParams,
+                "isCTC": statType === "ctc"
+            });
+        }
+
+    }  // end for curves
+
+    var queryResult;
+    var startMoment = moment();
+    var finishMoment;
+    try {
+        // send the query statements to the query function
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+        finishMoment = moment();
+        dataRequests["data retrieval (query) time"] = {
+            begin: startMoment.format(),
+            finish: finishMoment.format(),
+            duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
+            recordCount: queryResult.data.length
+        };
+        // get the data back from the query
+        dReturn = queryResult.data;
+    } catch (e) {
+        // this is an error produced by a bug in the query function, not an error returned by the mysql database
+        e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
+        throw new Error(e.message);
+    }
+    if (queryResult.error !== undefined && queryResult.error !== "") {
+        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
+            // this is NOT an error just a no data condition
+            dataFoundForCurve = false;
+        } else {
+            // this is an error returned by the mysql database
+            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
+            throw (new Error(error));
+        }
+    } else {
+        dataFoundForAnyCurve = true;
+    }
+
+    if (!dataFoundForAnyCurve) {
+        // we found no data for any curves so don't bother proceeding
+        throw new Error("INFO:  No valid data for any curves.");
+    }
+
+    var postQueryStartMoment = moment();
+    var d;
+    for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+        curve = curves[curveIndex];
+        if (curveIndex < dReturn.length) {
+            d = dReturn[curveIndex];
             // set axis limits based on returned data
-            var postQueryStartMoment = moment();
             if (dataFoundForCurve) {
                 xmin = xmin < d.xmin ? xmin : d.xmin;
                 xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -247,26 +275,6 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         curve['axisKey'] = axisKey;
         const cOptions = matsDataCurveOpsUtils.generateBarChartCurveOptions(curve, curveIndex, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
         dataset.push(cOptions);
-        var postQueryFinishMoment = moment();
-        dataRequests["post data retrieval (query) process time - " + label] = {
-            begin: postQueryStartMoment.format(),
-            finish: postQueryFinishMoment.format(),
-            duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
-        };
-    }  // end for curves
-
-    if (!dataFoundForAnyCurve) {
-        // we found no data for any curves so don't bother proceeding
-        throw new Error("INFO:  No valid data for any curves.");
-    } else if (appParams.matching) {
-        // make sure each curve has the same number of bins if plotting matched
-        for (curveIndex = 0; curveIndex < curvesLength - 1; curveIndex++) {
-            const theseXBins = dataset[curveIndex].x;
-            const nextXBins = dataset[curveIndex + 1].x;
-            if (theseXBins.length !== 0 && nextXBins.length !== 0 && !matsDataUtils.arraysEqual(theseXBins, nextXBins)) {
-                throw new Error("INFO:  Can't plot matched with these curves because they don't have the same bins. Try setting the histogram type to 'Probability Integral Transform Histogram'.");
-            }
-        }
     }
 
     // process the data returned by the query
@@ -281,5 +289,11 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     };
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataEnsembleHistogram(dataset, appParams, curveInfoParams, plotParams, bookkeepingParams);
+    var postQueryFinishMoment = moment();
+    dataRequests["post data retrieval (query) process time"] = {
+        begin: postQueryStartMoment.format(),
+        finish: postQueryFinishMoment.format(),
+        duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
+    };
     plotFunction(result);
 };

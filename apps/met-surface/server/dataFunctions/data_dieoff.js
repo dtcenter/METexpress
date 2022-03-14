@@ -241,10 +241,15 @@ dataDieOff = function (plotParams, plotFunction) {
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
         throw new Error(e.message);
     }
-    if (queryResult.error !== undefined && queryResult.error !== "" && queryResult.error !== matsTypes.Messages.NO_DATA_FOUND) {
-        // this is an error returned by the mysql database
-        error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-        throw (new Error(error));
+    if (queryResult.error !== undefined && queryResult.error !== "") {
+        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
+            // this is NOT an error just a no data condition
+            dataFoundForCurve = false;
+        } else {
+            // this is an error returned by the mysql database
+            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
+            throw (new Error(error));
+        }
     } else {
         dataFoundForAnyCurve = true;
     }

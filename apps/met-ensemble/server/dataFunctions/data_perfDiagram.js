@@ -22,6 +22,8 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
+    var queryArray = [];
+    var differenceArray = [];
     var dataFoundForCurve = true;
     var dataFoundForAnyCurve = false;
     var totalProcessingStart = moment();
@@ -49,9 +51,9 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
         var lineDataType = 'line_data_pct';
         var lineDataSuffix = 'thresh';
         var statisticClause = "ldt.i_value as bin_number, " +
-                "ldt.thresh_i as threshold, " +
-                "sum(ldt.oy_i) as oy_i, " +
-                "sum(ldt.on_i) as on_i";
+            "ldt.thresh_i as threshold, " +
+            "sum(ldt.oy_i) as oy_i, " +
+            "sum(ldt.on_i) as on_i";
         var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld, " + database + "." + lineDataType + "_" + lineDataSuffix + " ldt";
         var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
         regions = Array.isArray(regions) ? regions : [regions];
@@ -125,7 +127,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
         var axisKey = 'PerformanceDiagram';
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
-        var d;
+        var dReturn;
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
@@ -163,45 +165,71 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
             statement = statement.replace('{{dateClause}}', dateClause);
             dataRequests[label] = statement;
 
-            var queryResult;
-            var startMoment = moment();
-            var finishMoment;
-            try {
-                // send the query statement to the query function
-                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
-                finishMoment = moment();
-                dataRequests["data retrieval (query) time - " + label] = {
-                    begin: startMoment.format(),
-                    finish: finishMoment.format(),
-                    duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-                    recordCount: queryResult.data.x.length
-                };
-                // get the data back from the query
-                d = queryResult.data;
-            } catch (e) {
-                // this is an error produced by a bug in the query function, not an error returned by the mysql database
-                e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
-                throw new Error(e.message);
-            }
-            if (queryResult.error !== undefined && queryResult.error !== "") {
-                if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
-                    // this is NOT an error just a no data condition
-                    dataFoundForCurve = false;
-                } else {
-                    // this is an error returned by the mysql database
-                    error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-                    if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-                    } else {
-                        throw new Error(error);
-                    }
-                }
-            } else {
-                dataFoundForAnyCurve = true;
-            }
+            queryArray.push({
+                "statement": statement,
+                "statLineType": statLineType,
+                "statistic": statistic,
+                "appParams": appParams,
+                "vts": vts
+            });
 
+        } else {
+            // this is a difference curve
+            differenceArray.push({
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": appParams,
+                "isCTC": statType === "ctc"
+            });
+        }
+
+    }  // end for curves
+
+    var queryResult;
+    var startMoment = moment();
+    var finishMoment;
+    try {
+        // send the query statements to the query function
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+        finishMoment = moment();
+        dataRequests["data retrieval (query) time"] = {
+            begin: startMoment.format(),
+            finish: finishMoment.format(),
+            duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
+            recordCount: queryResult.data.length
+        };
+        // get the data back from the query
+        dReturn = queryResult.data;
+    } catch (e) {
+        // this is an error produced by a bug in the query function, not an error returned by the mysql database
+        e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
+        throw new Error(e.message);
+    }
+    if (queryResult.error !== undefined && queryResult.error !== "") {
+        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
+            // this is NOT an error just a no data condition
+            dataFoundForCurve = false;
+        } else {
+            // this is an error returned by the mysql database
+            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
+            throw (new Error(error));
+        }
+    } else {
+        dataFoundForAnyCurve = true;
+    }
+
+    if (!dataFoundForAnyCurve) {
+        // we found no data for any curves so don't bother proceeding
+        throw new Error("INFO:  No valid data for any curves.");
+    }
+
+    var postQueryStartMoment = moment();
+    var d;
+    for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+        curve = curves[curveIndex];
+        if (curveIndex < dReturn.length) {
+            d = dReturn[curveIndex];
             // set axis limits based on returned data
-            var postQueryStartMoment = moment();
             if (dataFoundForCurve) {
                 xmin = xmin < d.xmin ? xmin : d.xmin;
                 xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -226,17 +254,6 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
         curve['binParam'] = "met-bins";
         const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(curve, curveIndex, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
         dataset.push(cOptions);
-        var postQueryFinishMoment = moment();
-        dataRequests["post data retrieval (query) process time - " + label] = {
-            begin: postQueryStartMoment.format(),
-            finish: postQueryFinishMoment.format(),
-            duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
-        };
-    }  // end for curves
-
-    if (!dataFoundForAnyCurve) {
-        // we found no data for any curves so don't bother proceeding
-        throw new Error("INFO:  No valid data for any curves.");
     }
 
     // process the data returned by the query
@@ -250,5 +267,11 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
     };
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataPerformanceDiagram(dataset, appParams, curveInfoParams, plotParams, bookkeepingParams);
+    var postQueryFinishMoment = moment();
+    dataRequests["post data retrieval (query) process time"] = {
+        begin: postQueryStartMoment.format(),
+        finish: postQueryFinishMoment.format(),
+        duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
+    };
     plotFunction(result);
 };
