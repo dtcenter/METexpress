@@ -116,8 +116,14 @@ dataDieOff = function (plotParams, plotFunction) {
                 validTimeClause = "and unix_timestamp(h.fcst_valid)%(24*3600)/3600 IN(" + vts + ")";
             }
         } else if (dieoffType === matsTypes.ForecastTypes.utcCycle) {
-            utcCycleStart = Number(curve['utc-cycle-start']);
-            utcCycleStartClause = "and unix_timestamp(h.fcst_init)%(24*3600)/3600 IN(" + utcCycleStart + ")";
+            utcCycleStart = curve['utc-cycle-start'] === undefined ? [] : curve['utc-cycle-start'];
+            if (utcCycleStart.length !== 0 && utcCycleStart !== matsTypes.InputTypes.unused) {
+                utcCycleStart = utcCycleStart.map(function (u) {
+                    return "'" + u + "'";
+                }).join(',');
+                utcCycleStartClause = "and unix_timestamp(h.fcst_init)%(24*3600)/3600 IN(" + utcCycleStart + ")";
+            }
+            dateClause = "and unix_timestamp(h.fcst_init) >= " + fromSecs + " and unix_timestamp(h.fcst_init) <= " + toSecs;
         } else {
             dateClause = "and unix_timestamp(h.fcst_init) = " + fromSecs;
         }

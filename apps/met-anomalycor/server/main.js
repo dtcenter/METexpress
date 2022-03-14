@@ -925,14 +925,16 @@ const doCurveParams = function () {
                 name: 'utc-cycle-start',
                 type: matsTypes.InputTypes.select,
                 options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+                selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: 12,
+                default: ['12'],
                 controlButtonVisibility: 'block',
                 controlButtonText: "utc cycle init hour",
                 displayOrder: 4,
                 displayPriority: 1,
                 displayGroup: 5,
+                multiple: true
             });
     }
 
