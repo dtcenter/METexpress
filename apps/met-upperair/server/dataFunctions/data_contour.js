@@ -212,7 +212,7 @@ dataContour = function (plotParams, plotFunction) {
         "appParams": appParams,
         "vts": vts
     }];
-
+debugger;
     var queryResult;
     var startMoment = moment();
     var finishMoment;
@@ -227,7 +227,7 @@ dataContour = function (plotParams, plotFunction) {
             recordCount: queryResult.data.length
         };
         // get the data back from the query
-        d = queryResult.data;
+        d = queryResult.data[0];
     } catch (e) {
         // this is an error produced by a bug in the query function, not an error returned by the mysql database
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
@@ -247,7 +247,7 @@ dataContour = function (plotParams, plotFunction) {
             }
         }
     }
-
+debugger;
     var postQueryStartMoment = moment();
 
     // set curve annotation to be the curve mean -- may be recalculated later
