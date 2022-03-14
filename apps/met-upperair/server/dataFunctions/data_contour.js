@@ -212,7 +212,7 @@ dataContour = function (plotParams, plotFunction) {
         "appParams": appParams,
         "vts": vts
     }];
-debugger;
+
     var queryResult;
     var startMoment = moment();
     var finishMoment;
@@ -247,7 +247,7 @@ debugger;
             }
         }
     }
-debugger;
+
     var postQueryStartMoment = moment();
 
     // set curve annotation to be the curve mean -- may be recalculated later
