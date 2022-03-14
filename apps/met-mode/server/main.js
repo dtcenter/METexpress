@@ -226,6 +226,7 @@ const doCurveParams = function () {
             'PODy (Probability of positive detection)': ['mode_pair'],
             'Object frequency bias': ['mode_pair'],
             'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
+            'Model-obs centroid distance (unique pairs)': ['mode_pair'],
             'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
             'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
             'Model/obs area ratio': ['precalculated', 'mode_obj_pair', 'ld.area_ratio'],

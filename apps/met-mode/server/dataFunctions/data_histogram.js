@@ -68,7 +68,7 @@ dataHistogram = function (plotParams, plotFunction) {
             statisticClause = "avg(ld.interest) as interest, " +
                 "group_concat(distinct ld.interest, ';', ld.object_id, ';', h.mode_header_id, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
             statisticClause2 = "avg(ld2.area) as area, " +
-                "group_concat(distinct ld2.object_id, ';', h.mode_header_id, ';', ld2.area, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
+                "group_concat(distinct ld2.object_id, ';', h.mode_header_id, ';', ld2.area, ';', ld2.intensity_nn, ';', ld2.centroid_lat, ';', ld2.centroid_lon, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
             lineDataType = "mode_obj_pair";
             lineDataType2 = "mode_obj_single";
         }
