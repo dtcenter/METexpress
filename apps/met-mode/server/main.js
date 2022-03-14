@@ -224,6 +224,7 @@ const doCurveParams = function () {
             'CSI (Critical Success Index)': ['mode_pair'],
             'FAR (False Alarm Ratio)': ['mode_pair'],
             'PODy (Probability of positive detection)': ['mode_pair'],
+            'Object frequency bias': ['mode_pair'],
             'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
             'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
             'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
