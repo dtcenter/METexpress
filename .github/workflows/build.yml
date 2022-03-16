@@ -23,7 +23,7 @@ jobs:
           - met-cyclone
           - met-ensemble
           - met-precip
-          - met-mode
+          - met-object
           - met-surface
           - met-upperair
     steps:

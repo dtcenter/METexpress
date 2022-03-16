@@ -7,7 +7,7 @@ apps=(
     "met-anomalycor"
     "met-cyclone"
     "met-ensemble"
-    "met-mode"
+    "met-object"
     "met-precip"
     "met-surface"
     "met-upperair"
