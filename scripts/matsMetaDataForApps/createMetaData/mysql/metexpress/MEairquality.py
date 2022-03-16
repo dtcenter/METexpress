@@ -27,7 +27,7 @@ class MEAirquality(ParentMetadata):
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_ctc"]      # used for ctc stats on all plot types
-        options['metadata_table'] = "airquality_mats_metadata"
+        options['metadata_table'] = "airquality_metexpress_metadata"
         options['app_reference'] = "met-airquality"
         options['database_groups'] = "airquality_database_groups"
         super().__init__(options)
@@ -85,8 +85,8 @@ class MEAirquality(ParentMetadata):
 if __name__ == '__main__':
     options = MEAirquality.get_options(sys.argv)
     start = str(datetime.now())
-    print('AIR QUALITY MATS FOR MET METADATA START: ' + start)
+    print('AIR QUALITY METEXPRESS METADATA START: ' + start)
     me_dbcreator = MEAirquality(options)
     me_dbcreator.main()
-    print('AIR QUALITY MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('AIR QUALITY METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

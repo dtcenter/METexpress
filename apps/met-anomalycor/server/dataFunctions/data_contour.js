@@ -52,28 +52,22 @@ dataContour = function (plotParams, plotFunction) {
     var lineDataType = "";
     if (statLineType === 'scalar') {
         statisticClause = "count(ld.fabar) as n, " +
-            "avg(ld.fabar) as sub_fbar, " +
-            "avg(ld.oabar) as sub_obar, " +
-            "avg(ld.ffabar) as sub_ffbar, " +
-            "avg(ld.ooabar) as sub_oobar, " +
-            "avg(ld.foabar) as sub_fobar, " +
-            "avg(ld.total) as sub_total, ";
+            "avg(ld.fabar) as fbar, " +
+            "avg(ld.oabar) as obar, " +
+            "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', " +
+            "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_sal1l2";
     } else if (statLineType === 'vector') {
         statisticClause = "count(ld.ufabar) as n, " +
-            "avg(ld.ufabar) as sub_ufbar, " +
-            "avg(ld.vfabar) as sub_vfbar, " +
-            "avg(ld.uoabar) as sub_uobar, " +
-            "avg(ld.voabar) as sub_vobar, " +
-            "avg(ld.uvfoabar) as sub_uvfobar, " +
-            "avg(ld.uvffabar) as sub_uvffbar, " +
-            "avg(ld.uvooabar) as sub_uvoobar, " +
-            "avg(ld.total) as sub_total, ";
+            "avg(ld.ufabar) as ufbar, " +
+            "avg(ld.vfabar) as vfbar, " +
+            "avg(ld.uoabar) as uobar, " +
+            "avg(ld.voabar) as vobar, " +
+            "group_concat(distinct ld.ufabar, ';', ld.vfabar, ';', ld.uoabar, ';', ld.voabar, ';', " +
+            "ld.uvfoabar, ';', ld.uvffabar, ';', ld.uvooabar, ';', " +
+            "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_val1l2";
     }
-    statisticClause = statisticClause +
-        "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
-        "count(h.fcst_lev) as sub_levs";      // this is just a dummy for the common python function -- the actual value doesn't matter
     var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
     var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
     regions = Array.isArray(regions) ? regions : [regions];
@@ -206,21 +200,29 @@ dataContour = function (plotParams, plotFunction) {
     statement = statement.split('{{dateString}}').join(dateString);
     dataRequests[label] = statement;
 
+    var queryArray = [{
+        "statement": statement,
+        "statLineType": statLineType,
+        "statistic": statistic,
+        "appParams": appParams,
+        "vts": vts
+    }];
+
     var queryResult;
     var startMoment = moment();
     var finishMoment;
     try {
         // send the query statement to the query function
-        queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
         finishMoment = moment();
-        dataRequests["data retrieval (query) time - " + label] = {
+        dataRequests["data retrieval (query) time"] = {
             begin: startMoment.format(),
             finish: finishMoment.format(),
             duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-            recordCount: queryResult.data.xTextOutput.length
+            recordCount: queryResult.data.length
         };
         // get the data back from the query
-        d = queryResult.data;
+        d = queryResult.data[0];
     } catch (e) {
         // this is an error produced by a bug in the query function, not an error returned by the mysql database
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
@@ -259,7 +261,7 @@ dataContour = function (plotParams, plotFunction) {
     const cOptions = matsDataCurveOpsUtils.generateContourCurveOptions(curve, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
     dataset.push(cOptions);
     var postQueryFinishMoment = moment();
-    dataRequests["post data retrieval (query) process time - " + label] = {
+    dataRequests["post data retrieval (query) process time"] = {
         begin: postQueryStartMoment.format(),
         finish: postQueryFinishMoment.format(),
         duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'

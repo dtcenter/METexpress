@@ -284,14 +284,14 @@ const doCurveParams = function () {
             'Pearson correlation': ['scalar']
         },
         "line_data_ctc": {
-            'CSI': ['ctc'],
-            'FAR': ['ctc'],
-            'FBIAS': ['ctc'],
-            'GSS': ['ctc'],
-            'HSS': ['ctc'],
-            'PODy': ['ctc'],
-            'PODn': ['ctc'],
-            'POFD': ['ctc']
+            'CSI (Critical Success Index)': ['ctc'],
+            'FAR (False Alarm Ratio)': ['ctc'],
+            'FBIAS (Frequency Bias)': ['ctc'],
+            'GSS (Gilbert Skill Score)': ['ctc'],
+            'HSS (Heidke Skill Score)': ['ctc'],
+            'PODy (Probability of positive detection)': ['ctc'],
+            'PODn (Probability of negative detection)': ['ctc'],
+            'POFD (Probability of false detection)': ['ctc'],
         }
     };
 
@@ -338,7 +338,7 @@ const doCurveParams = function () {
 
     var thisDB;
     try {
-        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from airquality_mats_metadata;");
+        rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select distinct db from airquality_metexpress_metadata;");
         for (i = 0; i < rows.length; i++) {
             thisDB = rows[i].db.trim();
             myDBs.push(thisDB);
@@ -364,7 +364,7 @@ const doCurveParams = function () {
             scaleOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate from airquality_mats_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate from airquality_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -982,14 +982,16 @@ const doCurveParams = function () {
                 name: 'utc-cycle-start',
                 type: matsTypes.InputTypes.select,
                 options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+                selected: '',
                 controlButtonCovered: true,
                 unique: false,
-                default: 12,
+                default: ['12'],
                 controlButtonVisibility: 'block',
                 controlButtonText: "utc cycle init hour",
                 displayOrder: 4,
                 displayPriority: 1,
                 displayGroup: 5,
+                multiple: true
             });
     }
 
@@ -1408,7 +1410,7 @@ Meteor.startup(function () {
     }
 
     // create list of tables we need to monitor for update
-    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "mats_metadata", ['airquality_mats_metadata', 'airquality_database_groups']);
+    const mdr = new matsTypes.MetaDataDBRecord("sumPool", "metexpress_metadata", ['airquality_metexpress_metadata', 'airquality_database_groups']);
     try {
         matsMethods.resetApp({appPools: allPools, appMdr: mdr, appType: matsTypes.AppTypes.metexpress});
     } catch (error) {
