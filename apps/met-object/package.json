@@ -1,5 +1,5 @@
 {
-  "name": "met-mode",
+  "name": "met-object",
   "private": true,
   "scripts": {
     "start": "meteor run"
