@@ -35,6 +35,7 @@ dataContour = function (plotParams, plotFunction) {
     if (curves.length > 1) {
         throw new Error("INFO:  There must only be one added curve.");
     }
+    var allStatTypes = [];
     var dataset = [];
     var axisMap = Object.create(null);
 
@@ -155,6 +156,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     var statType = "met-" + statLineType;
+    allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.
     curve['unitKey'] = "ACC";
 
@@ -268,7 +270,7 @@ dataContour = function (plotParams, plotFunction) {
     };
 
     // process the data returned by the query
-    const curveInfoParams = {"curve": curves, "statType": statType, "axisMap": axisMap};
+    const curveInfoParams = {"curve": curves, "statType": allStatTypes, "axisMap": axisMap};
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataContour(dataset, curveInfoParams, plotParams, bookkeepingParams);
     plotFunction(result);

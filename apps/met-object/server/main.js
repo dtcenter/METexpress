@@ -256,7 +256,6 @@ const doCurveParams = function () {
     var variableOptionsMap = {};
     var variableValuesMap = {};
     var forecastLengthOptionsMap = {};
-    var accumulationLengthOptionsMap = {};
     var levelOptionsMap = {};
     var thresholdOptionsMap = {};
     var radiiOptionsMap = {};
@@ -303,14 +302,13 @@ const doCurveParams = function () {
             variableOptionsMap[thisDB] = {};
             variableValuesMap[thisDB] = {};
             forecastLengthOptionsMap[thisDB] = {};
-            accumulationLengthOptionsMap[thisDB] = {};
             levelOptionsMap[thisDB] = {};
             thresholdOptionsMap[thisDB] = {};
             radiiOptionsMap[thisDB] = {};
             scaleOptionsMap[thisDB] = {};
             descrOptionsMap[thisDB] = {};
 
-            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,levels,descrs,fcst_orig,accum_orig,trshs,radii,gridpoints,mindate,maxdate from mode_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,levels,descrs,fcst_orig,accum_orig,trshs,radii,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
+            rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(sumPool, "select model,display_text,line_data_table,variable,levels,descrs,fcst_orig,trshs,radii,gridpoints,mindate,maxdate from mode_metexpress_metadata where db = '" + thisDB + "' group by model,display_text,line_data_table,variable,levels,descrs,fcst_orig,trshs,radii,gridpoints,mindate,maxdate order by model,line_data_table,variable;");
             for (i = 0; i < rows.length; i++) {
 
                 var model_value = rows[i].model.trim();
@@ -336,12 +334,6 @@ const doCurveParams = function () {
                 var forecastLengthArr = forecastLengths.split(',').map(Function.prototype.call, String.prototype.trim);
                 for (var j = 0; j < forecastLengthArr.length; j++) {
                     forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]|0000/g, "");
-                }
-
-                var accumLengths = rows[i].accum_orig;
-                var accumLengthArr = accumLengths.split(',').map(Function.prototype.call, String.prototype.trim);
-                for (var j = 0; j < accumLengthArr.length; j++) {
-                    accumLengthArr[j] = accumLengthArr[j].replace(/'|\[|\]|0000/g, "");
                 }
 
                 var levels = rows[i].levels;
@@ -387,7 +379,6 @@ const doCurveParams = function () {
                 variableOptionsMap[thisDB][model] = variableOptionsMap[thisDB][model] === undefined ? {} : variableOptionsMap[thisDB][model];
                 variableValuesMap[thisDB][model] = variableValuesMap[thisDB][model] === undefined ? {} : variableValuesMap[thisDB][model];
                 forecastLengthOptionsMap[thisDB][model] = forecastLengthOptionsMap[thisDB][model] === undefined ? {} : forecastLengthOptionsMap[thisDB][model];
-                accumulationLengthOptionsMap[thisDB][model] = accumulationLengthOptionsMap[thisDB][model] === undefined ? {} : accumulationLengthOptionsMap[thisDB][model];
                 levelOptionsMap[thisDB][model] = levelOptionsMap[thisDB][model] === undefined ? {} : levelOptionsMap[thisDB][model];
                 thresholdOptionsMap[thisDB][model] = thresholdOptionsMap[thisDB][model] === undefined ? {} : thresholdOptionsMap[thisDB][model];
                 radiiOptionsMap[thisDB][model] = radiiOptionsMap[thisDB][model] === undefined ? {} : radiiOptionsMap[thisDB][model];
@@ -403,7 +394,6 @@ const doCurveParams = function () {
                         variableOptionsMap[thisDB][model][thisPlotType] = {};
                         variableValuesMap[thisDB][model][thisPlotType] = {};
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
-                        accumulationLengthOptionsMap[thisDB][model][thisPlotType] = {};
                         levelOptionsMap[thisDB][model][thisPlotType] = {};
                         thresholdOptionsMap[thisDB][model][thisPlotType] = {};
                         radiiOptionsMap[thisDB][model][thisPlotType] = {};
@@ -423,7 +413,6 @@ const doCurveParams = function () {
                             variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
                             variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
@@ -435,7 +424,6 @@ const doCurveParams = function () {
                             variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(jsonFriendlyVariable);
                             variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = variable;
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = forecastLengthArr;
-                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = accumLengthArr;
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = levelsArr;
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = trshArr;
                             radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = radiiArr;
@@ -444,7 +432,6 @@ const doCurveParams = function () {
                         } else {
                             // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
-                            accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(accumulationLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], accumLengthArr);
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], levelsArr);
                             thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], trshArr);
                             radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], radiiArr);
@@ -1009,39 +996,37 @@ const doCurveParams = function () {
         }
     }
 
-    // if (matsCollections["forecast-classification"].findOne({name: 'forecast-classification'}) == undefined) {
-    //     matsCollections["forecast-classification"].insert(
-    //         {
-    //             name: 'forecast-classification',
-    //             type: matsTypes.InputTypes.select,
-    //             options: ['All object types', 'Cellular', 'Linear, non-bow echo', 'Linear, bow-echo', 'Non-linear convective', 'Non-cellular convective', 'Non-convective'],
-    //             controlButtonCovered: true,
-    //             unique: false,
-    //             default: 'All object types',
-    //             controlButtonVisibility: 'block',
-    //             controlButtonText: "forecast classification",
-    //             displayOrder: 1,
-    //             displayPriority: 1,
-    //             displayGroup: 7,
-    //         });
-    // }
-    //
-    // if (matsCollections["observed-classification"].findOne({name: 'observed-classification'}) == undefined) {
-    //     matsCollections["observed-classification"].insert(
-    //         {
-    //             name: 'observed-classification',
-    //             type: matsTypes.InputTypes.select,
-    //             options: ['All object types', 'Cellular', 'Linear, non-bow echo', 'Linear, bow-echo', 'Non-linear convective', 'Non-cellular convective', 'Non-convective'],
-    //             controlButtonCovered: true,
-    //             unique: false,
-    //             default: 'All object types',
-    //             controlButtonVisibility: 'block',
-    //             controlButtonText: "observed classification",
-    //             displayOrder: 2,
-    //             displayPriority: 1,
-    //             displayGroup: 7,
-    //         });
-    // }
+    if (matsCollections["object-matching"].findOne({name: 'object-matching'}) == undefined) {
+        matsCollections["object-matching"].insert(
+            {
+                name: 'object-matching',
+                type: matsTypes.InputTypes.select,
+                options: ["All pairs", "Matched pairs"],
+                controlButtonCovered: true,
+                unique: false,
+                default: "All pairs",
+                controlButtonVisibility: 'block',
+                displayOrder: 1,
+                displayPriority: 1,
+                displayGroup: 7
+            });
+    }
+
+    if (matsCollections["object-simplicity"].findOne({name: 'object-simplicity'}) == undefined) {
+        matsCollections["object-simplicity"].insert(
+            {
+                name: 'object-simplicity',
+                type: matsTypes.InputTypes.select,
+                options: ["All objects", "Simple objects", "Cluster objects"],
+                controlButtonCovered: true,
+                unique: false,
+                default: "Simple objects",
+                controlButtonVisibility: 'block',
+                displayOrder: 2,
+                displayPriority: 1,
+                displayGroup: 7
+            });
+    }
 
     // determine date defaults for dates and curveDates
     // these defaults are app-specific and not controlled by the user
@@ -1131,10 +1116,12 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['avg: ', 'average', ', '],
-                [', desc: ', 'description', '']
+                ['desc: ', 'description', ', '],
+                ['matching: ', 'object-matching', ', '],
+                ['simplicity: ', 'object-simplicity', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "average", "forecast-length", "level", "description", "object-matching", "object-simplicity"
             ],
             groupSize: 6
         });
@@ -1154,10 +1141,12 @@ const doCurveTextPatterns = function () {
                 ['valid-time: ', 'valid-time', ', '],
                 ['start utc: ', 'utc-cycle-start', ', '],
                 ['desc: ', 'description', ', '],
+                ['matching: ', 'object-matching', ', '],
+                ['simplicity: ', 'object-simplicity', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "object-matching", "object-simplicity", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1175,10 +1164,12 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['desc: ', 'description', ', '],
+                ['matching: ', 'object-matching', ', '],
+                ['simplicity: ', 'object-simplicity', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "radius", "scale", "forecast-length", "valid-time", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "radius", "scale", "forecast-length", "valid-time", "level", "description", "object-matching", "object-simplicity", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1196,10 +1187,12 @@ const doCurveTextPatterns = function () {
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['desc: ', 'description', ', '],
+                ['matching: ', 'object-matching', ', '],
+                ['simplicity: ', 'object-simplicity', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "forecast-length", "level", "description", "object-matching", "object-simplicity", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1218,10 +1211,12 @@ const doCurveTextPatterns = function () {
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['desc: ', 'description', ', '],
+                ['matching: ', 'object-matching', ', '],
+                ['simplicity: ', 'object-simplicity', ', '],
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "forecast-length", "level", "description", "object-matching", "object-simplicity", "curve-dates"
             ],
             groupSize: 6
         });

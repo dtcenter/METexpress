@@ -30,6 +30,7 @@ dataDieOff = function (plotParams, plotFunction) {
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
+    var allStatTypes = [];
     var dataset = [];
     var utcCycleStarts = [];
     var axisMap = Object.create(null);
@@ -130,6 +131,7 @@ dataDieOff = function (plotParams, plotFunction) {
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
         var statType = "met-" + statLineType;
+        allStatTypes.push(statType);
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -274,7 +276,7 @@ dataDieOff = function (plotParams, plotFunction) {
         "curvesLength": curvesLength,
         "idealValues": idealValues,
         "utcCycleStarts": utcCycleStarts,
-        "statType": statType,
+        "statType": allStatTypes,
         "axisMap": axisMap,
         "xmax": xmax,
         "xmin": xmin

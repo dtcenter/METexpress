@@ -30,6 +30,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
+    var allStatTypes = [];
     var dataset = [];
     var axisMap = Object.create(null);
     var xmax = -1 * Number.MAX_VALUE;
@@ -120,6 +121,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
             descrsClause = "and h.descr IN(" + descrs + ")";
         }
         var statType = "met-" + statLineType;
+        allStatTypes.push(statType);
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -260,7 +262,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
     const curveInfoParams = {
         "curves": curves,
         "curvesLength": curvesLength,
-        "statType": statType,
+        "statType": allStatTypes,
         "axisMap": axisMap,
         "xmax": xmax,
         "xmin": xmin

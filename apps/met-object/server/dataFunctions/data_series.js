@@ -33,6 +33,7 @@ dataSeries = function (plotParams, plotFunction) {
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
+    var allStatTypes = [];
     var dataset = [];
     var utcCycleStarts = [];
     var axisMap = Object.create(null);
@@ -54,6 +55,8 @@ dataSeries = function (plotParams, plotFunction) {
         var statistic = curve['statistic'];
         var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
+        var matchFlag = curve['object-matching'];
+        var simpleFlag = curve['object-simplicity'];
         var statisticClause = "";
         var statisticClause2 = "";
         var lineDataType = "";
@@ -62,6 +65,10 @@ dataSeries = function (plotParams, plotFunction) {
         var queryTableClause2 = "";
         var headerIdClause = "";
         var headerIdClause2 = "";
+        var matchedFlagClause = "";
+        var matchedFlagClause2 = "";
+        var simpleFlagClause = "";
+        var simpleFlagClause2 = "";
         if (statLineType === 'precalculated') {
             statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', h.n_valid, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
@@ -75,9 +82,25 @@ dataSeries = function (plotParams, plotFunction) {
         }
         queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
         headerIdClause = "and h.mode_header_id = ld.mode_header_id";
+        if (matchFlag === "Matched pairs") {
+            matchedFlagClause = "and ld.matched_flag = 1";
+        }
+        if (simpleFlag === "Simple objects") {
+            simpleFlagClause = "and ld.simple_flag = 1";
+        } else if (simpleFlag === "Cluster objects") {
+            simpleFlagClause = "and ld.simple_flag = 0";
+        }
         if (lineDataType2 !== "") {
             queryTableClause2 = "from " + database + ".mode_header h, " + database + "." + lineDataType2 + " ld2";
             headerIdClause2 = "and h.mode_header_id = ld2.mode_header_id";
+            if (matchFlag === "Matched pairs") {
+                matchedFlagClause2 = "and ld2.matched_flag = 1";
+            }
+            if (simpleFlag === "Simple objects") {
+                simpleFlagClause2 = "and ld2.simple_flag = 1";
+            } else if (simpleFlag === "Cluster objects") {
+                simpleFlagClause2 = "and ld2.simple_flag = 0";
+            }
         }
         var scale = curve['scale'];
         var scaleClause = "";
@@ -150,6 +173,7 @@ dataSeries = function (plotParams, plotFunction) {
         var averageOptionsMap = matsCollections['average'].findOne({name: 'average'}, {optionsMap: 1})['optionsMap'];
         var average = averageOptionsMap[averageStr][0];
         var statType = "met-" + statLineType;
+        allStatTypes.push(statType);
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -180,6 +204,8 @@ dataSeries = function (plotParams, plotFunction) {
                 "{{forecastLengthsClause}} " +
                 "{{levelsClause}} " +
                 "{{descrsClause}} " +
+                "{{matchedFlagClause}} " +
+                "{{simpleFlagClause}} " +
                 "{{headerIdClause}} " +
                 "group by avtime " +
                 "order by avtime" +
@@ -200,11 +226,15 @@ dataSeries = function (plotParams, plotFunction) {
             statement1 = statement.replace('{{statisticClause}}', statisticClause);
             statement1 = statement1.replace('{{queryTableClause}}', queryTableClause);
             statement1 = statement1.replace('{{headerIdClause}}', headerIdClause);
+            statement1 = statement1.replace('{{matchedFlagClause}}', matchedFlagClause);
+            statement1 = statement1.replace('{{simpleFlagClause}}', simpleFlagClause);
 
             if (lineDataType2 !== "") {
                 statement2 = statement.replace('{{statisticClause}}', statisticClause2);
                 statement2 = statement2.replace('{{queryTableClause}}', queryTableClause2);
                 statement2 = statement2.replace('{{headerIdClause}}', headerIdClause2);
+                statement2 = statement2.replace('{{matchedFlagClause}}', matchedFlagClause2);
+                statement2 = statement2.replace('{{simpleFlagClause}}', simpleFlagClause2);
                 statement = statement1 + " ||| " + statement2;
             } else {
                 statement = statement1
@@ -311,7 +341,7 @@ dataSeries = function (plotParams, plotFunction) {
         "curvesLength": curvesLength,
         "idealValues": idealValues,
         "utcCycleStarts": utcCycleStarts,
-        "statType": statType,
+        "statType": allStatTypes,
         "axisMap": axisMap,
         "xmax": xmax,
         "xmin": xmin
