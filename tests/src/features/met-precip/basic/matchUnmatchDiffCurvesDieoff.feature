@@ -23,14 +23,16 @@ Feature: Match Unmatch Diff Curves Dieoff
         Then the "data-source" parameter value matches "GFDLFV3"
         When I change the "region" parameter to "FULL"
         Then the "region" parameter value matches "FULL"
-        When I change the "statistic" parameter to "CSI"
-        Then the "statistic" parameter value matches "CSI"
+        When I change the "statistic" parameter to "CSI (Critical Success Index)"
+        Then the "statistic" parameter value matches "CSI (Critical Success Index)"
         When I change the "variable" parameter to "APCP_03"
         Then the "variable" parameter value matches "APCP_03"
         When I set the curve-dates to "02/03/2018 0:00 - 06/03/2019 0:00"
         Then the curve-dates value is "02/03/2018 0:00 - 06/03/2019 0:00"
         When I change the "dieoff-type" parameter to "Dieoff for a specified UTC cycle init hour"
         Then the "dieoff-type" parameter value matches "Dieoff for a specified UTC cycle init hour"
+        When I change the "utc-cycle-start" parameter to "0"
+        Then the "utc-cycle-start" parameter value matches "0"
         When I click the "Add Curve" button
         Then "Curve0" is added
 
