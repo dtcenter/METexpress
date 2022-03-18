@@ -242,7 +242,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         throw new Error("INFO:  No valid data for any curves.");
     } else if (appParams.matching) {
         // make sure each curve has the same number of bins if plotting matched
-        for (curveIndex = 0; curveIndex < curvesLength - 1; curveIndex++) {
+        for (curveIndex = 0; curveIndex < dReturn.length - 1; curveIndex++) {
             const theseXBins = dReturn[curveIndex].x;
             const nextXBins = dReturn[curveIndex + 1].x;
             if (theseXBins.length !== 0 && nextXBins.length !== 0 && !matsDataUtils.arraysEqual(theseXBins, nextXBins)) {
