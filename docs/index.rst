@@ -91,7 +91,7 @@ Acronyms
 * **ESRL** - Earth Systems Research Laboratory
 * **HIWPP** - High Impact Weather Predication Project
 * **NGGPS** - Next Generation Global Predicatio System
-* **GSD** - Global Systems Division
+* **GSL** - Global Systems Laboratory
 
 
 Authors
@@ -102,7 +102,9 @@ To cite this documentation in publications, please refer to the METexpress User'
 
 * Venita Hagerty [#CIRA]_
 * Jeff Hamilton [#CIRES]_
+* Ian McGinnis [#CIRA]_
 * Randy Pierce [#CIRA]_
+* Keith Searight [#CIRA]_
 * Molly B. Smith [#CIRES]_
 * Bonny Strong [#CIRA]_
 
