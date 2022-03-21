@@ -712,7 +712,7 @@ Plot types available include
 * YearToYear
 * Histogram
 
-Plots in the Precipitation app for Time Series, DieOff,
+Plots in the Cyclone app for Time Series, DieOff,
 ValidTime, and Histogram are the same as in Upper Air.
 
 A different plot type, YearToYear, is present in this app. YearToYear
@@ -736,4 +736,68 @@ Cyclone app, and :numref:`apps_year_plot_cyclone` shows an example YearToYear pl
 
 	    YearToYear plot in the Cyclone
 	    app produced from selections in :numref:`apps_interface_year_cyclone`
+
+Objects App
+_________________
+
+The Objects app is designed for plotting skill scores and model-obs pair verification
+statistics for convective objects.
+
+For this app, the following parameters have choices derived from the data.
+
+* Group
+* Database
+* Data-source
+* Statistic
+* Variable
+* Threshold
+* Radius
+* Scale
+* Forecast lead time
+* Level
+* Description
+* Dates
+* Curve-dates
+
+The selector for the Statistic has these possible choices (depending on available MET line types):
+
+* OTS (Object Threat Score)
+* MMI (Median of Maximum Interest)
+* CSI (Critical Success Index)
+* FAR (False Alarm Ratio)
+* PODy (Probability of positive detection)
+* Object frequency bias
+* Model-obs centroid distance
+* Model-obs centroid distance (unique pairs)
+* Model-obs angle difference
+* Model-obs aspect difference
+* Model/obs area ratio
+* Model/obs intersection area
+* Model/obs union area
+* Model/obs symmetric difference area
+* Model/obs consumption ratio
+* Model/obs curvature ratio
+* Model/obs complexity ratio
+* Model/obs percentile intensity ratio
+* Model/obs interest
+
+Plot types available include
+
+* Time Series
+* DieOff
+* Threshold
+* ValidTime
+* Histogram
+
+Plots in the Objects app for Time Series, DieOff,
+ValidTime, and Histogram are the same as in Precipitation.
+
+:numref:`apps_interface_objects` shows an example of the user interface for the
+Objects app.
+
+.. apps_interface_objects:
+
+.. figure:: figure/apps_interface_objects.png
+
+	    User interface screen for the Objects app
 

@@ -13,6 +13,7 @@ The current list of apps includes:
 * MET Ensemble
 * MET Precipitation
 * MET Cyclone
+* MET Objects
 
 Future development of METexpress is likely to add more apps.
 
@@ -36,7 +37,7 @@ app they want to use.
  
 .. figure:: figure/interface_home_page.png
 	    
-	    METexpress Home Page
+	    METexpress Home Page (MET Objects not yet pictured)
 
 User Interface Layout Common to Each App
 ________________________________________
@@ -76,7 +77,7 @@ Immediately below the name of the app is a bar that allows selection of the
 plot type.  Available types for Upper Air include Time Series, Profile,
 DieOff, ValidTime, Histogram, and Contour.  Other apps include some plot
 types specific to that application domain, such as Reliability plots in the
-Ensemble app or GridScale plots in the Precip app.  The section for each
+Ensemble app or GridScale plots in the Precipitation app.  The section for each
 app below will describe the available plot types for that app.
 
 The user will first want to decide what type of plot they want to produce
