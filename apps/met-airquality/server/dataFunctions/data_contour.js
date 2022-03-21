@@ -35,6 +35,7 @@ dataContour = function (plotParams, plotFunction) {
     if (curves.length > 1) {
         throw new Error("INFO:  There must only be one added curve.");
     }
+    var allStatTypes = [];
     var dataset = [];
     var axisMap = Object.create(null);
 
@@ -52,25 +53,20 @@ dataContour = function (plotParams, plotFunction) {
     var lineDataType = "";
     if (statLineType === 'scalar') {
         statisticClause = "count(ld.fbar) as n, " +
-            "avg(ld.fbar) as sub_fbar, " +
-            "avg(ld.obar) as sub_obar, " +
-            "avg(ld.ffbar) as sub_ffbar, " +
-            "avg(ld.oobar) as sub_oobar, " +
-            "avg(ld.fobar) as sub_fobar, " +
-            "avg(ld.total) as sub_total, ";
+            "avg(ld.fbar) as fbar, " +
+            "avg(ld.obar) as obar, " +
+            "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+            "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_sl1l2";
     } else if (statLineType === 'ctc') {
         statisticClause = "count(ld.fy_oy) as n, " +
-            "avg(ld.fy_oy) as sub_fy_oy, " +
-            "avg(ld.fy_on) as sub_fy_on, " +
-            "avg(ld.fn_oy) as sub_fn_oy, " +
-            "avg(ld.fn_on) as sub_fn_on, " +
-            "avg(ld.total) as sub_total, ";
+            "sum(ld.fy_oy) as fy_oy, " +
+            "sum(ld.fy_on) as fy_on, " +
+            "sum(ld.fn_oy) as fn_oy, " +
+            "sum(ld.fn_on) as fn_on, " +
+            "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_ctc";
     }
-    statisticClause = statisticClause +
-        "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
-        "count(h.fcst_lev) as sub_levs";      // this is just a dummy for the common python function -- the actual value doesn't matter
     var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
     var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
     regions = Array.isArray(regions) ? regions : [regions];
@@ -160,6 +156,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     var statType = "met-" + statLineType;
+    allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.
     curve['unitKey'] = variable + " " + statistic;
 
@@ -207,21 +204,29 @@ dataContour = function (plotParams, plotFunction) {
     statement = statement.split('{{dateString}}').join(dateString);
     dataRequests[label] = statement;
 
+    var queryArray = [{
+        "statement": statement,
+        "statLineType": statLineType,
+        "statistic": statistic,
+        "appParams": appParams,
+        "vts": vts
+    }];
+
     var queryResult;
     var startMoment = moment();
     var finishMoment;
     try {
         // send the query statement to the query function
-        queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
         finishMoment = moment();
-        dataRequests["data retrieval (query) time - " + label] = {
+        dataRequests["data retrieval (query) time"] = {
             begin: startMoment.format(),
             finish: finishMoment.format(),
             duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-            recordCount: queryResult.data.xTextOutput.length
+            recordCount: queryResult.data.length
         };
         // get the data back from the query
-        d = queryResult.data;
+        d = queryResult.data[0];
     } catch (e) {
         // this is an error produced by a bug in the query function, not an error returned by the mysql database
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
@@ -260,14 +265,14 @@ dataContour = function (plotParams, plotFunction) {
     const cOptions = matsDataCurveOpsUtils.generateContourCurveOptions(curve, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
     dataset.push(cOptions);
     var postQueryFinishMoment = moment();
-    dataRequests["post data retrieval (query) process time - " + label] = {
+    dataRequests["post data retrieval (query) process time"] = {
         begin: postQueryStartMoment.format(),
         finish: postQueryFinishMoment.format(),
         duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
     };
 
     // process the data returned by the query
-    const curveInfoParams = {"curve": curves, "statType": statType, "axisMap": axisMap};
+    const curveInfoParams = {"curve": curves, "statType": allStatTypes, "axisMap": axisMap};
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataContour(dataset, curveInfoParams, plotParams, bookkeepingParams);
     plotFunction(result);

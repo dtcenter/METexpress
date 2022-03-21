@@ -27,7 +27,7 @@ class MEAnomalycor(ParentMetadata):
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sal1l2",    # used for scalar stats on all plot types
                                       "line_data_val1l2"]    # used for vector stats on all plot types
-        options['metadata_table'] = "anomalycor_mats_metadata"
+        options['metadata_table'] = "anomalycor_metexpress_metadata"
         options['app_reference'] = "met-anomalycor"
         options['database_groups'] = "anomalycor_database_groups"
         super().__init__(options)
@@ -92,8 +92,8 @@ class MEAnomalycor(ParentMetadata):
 if __name__ == '__main__':
     options = MEAnomalycor.get_options(sys.argv)
     start = str(datetime.now())
-    print('ANOMALYCOR MATS FOR MET METADATA START: ' + start)
+    print('ANOMALYCOR METEXPRESS METADATA START: ' + start)
     me_dbcreator = MEAnomalycor(options)
     me_dbcreator.main()
-    print('ANOMALYCOR MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('ANOMALYCOR METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

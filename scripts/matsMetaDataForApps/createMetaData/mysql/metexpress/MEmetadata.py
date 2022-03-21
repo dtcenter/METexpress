@@ -131,10 +131,13 @@ class ParentMetadata:
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
             if self.statHeaderType == "stat_header":
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
+                    self.metadata_table)
+            elif self.statHeaderType == "mode_header":
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), levels varchar(4095), fcst_lens varchar(4095), fcst_accums varchar(4095), trshs varchar(4095), radii varchar(4095), gridpoints varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), accum_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             else:
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs int(11), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
@@ -260,7 +263,7 @@ class ParentMetadata:
             d['model'] = tmp_row['model']
             d['line_data_table'] = tmp_row['line_data_table']
             d['updated'] = tmp_row['updated']
-            if self.statHeaderType == "stat_header":
+            if self.statHeaderType == "stat_header" or self.statHeaderType == "mode_header":
                 d['variable'] = tmp_row['variable']
                 self.cursor.execute(
                     'select * from {mdt_dev} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
@@ -297,7 +300,7 @@ class ParentMetadata:
             d['model'] = ""
             d['line_data_table'] = ""
             d['updated'] = ""
-            if self.statHeaderType == "stat_header":
+            if self.statHeaderType == "stat_header" or self.statHeaderType == "mode_header":
                 d['variable'] = ""
             else:
                 d['basin'] = ""
@@ -310,7 +313,7 @@ class ParentMetadata:
             d['db'] = dev_row['db']
             d['model'] = dev_row['model']
             d['line_data_table'] = dev_row['line_data_table']
-            if self.statHeaderType == "stat_header":
+            if self.statHeaderType == "stat_header" or self.statHeaderType == "mode_header":
                 d['variable'] = dev_row['variable']
                 self.cursor.execute(
                     'select * from {mdt_tmp} where db = "{db}" and model = "{model}" and line_data_table = "{line_data_table}" and variable = "{variable}";'.format(
@@ -346,7 +349,7 @@ class ParentMetadata:
             d['db'] = ""
             d['model'] = ""
             d['line_data_table'] = ""
-            if self.statHeaderType == "stat_header":
+            if self.statHeaderType == "stat_header" or self.statHeaderType == "mode_header":
                 d['variable'] = ""
             else:
                 d['basin'] = ""
@@ -523,10 +526,8 @@ class ParentMetadata:
                                 cursor3.execute(get_stats)
                                 data = cursor3.fetchone()
                                 if data:
-                                    mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                        'mindate']
-                                    maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                        'maxdate']
+                                    mindate = mindate if data['mindate'] is None or data['mindate'] is "NULL" or isinstance(data['mindate'], str) or mindate < data['mindate'] else data['mindate']
+                                    maxdate = maxdate if data['maxdate'] is None or data['maxdate'] is "NULL" or isinstance(data['maxdate'], str) or maxdate > data['maxdate'] else data['maxdate']
                                     num_recs = num_recs + data['numrecs']
                             except pymysql.Error as e:
                                 continue
@@ -541,10 +542,87 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table][fvar]['numrecs'] = num_recs
                         if int(num_recs) > 0:
                             db_has_valid_data = True
-                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
                             self.add_model_to_metadata_table(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][line_data_table][fvar])
                         else:
-                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table)
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
+            elif self.statHeaderType == "mode_header":
+                # check if mode_header table exists
+                mode_header_check = "show tables like 'mode_header';"
+                cursor2.execute(mode_header_check)
+                if cursor2.rowcount == 0:
+                    continue
+                else:
+                    test_result = cursor2.fetchall()
+
+                # Get the additional data in the stat header for model var pairs
+                get_val_lists = 'select model, fcst_var, version, ' \
+                                'group_concat(distinct fcst_lev) as levels, ' \
+                                'group_concat(distinct fcst_lead) as fcst_lens, ' \
+                                'group_concat(distinct fcst_accum) as fcst_accums, ' \
+                                'group_concat(distinct fcst_thr separator "$") as trshs, ' \
+                                'group_concat(distinct fcst_rad) as radii, ' \
+                                'group_concat(distinct grid_res) as gridpoints, ' \
+                                'group_concat(distinct descr) as descrs, ' \
+                                'min(fcst_valid) as mindate, ' \
+                                'max(fcst_valid) as maxdate, ' \
+                                'sum(n_valid) as numrecs ' \
+                                'from mode_header' \
+                                + where_query + ' group by model, fcst_var, version;'
+                cursor2.execute(get_val_lists)
+                result2 = cursor2.fetchall()
+
+                for line_data_table in self.line_data_table:
+                    for model_var_line in result2:
+                        model = model_var_line['model']
+                        version = int(model_var_line['version'][1])
+                        if version < 9:
+                            continue
+                        per_mvdb[mvdb][model] = {}
+                        fvar = model_var_line['fcst_var']
+                        per_mvdb[mvdb][model][fvar] = {}
+                        per_mvdb[mvdb][model][fvar]['levels'] = \
+                            sorted(model_var_line['levels'].split(','), key=self.strip_level)
+                        per_mvdb[mvdb][model][fvar]['trshs'] = \
+                            sorted(model_var_line['trshs'].split('$'), key=self.strip_trsh)
+                        per_mvdb[mvdb][model][fvar]['radii'] = \
+                            sorted(model_var_line['radii'].split(','))
+                        per_mvdb[mvdb][model][fvar]['gridpoints'] = \
+                            sorted(model_var_line['gridpoints'].split(','), key=int)
+                        per_mvdb[mvdb][model][fvar]['descrs'] = \
+                            model_var_line['descrs'].split(',')
+
+                        # get the line_date-specific fields
+                        per_mvdb[mvdb][model][fvar]['fcsts'] = []
+                        per_mvdb[mvdb][model][fvar]['fcst_orig'] = \
+                            sorted(model_var_line['fcst_lens'].split(','), key=int)
+                        for fcst_orig in per_mvdb[mvdb][model][fvar]['fcst_orig']:
+                            if int(fcst_orig) % 10000 == 0:
+                                per_mvdb[mvdb][model][fvar]['fcsts'].append(str(int(int(fcst_orig) / 10000)))
+                            else:
+                                per_mvdb[mvdb][model][fvar]['fcsts'].append(str(int(fcst_orig)))
+                        per_mvdb[mvdb][model][fvar]['accums'] = []
+                        per_mvdb[mvdb][model][fvar]['accum_orig'] = \
+                            sorted(model_var_line['fcst_accums'].split(','), key=int)
+                        for accum_orig in per_mvdb[mvdb][model][fvar]['accum_orig']:
+                            if int(accum_orig) % 10000 == 0:
+                                per_mvdb[mvdb][model][fvar]['accums'].append(str(int(int(accum_orig) / 10000)))
+                            else:
+                                per_mvdb[mvdb][model][fvar]['accums'].append(str(int(accum_orig)))
+                        num_recs = int(model_var_line['numrecs'])
+                        mindate = datetime.utcnow() if model_var_line['mindate'] is None or model_var_line['mindate'] is "NULL" or \
+                            isinstance(model_var_line['mindate'], str) else model_var_line['mindate']
+                        maxdate = datetime.utcnow() if model_var_line['maxdate'] is None or model_var_line['maxdate'] is "NULL" or \
+                            isinstance(model_var_line['maxdate'], str) else model_var_line['maxdate']
+                        per_mvdb[mvdb][model][fvar]['mindate'] = int(mindate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][fvar]['maxdate'] = int(maxdate.replace(tzinfo=timezone.utc).timestamp())
+                        per_mvdb[mvdb][model][fvar]['numrecs'] = num_recs
+                        if int(num_recs) > 0:
+                            db_has_valid_data = True
+                            print("\n" + self.script_name + " - Storing metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
+                            self.add_model_to_metadata_table_mode(cnx3, cursor3, mvdb, model, line_data_table, fvar, per_mvdb[mvdb][model][fvar])
+                        else:
+                            print("\n" + self.script_name + " - No valid metadata for model " + model + ", variable " + fvar + ", and line_type " + line_data_table + "\n")
             elif self.statHeaderType == "tcst_header":
                 # check if tcst_header table exists
                 tcst_header_check = "show tables like 'tcst_header';"
@@ -658,10 +736,8 @@ class ParentMetadata:
                                         cursor3.execute(get_stats)
                                         data = cursor3.fetchone()
                                         if data:
-                                            mindate = mindate if data['mindate'] is None or mindate < data['mindate'] else data[
-                                                'mindate']
-                                            maxdate = maxdate if data['maxdate'] is None or maxdate > data['maxdate'] else data[
-                                                'maxdate']
+                                            mindate = mindate if data['mindate'] is None or data['mindate'] is "NULL" or isinstance(data['mindate'], str) or mindate < data['mindate'] else data['mindate']
+                                            maxdate = maxdate if data['maxdate'] is None or data['maxdate'] is "NULL" or isinstance(data['maxdate'], str) or maxdate > data['maxdate'] else data['maxdate']
                                             num_recs = num_recs + data['numrecs']
                                     except pymysql.Error as e:
                                         continue
@@ -682,13 +758,10 @@ class ParentMetadata:
                             db_has_valid_data = True
                         for year in per_mvdb[mvdb][model][line_data_table][basin].keys():
                             if int(per_mvdb[mvdb][model][line_data_table][basin][year]['numrecs']) > 0:
-                                print(
-                                    "\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table)
-                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table,
-                                                                    basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
+                                print("\n" + self.script_name + " - Storing metadata for model " + model + ", basin " + basin + ", year " + year + ", and line_type " + line_data_table + "\n")
+                                self.add_model_to_metadata_table_tc(cnx3, cursor3, mvdb, model, line_data_table, basin, year, per_mvdb[mvdb][model][line_data_table][basin][year])
                             else:
-                                print(
-                                    "\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table)
+                                print("\n" + self.script_name + " - No valid metadata for model " + model + ", basin " + basin + ", and line_type " + line_data_table + "\n")
             else:
                 continue
 
@@ -760,6 +833,43 @@ class ParentMetadata:
             qd.append(str(raw_metadata['truths']))
             qd.append(str(raw_metadata['descrs']))
             qd.append(str(raw_metadata['fcst_orig']))
+            qd.append(mindate)
+            qd.append(maxdate)
+            qd.append(raw_metadata['numrecs'])
+            qd.append(updated_utc)
+            cursor_tmp.execute(insert_row, qd)
+            cnx_tmp.commit()
+        # put the cursor back to the db it was using
+        cursor_tmp.execute("use  " + mvdb + ";")
+
+    def add_model_to_metadata_table_mode(self, cnx_tmp, cursor_tmp, mvdb, model, line_data_table, variable, raw_metadata):
+        # Add a row for each model/db combo
+        cursor_tmp.execute("use  " + self.metadata_database + ";")
+        #
+        if len(raw_metadata['accums']) > 0 and len(raw_metadata['levels']) > 0 \
+                and len(raw_metadata['fcsts']) > 0 and len(raw_metadata['trshs']) > 0 \
+                and len(raw_metadata['gridpoints']) > 0 and len(raw_metadata['descrs']) > 0:
+            qd = []
+            updated_utc = datetime.utcnow().strftime('%s')
+            mindate = raw_metadata['mindate']
+            maxdate = raw_metadata['maxdate']
+            display_text = model.replace('.', '_')
+            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, levels, fcst_lens, fcst_accums, trshs, radii, gridpoints, descrs, fcst_orig, accum_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+                self.metadata_table)
+            qd.append(mvdb)
+            qd.append(model)
+            qd.append(display_text)
+            qd.append(line_data_table)
+            qd.append(variable)
+            qd.append(str(raw_metadata['levels']))
+            qd.append(str(raw_metadata['fcsts']))
+            qd.append(str(raw_metadata['accums']))
+            qd.append(str(raw_metadata['trshs']))
+            qd.append(str(raw_metadata['radii']))
+            qd.append(str(raw_metadata['gridpoints']))
+            qd.append(str(raw_metadata['descrs']))
+            qd.append(str(raw_metadata['fcst_orig']))
+            qd.append(str(raw_metadata['accum_orig']))
             qd.append(mindate)
             qd.append(maxdate)
             qd.append(raw_metadata['numrecs'])
@@ -842,7 +952,7 @@ class ParentMetadata:
     @classmethod
     # process 'c' style options - using getopt - usage describes options
     # cnf_file - mysql cnf file, db - prescribed db to process, metexpress_base_url - metexpress address
-    # (m)ats_metadata_database_name] allows to override the default metadata databasename (mats_metadata) with something
+    # (m)etexpress_metadata_database_name] allows to override the default metadata databasename (metexpress_metadata) with something
     # db is a prescribed database to process (selective mode) used by mv_load, if it is missing then all databases will be processed
     # (D)ata_table_stat_header_id_limit, (d)atabase name, (u)=metexpress_base_url are all optional for selective mode
 
@@ -853,7 +963,7 @@ class ParentMetadata:
         cnf_file = None
         db = None
         metexpress_base_url = None
-        metadata_database = "mats_metadata"
+        metadata_database = "metexpress_metadata"
         data_table_stat_header_id_limit = None
         try:
             opts, args = getopt.getopt(args[1:], "c:d:u:m:D:u:", usage)

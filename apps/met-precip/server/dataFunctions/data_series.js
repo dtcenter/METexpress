@@ -22,6 +22,8 @@ dataSeries = function (plotParams, plotFunction) {
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
+    var queryArray = [];
+    var differenceArray = [];
     var dataFoundForCurve = true;
     var dataFoundForAnyCurve = false;
     var totalProcessingStart = moment();
@@ -31,6 +33,7 @@ dataSeries = function (plotParams, plotFunction) {
     var error = "";
     var curves = JSON.parse(JSON.stringify(plotParams.curves));
     var curvesLength = curves.length;
+    var allStatTypes = [];
     var dataset = [];
     var utcCycleStarts = [];
     var axisMap = Object.create(null);
@@ -61,10 +64,10 @@ dataSeries = function (plotParams, plotFunction) {
                 "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_sl1l2";
         } else if (statLineType === 'ctc') {
-            statisticClause = "avg(ld.fy_oy) as fy_oy, " +
-                "avg(ld.fy_on) as fy_on, " +
-                "avg(ld.fn_oy) as fn_oy, " +
-                "avg(ld.fn_on) as fn_on, " +
+            statisticClause = "sum(ld.fy_oy) as fy_oy, " +
+                "sum(ld.fy_on) as fy_on, " +
+                "sum(ld.fn_oy) as fn_oy, " +
+                "sum(ld.fn_on) as fn_on, " +
                 "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = "line_data_ctc";
         } else if (statLineType === 'precalculated') {
@@ -157,6 +160,7 @@ dataSeries = function (plotParams, plotFunction) {
         var averageOptionsMap = matsCollections['average'].findOne({name: 'average'}, {optionsMap: 1})['optionsMap'];
         var average = averageOptionsMap[averageStr][0];
         var statType = "met-" + statLineType;
+        allStatTypes.push(statType);
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -164,7 +168,7 @@ dataSeries = function (plotParams, plotFunction) {
         var axisKey = variable + " " + statistic;
         curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
-        var d;
+        var dReturn;
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
@@ -210,45 +214,71 @@ dataSeries = function (plotParams, plotFunction) {
             statement = statement.replace('{{dateClause}}', dateClause);
             dataRequests[label] = statement;
 
-            var queryResult;
-            var startMoment = moment();
-            var finishMoment;
-            try {
-                // send the query statement to the query function
-                queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
-                finishMoment = moment();
-                dataRequests["data retrieval (query) time - " + label] = {
-                    begin: startMoment.format(),
-                    finish: finishMoment.format(),
-                    duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-                    recordCount: queryResult.data.x.length
-                };
-                // get the data back from the query
-                d = queryResult.data;
-            } catch (e) {
-                // this is an error produced by a bug in the query function, not an error returned by the mysql database
-                e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
-                throw new Error(e.message);
-            }
-            if (queryResult.error !== undefined && queryResult.error !== "") {
-                if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
-                    // this is NOT an error just a no data condition
-                    dataFoundForCurve = false;
-                } else {
-                    // this is an error returned by the mysql database
-                    error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-                    if (error.includes('Unknown column')) {
-                        throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-                    } else {
-                        throw new Error(error);
-                    }
-                }
-            } else {
-                dataFoundForAnyCurve = true;
-            }
+            queryArray.push({
+                "statement": statement,
+                "statLineType": statLineType,
+                "statistic": statistic,
+                "appParams": appParams,
+                "vts": vts
+            });
 
+        } else {
+            // this is a difference curve
+            differenceArray.push({
+               "dataset": dataset,
+               "diffFrom": diffFrom,
+               "appParams": appParams,
+                "isCTC": statType === "ctc"
+            });
+        }
+
+    }  // end for curves
+
+    var queryResult;
+    var startMoment = moment();
+    var finishMoment;
+    try {
+        // send the query statements to the query function
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+        finishMoment = moment();
+        dataRequests["data retrieval (query) time"] = {
+            begin: startMoment.format(),
+            finish: finishMoment.format(),
+            duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
+            recordCount: queryResult.data.length
+        };
+        // get the data back from the query
+        dReturn = queryResult.data;
+    } catch (e) {
+        // this is an error produced by a bug in the query function, not an error returned by the mysql database
+        e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
+        throw new Error(e.message);
+    }
+    if (queryResult.error !== undefined && queryResult.error !== "") {
+        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
+            // this is NOT an error just a no data condition
+            dataFoundForCurve = false;
+        } else {
+            // this is an error returned by the mysql database
+            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
+            throw (new Error(error));
+        }
+    } else {
+        dataFoundForAnyCurve = true;
+    }
+
+    if (!dataFoundForAnyCurve) {
+        // we found no data for any curves so don't bother proceeding
+        throw new Error("INFO:  No valid data for any curves.");
+    }
+
+    var postQueryStartMoment = moment();
+    var d;
+    for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+        curve = curves[curveIndex];
+        if (curveIndex < dReturn.length) {
+            d = dReturn[curveIndex];
             // set axis limits based on returned data
-            var postQueryStartMoment = moment();
             if (dataFoundForCurve) {
                 xmin = xmin < d.xmin ? xmin : d.xmin;
                 xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -256,8 +286,7 @@ dataSeries = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            // this is a difference curve
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(dataset, diffFrom, appParams, statType === "ctc");
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"]);
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;
@@ -277,17 +306,6 @@ dataSeries = function (plotParams, plotFunction) {
         curve['axisKey'] = axisKey;
         const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(curve, curveIndex, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
         dataset.push(cOptions);
-        var postQueryFinishMoment = moment();
-        dataRequests["post data retrieval (query) process time - " + label] = {
-            begin: postQueryStartMoment.format(),
-            finish: postQueryFinishMoment.format(),
-            duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
-        };
-    }  // end for curves
-
-    if (!dataFoundForAnyCurve) {
-        // we found no data for any curves so don't bother proceeding
-        throw new Error("INFO:  No valid data for any curves.");
     }
 
     // process the data returned by the query
@@ -296,12 +314,18 @@ dataSeries = function (plotParams, plotFunction) {
         "curvesLength": curvesLength,
         "idealValues": idealValues,
         "utcCycleStarts": utcCycleStarts,
-        "statType": statType,
+        "statType": allStatTypes,
         "axisMap": axisMap,
         "xmax": xmax,
         "xmin": xmin
     };
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataXYCurve(dataset, appParams, curveInfoParams, plotParams, bookkeepingParams);
+    var postQueryFinishMoment = moment();
+    dataRequests["post data retrieval (query) process time"] = {
+        begin: postQueryStartMoment.format(),
+        finish: postQueryFinishMoment.format(),
+        duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
+    };
     plotFunction(result);
 };

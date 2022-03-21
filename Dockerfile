@@ -1,9 +1,9 @@
 # This tag here should match the app's Meteor version, per .meteor/release
-FROM geoffreybooth/meteor-base:2.3.6 AS meteor-builder
+FROM geoffreybooth/meteor-base:2.6.1 AS meteor-builder
 
 ARG APPNAME
 
-# Make MATScommon discoverable
+# Make MATScommon discoverable by Meteor
 ENV METEOR_PACKAGE_DIRS=/MATScommon/meteor_packages
 
 # Assume we're passed the repo root as build context
@@ -17,9 +17,36 @@ COPY MATScommon /MATScommon
 
 RUN bash ${SCRIPTS_FOLDER}/build-meteor-bundle.sh
 
+# Install OS build dependencies
+FROM node:14.18-alpine3.15 AS native-builder
+
+ENV APP_FOLDER=/usr/app
+ENV APP_BUNDLE_FOLDER=${APP_FOLDER}/bundle
+ENV SCRIPTS_FOLDER /docker
+
+# Install OS build dependencies, which stay with this intermediate image but don’t become part of the final published image
+RUN apk --no-cache add \
+    bash \
+    g++ \
+    make \
+    python3
+
+# Copy in build scripts & entrypoint
+COPY --from=meteor-builder $SCRIPTS_FOLDER $SCRIPTS_FOLDER/
+
+# Copy in app bundle
+COPY --from=meteor-builder /opt/bundle $APP_BUNDLE_FOLDER/
+
+# Build the native dependencies
+# NOTE - the randyp_mats-common atmosphere package pulls in a native npm couchbase dependency
+# so we need to force an npm rebuild in the node_modules directory there as well
+RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh --build-from-source \
+&& cd $APP_BUNDLE_FOLDER/bundle/programs/server/npm/node_modules/meteor/randyp_mats-common \
+&& npm rebuild --build-from-source
+
 
 # Use the specific version of Node expected by your Meteor release, per https://docs.meteor.com/changelog.html
-FROM node:14.17-alpine3.14
+FROM node:14.18-alpine3.15 AS production
 
 # Set Build ARGS
 ARG APPNAME
@@ -29,13 +56,13 @@ ARG COMMITSHA
 
 # Install runtime dependencies
 RUN apk --no-cache add \
-                    bash \
-                    ca-certificates \
-                    mariadb \
-                    mongodb-tools \
-                    python3 \
-                    py3-numpy \
-                    py3-pip \
+    bash \
+    ca-certificates \
+    mariadb \
+    mongodb-tools \
+    python3 \
+    py3-numpy \
+    py3-pip \
     && pip3 --no-cache-dir install pymysql
 
 # Set Environment
@@ -51,18 +78,17 @@ ENV VERSION=${BUILDVER}
 ENV BRANCH=${COMMITBRANCH}
 ENV COMMIT=${COMMITSHA}
 
-# Copy in helper scripts
-COPY --from=meteor-builder ${SCRIPTS_FOLDER} ${SCRIPTS_FOLDER}/
+# Copy in helper scripts with the built and installed dependencies from the previous image
+COPY --from=native-builder ${SCRIPTS_FOLDER} ${SCRIPTS_FOLDER}/
 
-# Copy in app bundle
-COPY --from=meteor-builder /opt/bundle ${APP_BUNDLE_FOLDER}/
+# Copy in app bundle with the built and installed dependencies from the previous image
+COPY --from=native-builder ${APP_BUNDLE_FOLDER} ${APP_BUNDLE_FOLDER}/
 
-# Copy in our launcher script
+# We want to use our own launcher script
 COPY container-scripts/run_app.sh ${APP_FOLDER}/
 
-# Build Meteor dependencies, and create a writeable settings dir and Node fileCache
-RUN bash ${SCRIPTS_FOLDER}/build-meteor-npm-dependencies.sh \
-    && mkdir -p ${SETTINGS_DIR} \
+# The app won't work without a writeable settings dir and local Node fileCache
+RUN mkdir -p ${SETTINGS_DIR} \
     && chown -R node:node ${APP_FOLDER}/settings \
     && chmod -R 755 ${APP_FOLDER}/settings \
     && touch ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache \
@@ -80,5 +106,13 @@ ENTRYPOINT ["/usr/app/run_app.sh"]
 
 CMD ["node", "main.js"]
 
-# Add Labels
 LABEL version=${BUILDVER} code.branch=${COMMITBRANCH} code.commit=${COMMITSHA}
+
+
+# Create a stage with the root user for debugging
+# Note - you'll need to override the entrypoint if you want a shell (docker run --entrypoint /bin/bash ...)
+FROM production AS debug
+USER root
+
+# Use the production stage by default
+FROM production

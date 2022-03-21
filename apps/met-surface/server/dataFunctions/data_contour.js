@@ -35,6 +35,7 @@ dataContour = function (plotParams, plotFunction) {
     if (curves.length > 1) {
         throw new Error("INFO:  There must only be one added curve.");
     }
+    var allStatTypes = [];
     var dataset = [];
     var axisMap = Object.create(null);
 
@@ -52,30 +53,22 @@ dataContour = function (plotParams, plotFunction) {
     var lineDataType = "";
     if (statLineType === 'scalar') {
         statisticClause = "count(ld.fbar) as n, " +
-            "avg(ld.fbar) as sub_fbar, " +
-            "avg(ld.obar) as sub_obar, " +
-            "avg(ld.ffbar) as sub_ffbar, " +
-            "avg(ld.oobar) as sub_oobar, " +
-            "avg(ld.fobar) as sub_fobar, " +
-            "avg(ld.total) as sub_total, ";
+            "avg(ld.fbar) as fbar, " +
+            "avg(ld.obar) as obar, " +
+            "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+            "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_sl1l2";
     } else if (statLineType === 'vector') {
         statisticClause = "count(ld.ufbar) as n, " +
-            "avg(ld.ufbar) as sub_ufbar, " +
-            "avg(ld.vfbar) as sub_vfbar, " +
-            "avg(ld.uobar) as sub_uobar, " +
-            "avg(ld.vobar) as sub_vobar, " +
-            "avg(ld.uvfobar) as sub_uvfobar, " +
-            "avg(ld.uvffbar) as sub_uvffbar, " +
-            "avg(ld.uvoobar) as sub_uvoobar, " +
-            "avg(ld.f_speed_bar) as sub_f_speed_bar, " +
-            "avg(ld.o_speed_bar) as sub_o_speed_bar, " +
-            "avg(ld.total) as sub_total, ";
+            "avg(ld.ufbar) as ufbar, " +
+            "avg(ld.vfbar) as vfbar, " +
+            "avg(ld.uobar) as uobar, " +
+            "avg(ld.vobar) as vobar, " +
+            "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
+            "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
+            "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
         lineDataType = "line_data_vl1l2";
     }
-    statisticClause = statisticClause +
-        "avg(unix_timestamp(ld.fcst_valid_beg)) as sub_secs, " +    // this is just a dummy for the common python function -- the actual value doesn't matter
-        "count(h.fcst_lev) as sub_levs";      // this is just a dummy for the common python function -- the actual value doesn't matter
     var queryTableClause = "from " + database + ".stat_header h, " + database + "." + lineDataType + " ld";
     var regions = (curve['region'] === undefined || curve['region'] === matsTypes.InputTypes.unused) ? [] : curve['region'];
     regions = Array.isArray(regions) ? regions : [regions];
@@ -160,6 +153,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     var statType = "met-" + statLineType;
+    allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.
     var unitKey;
     if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
@@ -213,21 +207,29 @@ dataContour = function (plotParams, plotFunction) {
     statement = statement.split('{{dateString}}').join(dateString);
     dataRequests[label] = statement;
 
+    var queryArray = [{
+        "statement": statement,
+        "statLineType": statLineType,
+        "statistic": statistic,
+        "appParams": appParams,
+        "vts": vts
+    }];
+
     var queryResult;
     var startMoment = moment();
     var finishMoment;
     try {
         // send the query statement to the query function
-        queryResult = matsDataQueryUtils.queryDBPython(sumPool, statement, statLineType, statistic, appParams, vts);
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
         finishMoment = moment();
-        dataRequests["data retrieval (query) time - " + label] = {
+        dataRequests["data retrieval (query) time"] = {
             begin: startMoment.format(),
             finish: finishMoment.format(),
             duration: moment.duration(finishMoment.diff(startMoment)).asSeconds() + " seconds",
-            recordCount: queryResult.data.xTextOutput.length
+            recordCount: queryResult.data.length
         };
         // get the data back from the query
-        d = queryResult.data;
+        d = queryResult.data[0];
     } catch (e) {
         // this is an error produced by a bug in the query function, not an error returned by the mysql database
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
@@ -240,11 +242,7 @@ dataContour = function (plotParams, plotFunction) {
         } else {
             // this is an error returned by the mysql database
             error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-            if (error.includes('Unknown column')) {
-                throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-            } else {
-                throw new Error(error);
-            }
+            throw new Error(error);
         }
     }
 
@@ -266,14 +264,14 @@ dataContour = function (plotParams, plotFunction) {
     const cOptions = matsDataCurveOpsUtils.generateContourCurveOptions(curve, axisMap, d, appParams);  // generate plot with data, curve annotation, axis labels, etc.
     dataset.push(cOptions);
     var postQueryFinishMoment = moment();
-    dataRequests["post data retrieval (query) process time - " + label] = {
+    dataRequests["post data retrieval (query) process time"] = {
         begin: postQueryStartMoment.format(),
         finish: postQueryFinishMoment.format(),
         duration: moment.duration(postQueryFinishMoment.diff(postQueryStartMoment)).asSeconds() + ' seconds'
     };
 
     // process the data returned by the query
-    const curveInfoParams = {"curve": curves, "statType": statType, "axisMap": axisMap};
+    const curveInfoParams = {"curve": curves, "statType": allStatTypes, "axisMap": axisMap};
     const bookkeepingParams = {"dataRequests": dataRequests, "totalProcessingStart": totalProcessingStart};
     var result = matsDataProcessUtils.processDataContour(dataset, curveInfoParams, plotParams, bookkeepingParams);
     plotFunction(result);

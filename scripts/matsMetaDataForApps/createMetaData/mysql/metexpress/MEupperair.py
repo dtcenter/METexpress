@@ -27,7 +27,7 @@ class MEUpperair(ParentMetadata):
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_vl1l2"]    # used for vector stats on all plot types
-        options['metadata_table'] = "upperair_mats_metadata"
+        options['metadata_table'] = "upperair_metexpress_metadata"
         options['app_reference'] = "met-upperair"
         options['database_groups'] = "upperair_database_groups"
         super().__init__(options)
@@ -80,8 +80,8 @@ class MEUpperair(ParentMetadata):
 if __name__ == '__main__':
     options = MEUpperair.get_options(sys.argv)
     start = str(datetime.now())
-    print('UPPER AIR MATS FOR MET METADATA START: ' + start)
+    print('UPPER AIR METEXPRESS METADATA START: ' + start)
     me_dbcreator = MEUpperair(options)
     me_dbcreator.main()
-    print('UPPER AIR MATS FOR MET METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('UPPER AIR METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)
