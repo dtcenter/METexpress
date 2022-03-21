@@ -795,7 +795,7 @@ ValidTime, and Histogram are the same as in Precipitation.
 :numref:`apps_interface_objects` shows an example of the user interface for the
 Objects app.
 
-.. apps_interface_objects:
+.. _apps_interface_objects:
 
 .. figure:: figure/apps_interface_objects.png
 
