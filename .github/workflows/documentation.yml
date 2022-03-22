@@ -2,12 +2,10 @@ name: Documentation
 on:
   push:
     branches:
-      - develop
-      - develop-ref
       - development
       - main_*
-      - master
-      - v4.0.*
+      - main
+      - v4.*
       - feature_*
       - bugfix_*
     paths:
