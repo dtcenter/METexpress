@@ -20,7 +20,40 @@ print(sys.path)
 
 project = 'METexpress'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Pierce, R., M.B. Smith, I. McGinnis, K. Searight, V. Hagerty, J. Hamilton, B. Strong'
+
+# list of contributing authors currently involved with the project
+# To rotate this list of authors for each official release,
+# move the first author to the end of the list
+CURRENT_AUTHORS = [
+    'Randy Pierce',
+    'Molly Smith',
+    'Ian McGinnis',
+    'Keith Searight',
+    'Jeff Hamilton',
+    'Bonny Strong',
+]
+
+# list of former contributors who are no longer involved with the project
+# but still deserve citation credit
+FORMER_AUTHORS = [
+    'Venita Hagerty',
+]
+
+# format citation authors list
+formatted_authors = []
+for index, author_name in enumerate(CURRENT_AUTHORS + FORMER_AUTHORS):
+    first_name, last_name = author_name.split(' ', 1)
+    first_initial = first_name[0]
+    #  first name uses "Last Name, First Initial"
+    if index == 0:
+        formatted_name = f'{last_name}, {first_initial}.'
+    #  the rest uses "First Initial Last Name"
+    else:
+        formatted_name = f'{first_initial}. {last_name}'
+    formatted_authors.append(formatted_name)
+
+# compile string from list of current and former authors separated by comma
+author_list = ', '.join(formatted_authors)
 
 # The stable version, displayed on the front page of the PDF
 version = '4.4.0'
