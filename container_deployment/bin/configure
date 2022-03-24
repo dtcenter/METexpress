@@ -15,10 +15,9 @@ if [[ ! -d "./web"  ]]; then
     echo -e "${RED}I don't see a ./web directory - I cannot set up anything, try cd'ing to the container deployment directory - exiting ${NC}"
     exit 1
 fi
-#setupurl="curl https://www.esrl.noaa.gov/gsd/mats/appProductionStatus/setup" 
+#setupurl="curl https://www.esrl.noaa.gov/gsd/mats/appProductionStatus/setup"
 #echo -e "${GRN} retrieving ... ${setupurl}"
 #curl ${setupurl} > $tmpfile 2>/dev/null
-#bash $tmpfile
 bash $tmpfile
 if  [[ $? -ne 0 ]]; then
 	#cp $tmpfile /tmp/setup
