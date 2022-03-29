@@ -14,7 +14,7 @@ export default (parameter, value) => {
         text = $(`#controlButton-${parameter}-value`).getText();
         if (text !== value) {
             if (text.includes(" .. ") && !value.includes(" .. ")) {
-                // this is a multiselect, which have different display formats than regular selectors. 
+                // this is a multiselect, which have different display formats than regular selectors.
                 // we need to reformat our expected value to match.
                 value = value + " .. " + value;
             }
