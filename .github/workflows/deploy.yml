@@ -6,6 +6,7 @@ on:
 env:
   DEV_REGISTRY: ghcr.io/dtcenter/metexpress/development
   PROD_REGISTRY: ghcr.io/dtcenter/metexpress/production
+  DOCKER_HUB: dtcenter/metexpress-production
 
 jobs:
   build:
@@ -38,15 +39,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PAT_RANDY }}
+
       - name: Pull image
         run: |
-          docker pull ${{ env.DEV_REGISTRY }}/${{ env.APP_NAME }}:${{ GITHUB_REF }}
+          docker pull ${{ env.DEV_REGISTRY }}/${{ env.APP_NAME }}:${ GITHUB_REF }
 
       - name: Retag image
         run: |
-          docker tag ${{ env.DEV_REGISTRY }}/${{ env.APP_NAME }}:${{ GITHUB_REF }} \
-                     ${{ env.PROD_REGISTRY }}/${{ env.APP_NAME }}:${{ GITHUB_REF }}
+          docker tag ${{ env.DEV_REGISTRY }}/${{ env.APP_NAME }}:${ GITHUB_REF } \
+                     ${{ env.PROD_REGISTRY }}/${{ env.APP_NAME }}:${ GITHUB_REF }
+          docker tag ${{ env.DEV_REGISTRY }}/${{ env.APP_NAME }}:${ GITHUB_REF } \
+                     ${{ env.DOCKER_HUB }}:${{ env.APP_NAME }}-${ GITHUB_REF }
 
       - name: Push image
         run: |
-          docker push ${{ env.PROD_REGISTRY }}/${{ env.APP_NAME }}:${{ GITHUB_REF }}
+          docker push ${{ env.PROD_REGISTRY }}/${{ env.APP_NAME }}:${ GITHUB_REF }
+          docker push ${{ env.DOCKER_HUB }}:${{ env.APP_NAME }}-${ GITHUB_REF }
