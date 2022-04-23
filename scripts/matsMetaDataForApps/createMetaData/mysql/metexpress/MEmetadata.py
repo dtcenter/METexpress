@@ -575,11 +575,12 @@ class ParentMetadata:
                 for line_data_table in self.line_data_table:
                     for model_var_line in result2:
                         model = model_var_line['model']
-                        version = int(model_var_line['version'][1])
+                        fvar = model_var_line['fcst_var']
+                        version = int(model_var_line['version'].split('.')[0][1:])
                         if version < 9:
+                            print("\nSkipping model " + model + ", variable " + fvar + ", and line_type " + line_data_table + " because the version of MODE used is too old.\n")
                             continue
                         per_mvdb[mvdb][model] = {}
-                        fvar = model_var_line['fcst_var']
                         per_mvdb[mvdb][model][fvar] = {}
                         per_mvdb[mvdb][model][fvar]['levels'] = \
                             sorted(model_var_line['levels'].split(','), key=self.strip_level)
