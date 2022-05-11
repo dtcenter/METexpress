@@ -776,10 +776,10 @@ const doCurveParams = function () {
     // these defaults are app-specific and not controlled by the user
     const fhrOptions = forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]];
     var fhrDefault;
-    if (fhrOptions.indexOf("24") !== -1) {
+    if (fhrOptions.indexOf("6") !== -1) {
+        fhrDefault = "6";
+    } else if (fhrOptions.indexOf("24") !== -1) {
         fhrDefault = "24";
-    } else if (fhrOptions.indexOf("12") !== -1) {
-        fhrDefault = "12";
     } else {
         fhrDefault = fhrOptions[0];
     }

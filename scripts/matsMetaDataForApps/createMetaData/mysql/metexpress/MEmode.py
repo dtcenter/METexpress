@@ -27,13 +27,13 @@ class MEMode(ParentMetadata):
         options['statHeaderType'] = 'mode_header'           # all the important MODE metadata is in the header table,
         options['line_data_table'] = ["mode_obj_pair"]      # so only list one line type or we'll get redundancy
         options['metadata_table'] = "mode_metexpress_metadata"
-        options['app_reference'] = "met-mode"
+        options['app_reference'] = "met-object"
         options['database_groups'] = "mode_database_groups"
         super().__init__(options)
 
     @staticmethod
     def get_app_reference():
-        return "met-mode"
+        return "met-object"
 
     def strip_level(self, elem):
         # helper function for sorting levels
