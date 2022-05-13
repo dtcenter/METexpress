@@ -5,8 +5,6 @@ on:
       - development
       - main_*
       - main
-      - v4.*
-      - v5.*
       - feature_*
       - bugfix_*
     paths:
