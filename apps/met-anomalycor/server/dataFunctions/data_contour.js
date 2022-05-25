@@ -230,19 +230,22 @@ dataContour = function (plotParams, plotFunction) {
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
         throw new Error(e.message);
     }
-    if (queryResult.error !== undefined && queryResult.error !== "") {
-        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
+
+    // parse any errors from the python code
+    if (queryResult.error[0] !== undefined && queryResult.error[0] !== "") {
+        if (queryResult.error[0] === matsTypes.Messages.NO_DATA_FOUND) {
             // this is NOT an error just a no data condition
             dataFoundForCurve = false;
         } else {
             // this is an error returned by the mysql database
-            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-            if (error.includes('Unknown column')) {
-                throw new Error("INFO:  The statistic/variable combination [" + statistic + " and " + variable + "] is not supported by the database for the model/regions [" + model + " and " + regions + "].");
-            } else {
-                throw new Error(error);
-            }
+            error += "Error from verification query: <br>" + queryResult.error[0] + "<br> query: <br>" + statement + "<br>";
+            throw new Error(error);
         }
+    }
+
+    if (!dataFoundForCurve) {
+        // we found no data for any curves so don't bother proceeding
+        throw new Error("INFO:  No valid data for any curves.");
     }
 
     var postQueryStartMoment = moment();
