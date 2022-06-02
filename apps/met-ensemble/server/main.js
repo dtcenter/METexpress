@@ -27,7 +27,7 @@ const doPlotParams = function () {
                 options: [''],
                 startDate: minDate,
                 stopDate: maxDate,
-                superiorNames: ['database', 'data-source'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
                 controlButtonCovered: true,
                 default: dstr,
                 controlButtonVisibility: 'block',
@@ -355,12 +355,6 @@ const doCurveParams = function () {
 
                 var rowMinDate = moment.utc(rows[i].mindate * 1000).format("MM/DD/YYYY HH:mm");
                 var rowMaxDate = moment.utc(rows[i].maxdate * 1000).format("MM/DD/YYYY HH:mm");
-                if (dbDateRangeMap[thisDB][model] === undefined) {
-                    dbDateRangeMap[thisDB][model] = {minDate: rowMinDate, maxDate: rowMaxDate};
-                } else {
-                    dbDateRangeMap[thisDB][model][minDate] = dbDateRangeMap[thisDB][model][minDate] < rowMinDate ? dbDateRangeMap[thisDB][model][minDate] : rowMinDate;
-                    dbDateRangeMap[thisDB][model][maxDate] = dbDateRangeMap[thisDB][model][maxDate] > rowMaxDate ? dbDateRangeMap[thisDB][model][maxDate] : rowMaxDate;
-                }
 
                 var line_data_table = rows[i].line_data_table.trim();
                 var validPlotTypes = masterPlotTypeOptionsMap[line_data_table];
@@ -405,6 +399,7 @@ const doCurveParams = function () {
                 forecastLengthOptionsMap[thisDB][model] = forecastLengthOptionsMap[thisDB][model] === undefined ? {} : forecastLengthOptionsMap[thisDB][model];
                 levelOptionsMap[thisDB][model] = levelOptionsMap[thisDB][model] === undefined ? {} : levelOptionsMap[thisDB][model];
                 descrOptionsMap[thisDB][model] = descrOptionsMap[thisDB][model] === undefined ? {} : descrOptionsMap[thisDB][model];
+                dbDateRangeMap[thisDB][model] = dbDateRangeMap[thisDB][model] === undefined ? {} : dbDateRangeMap[thisDB][model];
 
                 var thisPlotType;
                 for (var ptidx = 0; ptidx < validPlotTypes.length; ptidx++) {
@@ -418,6 +413,7 @@ const doCurveParams = function () {
                         forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
                         levelOptionsMap[thisDB][model][thisPlotType] = {};
                         descrOptionsMap[thisDB][model][thisPlotType] = {};
+                        dbDateRangeMap[thisDB][model][thisPlotType] = {};
                     } else {
                         // if we have encountered this plot type for this model, add in any new stats
                         statisticOptionsMap[thisDB][model][thisPlotType] = {...statisticOptionsMap[thisDB][model][thisPlotType], ...validStats};
@@ -435,6 +431,7 @@ const doCurveParams = function () {
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                         }
                         if (variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] === undefined) {
                             // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
@@ -444,12 +441,15 @@ const doCurveParams = function () {
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = forecastLengthArr;
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = levelsArr;
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = descrsArr;
+                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = {minDate: rowMinDate, maxDate: rowMaxDate};
                         } else {
                             // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
                             regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], regionsArr);
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
                             levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], levelsArr);
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], descrsArr);
+                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].minDate = dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].minDate < rowMinDate ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].minDate : rowMinDate;
+                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].maxDate = dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].maxDate > rowMaxDate ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable].maxDate : rowMaxDate;
                         }
                     }
                 }
@@ -569,7 +569,7 @@ const doCurveParams = function () {
                 optionsMap: modelOptionsMap,
                 options: Object.keys(modelOptionsMap[defaultDB]),
                 superiorNames: ["database"],
-                dependentNames: ["plot-type", "dates", "curve-dates"],
+                dependentNames: ["plot-type"],
                 controlButtonCovered: true,
                 default: defaultModel,
                 unique: false,
@@ -721,7 +721,7 @@ const doCurveParams = function () {
                 options: variableOptions,
                 valuesMap: variableValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type', 'statistic'],
-                dependentNames: ["region", "forecast-length", "level", "description"],
+                dependentNames: ["region", "forecast-length", "level", "description", "dates", "curve-dates"],
                 controlButtonCovered: true,
                 unique: false,
                 default: variableDefault,
@@ -966,11 +966,8 @@ const doCurveParams = function () {
 
     // determine date defaults for dates and curveDates
     // these defaults are app-specific and not controlled by the user
-    var defaultDb = matsCollections["database"].findOne({name: "database"}, {default: 1}).default;
-    var dbDateRanges = matsCollections["database"].findOne({name: "database"}, {dates: 1}).dates;
-    var defaultDataSource = matsCollections["data-source"].findOne({name: "data-source"}, {default: 1}).default;
-    minDate = dbDateRanges[defaultDb][defaultDataSource].minDate;
-    maxDate = dbDateRanges[defaultDb][defaultDataSource].maxDate;
+    minDate = dbDateRangeMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]].minDate;
+    maxDate = dbDateRangeMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(regionModelOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]].maxDate;
 
     // need to turn the raw max and min from the metadata into the last valid month of data
     const newDateRange = matsParamUtils.getMinMaxDates(minDate, maxDate);
@@ -996,7 +993,7 @@ const doCurveParams = function () {
                 options: Object.keys(optionsMap).sort(),
                 startDate: minDate,
                 stopDate: maxDate,
-                superiorNames: ['database', 'data-source'],
+                superiorNames: ['database', 'data-source', 'plot-type', 'statistic', 'variable'],
                 controlButtonCovered: true,
                 unique: false,
                 default: dstr,
