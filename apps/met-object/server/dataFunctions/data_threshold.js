@@ -273,17 +273,21 @@ dataThreshold = function (plotParams, plotFunction) {
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
         throw new Error(e.message);
     }
-    if (queryResult.error !== undefined && queryResult.error !== "") {
-        if (queryResult.error === matsTypes.Messages.NO_DATA_FOUND) {
-            // this is NOT an error just a no data condition
-            dataFoundForCurve = false;
+
+    // parse any errors from the python code
+    for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+        if (queryResult.error[curveIndex] !== undefined && queryResult.error[curveIndex] !== "") {
+            if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
+                // this is NOT an error just a no data condition
+                dataFoundForCurve = false;
+            } else {
+                // this is an error returned by the mysql database
+                error += "Error from verification query: <br>" + queryResult.error[curveIndex] + "<br> query: <br>" + statement + "<br>";
+                throw (new Error(error));
+            }
         } else {
-            // this is an error returned by the mysql database
-            error += "Error from verification query: <br>" + queryResult.error + "<br> query: <br>" + statement + "<br>";
-            throw (new Error(error));
+            dataFoundForAnyCurve = true;
         }
-    } else {
-        dataFoundForAnyCurve = true;
     }
 
     if (!dataFoundForAnyCurve) {
