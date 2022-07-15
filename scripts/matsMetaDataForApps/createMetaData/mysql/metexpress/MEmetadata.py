@@ -109,6 +109,7 @@ class ParentMetadata:
             self.cnx.autocommit = True
             self.cursor = self.cnx.cursor(pymysql.cursors.DictCursor)
             self.cursor.execute('set group_concat_max_len=4294967295;')
+            self.cursor.execute('set session wait_timeout = 24*3600;')
 
         except pymysql.Error as e:
             print(self.script_name + "- Error: " + str(e))
@@ -378,6 +379,7 @@ class ParentMetadata:
             cnx2.autocommit = True
             cursor2 = cnx2.cursor(pymysql.cursors.DictCursor)
             cursor2.execute('set group_concat_max_len=4294967295;')
+            cursor2.execute('set session wait_timeout = 24*3600;')
 
         except pymysql.Error as e:
             print(self.script_name + " - Error: " + str(e))
@@ -388,6 +390,7 @@ class ParentMetadata:
             cnx3.autocommit = True
             cursor3 = cnx3.cursor(pymysql.cursors.DictCursor)
             cursor3.execute('set group_concat_max_len=4294967295;')
+            cursor3.execute('set session wait_timeout = 24*3600;')
 
         except pymysql.Error as e:
             print(self.script_name + " - Error: " + str(e))
