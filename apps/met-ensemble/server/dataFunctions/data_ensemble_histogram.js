@@ -300,6 +300,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         "statType": allStatTypes,
         "axisMap": axisMap,
         "yAxisFormat": yAxisFormat,
+        "varUnits" : "",
         "xmax": xmax,
         "xmin": xmin
     };

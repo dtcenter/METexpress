@@ -324,7 +324,8 @@ dataHistogram = function (plotParams, plotFunction) {
         "dataFoundForCurve": dataFoundForCurve,
         "statType": allStatTypes,
         "axisMap": axisMap,
-        "yAxisFormat": yAxisFormat
+        "yAxisFormat": yAxisFormat,
+        "varUnits" : ""
     };
     const bookkeepingParams = {
         "alreadyMatched": alreadyMatched,
