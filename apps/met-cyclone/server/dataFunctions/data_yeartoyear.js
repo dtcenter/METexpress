@@ -169,7 +169,8 @@ dataYearToYear = function (plotParams, plotFunction) {
                "dataset": dataset,
                "diffFrom": diffFrom,
                "appParams": appParams,
-                "isCTC": statType === "ctc"
+                "isCTC": statType === "ctc",
+                "isScalar": statType === "scalar"
             });
         }
 
@@ -231,7 +232,7 @@ dataYearToYear = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"]);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"], differenceArray[curveIndex-dReturn.length]["isScalar"]);
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;

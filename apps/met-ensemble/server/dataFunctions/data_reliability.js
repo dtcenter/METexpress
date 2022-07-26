@@ -181,7 +181,8 @@ dataReliability = function (plotParams, plotFunction) {
                 "dataset": dataset,
                 "diffFrom": diffFrom,
                 "appParams": appParams,
-                "isCTC": statType === "ctc"
+                "isCTC": statType === "ctc",
+                "isScalar": statType === "scalar"
             });
         }
 
