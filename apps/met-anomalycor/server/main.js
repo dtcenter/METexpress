@@ -778,6 +778,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
                 controlButtonVisibility: 'block',
+                controlButtonText: 'interpolation method',
                 displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 4
