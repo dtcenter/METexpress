@@ -25,19 +25,19 @@ author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 # To rotate this list of authors for each official release,
 # move the first author to the end of the list
 CURRENT_AUTHORS = [
-    'Molly Smith',
     'Ian McGinnis',
     'Keith Searight',
     'Jeff Hamilton',
     'Bonny Strong',
     'Randy Pierce',
+    'Molly Smith',
 ]
 
 # list of former contributors who are no longer involved with the project
 # but still deserve citation credit
 FORMER_AUTHORS = [
-    'Venita Hagerty',
     'Bill Moninger',
+    'Venita Hagerty',
 ]
 
 # format citation authors list
@@ -57,13 +57,13 @@ for index, author_name in enumerate(CURRENT_AUTHORS + FORMER_AUTHORS):
 author_list = ', '.join(formatted_authors)
 
 # The stable version, displayed on the front page of the PDF
-version = '4.5.0'
+version = '4.5.1'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 release_year = '2022'
-release_date = f'{release_year}0805'
+release_date = f'{release_year}0812'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
