@@ -25,8 +25,8 @@ Feature: Match Unmatch Diff Curves Threshold
         Then the "statistic" parameter value matches "OTS (Object Threat Score)"
         When I change the "variable" parameter to "REFC"
         Then the "variable" parameter value matches "REFC"
-        When I set the curve-dates to "05/01/2020 0:00 - 05/08/2020 0:00"
-        Then the curve-dates value is "05/01/2020 0:00 - 05/08/2020 0:00"
+        When I set the curve-dates to "05/01/2020 00:00 - 05/08/2020 00:00"
+        Then the curve-dates value is "05/01/2020 00:00 - 05/08/2020 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
 

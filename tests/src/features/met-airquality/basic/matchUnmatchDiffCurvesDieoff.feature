@@ -21,8 +21,8 @@ Feature: Match Unmatch Diff Curves Dieoff
         Then the "database" parameter value matches "mv_cmaq_g2o"
         When I change the "data-source" parameter to "CMAQ5X/148"
         Then the "data-source" parameter value matches "CMAQ5X/148"
-        When I set the curve-dates to "04/01/2019 0:00 - 05/09/2019 0:00"
-        Then the curve-dates value is "04/01/2019 0:00 - 05/09/2019 0:00"
+        When I set the curve-dates to "04/01/2019 00:00 - 05/09/2019 00:00"
+        Then the curve-dates value is "04/01/2019 00:00 - 05/09/2019 00:00"
         When I change the "dieoff-type" parameter to "Dieoff for a specified UTC cycle init hour"
         Then the "dieoff-type" parameter value matches "Dieoff for a specified UTC cycle init hour"
         When I click the "Add Curve" button
