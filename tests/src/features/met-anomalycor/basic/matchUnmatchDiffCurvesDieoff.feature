@@ -23,8 +23,8 @@ Feature: Match Unmatch Diff Curves Dieoff
         Then the "data-source" parameter value matches "GFS"
         When I change the "level" parameter to "P500"
         Then the "level" parameter value matches "P500"
-        When I set the curve-dates to "11/01/2018 0:00 - 11/11/2018 0:00"
-        Then the curve-dates value is "11/01/2018 0:00 - 11/11/2018 0:00"
+        When I set the curve-dates to "11/01/2018 00:00 - 11/11/2018 00:00"
+        Then the curve-dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
         When I change the "dieoff-type" parameter to "Dieoff for a specified UTC cycle init hour"
         Then the "dieoff-type" parameter value matches "Dieoff for a specified UTC cycle init hour"
         When I click the "Add Curve" button

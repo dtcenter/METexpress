@@ -27,8 +27,8 @@ Feature: Match Unmatch Diff Curves Histogram
         Then the "variable" parameter value matches "REFC"
         When I change the "level" parameter to "L0"
         Then the "level" parameter value matches "L0"
-        When I set the curve-dates to "10/24/2019 0:00 - 12/24/2019 0:00"
-        Then the curve-dates value is "10/24/2019 0:00 - 12/24/2019 0:00"
+        When I set the curve-dates to "10/24/2019 00:00 - 12/24/2019 00:00"
+        Then the curve-dates value is "10/24/2019 00:00 - 12/24/2019 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
 

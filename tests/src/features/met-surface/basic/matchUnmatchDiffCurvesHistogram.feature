@@ -21,8 +21,8 @@ Feature: Match Unmatch Diff Curves Histogram
         Then the "database" parameter value matches "mv_ncep_meso_sl1l2"
         When I change the "data-source" parameter to "GFS/212"
         Then the "data-source" parameter value matches "GFS/212"
-        When I set the curve-dates to "10/01/2014 0:00 - 11/09/2014 0:00"
-        Then the curve-dates value is "10/01/2014 0:00 - 11/09/2014 0:00"
+        When I set the curve-dates to "10/01/2014 00:00 - 11/09/2014 00:00"
+        Then the curve-dates value is "10/01/2014 00:00 - 11/09/2014 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
 

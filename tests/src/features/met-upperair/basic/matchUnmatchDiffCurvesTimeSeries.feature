@@ -25,8 +25,8 @@ Feature: Match Unmatch Diff Curves Timeseries
         Then the "forecast-length" parameter value matches "120"
         When I change the "level" parameter to "P500"
         Then the "level" parameter value matches "P500"
-        When I set the dates to "11/01/2018 0:00 - 11/11/2018 0:00"
-        Then the dates value is "11/01/2018 0:00 - 11/11/2018 0:00"
+        When I set the dates to "11/01/2018 00:00 - 11/11/2018 00:00"
+        Then the dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
 

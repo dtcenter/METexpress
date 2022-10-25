@@ -34,8 +34,8 @@ Feature: Mismatch EnsembleHistogram Exception
         Then the "level" parameter value matches "L0"
         When I change the "histogram-type-controls" parameter to "Relative Position Histogram"
         Then the "histogram-type-controls" parameter value matches "Relative Position Histogram"
-        When I set the curve-dates to "10/24/2019 0:00 - 12/24/2019 0:00"
-        Then the curve-dates value is "10/24/2019 0:00 - 12/24/2019 0:00"
+        When I set the curve-dates to "10/24/2019 00:00 - 12/24/2019 00:00"
+        Then the curve-dates value is "10/24/2019 00:00 - 12/24/2019 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
         And I should see a list of curves containing "Curve0"

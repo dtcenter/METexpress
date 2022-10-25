@@ -28,8 +28,8 @@ Feature: Add Remove Contour
         Then the "statistic" parameter value matches "CSI (Critical Success Index)"
         When I change the "variable" parameter to "APCP_03"
         Then the "variable" parameter value matches "APCP_03"
-        When I set the dates to "02/03/2018 0:00 - 06/03/2019 0:00"
-        Then the dates value is "02/03/2018 0:00 - 06/03/2019 0:00"
+        When I set the dates to "02/03/2018 00:00 - 06/03/2019 00:00"
+        Then the dates value is "02/03/2018 00:00 - 06/03/2019 00:00"
         Then I click the "Add Curve" button
         Then "Curve0" is added
         And I should see a list of curves containing "Curve0"
