@@ -19,26 +19,27 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METexpress'
-author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
+author = 'UCAR/DTC, NOAA, CSU/CIRA, and CU/CIRES'
 
 # list of contributing authors currently involved with the project
 # To rotate this list of authors for each official release,
 # move the first author to the end of the list
 CURRENT_AUTHORS = [
-    'Jeff Hamilton',
     'Bonny Strong',
-    'Randy Pierce',
     'Molly Smith',
+    'Randy Pierce',
+    'Jeff Hamilton',
     'Ian McGinnis',
-    'Keith Searight',
     'Gopa Padmanabhan',
+    'Keith Searight',
+    'Dave Turner'
 ]
 
 # list of former contributors who are no longer involved with the project
 # but still deserve citation credit
 FORMER_AUTHORS = [
-    'Bill Moninger',
     'Venita Hagerty',
+    'Bill Moninger'
 ]
 
 # format citation authors list
@@ -58,13 +59,13 @@ for index, author_name in enumerate(CURRENT_AUTHORS + FORMER_AUTHORS):
 author_list = ', '.join(formatted_authors)
 
 # The stable version, displayed on the front page of the PDF
-version = '4.5.3'
+version = '4.6.0'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 release_year = '2022'
-release_date = f'{release_year}1014'
+release_date = f'{release_year}1104'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
@@ -124,8 +125,16 @@ latex_documents = [
     (master_doc, 
         'users_guide.tex', 
         'METexpress User\'s Guide',
-        'B. Strong, R. Pierce, M. B. Smith, V. Hagerty, J. Hamilton', 
-        'manual')
+        CURRENT_AUTHORS[0],
+        CURRENT_AUTHORS[1],
+        CURRENT_AUTHORS[2],
+        CURRENT_AUTHORS[3],
+        CURRENT_AUTHORS[4],
+        CURRENT_AUTHORS[5],
+        CURRENT_AUTHORS[6],
+        CURRENT_AUTHORS[7],
+        FORMER_AUTHORS[0],
+        FORMER_AUTHORS[1])
     ]
     
 # used for generating PDF built locally
