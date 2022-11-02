@@ -120,6 +120,9 @@ To cite this documentation in publications, please refer to the METexpress User'
        Science at the University of Colorado Boulder
        <https://cires.colorado.edu/>`_
 
+.. [#NOAA] `National Oceanic and Atmospheric Administration
+       <https://noaa.gov/>`_
+
 .. toctree::
    :hidden:
    :caption: METexpress
