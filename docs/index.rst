@@ -97,16 +97,18 @@ Acronyms
 Authors
 -------
 
-Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
+Many authors, listed below in alphabetical order, have contributed to the documentation of METexpress.
 To cite this documentation in publications, please refer to the METexpress User's Guide :ref:`Citation Instructions<citations>`.
 
 * Venita Hagerty [#CIRA]_
 * Jeff Hamilton [#CIRES]_
 * Ian McGinnis [#CIRA]_
+* Gopa Padmanabhan [#CIRA]_
 * Randy Pierce [#CIRA]_
 * Keith Searight [#CIRA]_
 * Molly B. Smith [#CIRES]_
 * Bonny Strong [#CIRA]_
+* Dave Turner [#NOAA]_
 
 .. rubric:: Organization
 
