@@ -1,3 +1,6 @@
 [submodule "MATScommon"]
 	path = MATScommon
 	url = https://github.com/dtcenter/MATScommon
+[submodule "METcalcpy"]
+	path = METcalcpy
+	url = https://github.com/dtcenter/METcalcpy
