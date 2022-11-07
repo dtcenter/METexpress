@@ -126,3 +126,28 @@ hr {
 .mediumPublicSans {
     font-family: PublicSans-Medium, Arial, Helvetica, serif;
 }
+
+.item + .tooltip > .tooltip-inner {
+    background-color: #73AD21;
+    color: #FFFFFF;
+    border: 1px solid green;
+    padding: 5px;
+    font-size: 15px;
+    max-width: 350px;
+    width: 350px;
+}
+
+.daterangepicker .ranges li {
+    background-color: #bfdfff;
+    font-size: 14px !important;
+    margin: 5px 2px;
+    border-radius: 10px;
+    border-color: #dddddd;
+    border-width: 1px;
+}
+
+.daterangepicker .drp-selected {
+    font-size: 18px !important;
+    color: #990000;
+}
+

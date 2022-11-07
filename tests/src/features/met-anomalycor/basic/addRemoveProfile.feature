@@ -23,8 +23,8 @@ Feature: Add Remove Profile
         Then the "data-source" parameter value matches "GFS"
         When I change the "forecast-length" parameter to "120"
         Then the "forecast-length" parameter value matches "120"
-        When I set the curve-dates to "11/01/2018 0:00 - 11/11/2018 0:00"
-        Then the curve-dates value is "11/01/2018 0:00 - 11/11/2018 0:00"
+        When I set the curve-dates to "11/01/2018 00:00 - 11/11/2018 00:00"
+        Then the curve-dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
         Then I click the "Add Curve" button
         Then "Curve0" is added
         And I should see a list of curves containing "Curve0"
