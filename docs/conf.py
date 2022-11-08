@@ -125,16 +125,7 @@ latex_documents = [
     (master_doc, 
         'users_guide.tex', 
         'METexpress User\'s Guide',
-        CURRENT_AUTHORS[0],
-        CURRENT_AUTHORS[1],
-        CURRENT_AUTHORS[2],
-        CURRENT_AUTHORS[3],
-        CURRENT_AUTHORS[4],
-        CURRENT_AUTHORS[5],
-        CURRENT_AUTHORS[6],
-        CURRENT_AUTHORS[7],
-        FORMER_AUTHORS[0],
-        FORMER_AUTHORS[1],
+        author_list,
         'manual')
     ]
     
