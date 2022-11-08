@@ -134,7 +134,8 @@ latex_documents = [
         CURRENT_AUTHORS[6],
         CURRENT_AUTHORS[7],
         FORMER_AUTHORS[0],
-        FORMER_AUTHORS[1])
+        FORMER_AUTHORS[1],
+        'manual')
     ]
     
 # used for generating PDF built locally
