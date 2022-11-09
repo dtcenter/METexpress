@@ -452,6 +452,63 @@ class ParentMetadata:
 
                 for line_data_table in self.line_data_table:
                     for model_var_line in result2:
+
+                        # refresh the database connections. This is obnoxious, but
+                        # some of these databases take so long to query that we time out
+                        try:
+                            self.cursor.close()
+                            self.cnx.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor2.close()
+                            cnx2.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 2nd cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor3.close()
+                            cnx3.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 3rd cursor: " + str(e))
+                            traceback.print_stack()
+
+                        try:
+                            self.cnx = pymysql.connect(read_default_file=self.cnf_file)
+                            self.cnx.autocommit = True
+                            self.cursor = self.cnx.cursor(pymysql.cursors.DictCursor)
+                            self.cursor.execute('set group_concat_max_len=4294967295;')
+                            self.cursor.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx2 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx2.autocommit = True
+                            cursor2 = cnx2.cursor(pymysql.cursors.DictCursor)
+                            cursor2.execute('set group_concat_max_len=4294967295;')
+                            cursor2.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx3 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx3.autocommit = True
+                            cursor3 = cnx3.cursor(pymysql.cursors.DictCursor)
+                            cursor3.execute('set group_concat_max_len=4294967295;')
+                            cursor3.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+
+                        self.cursor.execute(use_db)
+                        cursor2.execute(use_db)
+                        cursor3.execute(use_db)
+
                         model = model_var_line['model']
                         per_mvdb[mvdb][model] = {}
                         per_mvdb[mvdb][model][line_data_table] = {}
@@ -577,6 +634,63 @@ class ParentMetadata:
 
                 for line_data_table in self.line_data_table:
                     for model_var_line in result2:
+
+                        # refresh the database connections. This is obnoxious, but
+                        # some of these databases take so long to query that we time out
+                        try:
+                            self.cursor.close()
+                            self.cnx.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor2.close()
+                            cnx2.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 2nd cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor3.close()
+                            cnx3.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 3rd cursor: " + str(e))
+                            traceback.print_stack()
+
+                        try:
+                            self.cnx = pymysql.connect(read_default_file=self.cnf_file)
+                            self.cnx.autocommit = True
+                            self.cursor = self.cnx.cursor(pymysql.cursors.DictCursor)
+                            self.cursor.execute('set group_concat_max_len=4294967295;')
+                            self.cursor.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx2 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx2.autocommit = True
+                            cursor2 = cnx2.cursor(pymysql.cursors.DictCursor)
+                            cursor2.execute('set group_concat_max_len=4294967295;')
+                            cursor2.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx3 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx3.autocommit = True
+                            cursor3 = cnx3.cursor(pymysql.cursors.DictCursor)
+                            cursor3.execute('set group_concat_max_len=4294967295;')
+                            cursor3.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+
+                        self.cursor.execute(use_db)
+                        cursor2.execute(use_db)
+                        cursor3.execute(use_db)
+
                         model = model_var_line['model']
                         fvar = model_var_line['fcst_var']
                         version = int(model_var_line['version'].split('.')[0][1:])
@@ -647,6 +761,63 @@ class ParentMetadata:
 
                 for line_data_table in self.line_data_table:
                     for model_var_line in result2:
+
+                        # refresh the database connections. This is obnoxious, but
+                        # some of these databases take so long to query that we time out
+                        try:
+                            self.cursor.close()
+                            self.cnx.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor2.close()
+                            cnx2.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 2nd cursor: " + str(e))
+                            traceback.print_stack()
+                        try:
+                            cursor3.close()
+                            cnx3.close()
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error closing 3rd cursor: " + str(e))
+                            traceback.print_stack()
+
+                        try:
+                            self.cnx = pymysql.connect(read_default_file=self.cnf_file)
+                            self.cnx.autocommit = True
+                            self.cursor = self.cnx.cursor(pymysql.cursors.DictCursor)
+                            self.cursor.execute('set group_concat_max_len=4294967295;')
+                            self.cursor.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx2 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx2.autocommit = True
+                            cursor2 = cnx2.cursor(pymysql.cursors.DictCursor)
+                            cursor2.execute('set group_concat_max_len=4294967295;')
+                            cursor2.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+                        try:
+                            cnx3 = pymysql.connect(read_default_file=self.cnf_file)
+                            cnx3.autocommit = True
+                            cursor3 = cnx3.cursor(pymysql.cursors.DictCursor)
+                            cursor3.execute('set group_concat_max_len=4294967295;')
+                            cursor3.execute('set session wait_timeout = 24*3600;')
+                        except pymysql.Error as e:
+                            print(self.script_name + " - Error: " + str(e))
+                            traceback.print_stack()
+                            sys.exit(1)
+
+                        self.cursor.execute(use_db)
+                        cursor2.execute(use_db)
+                        cursor3.execute(use_db)
+
                         model = model_var_line['model']
                         per_mvdb[mvdb][model] = {}
                         per_mvdb[mvdb][model][line_data_table] = {}
@@ -771,25 +942,23 @@ class ParentMetadata:
 
             # Get the group(s) this db is in
             if db_has_valid_data:
+                print("\n" + self.script_name + " - Getting DB group for " + mvdb + "\n")
                 get_groups = 'select category from metadata'
+                group = "NO GROUP"
                 self.cursor.execute(get_groups)
                 if self.cursor.rowcount > 0:
                     for line in self.cursor:
                         group = list(line.values())[0]
-                        if group in db_groups:
-                            db_groups[group].append(mvdb)
-                        else:
-                            db_groups[group] = [mvdb]
+                if group in db_groups:
+                    db_groups[group].append(mvdb)
                 else:
-                    group = "NO GROUP"
-                    if group in db_groups:
-                        db_groups[group].append(mvdb)
-                    else:
-                        db_groups[group] = [mvdb]
+                    db_groups[group] = [mvdb]
+                print(self.script_name + " - DB group is " + group + "\n")
 
         # save db group information
         if debug:
             print(db_groups)
+        print("\n" + self.script_name + " - Populating group tables\n")
         self.populate_db_group_tables(db_groups)
 
         # Print full metadata object
