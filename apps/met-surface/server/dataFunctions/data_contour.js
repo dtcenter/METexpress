@@ -18,6 +18,7 @@ dataContour = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
+        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
@@ -156,9 +157,9 @@ dataContour = function (plotParams, plotFunction) {
     allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.
     var unitKey;
-    if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
+    if (statistic.includes("vector") && (statistic.includes("speed") || statistic.includes("length") || statistic.includes("Speed") || statistic.includes("Length"))) {
         unitKey = "Vector wind speed";
-    } else if (statistic.includes("vector") && (statistic.includes("direction")  || statistic.includes("angle")  || statistic.includes("Direction")  || statistic.includes("Angle"))){
+    } else if (statistic.includes("vector") && (statistic.includes("direction") || statistic.includes("angle") || statistic.includes("Direction") || statistic.includes("Angle"))) {
         unitKey = "Vector wind direction";
     } else {
         unitKey = variable + " " + statistic;

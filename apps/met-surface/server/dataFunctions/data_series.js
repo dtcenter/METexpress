@@ -19,6 +19,7 @@ dataSeries = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
+        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
@@ -155,9 +156,9 @@ dataSeries = function (plotParams, plotFunction) {
         // variable + statistic (axisKey) it will use the same axis.
         // The axis number is assigned to the axisKeySet value, which is the axisKey.
         var axisKey;
-        if (statistic.includes("vector") && (statistic.includes("speed")  || statistic.includes("length")  || statistic.includes("Speed")  || statistic.includes("Length"))) {
+        if (statistic.includes("vector") && (statistic.includes("speed") || statistic.includes("length") || statistic.includes("Speed") || statistic.includes("Length"))) {
             axisKey = "Vector wind speed";
-        } else if (statistic.includes("vector") && (statistic.includes("direction")  || statistic.includes("angle")  || statistic.includes("Direction")  || statistic.includes("Angle"))){
+        } else if (statistic.includes("vector") && (statistic.includes("direction") || statistic.includes("angle") || statistic.includes("Direction") || statistic.includes("Angle"))) {
             axisKey = "Vector wind direction";
         } else {
             axisKey = variable + " " + statistic;
@@ -217,9 +218,9 @@ dataSeries = function (plotParams, plotFunction) {
         } else {
             // this is a difference curve
             differenceArray.push({
-               "dataset": dataset,
-               "diffFrom": diffFrom,
-               "appParams": appParams,
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": appParams,
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });
@@ -283,7 +284,7 @@ dataSeries = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"], differenceArray[curveIndex-dReturn.length]["isScalar"]);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex - dReturn.length]["dataset"], differenceArray[curveIndex - dReturn.length]["diffFrom"], differenceArray[curveIndex - dReturn.length]["appParams"], differenceArray[curveIndex - dReturn.length]["isCTC"], differenceArray[curveIndex - dReturn.length]["isScalar"]);
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;

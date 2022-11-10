@@ -19,6 +19,7 @@ dataDieOff = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
+        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
@@ -213,9 +214,9 @@ dataDieOff = function (plotParams, plotFunction) {
         } else {
             // this is a difference curve
             differenceArray.push({
-               "dataset": dataset,
-               "diffFrom": diffFrom,
-               "appParams": appParams,
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": appParams,
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });
@@ -279,7 +280,7 @@ dataDieOff = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"], differenceArray[curveIndex-dReturn.length]["isScalar"]);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex - dReturn.length]["dataset"], differenceArray[curveIndex - dReturn.length]["diffFrom"], differenceArray[curveIndex - dReturn.length]["appParams"], differenceArray[curveIndex - dReturn.length]["isCTC"], differenceArray[curveIndex - dReturn.length]["isScalar"]);
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;
