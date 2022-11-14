@@ -741,7 +741,7 @@ const doCurveParams = function () {
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["variable"],
+                dependentNames: ['variable', 'aggregation-method'],
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -1101,6 +1101,7 @@ const doCurveParams = function () {
                 type: matsTypes.InputTypes.select,
                 optionsMap: aggMethodOptionsMap,
                 options: Object.keys(aggMethodOptionsMap[defaultStatType]),
+                superiorNames: ['statistic'],
                 default: Object.keys(aggMethodOptionsMap[defaultStatType])[0],
                 controlButtonCovered: true,
                 gapAbove: true,
@@ -1198,7 +1199,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description", "aggregation-method"
             ],
             groupSize: 6
         });
@@ -1219,7 +1220,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1242,7 +1243,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1263,7 +1264,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1285,7 +1286,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1306,7 +1307,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "aggregation-method", "description"
             ],
             groupSize: 6
         });

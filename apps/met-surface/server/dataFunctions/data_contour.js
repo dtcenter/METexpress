@@ -18,7 +18,6 @@ dataContour = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
-        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
@@ -153,6 +152,7 @@ dataContour = function (plotParams, plotFunction) {
         }).join(',');
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
+    appParams['aggMethod'] = curve['aggregation-method'];
     var statType = "met-" + statLineType;
     allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.

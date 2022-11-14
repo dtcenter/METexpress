@@ -52,25 +52,7 @@ const doPlotParams = function () {
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
-                displayGroup: 4
-            });
-
-        const aggMethodOptionsMap = {
-            "Overall statistic": ["aggStat"],
-            "Mean statistic": ["meanStat"],
-            "Median statistic": ["medStat"]
-        };
-        matsCollections.PlotParams.insert(
-            {
-                name: 'aggregation-method',
-                type: matsTypes.InputTypes.select,
-                optionsMap: aggMethodOptionsMap,
-                options: Object.keys(aggMethodOptionsMap),
-                default: Object.keys(aggMethodOptionsMap)[0],
-                controlButtonCovered: true,
-                displayOrder: 1,
-                displayPriority: 1,
-                displayGroup: 2
+                displayGroup: 3
             });
 
         const yAxisOptionsMap = {
@@ -88,7 +70,7 @@ const doPlotParams = function () {
                 controlButtonText: 'Y-axis mode',
                 displayOrder: 2,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         const binOptionsMap = {
@@ -119,7 +101,7 @@ const doPlotParams = function () {
                 controlButtonText: 'customize bins',
                 displayOrder: 3,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         matsCollections.PlotParams.insert(
@@ -136,7 +118,7 @@ const doPlotParams = function () {
                 controlButtonText: "number of bins",
                 displayOrder: 4,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         matsCollections.PlotParams.insert(
@@ -153,7 +135,7 @@ const doPlotParams = function () {
                 controlButtonText: "bin pivot value",
                 displayOrder: 5,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         matsCollections.PlotParams.insert(
@@ -170,7 +152,7 @@ const doPlotParams = function () {
                 controlButtonText: "bin start",
                 displayOrder: 6,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         matsCollections.PlotParams.insert(
@@ -187,7 +169,7 @@ const doPlotParams = function () {
                 controlButtonText: "bin stride",
                 displayOrder: 7,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         matsCollections.PlotParams.insert(
@@ -201,7 +183,7 @@ const doPlotParams = function () {
                 controlButtonText: "bin bounds (Enter numbers separated by commas)",
                 displayOrder: 8,
                 displayPriority: 1,
-                displayGroup: 3
+                displayGroup: 2
             });
 
         const xOptionsMap = {
@@ -226,7 +208,7 @@ const doPlotParams = function () {
                 controlButtonVisibility: 'block',
                 displayOrder: 9,
                 displayPriority: 1,
-                displayGroup: 3,
+                displayGroup: 2,
             });
 
         const yOptionsMap = {
@@ -251,7 +233,7 @@ const doPlotParams = function () {
                 controlButtonVisibility: 'block',
                 displayOrder: 10,
                 displayPriority: 1,
-                displayGroup: 3,
+                displayGroup: 2,
             });
     } else {
         // need to update the dates selector if the metadata has changed
@@ -310,6 +292,19 @@ const doCurveParams = function () {
             'PODy (Probability of positive detection)': ['ctc'],
             'PODn (Probability of negative detection)': ['ctc'],
             'POFD (Probability of false detection)': ['ctc'],
+        }
+    };
+
+    const aggMethodOptionsMap = {
+        "scalar": {
+            "Overall statistic": ["aggStat"],
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
+        },
+        "ctc": {
+            "Overall statistic": ["aggStat"],
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
         }
     };
 
@@ -751,7 +746,7 @@ const doCurveParams = function () {
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["variable"],
+                dependentNames: ['variable', 'aggregation-method'],
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -789,6 +784,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][0],
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 3
@@ -854,6 +850,7 @@ const doCurveParams = function () {
                 default: imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
                 controlButtonVisibility: 'block',
                 controlButtonText: 'interpolation method',
+                gapAbove: true,
                 displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 4
@@ -1105,6 +1102,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 6,
@@ -1123,6 +1121,23 @@ const doCurveParams = function () {
                 }
             });
         }
+    }
+
+    if (matsCollections["aggregation-method"].findOne({name: 'aggregation-method'}) == undefined) {
+        matsCollections["aggregation-method"].insert(
+            {
+                name: 'aggregation-method',
+                type: matsTypes.InputTypes.select,
+                optionsMap: aggMethodOptionsMap,
+                options: Object.keys(aggMethodOptionsMap[defaultStatType]),
+                superiorNames: ['statistic'],
+                default: Object.keys(aggMethodOptionsMap[defaultStatType])[0],
+                controlButtonCovered: true,
+                gapAbove: true,
+                displayOrder: 1,
+                displayPriority: 1,
+                displayGroup: 7
+            });
     }
 
     // determine date defaults for dates and curveDates
@@ -1215,7 +1230,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "average", "forecast-length", "level", "description", "aggregation-method"
             ],
             groupSize: 6
         });
@@ -1239,7 +1254,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1261,7 +1276,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "valid-time", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "forecast-length", "valid-time", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1283,7 +1298,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1306,7 +1321,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1329,7 +1344,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "threshold", "interp-method", "scale", "valid-time", "forecast-length", "level", "aggregation-method", "description"
             ],
             groupSize: 6
         });

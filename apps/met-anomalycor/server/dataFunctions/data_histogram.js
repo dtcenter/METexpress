@@ -17,7 +17,6 @@ dataHistogram = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
-        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var alreadyMatched = false;
@@ -150,6 +149,7 @@ dataHistogram = function (plotParams, plotFunction) {
         }
         var statType = "met-" + statLineType;
         allStatTypes.push(statType);
+        appParams['aggMethod'] = curve['aggregation-method'];
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable (axisKey) it will use the same axis.
