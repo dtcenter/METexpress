@@ -18,6 +18,7 @@ dataContour = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
+        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries

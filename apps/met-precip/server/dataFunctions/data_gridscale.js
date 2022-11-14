@@ -19,6 +19,7 @@ dataGridScale = function (plotParams, plotFunction) {
         "completeness": plotParams['completeness'],
         "outliers": plotParams['outliers'],
         "hideGaps": plotParams['noGapsCheck'],
+        "aggMethod": plotParams['aggregation-method'],
         "hasLevels": true
     };
     var dataRequests = {}; // used to store data queries
@@ -214,9 +215,9 @@ dataGridScale = function (plotParams, plotFunction) {
         } else {
             // this is a difference curve
             differenceArray.push({
-               "dataset": dataset,
-               "diffFrom": diffFrom,
-               "appParams": appParams,
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": appParams,
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });
