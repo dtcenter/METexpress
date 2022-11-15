@@ -207,6 +207,7 @@ dataHistogram = function (plotParams, plotFunction) {
                 "statLineType": statLineType,
                 "statistic": statistic,
                 "appParams": appParams,
+                "fcstOffset": 0,
                 "vts": vts
             });
 

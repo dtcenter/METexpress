@@ -869,7 +869,6 @@ const doCurveParams = function () {
                 default: fhrDefault,
                 controlButtonVisibility: 'block',
                 controlButtonText: "forecast lead time",
-                multiple: true,
                 displayOrder: 1,
                 displayPriority: 1,
                 displayGroup: 5

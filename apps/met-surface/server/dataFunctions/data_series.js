@@ -112,6 +112,7 @@ dataSeries = function (plotParams, plotFunction) {
         var forecastLengthsClause = "";
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+        var fcstOffset = fcsts[0];
         if (fcsts.length > 0) {
             fcsts = fcsts.map(function (fl) {
                 return "'" + fl + "','" + fl + "0000'";
@@ -212,6 +213,7 @@ dataSeries = function (plotParams, plotFunction) {
                 "statLineType": statLineType,
                 "statistic": statistic,
                 "appParams": appParams,
+                "fcstOffset": fcstOffset,
                 "vts": vts
             });
 
