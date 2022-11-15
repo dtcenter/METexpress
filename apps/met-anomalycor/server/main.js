@@ -1249,8 +1249,7 @@ const doCurveTextPatterns = function () {
                 ['', 'interp-method', ' '],
                 ['', 'scale', ', '],
                 ['', 'variable', ' '],
-                ['', 'statistic', ' '],
-                ['', 'aggregation-method', ', '],
+                ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
@@ -1258,7 +1257,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "interp-method", "scale", "valid-time", "forecast-length", "level", "description", "curve-dates"
             ],
             groupSize: 6
         });
