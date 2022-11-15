@@ -212,7 +212,7 @@ dataContour = function (plotParams, plotFunction) {
         "statement": statement,
         "statLineType": statLineType,
         "statistic": statistic,
-        "appParams": appParams,
+        "appParams": JSON.parse(JSON.stringify(appParams)),
         "fcstOffset": 0,
         "vts": vts
     }];

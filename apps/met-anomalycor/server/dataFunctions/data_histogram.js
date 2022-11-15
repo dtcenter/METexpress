@@ -206,7 +206,7 @@ dataHistogram = function (plotParams, plotFunction) {
                 "statement": statement,
                 "statLineType": statLineType,
                 "statistic": statistic,
-                "appParams": appParams,
+                "appParams": JSON.parse(JSON.stringify(appParams)),
                 "fcstOffset": 0,
                 "vts": vts
             });
@@ -216,7 +216,7 @@ dataHistogram = function (plotParams, plotFunction) {
             differenceArray.push({
                 "dataset": dataset,
                 "diffFrom": diffFrom,
-                "appParams": appParams,
+                "appParams": JSON.parse(JSON.stringify(appParams)),
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });
