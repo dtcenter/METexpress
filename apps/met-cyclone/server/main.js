@@ -258,6 +258,13 @@ const doCurveParams = function () {
         }
     };
 
+    const aggMethodOptionsMap = {
+        "precalculated": {
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
+        }
+    };
+
     const bestTrackDefs = {
         "TD": {
             "name": "Tropical depression (wind <34kt)",
@@ -1089,7 +1096,7 @@ const doCurveParams = function () {
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["basin"],
+                dependentNames: ['basin', 'aggregation-method'],
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -1161,7 +1168,6 @@ const doCurveParams = function () {
                 unique: false,
                 default: stormsOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear][0],
                 controlButtonVisibility: 'block',
-                // multiple: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 4
@@ -1194,6 +1200,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][0],
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 4,
                 displayPriority: 1,
                 displayGroup: 4
@@ -1238,7 +1245,7 @@ const doCurveParams = function () {
                 default: fhrDefault,
                 controlButtonVisibility: 'block',
                 controlButtonText: "forecast lead time",
-                multiple: true,
+                gapAbove: true,
                 displayOrder: 1,
                 displayPriority: 1,
                 displayGroup: 5
@@ -1402,6 +1409,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 6,
@@ -1420,6 +1428,23 @@ const doCurveParams = function () {
                 }
             });
         }
+    }
+
+    if (matsCollections["aggregation-method"].findOne({name: 'aggregation-method'}) == undefined) {
+        matsCollections["aggregation-method"].insert(
+            {
+                name: 'aggregation-method',
+                type: matsTypes.InputTypes.select,
+                optionsMap: aggMethodOptionsMap,
+                options: Object.keys(aggMethodOptionsMap[defaultStatType]),
+                superiorNames: ['statistic'],
+                default: Object.keys(aggMethodOptionsMap[defaultStatType])[0],
+                controlButtonCovered: true,
+                gapAbove: true,
+                displayOrder: 1,
+                displayPriority: 1,
+                displayGroup: 7
+            });
     }
 
     // determine date defaults for dates and curveDates
@@ -1514,7 +1539,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "valid-time", "average", "forecast-length", "level", "description", "aggregation-method"
             ],
             groupSize: 6
         });
@@ -1538,7 +1563,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1560,7 +1585,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "basin", "statistic", "year", "storm", "truth", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1580,7 +1605,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "basin", "statistic", "truth", "valid-time", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "basin", "statistic", "truth", "valid-time", "forecast-length", "level", "description", "aggregation-method"
             ],
             groupSize: 6
         });
@@ -1593,8 +1618,7 @@ const doCurveTextPatterns = function () {
                 ['', 'basin', ', '],
                 ['', 'year', ' '],
                 ['', 'storm', ' '],
-                ['', 'statistic', ' '],
-                ['', 'aggregation-method', ', '],
+                ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
