@@ -243,18 +243,17 @@ const doCurveParams = function () {
 
     const masterStatsOptionsMap = {
         "line_data_ecnt": {
-            'RMSE': ['precalculated', 'line_data_ecnt', 'ld.rmse'],
-            'RMSE with obs error': ['precalculated', 'line_data_ecnt', 'ld.rmse_oerr'],
-            'Spread': ['precalculated', 'line_data_ecnt', 'ld.spread'],
-            'Spread with obs error': ['precalculated', 'line_data_ecnt', 'ld.spread_oerr'],
-            'ME (Additive bias)': ['precalculated', 'line_data_ecnt', 'ld.me'],
-            'ME with obs error': ['precalculated', 'line_data_ecnt', 'ld.me_oerr'],
-            'CRPS': ['precalculated', 'line_data_ecnt', 'ld.crps'],
-            'CRPSS': ['precalculated', 'line_data_ecnt', 'ld.crpss']
+            'RMSE': ['ecnt', 'line_data_ecnt', 'ld.rmse'],
+            'RMSE with obs error': ['ecnt', 'line_data_ecnt', 'ld.rmse_oerr'],
+            'Spread': ['ecnt', 'line_data_ecnt', 'ld.spread'],
+            'Spread with obs error': ['ecnt', 'line_data_ecnt', 'ld.spread_oerr'],
+            'ME (Additive bias)': ['ecnt', 'line_data_ecnt', 'ld.me'],
+            'ME with obs error': ['ecnt', 'line_data_ecnt', 'ld.me_oerr'],
+            'CRPS': ['ecnt', 'line_data_ecnt', 'ld.crps'],
+            'CRPSS': ['ecnt', 'line_data_ecnt', 'ld.crpss']
         },
         "line_data_cnt": {
-            'MAE': ['precalculated', 'line_data_cnt', 'ld.mae'],
-            'ACC': ['precalculated', 'line_data_cnt', 'ld.anom_corr']
+            'MAE': ['ecnt', 'line_data_cnt', 'ld.mae']
         },
         "line_data_pstd": {
             'BS': ['precalculated', 'line_data_pstd', 'ld.brier'],
@@ -284,6 +283,11 @@ const doCurveParams = function () {
     };
 
     const aggMethodOptionsMap = {
+        "ecnt": {
+            "Mean statistic weighted by N": ["weightMeanStat"],
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
+        },
         "precalculated": {
             "Mean statistic": ["meanStat"],
             "Median statistic": ["medStat"]
@@ -1239,7 +1243,7 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.timeSeries,
             graphFunction: "graphPlotly",
             dataFunction: "dataSeries",
-            checked: false
+            checked: true
         });
         matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.dieoff,
@@ -1269,7 +1273,7 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.reliability,
             graphFunction: "graphPlotly",
             dataFunction: "dataReliability",
-            checked: true
+            checked: false
         });
         matsCollections.PlotGraphFunctions.insert({
             plotType: matsTypes.PlotTypes.roc,
