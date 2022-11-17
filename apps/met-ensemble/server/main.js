@@ -235,7 +235,6 @@ const doCurveParams = function () {
         "line_data_ecnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_cnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_pstd": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
-        "line_data_eclv": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_nbrcnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.histogram],
         "line_data_rhist": [matsTypes.PlotTypes.ensembleHistogram],
         "line_data_pct": [matsTypes.PlotTypes.reliability, matsTypes.PlotTypes.roc, matsTypes.PlotTypes.performanceDiagram]
@@ -265,11 +264,8 @@ const doCurveParams = function () {
             'BS upper confidence limit': ['precalculated', 'line_data_pstd', 'ld.brier_ncu'],
             'ROC AUC': ['precalculated', 'line_data_pstd', 'ld.roc_auc']
         },
-        "line_data_eclv": {
-            'EV': ['precalculated', 'line_data_eclv', 'ld.value_baser']
-        },
         "line_data_nbrcnt": {
-            'FSS': ['precalculated', 'line_data_nbrcnt', 'ld.fss']
+            'FSS': ['nbrcnt']
         },
         "line_data_pct": {
             'Reliability': ['precalculated', 'line_data_pct', ''],
@@ -285,6 +281,11 @@ const doCurveParams = function () {
     const aggMethodOptionsMap = {
         "ecnt": {
             "Mean statistic weighted by N": ["weightMeanStat"],
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
+        },
+        "nbrcnt": {
+            "Overall statistic": ["aggStat"],
             "Mean statistic": ["meanStat"],
             "Median statistic": ["medStat"]
         },

@@ -263,7 +263,6 @@ const doCurveParams = function () {
     const masterPlotTypeOptionsMap = {
         "line_data_sl1l2": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
         "line_data_ctc": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
-        "line_data_eclv": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour],
         "line_data_nbrcnt": [matsTypes.PlotTypes.timeSeries, matsTypes.PlotTypes.dieoff, matsTypes.PlotTypes.threshold, matsTypes.PlotTypes.validtime, matsTypes.PlotTypes.gridscale, matsTypes.PlotTypes.histogram, matsTypes.PlotTypes.contour]
     };
 
@@ -293,11 +292,8 @@ const doCurveParams = function () {
             'PODn (Probability of negative detection)': ['ctc'],
             'POFD (Probability of false detection)': ['ctc'],
         },
-        "line_data_eclv": {
-            'EV': ['precalculated', 'line_data_eclv', 'ld.value_baser']
-        },
         "line_data_nbrcnt": {
-            'FSS': ['precalculated', 'line_data_nbrcnt', 'ld.fss']
+            'FSS': ['nbrcnt']
         }
     };
 
@@ -312,7 +308,8 @@ const doCurveParams = function () {
             "Mean statistic": ["meanStat"],
             "Median statistic": ["medStat"]
         },
-        "precalculated": {
+        "nbrcnt": {
+            "Overall statistic": ["aggStat"],
             "Mean statistic": ["meanStat"],
             "Median statistic": ["medStat"]
         }

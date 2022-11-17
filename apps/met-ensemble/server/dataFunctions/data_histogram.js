@@ -56,7 +56,12 @@ dataHistogram = function (plotParams, plotFunction) {
         var statLineType = statisticOptionsMap[statistic][0];
         var statisticClause = "";
         var lineDataType = "";
-        if (statLineType === 'precalculated' || statLineType === 'ecnt') {
+        if (statLineType === 'nbrcnt') {
+            statisticClause = "sum(ld.fss) as fss, " +
+                "sum(ld.fbs) as fbs, " +
+                "group_concat(distinct ld.fss, ';', ld.fbs, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+            lineDataType = "line_data_nbrcnt";
+        } else if (statLineType === 'precalculated' || statLineType === 'ecnt') {
             statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
             lineDataType = statisticOptionsMap[statistic][1];
         }
