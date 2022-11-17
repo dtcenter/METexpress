@@ -196,7 +196,7 @@ dataSeries = function (plotParams, plotFunction) {
         }
 
     }  // end for curves
-debugger;
+
     var queryResult;
     var startMoment = moment();
     var finishMoment;
@@ -217,7 +217,7 @@ debugger;
         e.message = "Error in queryDB: " + e.message + " for statement: " + statement;
         throw new Error(e.message);
     }
-debugger;
+
     // parse any errors from the python code
     for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
         if (queryResult.error[curveIndex] !== undefined && queryResult.error[curveIndex] !== "") {
