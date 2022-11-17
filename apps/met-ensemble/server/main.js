@@ -270,6 +270,7 @@ const doCurveParams = function () {
         "line_data_pct": {
             'Reliability': ['precalculated', 'line_data_pct', ''],
             'ROC': ['precalculated', 'line_data_pct', ''],
+            'PerformanceDiagram': ['precalculated', 'line_data_pct', ''],
         },
         "line_data_rhist": {
             'rhist': ['precalculated', 'line_data_rhist', ''],
