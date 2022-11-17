@@ -283,6 +283,13 @@ const doCurveParams = function () {
         }
     };
 
+    const aggMethodOptionsMap = {
+        "precalculated": {
+            "Mean statistic": ["meanStat"],
+            "Median statistic": ["medStat"]
+        }
+    };
+
     var masterStatsValuesMap = {};
     const lineTypes = Object.keys(masterStatsOptionsMap);
     for (var si = 0; si < lineTypes.length; si++) {
@@ -679,7 +686,7 @@ const doCurveParams = function () {
                 options: Object.keys(statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]),
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
-                dependentNames: ["variable"],
+                dependentNames: ['variable', 'aggregation-method'],
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -726,6 +733,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: variableDefault,
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 3
@@ -772,7 +780,7 @@ const doCurveParams = function () {
                 default: fhrDefault,
                 controlButtonVisibility: 'block',
                 controlButtonText: "forecast lead time",
-                multiple: true,
+                gapAbove: true,
                 displayOrder: 1,
                 displayPriority: 1,
                 displayGroup: 5
@@ -944,6 +952,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: matsTypes.InputTypes.unused,
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 6,
@@ -962,6 +971,23 @@ const doCurveParams = function () {
                 }
             });
         }
+    }
+
+    if (matsCollections["aggregation-method"].findOne({name: 'aggregation-method'}) == undefined) {
+        matsCollections["aggregation-method"].insert(
+            {
+                name: 'aggregation-method',
+                type: matsTypes.InputTypes.select,
+                optionsMap: aggMethodOptionsMap,
+                options: Object.keys(aggMethodOptionsMap[defaultStatType]),
+                superiorNames: ['statistic'],
+                default: Object.keys(aggMethodOptionsMap[defaultStatType])[0],
+                controlButtonCovered: true,
+                gapAbove: true,
+                displayOrder: 1,
+                displayPriority: 1,
+                displayGroup: 7
+            });
     }
 
     // determine date defaults for dates and curveDates
@@ -1051,7 +1077,7 @@ const doCurveTextPatterns = function () {
                 [', desc: ', 'description', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "valid-time", "average", "forecast-length", "level", "description", "aggregation-method"
             ],
             groupSize: 6
         });
@@ -1073,7 +1099,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "dieoff-type", "valid-time", "utc-cycle-start", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1093,7 +1119,7 @@ const doCurveTextPatterns = function () {
                 ['', 'curve-dates', '']
             ],
             displayParams: [
-                "label", "group", "database", "data-source", "region", "statistic", "variable", "forecast-length", "level", "description", "curve-dates"
+                "label", "group", "database", "data-source", "region", "statistic", "variable", "forecast-length", "level", "description", "aggregation-method", "curve-dates"
             ],
             groupSize: 6
         });
@@ -1105,8 +1131,7 @@ const doCurveTextPatterns = function () {
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
                 ['', 'variable', ' '],
-                ['', 'statistic', ' '],
-                ['', 'aggregation-method', ', '],
+                ['', 'statistic', ', '],
                 ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
@@ -1126,7 +1151,7 @@ const doCurveTextPatterns = function () {
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
                 ['', 'variable', ', '],
-                                ['level: ', 'level', ', '],
+                ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ', '],
                 ['desc: ', 'description', ', '],
@@ -1145,7 +1170,7 @@ const doCurveTextPatterns = function () {
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
                 ['', 'variable', ', '],
-                                ['level: ', 'level', ', '],
+                ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ''],
                 [', desc: ', 'description', '']
@@ -1163,7 +1188,7 @@ const doCurveTextPatterns = function () {
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
                 ['', 'variable', ', '],
-                                ['level: ', 'level', ', '],
+                ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ''],
                 [', desc: ', 'description', ', '],
@@ -1182,7 +1207,7 @@ const doCurveTextPatterns = function () {
                 ['', 'data-source', ' in '],
                 ['', 'region', ', '],
                 ['', 'variable', ', '],
-                                ['level: ', 'level', ', '],
+                ['level: ', 'level', ', '],
                 ['fcst_len: ', 'forecast-length', 'h, '],
                 ['valid-time: ', 'valid-time', ''],
                 [', desc: ', 'description', ', '],
