@@ -87,6 +87,7 @@ dataROC = function (plotParams, plotFunction) {
         var forecastLengthsClause = "";
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+        var fcstOffset = fcsts[0];
         if (fcsts.length > 0) {
             fcsts = fcsts.map(function (fl) {
                 return "'" + fl + "','" + fl + "0000'";
@@ -122,6 +123,7 @@ dataROC = function (plotParams, plotFunction) {
         }
         var statType = "met-" + statLineType;
         allStatTypes.push(statType);
+        appParams['aggMethod'] = "Overall statistic";
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -172,6 +174,7 @@ dataROC = function (plotParams, plotFunction) {
                 "statLineType": statLineType,
                 "statistic": statistic,
                 "appParams": JSON.parse(JSON.stringify(appParams)),
+                "fcstOffset": fcstOffset,
                 "vts": vts
             });
 
