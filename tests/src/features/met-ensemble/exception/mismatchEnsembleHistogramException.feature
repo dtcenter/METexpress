@@ -27,9 +27,8 @@ Feature: Mismatch EnsembleHistogram Exception
         Then the "region" parameter value matches "CONUS"
         When I change the "variable" parameter to "REFC"
         Then the "variable" parameter value matches "REFC"
-        When I clear the "forecast-length" parameter
         Then I change the "forecast-length" parameter to "6"
-        Then the "forecast-length" parameter value matches "6 .. 6"
+        Then the "forecast-length" parameter value matches "6"
         When I change the "level" parameter to "L0"
         Then the "level" parameter value matches "L0"
         When I change the "histogram-type-controls" parameter to "Relative Position Histogram"
