@@ -55,136 +55,6 @@ const doPlotParams = function () {
                 displayGroup: 3
             });
 
-        const yAxisOptionsMap = {
-            "Relative frequency": ["relFreq"],
-            "Number": ["number"]
-        };
-        matsCollections.PlotParams.insert(
-            {
-                name: 'histogram-yaxis-controls',
-                type: matsTypes.InputTypes.select,
-                optionsMap: yAxisOptionsMap,
-                options: Object.keys(yAxisOptionsMap),
-                default: Object.keys(yAxisOptionsMap)[0],
-                controlButtonCovered: true,
-                controlButtonText: 'Y-axis mode',
-                displayOrder: 2,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        const binOptionsMap = {
-            "Default bins": ["default"],
-            "Set number of bins": ["binNumber"],
-            "Make zero a bin bound": ["zeroBound"],
-            "Choose a bin bound": ["chooseBound"],
-            "Set number of bins and make zero a bin bound": ["binNumberWithZero"],
-            "Set number of bins and choose a bin bound": ["binNumberWithChosen"],
-            "Manual bins": ["manual"],
-            "Manual bin start, number, and stride": ["manualStride"]
-        };
-        matsCollections.PlotParams.insert(
-            {
-                name: 'histogram-bin-controls',
-                type: matsTypes.InputTypes.select,
-                optionsMap: binOptionsMap,
-                options: Object.keys(binOptionsMap),
-                hideOtherFor: {
-                    'bin-number': ["Default bins", "Make zero a bin bound", "Manual bins", "Choose a bin bound"],
-                    'bin-pivot': ["Default bins", "Set number of bins", "Make zero a bin bound", "Set number of bins and make zero a bin bound", "Manual bins", "Manual bin start, number, and stride"],
-                    'bin-start': ["Default bins", "Set number of bins", "Make zero a bin bound", "Choose a bin bound", "Set number of bins and make zero a bin bound", "Set number of bins and choose a bin bound", "Manual bins"],
-                    'bin-stride': ["Default bins", "Set number of bins", "Make zero a bin bound", "Choose a bin bound", "Set number of bins and make zero a bin bound", "Set number of bins and choose a bin bound", "Manual bins"],
-                    'bin-bounds': ["Default bins", "Set number of bins", "Make zero a bin bound", "Choose a bin bound", "Set number of bins and make zero a bin bound", "Set number of bins and choose a bin bound", "Manual bin start, number, and stride"],
-                },
-                default: Object.keys(binOptionsMap)[0],
-                controlButtonCovered: true,
-                controlButtonText: 'customize bins',
-                displayOrder: 3,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'bin-number',
-                type: matsTypes.InputTypes.numberSpinner,
-                optionsMap: {},
-                options: [],
-                min: '2',
-                max: '100',
-                step: 'any',
-                default: '12',
-                controlButtonCovered: true,
-                controlButtonText: "number of bins",
-                displayOrder: 4,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'bin-pivot',
-                type: matsTypes.InputTypes.numberSpinner,
-                optionsMap: {},
-                options: [],
-                min: '-10000',
-                max: '10000',
-                step: 'any',
-                default: '0',
-                controlButtonCovered: true,
-                controlButtonText: "bin pivot value",
-                displayOrder: 5,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'bin-start',
-                type: matsTypes.InputTypes.numberSpinner,
-                optionsMap: {},
-                options: [],
-                min: '-10000',
-                max: '10000',
-                step: 'any',
-                default: '0',
-                controlButtonCovered: true,
-                controlButtonText: "bin start",
-                displayOrder: 6,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'bin-stride',
-                type: matsTypes.InputTypes.numberSpinner,
-                optionsMap: {},
-                options: [],
-                min: '-10000',
-                max: '10000',
-                step: 'any',
-                default: '0',
-                controlButtonCovered: true,
-                controlButtonText: "bin stride",
-                displayOrder: 7,
-                displayPriority: 1,
-                displayGroup: 2
-            });
-
-        matsCollections.PlotParams.insert(
-            {
-                name: 'bin-bounds',
-                type: matsTypes.InputTypes.textInput,
-                optionsMap: {},
-                options: [],
-                default: ' ',
-                controlButtonCovered: true,
-                controlButtonText: "bin bounds (Enter numbers separated by commas)",
-                displayOrder: 8,
-                displayPriority: 1,
-                displayGroup: 2
-            });
     } else {
         // need to update the dates selector if the metadata has changed
         var currentParam = matsCollections.PlotParams.findOne({name: 'dates'});
@@ -218,25 +88,63 @@ const doCurveParams = function () {
 
     const masterStatsOptionsMap = {
         "mode_obj_pair": {
+            // Many of these are not pair statistics ("mode_pair"
+            // and "precalculated" are paired, "mode_single" are not),
+            // but they are kept in the same dictionary as a simplification
+            // because they have the same metadata by necessity. The same is
+            // not necesarily true for other apps' line types; for example
+            // line_data_ecnt and line_data_pct in MET Ensemble.
+
+            // --------- Precalculated Pair Statistics ------------
+            'Model-obs centroid distance': ['precalculated', 'ld.centroid_dist'],
+            'Model-obs angle difference': ['precalculated', 'ld.angle_diff'],
+            'Model-obs aspect difference': ['precalculated', 'ld.aspect_diff'],
+            'Model/obs area ratio': ['precalculated', 'ld.area_ratio'],
+            'Model/obs intersection area': ['precalculated', 'ld.intersection_area'],
+            'Model/obs union area': ['precalculated', 'ld.union'],
+            'Model/obs symmetric difference area': ['precalculated', 'ld.union'],
+            'Model/obs consumption ratio': ['precalculated', 'ld.intersection_over_area'],
+            'Model/obs curvature ratio': ['precalculated', 'ld.curvature_ratio'],
+            'Model/obs complexity ratio': ['precalculated', 'ld.complexity_ratio'],
+            'Model/obs percentile intensity ratio': ['precalculated', 'ld.percentile_intensity_ratio'],
+            'Model/obs interest': ['precalculated', 'ld.interest'],
+
+            // --------- Pair Statistics ------------
             'OTS (Object Threat Score)': ['mode_pair'],
             'MMI (Median of Maximum Interest)': ['mode_pair'],
             'CSI (Critical Success Index)': ['mode_pair'],
             'FAR (False Alarm Ratio)': ['mode_pair'],
             'PODy (Probability of positive detection)': ['mode_pair'],
             'Object frequency bias': ['mode_pair'],
-            'Model-obs centroid distance': ['precalculated', 'mode_obj_pair', 'ld.centroid_dist'],
             'Model-obs centroid distance (unique pairs)': ['mode_pair'],
-            'Model-obs angle difference': ['precalculated', 'mode_obj_pair', 'ld.angle_diff'],
-            'Model-obs aspect difference': ['precalculated', 'mode_obj_pair', 'ld.aspect_diff'],
-            'Model/obs area ratio': ['precalculated', 'mode_obj_pair', 'ld.area_ratio'],
-            'Model/obs intersection area': ['precalculated', 'mode_obj_pair', 'ld.intersection_area'],
-            'Model/obs union area': ['precalculated', 'mode_obj_pair', 'ld.union'],
-            'Model/obs symmetric difference area': ['precalculated', 'mode_obj_pair', 'ld.union'],
-            'Model/obs consumption ratio': ['precalculated', 'mode_obj_pair', 'ld.intersection_over_area'],
-            'Model/obs curvature ratio': ['precalculated', 'mode_obj_pair', 'ld.curvature_ratio'],
-            'Model/obs complexity ratio': ['precalculated', 'mode_obj_pair', 'ld.complexity_ratio'],
-            'Model/obs percentile intensity ratio': ['precalculated', 'mode_obj_pair', 'ld.percentile_intensity_ratio'],
-            'Model/obs interest': ['precalculated', 'mode_obj_pair', 'ld.interest'],
+
+            // --------- Single Statistics ------------
+            'Ratio of simple objects that are forecast objects': ['mode_single'],
+            'Ratio of simple objects that are observation objects': ['mode_single'],
+            'Ratio of simple objects that are matched': ['mode_single'],
+            'Ratio of simple objects that are unmatched': ['mode_single'],
+            'Ratio of simple forecast objects that are matched': ['mode_single'],
+            'Ratio of simple forecast objects that are unmatched': ['mode_single'],
+            'Ratio of simple observed objects that are matched': ['mode_single'],
+            'Ratio of simple observed objects that are unmatched': ['mode_single'],
+            'Ratio of simple matched objects that are forecast objects': ['mode_single'],
+            'Ratio of simple matched objects that are observed objects': ['mode_single'],
+            'Ratio of simple unmatched objects that are forecast objects': ['mode_single'],
+            'Ratio of simple unmatched objects that are observed objects': ['mode_single'],
+            'Ratio of forecast objects that are simple': ['mode_single'],
+            'Ratio of forecast objects that are cluster': ['mode_single'],
+            'Ratio of observed objects that are simple': ['mode_single'],
+            'Ratio of observed objects that are cluster': ['mode_single'],
+            'Ratio of cluster objects that are forecast objects': ['mode_single'],
+            'Ratio of cluster objects that are observation objects': ['mode_single'],
+            'Ratio of simple forecasts to simple observations (frequency bias)': ['mode_single'],
+            'Ratio of simple observations to simple forecasts (1 / frequency bias)': ['mode_single'],
+            'Ratio of cluster objects to simple objects': ['mode_single'],
+            'Ratio of simple objects to cluster objects': ['mode_single'],
+            'Ratio of forecast cluster objects to forecast simple objects': ['mode_single'],
+            'Ratio of forecast simple objects to forecast cluster objects': ['mode_single'],
+            'Ratio of observed cluster objects to observed simple objects': ['mode_single'],
+            'Ratio of observed simple objects to observed cluster objects': ['mode_single'],
         }
     };
 
@@ -245,9 +153,7 @@ const doCurveParams = function () {
             "Overall statistic": ["aggStat"]
         },
         "mode_single": {
-            "Overall statistic": ["aggStat"],
-            "Mean statistic": ["meanStat"],
-            "Median statistic": ["medStat"]
+            "Overall statistic": ["aggStat"]
         },
         "precalculated": {
             "Mean statistic": ["meanStat"],
@@ -440,7 +346,10 @@ const doCurveParams = function () {
                             radiiOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = radiiArr;
                             scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = scalesArr;
                             descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = descrsArr;
-                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = {minDate: rowMinDate, maxDate: rowMaxDate};
+                            dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = {
+                                minDate: rowMinDate,
+                                maxDate: rowMaxDate
+                            };
                         } else {
                             // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
                             forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable] = _.union(forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][jsonFriendlyVariable], forecastLengthArr);
@@ -636,6 +545,64 @@ const doCurveParams = function () {
                 valuesMap: masterStatsValuesMap,
                 superiorNames: ['database', 'data-source', 'plot-type'],
                 dependentNames: ['variable', 'aggregation-method'],
+                hideOtherFor: {
+                    'object-matching': [
+                        'Ratio of simple objects that are forecast objects',
+                        'Ratio of simple objects that are observation objects',
+                        'Ratio of simple objects that are matched',
+                        'Ratio of simple objects that are unmatched',
+                        'Ratio of simple forecast objects that are matched',
+                        'Ratio of simple forecast objects that are unmatched',
+                        'Ratio of simple observed objects that are matched',
+                        'Ratio of simple observed objects that are unmatched',
+                        'Ratio of simple matched objects that are forecast objects',
+                        'Ratio of simple matched objects that are observed objects',
+                        'Ratio of simple unmatched objects that are forecast objects',
+                        'Ratio of simple unmatched objects that are observed objects',
+                        'Ratio of forecast objects that are simple',
+                        'Ratio of forecast objects that are cluster',
+                        'Ratio of observed objects that are simple',
+                        'Ratio of observed objects that are cluster',
+                        'Ratio of cluster objects that are forecast objects',
+                        'Ratio of cluster objects that are observation objects',
+                        'Ratio of simple forecasts to simple observations (frequency bias)',
+                        'Ratio of simple observations to simple forecasts (1 / frequency bias)',
+                        'Ratio of cluster objects to simple objects',
+                        'Ratio of simple objects to cluster objects',
+                        'Ratio of forecast cluster objects to forecast simple objects',
+                        'Ratio of forecast simple objects to forecast cluster objects',
+                        'Ratio of observed cluster objects to observed simple objects',
+                        'Ratio of observed simple objects to observed cluster objects',
+                    ],
+                    'object-simplicity': [
+                        'Ratio of simple objects that are forecast objects',
+                        'Ratio of simple objects that are observation objects',
+                        'Ratio of simple objects that are matched',
+                        'Ratio of simple objects that are unmatched',
+                        'Ratio of simple forecast objects that are matched',
+                        'Ratio of simple forecast objects that are unmatched',
+                        'Ratio of simple observed objects that are matched',
+                        'Ratio of simple observed objects that are unmatched',
+                        'Ratio of simple matched objects that are forecast objects',
+                        'Ratio of simple matched objects that are observed objects',
+                        'Ratio of simple unmatched objects that are forecast objects',
+                        'Ratio of simple unmatched objects that are observed objects',
+                        'Ratio of forecast objects that are simple',
+                        'Ratio of forecast objects that are cluster',
+                        'Ratio of observed objects that are simple',
+                        'Ratio of observed objects that are cluster',
+                        'Ratio of cluster objects that are forecast objects',
+                        'Ratio of cluster objects that are observation objects',
+                        'Ratio of simple forecasts to simple observations (frequency bias)',
+                        'Ratio of simple observations to simple forecasts (1 / frequency bias)',
+                        'Ratio of cluster objects to simple objects',
+                        'Ratio of simple objects to cluster objects',
+                        'Ratio of forecast cluster objects to forecast simple objects',
+                        'Ratio of forecast simple objects to forecast cluster objects',
+                        'Ratio of observed cluster objects to observed simple objects',
+                        'Ratio of observed simple objects to observed cluster objects',
+                    ],
+                },
                 controlButtonCovered: true,
                 unique: false,
                 default: defaultStatistic,
@@ -992,7 +959,6 @@ const doCurveParams = function () {
                 unique: false,
                 default: descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][Object.keys(descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType])[0]][0],
                 controlButtonVisibility: 'block',
-                gapBelow: true,
                 displayOrder: 3,
                 displayPriority: 1,
                 displayGroup: 6,
@@ -1023,7 +989,6 @@ const doCurveParams = function () {
                 unique: false,
                 default: "All pairs",
                 controlButtonVisibility: 'block',
-                gapAbove: true,
                 displayOrder: 1,
                 displayPriority: 1,
                 displayGroup: 7
@@ -1040,6 +1005,7 @@ const doCurveParams = function () {
                 unique: false,
                 default: "Simple objects",
                 controlButtonVisibility: 'block',
+                gapBelow: true,
                 displayOrder: 2,
                 displayPriority: 1,
                 displayGroup: 7
@@ -1056,9 +1022,10 @@ const doCurveParams = function () {
                 superiorNames: ['statistic'],
                 default: Object.keys(aggMethodOptionsMap[defaultStatType])[0],
                 controlButtonCovered: true,
-                displayOrder: 3,
+                gapAbove: true,
+                displayOrder: 1,
                 displayPriority: 1,
-                displayGroup: 7
+                displayGroup: 8
             });
     }
 
@@ -1098,7 +1065,7 @@ const doCurveParams = function () {
                 controlButtonVisibility: 'block',
                 displayOrder: 1,
                 displayPriority: 1,
-                displayGroup: 8,
+                displayGroup: 9,
                 help: "dateHelp.html"
             });
     } else {
@@ -1231,30 +1198,6 @@ const doCurveTextPatterns = function () {
             ],
             groupSize: 6
         });
-        matsCollections.CurveTextPatterns.insert({
-            plotType: matsTypes.PlotTypes.histogram,
-            textPattern: [
-                ['', 'label', ': '],
-                ['', 'database', '.'],
-                ['', 'data-source', ' in '],
-                ['', 'threshold', ', '],
-                ['rad: ', 'raduis', ', '],
-                ['', 'scale', 'km, '],
-                ['', 'variable', ' '],
-                ['', 'statistic', ', '],
-                ['level: ', 'level', ', '],
-                ['fcst_len: ', 'forecast-length', 'h, '],
-                ['valid-time: ', 'valid-time', ', '],
-                ['desc: ', 'description', ', '],
-                ['matching: ', 'object-matching', ', '],
-                ['simplicity: ', 'object-simplicity', ', '],
-                ['', 'curve-dates', '']
-            ],
-            displayParams: [
-                "label", "group", "database", "data-source", "statistic", "variable", "threshold", "radius", "scale", "valid-time", "forecast-length", "level", "description", "object-matching", "object-simplicity", "curve-dates"
-            ],
-            groupSize: 6
-        });
     }
 };
 
@@ -1294,12 +1237,6 @@ const doPlotGraph = function () {
             plotType: matsTypes.PlotTypes.validtime,
             graphFunction: "graphPlotly",
             dataFunction: "dataValidTime",
-            checked: false
-        });
-        matsCollections.PlotGraphFunctions.insert({
-            plotType: matsTypes.PlotTypes.histogram,
-            graphFunction: "graphPlotly",
-            dataFunction: "dataHistogram",
             checked: false
         });
     }

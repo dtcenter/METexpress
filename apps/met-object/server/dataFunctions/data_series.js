@@ -55,33 +55,34 @@ dataSeries = function (plotParams, plotFunction) {
         var statistic = curve['statistic'];
         var statisticOptionsMap = matsCollections['statistic'].findOne({name: 'statistic'}, {optionsMap: 1})['optionsMap'][database][curve['data-source']][selectorPlotType];
         var statLineType = statisticOptionsMap[statistic][0];
-        var matchFlag = curve['object-matching'];
-        var simpleFlag = curve['object-simplicity'];
+        var matchFlag = "";
+        var simpleFlag = "";
         var statisticClause = "";
-        var statisticClause2 = "";
-        var lineDataType = "";
-        var lineDataType2 = "";
         var queryTableClause = "";
-        var queryTableClause2 = "";
         var headerIdClause = "";
-        var headerIdClause2 = "";
         var matchedFlagClause = "";
-        var matchedFlagClause2 = "";
         var simpleFlagClause = "";
-        var simpleFlagClause2 = "";
         if (statLineType === 'precalculated') {
-            statisticClause = "avg(" + statisticOptionsMap[statistic][2] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][2] + ", ';', h.n_valid, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
-            lineDataType = statisticOptionsMap[statistic][1];
-        } else if (statLineType === 'mode_pair') {
-            statisticClause = "avg(ld.interest) as interest, " +
-                "group_concat(distinct ld.interest, ';', ld.object_id, ';', h.mode_header_id, ';', ld.centroid_dist, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
-            statisticClause2 = "avg(ld2.area) as area, " +
-                "group_concat(distinct ld2.object_id, ';', h.mode_header_id, ';', ld2.area, ';', ld2.intensity_nn, ';', ld2.centroid_lat, ';', ld2.centroid_lon, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
-            lineDataType = "mode_obj_pair";
-            lineDataType2 = "mode_obj_single";
+            statisticClause = "avg(" + statisticOptionsMap[statistic][1] + ") as stat, group_concat(distinct " + statisticOptionsMap[statistic][1] + ", ';', 1, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+            queryTableClause = "from " + database + ".mode_header h, " + database + ".mode_obj_pair ld";
+            headerIdClause = "and h.mode_header_id = ld.mode_header_id";
+            matchFlag = curve['object-matching'];
+            simpleFlag = curve['object-simplicity'];
+        } else if (statLineType === 'mode_single') {
+            statisticClause = "avg(ld1.area) as area, " +
+                "group_concat(distinct ld1.object_id, ';', ld1.object_cat, ';', ld1.area, ';', h.n_valid, ';', ld1.fcst_flag, ';', ld1.simple_flag, ';', ld1.matched_flag, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+            queryTableClause = "from " + database + ".mode_header h, " + database + ".mode_obj_single ld1";
+            headerIdClause = "and h.mode_header_id = ld1.mode_header_id";
+        // } else if (statLineType === 'mode_pair') {
+        //     statisticClause = "avg(ld.interest) as interest, " +
+        //         "group_concat(distinct ld.interest, ';', ld.object_id, ';', h.mode_header_id, ';', ld.centroid_dist, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+        //     statisticClause2 = "avg(ld2.area) as area, " +
+        //         "group_concat(distinct ld2.object_id, ';', h.mode_header_id, ';', ld2.area, ';', ld2.intensity_nn, ';', ld2.centroid_lat, ';', ld2.centroid_lon, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
+        //     queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
+        //     headerIdClause = "and h.mode_header_id = ld.mode_header_id";
+        //     matchFlag = curve['object-matching'];
+        //     simpleFlag = curve['object-simplicity'];
         }
-        queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
-        headerIdClause = "and h.mode_header_id = ld.mode_header_id";
         if (matchFlag === "Matched pairs") {
             matchedFlagClause = "and ld.matched_flag = 1";
         }
@@ -89,18 +90,6 @@ dataSeries = function (plotParams, plotFunction) {
             simpleFlagClause = "and ld.simple_flag = 1";
         } else if (simpleFlag === "Cluster objects") {
             simpleFlagClause = "and ld.simple_flag = 0";
-        }
-        if (lineDataType2 !== "") {
-            queryTableClause2 = "from " + database + ".mode_header h, " + database + "." + lineDataType2 + " ld2";
-            headerIdClause2 = "and h.mode_header_id = ld2.mode_header_id";
-            if (matchFlag === "Matched pairs") {
-                matchedFlagClause2 = "and ld2.matched_flag = 1";
-            }
-            if (simpleFlag === "Simple objects") {
-                simpleFlagClause2 = "and ld2.simple_flag = 1";
-            } else if (simpleFlag === "Cluster objects") {
-                simpleFlagClause2 = "and ld2.simple_flag = 0";
-            }
         }
         var scale = curve['scale'];
         var scaleClause = "";
@@ -187,8 +176,6 @@ dataSeries = function (plotParams, plotFunction) {
         if (diffFrom == null) {
             // this is a database driven curve, not a difference curve
             // prepare the query from the above parameters
-            var statement1 = "";    // some mode statistics require two queries
-            var statement2 = "";
             var statement = "select {{average}} as avtime, " +
                 "count(distinct unix_timestamp(h.fcst_valid)) as N_times, " +
                 "min(unix_timestamp(h.fcst_valid)) as min_secs, " +
@@ -224,23 +211,11 @@ dataSeries = function (plotParams, plotFunction) {
             statement = statement.replace('{{levelsClause}}', levelsClause);
             statement = statement.replace('{{descrsClause}}', descrsClause);
             statement = statement.replace('{{dateClause}}', dateClause);
-
-            statement1 = statement.replace('{{statisticClause}}', statisticClause);
-            statement1 = statement1.replace('{{queryTableClause}}', queryTableClause);
-            statement1 = statement1.replace('{{headerIdClause}}', headerIdClause);
-            statement1 = statement1.replace('{{matchedFlagClause}}', matchedFlagClause);
-            statement1 = statement1.replace('{{simpleFlagClause}}', simpleFlagClause);
-
-            if (lineDataType2 !== "") {
-                statement2 = statement.replace('{{statisticClause}}', statisticClause2);
-                statement2 = statement2.replace('{{queryTableClause}}', queryTableClause2);
-                statement2 = statement2.replace('{{headerIdClause}}', headerIdClause2);
-                statement2 = statement2.replace('{{matchedFlagClause}}', matchedFlagClause2);
-                statement2 = statement2.replace('{{simpleFlagClause}}', simpleFlagClause2);
-                statement = statement1 + " ||| " + statement2;
-            } else {
-                statement = statement1
-            }
+            statement = statement.replace('{{statisticClause}}', statisticClause);
+            statement = statement.replace('{{queryTableClause}}', queryTableClause);
+            statement = statement.replace('{{headerIdClause}}', headerIdClause);
+            statement = statement.replace('{{matchedFlagClause}}', matchedFlagClause);
+            statement = statement.replace('{{simpleFlagClause}}', simpleFlagClause);
             dataRequests[label] = statement;
 
             queryArray.push({
