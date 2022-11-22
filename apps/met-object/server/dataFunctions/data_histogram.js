@@ -173,6 +173,7 @@ dataHistogram = function (plotParams, plotFunction) {
         }
         var statType = "met-" + statLineType;
         allStatTypes.push(statType);
+        appParams['aggMethod'] = "Mean statistic";
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable (axisKey) it will use the same axis.
@@ -248,15 +249,16 @@ dataHistogram = function (plotParams, plotFunction) {
                 "statLineType": statLineType,
                 "statistic": statistic,
                 "appParams": JSON.parse(JSON.stringify(appParams)),
+                "fcstOffset": 0,
                 "vts": vts
             });
 
         } else {
             // this is a difference curve
             differenceArray.push({
-               "dataset": dataset,
-               "diffFrom": diffFrom,
-               "appParams": JSON.parse(JSON.stringify(appParams)),
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": JSON.parse(JSON.stringify(appParams)),
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });

@@ -136,6 +136,7 @@ dataSeries = function (plotParams, plotFunction) {
         var forecastLengthsClause = "";
         var fcsts = (curve['forecast-length'] === undefined || curve['forecast-length'] === matsTypes.InputTypes.unused) ? [] : curve['forecast-length'];
         fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+        var fcstOffset = fcsts[0];
         if (fcsts.length > 0) {
             fcsts = fcsts.map(function (fl) {
                 return "'" + fl + "','" + fl + "0000'";
@@ -174,6 +175,7 @@ dataSeries = function (plotParams, plotFunction) {
         var average = averageOptionsMap[averageStr][0];
         var statType = "met-" + statLineType;
         allStatTypes.push(statType);
+        appParams['aggMethod'] = curve['aggregation-method'];
         // axisKey is used to determine which axis a curve should use.
         // This axisKeySet object is used like a set and if a curve has the same
         // variable + statistic (axisKey) it will use the same axis.
@@ -246,15 +248,16 @@ dataSeries = function (plotParams, plotFunction) {
                 "statLineType": statLineType,
                 "statistic": statistic,
                 "appParams": JSON.parse(JSON.stringify(appParams)),
+                "fcstOffset": fcstOffset,
                 "vts": vts
             });
 
         } else {
             // this is a difference curve
             differenceArray.push({
-               "dataset": dataset,
-               "diffFrom": diffFrom,
-               "appParams": JSON.parse(JSON.stringify(appParams)),
+                "dataset": dataset,
+                "diffFrom": diffFrom,
+                "appParams": JSON.parse(JSON.stringify(appParams)),
                 "isCTC": statType === "ctc",
                 "isScalar": statType === "scalar"
             });
@@ -318,7 +321,7 @@ dataSeries = function (plotParams, plotFunction) {
                 ymax = ymax > d.ymax ? ymax : d.ymax;
             }
         } else {
-            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex-dReturn.length]["dataset"], differenceArray[curveIndex-dReturn.length]["diffFrom"], differenceArray[curveIndex-dReturn.length]["appParams"], differenceArray[curveIndex-dReturn.length]["isCTC"], differenceArray[curveIndex-dReturn.length]["isScalar"]);
+            const diffResult = matsDataDiffUtils.getDataForDiffCurve(differenceArray[curveIndex - dReturn.length]["dataset"], differenceArray[curveIndex - dReturn.length]["diffFrom"], differenceArray[curveIndex - dReturn.length]["appParams"], differenceArray[curveIndex - dReturn.length]["isCTC"], differenceArray[curveIndex - dReturn.length]["isScalar"]);
             d = diffResult.dataset;
             xmin = xmin < d.xmin ? xmin : d.xmin;
             xmax = xmax > d.xmax ? xmax : d.xmax;
