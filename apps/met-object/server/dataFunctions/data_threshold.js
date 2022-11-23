@@ -67,18 +67,20 @@ dataThreshold = function (plotParams, plotFunction) {
             simpleFlag = curve['object-simplicity'];
         } else if (statLineType === 'mode_single') {
             statisticClause = "avg(ld1.area) as area, " +
-                "group_concat(distinct ld1.object_id, ';', ld1.object_cat, ';', ld1.area, ';', h.n_valid, ';', ld1.fcst_flag, ';', ld1.simple_flag, ';', ld1.matched_flag, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
+                "group_concat(distinct ld1.object_id, ';', ld1.object_cat, ';', ld1.area, ';', h.n_valid, ';', ld1.fcst_flag, ';', ld1.simple_flag, ';', ld1.matched_flag, ';', " +
+                "unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
             queryTableClause = "from " + database + ".mode_header h, " + database + ".mode_obj_single ld1";
             headerIdClause = "and h.mode_header_id = ld1.mode_header_id";
-        // } else if (statLineType === 'mode_pair') {
-        //     statisticClause = "avg(ld.interest) as interest, " +
-        //         "group_concat(distinct ld.interest, ';', ld.object_id, ';', h.mode_header_id, ';', ld.centroid_dist, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data";
-        //     statisticClause2 = "avg(ld2.area) as area, " +
-        //         "group_concat(distinct ld2.object_id, ';', h.mode_header_id, ';', ld2.area, ';', ld2.intensity_nn, ';', ld2.centroid_lat, ';', ld2.centroid_lon, ';', unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev) as sub_data2";
-        //     queryTableClause = "from " + database + ".mode_header h, " + database + "." + lineDataType + " ld";
-        //     headerIdClause = "and h.mode_header_id = ld.mode_header_id";
-        //     matchFlag = curve['object-matching'];
-        //     simpleFlag = curve['object-simplicity'];
+        } else if (statLineType === 'mode_pair') {
+            statisticClause = "avg(ld.interest) as interest, " +
+                "group_concat(distinct h.mode_header_id, ';', ld.object_id, ';', ld1.object_id, ';', ld1.object_cat, ';', ld.interest, ';', ld.centroid_dist, ';', " +
+                "ld1.area, ';', ld1.intensity_nn, ';', ld1.centroid_lat, ';', ld1.centroid_lon, ';', h.n_valid, ';', " +
+                "unix_timestamp(h.fcst_valid), ';', h.fcst_lev order by unix_timestamp(h.fcst_valid), h.fcst_lev, h.mode_header_id, ld.object_id, ld1.object_id) as sub_data";
+            queryTableClause = "from " + database + ".mode_header h, " + database + ".mode_obj_pair ld, " + database + ".mode_obj_single ld1";
+            headerIdClause = "and h.mode_header_id = ld.mode_header_id and h.mode_header_id = ld1.mode_header_id " +
+                "and (ld.object_id like concat(ld1.object_id, '_%') or ld.object_id like concat('%_', ld1.object_id))";
+            matchFlag = curve['object-matching'];
+            simpleFlag = curve['object-simplicity'];
         }
         if (matchFlag === "Matched pairs") {
             matchedFlagClause = "and ld.matched_flag = 1";
