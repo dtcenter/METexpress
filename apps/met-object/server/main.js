@@ -92,7 +92,7 @@ const doCurveParams = function () {
             // and "precalculated" are paired, "mode_single" are not),
             // but they are kept in the same dictionary as a simplification
             // because they have the same metadata by necessity. The same is
-            // not necesarily true for other apps' line types; for example
+            // not necessarily true for other apps' line types; for example
             // line_data_ecnt and line_data_pct in MET Ensemble.
 
             // --------- Precalculated Pair Statistics ------------
