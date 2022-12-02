@@ -170,7 +170,7 @@ dataContour = function (plotParams, plotFunction) {
         descrsClause = "and h.descr IN(" + descrs + ")";
     }
     appParams['aggMethod'] = curve['aggregation-method'];
-    var statType = "met-" + statLineType;
+    var statType = curve['aggregation-method'] === "Overall statistic" && statLineType === "ctc" ? statLineType : "met-" + statLineType;
     allStatTypes.push(statType);
     // For contours, this functions as the colorbar label.
     curve['unitKey'] = variable + " " + statistic;

@@ -165,7 +165,7 @@ dataSeries = function (plotParams, plotFunction) {
         var averageStr = curve['average'];
         var averageOptionsMap = matsCollections['average'].findOne({name: 'average'}, {optionsMap: 1})['optionsMap'];
         var average = averageOptionsMap[averageStr][0];
-        var statType = "met-" + statLineType;
+        var statType = curve['aggregation-method'] === "Overall statistic" && statLineType === "ctc" ? statLineType : "met-" + statLineType;
         allStatTypes.push(statType);
         appParams['aggMethod'] = curve['aggregation-method'];
         // axisKey is used to determine which axis a curve should use.
