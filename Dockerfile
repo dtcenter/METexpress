@@ -54,16 +54,21 @@ ARG APPNAME
 ARG BUILDVER=dev
 ARG COMMITBRANCH=development
 ARG COMMITSHA
+ARG METCALCPYVER=develop
 
 # Install runtime dependencies
 RUN apk --no-cache add \
     bash \
+    git \
     ca-certificates \
     mariadb \
     python3 \
     py3-numpy \
+    py3-scipy \
+    py3-pandas \
     py3-pip \
-    && pip3 --no-cache-dir install pymysql
+    && pip3 --no-cache-dir install pymysql \
+    && pip3 --no-cache-dir install metcalcpy@git+https://github.com/dtcenter/METcalcpy.git@${METCALCPYVER}
 
 # Set Environment
 ENV APP_FOLDER=/usr/app
