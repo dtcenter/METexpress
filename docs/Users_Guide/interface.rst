@@ -37,7 +37,7 @@ app they want to use.
  
 .. figure:: figure/interface_home_page.png
 	    
-	    METexpress Home Page (MET Objects not yet pictured)
+        METexpress Home Page (MET Objects not yet pictured)
 
 User Interface Layout Common to Each App
 ________________________________________
@@ -55,7 +55,7 @@ this screen:
 
 .. figure:: figure/interface_upper_air_no_curve.png
 
-	    Upper Air User Interface screen before any curves have been defined
+        Upper Air User Interface screen before any curves have been defined
 
 After any curves have been added, the user interface screen includes a
 fourth area, as shown in :numref:`interface_upper_air_curve0`, that shows what curves have already
@@ -66,9 +66,9 @@ user to create additional curves to be added to the plot.
 
 .. figure:: figure/interface_upper_air_curve0.png
 
-	    Upper Air User Interface screen after Curve0 has been added,
-	    showing the addition of the area for Defined Curves above the
-	    Curve Data Parameters
+        Upper Air User Interface screen after Curve0 has been added,
+        showing the addition of the area for Defined Curves above the
+        Curve Data Parameters
  
 Plot Types
 __________
@@ -157,6 +157,16 @@ value.  Available choices are as follows for all of the apps:
 * 60D
 * 90D
 * 180D
+
+**Aggregation Method:**
+This selector specifies the method by which sub-values returned by the database
+are combined into points on the graph. Options will vary by statistic, but will
+be some subset of the following:
+
+* Overall statistic (combines partial sums and contingencies from sub-values, then calculates statistic)
+* Mean statistic (calculates one statistic for each sub-values' partial sums and contingencies, then takes mean)
+* Mean statistic weighted by N (like above but the mean is weighted by N)
+* Median statistic (calculates one statistic for each sub-values' partial sums and contingencies, then takes median)
 
 After selecting all data parameters as desired, the user would click the Add
 Curve action button inside the green bar, and the area outlined in red in

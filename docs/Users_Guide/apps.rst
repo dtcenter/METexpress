@@ -21,6 +21,7 @@ Choices for Statistic (depending on available line types):
 * MSE
 * Bias-corrected MSE
 * ME (Additive bias)
+* Fractional Error
 * Multiplicative bias
 * Forecast mean
 * Observed mean
@@ -33,17 +34,16 @@ Choices for Statistic (depending on available line types):
 * Forecast length - observed length of mean wind vector
 * abs(Forecast length - observed length of mean wind vector)
 * Length of forecast - observed mean wind vector
-* abs(Length of forecast - observed mean wind vector)
+* Direction of forecast - observed mean wind vector
 * Forecast direction of mean wind vector
 * Observed direction of mean wind vector
+* Angle between mean forecast and mean observed wind vectors
 * RMSE of forecast wind vector length
 * RMSE of observed wind vector length
 * Vector wind speed MSVE
 * Vector wind speed RMSVE
 * Forecast mean of wind vector length
 * Observed mean of wind vector length
-* Forecast mean - observed mean of wind vector length
-* abs(Forecast mean - observed mean of wind vector length)
 * Forecast stdev of wind vector length
 * Observed stdev of wind vector length
 
@@ -71,17 +71,17 @@ interface page after selecting the plot type of DieOff.  Note that
 another selector is included for DIEOFF TYPE, which has the following
 possible values:
 
-        1. Dieoff
+    1. Dieoff
 
-	2. Dieoff for a specific UTC cycle start time
+    2. Dieoff for a specific UTC cycle start time
 	
-	3. Single cycle forecast
+    3. Single cycle forecast
 
 .. _apps_interface_dieoff:
 
 .. figure:: figure/apps_interface_dieoff.png
 
-	    User Interface screen after selecting plot type of DieOff.
+        User Interface screen after selecting plot type of DieOff.
 
 :numref:`apps_upper_air_dieoff_plot` shows a sample of a DieOff plot in METexpress.
 This looks more
@@ -100,13 +100,13 @@ the specified date range.
 
 .. figure:: figure/apps_upper_air_dieoff_plot.png
 	    
-	    Upper Air DieOff plot
+        Upper Air DieOff plot
 
 .. _apps_anom_corr_dieoff_plot:
 
 .. figure:: figure/apps_anom_corr_dieoff_plot.png
 
-	    Anomaly Correlation DieOff plot
+        Anomaly Correlation DieOff plot
 
 **ValidTime**: The ValidTime plot type (also sometimes known as diurnal
 cycle plots) displays valid UTC hour on the x–axis and the mean value of
@@ -163,13 +163,13 @@ and :numref:`apps_histogram_plot` shows a sample plot.
 
 .. figure:: figure/apps_interface_histogram.png
 	    
-	    The user interface for histogram plots.
+        The user interface for histogram plots.
 
 .. _apps_histogram_plot:
 
 .. figure:: figure/apps_histogram_plot.png
 
-	    Plot generated from selections in :numref:`apps_interface_histogram`
+        Plot generated from selections in :numref:`apps_interface_histogram`
 
 **Contour**: Contour plots can be used in many ways.  One can illustrate
 data with respect to height, as in plots seen at
@@ -193,7 +193,7 @@ the x-axis (e.g. forecast lead time), and which to place on the y-axis
 
 .. figure:: figure/apps_upper_air_contour_plot.png
  
-	    Upper Air profile, as a contour plot
+        Upper Air profile, as a contour plot
 
 Anomaly Correlation App
 _______________________
@@ -208,7 +208,7 @@ This interface is similar to the one for Upper Air but has fewer selectable para
 
 .. figure:: figure/apps_interface_anom_corr.png
  
-	    Anomaly Correlation app user interface
+        Anomaly Correlation app user interface
 
 In this application, the selectable values are derived from the data for these parameters:
 
@@ -248,7 +248,7 @@ A sample anomaly correlation plot is shown in :numref:`apps_anom_corr_sample_plo
 
 .. figure:: figure/apps_anom_corr_sample_plot.png
 
-	    Anomaly Correlation sample plot.
+        Anomaly Correlation sample plot.
  
 Surface App
 ___________
@@ -262,7 +262,7 @@ The user interface for the Surface app is shown in :numref:`apps_interface_surfa
 
 .. figure:: figure/apps_interface_surface.png
 
-	    User Interface for the Surface app
+        User Interface for the Surface app
 
 For this app, the following parameters have choices derived from the data.
 
@@ -287,6 +287,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * MSE
 * Bias-corrected MSE
 * ME (Additive bias)
+* Fractional Error
 * Multiplicative bias
 * Forecast mean
 * Observed mean
@@ -299,17 +300,16 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Forecast length - observed length of mean wind vector
 * abs(Forecast length - observed length of mean wind vector)
 * Length of forecast - observed mean wind vector
-* abs(Length of forecast - observed mean wind vector)
+* Direction of forecast - observed mean wind vector
 * Forecast direction of mean wind vector
 * Observed direction of mean wind vector
+* Angle between mean forecast and mean observed wind vectors
 * RMSE of forecast wind vector length
 * RMSE of observed wind vector length
 * Vector wind speed MSVE
 * Vector wind speed RMSVE
 * Forecast mean of wind vector length
 * Observed mean of wind vector length
-* Forecast mean - observed mean of wind vector length
-* abs(Forecast mean - observed mean of wind vector length)
 * Forecast stdev of wind vector length
 * Observed stdev of wind vector length
 
@@ -329,7 +329,7 @@ is shown in :numref:`apps_surface_plot`.
 
 .. figure:: figure/apps_surface_plot.png
 
-	    Surface app ValidTime plot
+        Surface app ValidTime plot
  
 Air Quality App
 _______________
@@ -369,6 +369,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * MSE
 * Bias-corrected MSE
 * ME (Additive bias)
+* Fractional Error
 * Multiplicative bias
 * Forecast mean
 * Observed mean
@@ -399,7 +400,7 @@ of the selected parameter on the y-axis.
 
 .. figure:: figure/apps_air_qual_thresh_plot.png
 
-	    Air Quality app Threshold plot
+        Air Quality app Threshold plot
  
 Ensemble App
 ____________
@@ -432,7 +433,6 @@ The selector for the Statistic has these possible choices (depending on availabl
 * CRPS
 * CRPSS
 * MAE
-* ACC
 * BS
 * BSS
 * BS reliability
@@ -441,9 +441,8 @@ The selector for the Statistic has these possible choices (depending on availabl
 * BS lower confidence limit
 * BS upper confidence limit
 * ROC AUC
-* EV
 * FSS
-  
+
 Plot types available include 
 
 * Time Series
@@ -495,30 +494,30 @@ examples of the 3 types of Ensemble Histograms.
 
 .. figure:: figure/apps_interface_ens_hist.png
 
-	    The Ensemble app user interface for Ensemble
-	    Histogram plots.  Note the selector for Histogram Type which
-	    is unique to this plot type.
+        The Ensemble app user interface for Ensemble
+        Histogram plots.  Note the selector for Histogram Type which
+        is unique to this plot type.
 
 .. _apps_ens_hist_plot_rank_hist:
 
 .. figure:: figure/apps_ens_hist_plot_rank_hist.png
 
-	    Ensemble Histogram plot type with Histogram Type
-	    of Rank Histogram.
+        Ensemble Histogram plot type with Histogram Type
+        of Rank Histogram.
 
 .. _apps_ens_hist_plot_pith:
 
 .. figure:: figure/apps_ens_hist_plot_pith.png
 
-	    Ensemble Histogram plot type with Histogram Type
-	    of Probability Integral Transform Histogram.
+        Ensemble Histogram plot type with Histogram Type
+        of Probability Integral Transform Histogram.
 
 .. _apps_ens_hist_plot_rel_pos_hist:
 
 .. figure:: figure/apps_ens_hist_plot_rel_pos_hist.png
 
-	    Ensemble Histogram plot type with Histogram
-	    Type of Relative Position Histogram
+        Ensemble Histogram plot type with Histogram
+        Type of Relative Position Histogram
 
 :numref:`apps_ens_reliability_plot` shows an example Reliability plot,
 :numref:`apps_ens_roc_plot` shows an example ROC plot, and
@@ -529,27 +528,27 @@ all for the same data set.
 
 .. figure:: figure/apps_ens_reliability_plot.png
 
-	    Ensemble app Reliability plot.
-	    The 1:1 diagonal gray line represents
-	    perfect skill between forecast probability and observation
-	    frequency. The diagonal line with the lower slope indicates
-	    the point above which the forecast becomes more skillful
-	    than climatology, and the vertical and horizontal lines
-	    indicate climatology.
+        Ensemble app Reliability plot.
+        The 1:1 diagonal gray line represents
+        perfect skill between forecast probability and observation
+        frequency. The diagonal line with the lower slope indicates
+        the point above which the forecast becomes more skillful
+        than climatology, and the vertical and horizontal lines
+        indicate climatology.
 
 .. _apps_ens_roc_plot:
 
 .. figure:: figure/apps_ens_roc_plot.png
 
-	    Ensemble app ROC plot for the same data
-	    set defined in :numref:`apps_ens_reliability_plot`.
+        Ensemble app ROC plot for the same data
+        set defined in :numref:`apps_ens_reliability_plot`.
 
 .. _apps_ens_perf_diag:
 
 .. figure:: figure/apps_ens_perf_diag.png
 
-	    Ensemble app Performance Diagram for the same data
-	    set defined in :numref:`apps_ens_reliability_plot`.
+        Ensemble app Performance Diagram for the same data
+        set defined in :numref:`apps_ens_reliability_plot`.
 
 Precipitation App
 _________________
@@ -591,6 +590,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * MSE
 * Bias-corrected MSE
 * ME (Additive bias)
+* Fractional Error
 * Multiplicative bias
 * Forecast mean
 * Observed mean
@@ -628,22 +628,22 @@ Precipitation app, :numref:`apps_thresh_plot_precip` shows an example Threshold 
 
 .. figure:: figure/apps_interface_thresh_precip.png
 
-	    User interface screen for a Threshold plot
-	    in the Precipitation app
+        User interface screen for a Threshold plot
+        in the Precipitation app
 
 .. _apps_thresh_plot_precip:
 
 .. figure:: figure/apps_thresh_plot_precip.png
 
-	    Threshold plot in the Precipitation
-	    app produced from selections in :numref:`apps_interface_thresh_precip`
+        Threshold plot in the Precipitation
+        app produced from selections in :numref:`apps_interface_thresh_precip`
 
 .. _apps_gridscale_plot_precip:
 
 .. figure:: figure/apps_gridscale_plot_precip.png  
 
-	    GridScale plot in the Precipitation app
-	    produced from selections in :numref:`apps_interface_thresh_precip` 
+        GridScale plot in the Precipitation app
+        produced from selections in :numref:`apps_interface_thresh_precip`
  
 Cyclone App
 _________________
@@ -727,15 +727,15 @@ Cyclone app, and :numref:`apps_year_plot_cyclone` shows an example YearToYear pl
 
 .. figure:: figure/apps_interface_year_cyclone.png
 
-	    User interface screen for a YearToYear plot
-	    in the Cyclone app
+        User interface screen for a YearToYear plot
+        in the Cyclone app
 
 .. _apps_year_plot_cyclone:
 
 .. figure:: figure/apps_year_plot_cyclone.png
 
-	    YearToYear plot in the Cyclone
-	    app produced from selections in :numref:`apps_interface_year_cyclone`
+        YearToYear plot in the Cyclone
+        app produced from selections in :numref:`apps_interface_year_cyclone`
 
 Objects App
 _________________
@@ -761,12 +761,6 @@ For this app, the following parameters have choices derived from the data.
 
 The selector for the Statistic has these possible choices (depending on available MET line types):
 
-* OTS (Object Threat Score)
-* MMI (Median of Maximum Interest)
-* CSI (Critical Success Index)
-* FAR (False Alarm Ratio)
-* PODy (Probability of positive detection)
-* Object frequency bias
 * Model-obs centroid distance
 * Model-obs centroid distance (unique pairs)
 * Model-obs angle difference
@@ -780,6 +774,64 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Model/obs complexity ratio
 * Model/obs percentile intensity ratio
 * Model/obs interest
+* OTS (Object Threat Score)
+* MMI (Median of Maximum Interest)
+* CSI (Critical Success Index)
+* FAR (False Alarm Ratio)
+* PODy (Probability of positive detection)
+* Object frequency bias
+* Ratio of simple objects that are forecast objects
+* Ratio of simple objects that are observation objects
+* Ratio of simple objects that are matched
+* Ratio of simple objects that are unmatched
+* Ratio of simple forecast objects that are matched
+* Ratio of simple forecast objects that are unmatched
+* Ratio of simple observed objects that are matched
+* Ratio of simple observed objects that are unmatched
+* Ratio of simple matched objects that are forecast objects
+* Ratio of simple matched objects that are observed objects
+* Ratio of simple unmatched objects that are forecast objects
+* Ratio of simple unmatched objects that are observed objects
+* Ratio of forecast objects that are simple
+* Ratio of forecast objects that are cluster
+* Ratio of observed objects that are simple
+* Ratio of observed objects that are cluster
+* Ratio of cluster objects that are forecast objects
+* Ratio of cluster objects that are observation objects
+* Ratio of simple forecasts to simple observations (frequency bias)
+* Ratio of simple observations to simple forecasts (1 / frequency bias)
+* Ratio of cluster objects to simple objects
+* Ratio of simple objects to cluster objects
+* Ratio of forecast cluster objects to forecast simple objects
+* Ratio of forecast simple objects to forecast cluster objects
+* Ratio of observed cluster objects to observed simple objects
+* Ratio of observed simple objects to observed cluster objects
+* Area-weighted ratio of simple objects that are forecast objects
+* Area-weighted ratio of simple objects that are observation objects
+* Area-weighted ratio of simple objects that are matched
+* Area-weighted ratio of simple objects that are unmatched
+* Area-weighted ratio of simple forecast objects that are matched
+* Area-weighted ratio of simple forecast objects that are unmatched
+* Area-weighted ratio of simple observed objects that are matched
+* Area-weighted ratio of simple observed objects that are unmatched
+* Area-weighted ratio of simple matched objects that are forecast objects
+* Area-weighted ratio of simple matched objects that are observed objects
+* Area-weighted ratio of simple unmatched objects that are forecast objects
+* Area-weighted ratio of simple unmatched objects that are observed objects
+* Area-weighted ratio of forecast objects that are simple
+* Area-weighted ratio of forecast objects that are cluster
+* Area-weighted ratio of observed objects that are simple
+* Area-weighted ratio of observed objects that are cluster
+* Area-weighted ratio of cluster objects that are forecast objects
+* Area-weighted ratio of cluster objects that are observation objects
+* Area-weighted ratio of simple forecasts to simple observations (frequency bias)
+* Area-weighted ratio of simple observations to simple forecasts (1 / frequency bias)
+* Area-weighted ratio of cluster objects to simple objects
+* Area-weighted ratio of simple objects to cluster objects
+* Area-weighted ratio of forecast cluster objects to forecast simple objects
+* Area-weighted ratio of forecast simple objects to forecast cluster objects
+* Area-weighted ratio of observed cluster objects to observed simple objects
+* Area-weighted ratio of observed simple objects to observed cluster objects
 
 Plot types available include
 
@@ -787,10 +839,9 @@ Plot types available include
 * DieOff
 * Threshold
 * ValidTime
-* Histogram
 
 Plots in the Objects app for Time Series, DieOff,
-ValidTime, and Histogram are the same as in Precipitation.
+and ValidTime are the same as in Precipitation.
 
 :numref:`apps_interface_objects` shows an example of the user interface for the
 Objects app.
@@ -799,5 +850,5 @@ Objects app.
 
 .. figure:: figure/apps_interface_objects.png
 
-	    User interface screen for the Objects app
+        User interface screen for the Objects app
 

@@ -31,7 +31,7 @@ and how METexpress integrates with the other tools.
 .. figure:: figure/overview_metplus_schematic.png
 
             Schematic diagram of the structure of METplus, including
-	    METexpress
+            METexpress
 
 In the simplest workflow for verifying model outputs, the model output data
 and “truth” or observation data are input into the MET software package which

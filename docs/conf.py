@@ -25,21 +25,21 @@ author = 'UCAR/DTC, NOAA, CSU/CIRA, and CU/CIRES'
 # To rotate this list of authors for each official release,
 # move the first author to the end of the list
 CURRENT_AUTHORS = [
-    'Bonny Strong',
     'Molly Smith',
     'Randy Pierce',
     'Jeff Hamilton',
     'Ian McGinnis',
     'Gopa Padmanabhan',
     'Keith Searight',
-    'Dave Turner'
+    'Dave Turner',
+    'Bonny Strong'
 ]
 
 # list of former contributors who are no longer involved with the project
 # but still deserve citation credit
 FORMER_AUTHORS = [
-    'Venita Hagerty',
-    'Bill Moninger'
+    'Bill Moninger',
+    'Venita Hagerty'
 ]
 
 # format citation authors list
@@ -59,13 +59,13 @@ for index, author_name in enumerate(CURRENT_AUTHORS + FORMER_AUTHORS):
 author_list = ', '.join(formatted_authors)
 
 # The stable version, displayed on the front page of the PDF
-version = '4.6.0'
+version = '5.0.0'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
 release_year = '2022'
-release_date = f'{release_year}1104'
+release_date = f'{release_year}1209'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
@@ -133,7 +133,7 @@ latex_documents = [
 pdf_documents = [('Users_Guide/index',
                   f'METexpress_Users_Guide_v{version}',
                   'METexpress User\'s Guide', 
-                  'Bonny Strong\\Randy Pierce\\Molly B. Smith\\Venita Hagerty\\Jeff Hamilton\\'
+                  author_list
                   )]
 
 # comma-separated list of custom stylesheets. Example:

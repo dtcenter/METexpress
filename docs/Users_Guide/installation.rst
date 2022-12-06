@@ -63,9 +63,9 @@ to be provided:
        and have a landing page location of "/", while the public URL
        is a proxy redirect like "https://www.esrl.noaa.gov/gsd/mats". 
 
-       * In this case the fully qualified proxy hostname is
-	 www.esrl.noaa.gov and the proxy_prefix_path needs to be set
-	 to "/gsd/mats".
+     * In this case the fully qualified proxy hostname is
+       www.esrl.noaa.gov and the proxy_prefix_path needs to be set
+       to "/gsd/mats".
 
   * Proxy redirection path
 
