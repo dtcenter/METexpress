@@ -66,7 +66,7 @@ dataHistogram = function (plotParams, plotFunction) {
         var storm = curve['storm'];
         var stormClause;
         if (storm === "All storms") {
-            stormClause = "and h.storm_id like '" + basin + "%" + year.toString() + "'";
+            stormClause = "and h.storm_id like '" + basin + "%'";
         } else {
             stormClause = "and h.storm_id = '" + storm.split(" - ")[0] + "'";
         }
