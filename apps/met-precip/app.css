@@ -151,3 +151,8 @@ hr {
     color: #990000;
 }
 
+.login-link-text {
+  color:white;
+  font-size: medium;
+  text-decoration:none !important;
+}
