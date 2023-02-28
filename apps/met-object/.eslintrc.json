@@ -42,7 +42,6 @@
     "no-unused-vars": "warn",
     "prefer-destructuring": "warn",
     "no-useless-escape": "warn",
-    "eqeqeq": "warn",
     "camelcase": "warn",
     "no-redeclare": "warn"
   }
