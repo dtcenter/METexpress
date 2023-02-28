@@ -171,7 +171,7 @@ dataPerformanceDiagram = function (plotParams, plotFunction) {
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
     var dReturn;
-    if (diffFrom == null) {
+    if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
       var statement =

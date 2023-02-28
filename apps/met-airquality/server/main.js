@@ -21,11 +21,11 @@ const doPlotParams = function () {
   if (
     matsCollections.Settings.findOne({}) === undefined ||
     matsCollections.Settings.findOne({}).resetFromCode === undefined ||
-    matsCollections.Settings.findOne({}).resetFromCode == true
+    matsCollections.Settings.findOne({}).resetFromCode === true
   ) {
     matsCollections.PlotParams.remove({});
   }
-  if (matsCollections.PlotParams.find().count() == 0) {
+  if (matsCollections.PlotParams.find().count() === 0) {
     matsCollections.PlotParams.insert({
       name: "dates",
       type: matsTypes.InputTypes.dateRange,
@@ -300,7 +300,7 @@ const doCurveParams = function () {
   if (
     matsCollections.Settings.findOne({}) === undefined ||
     matsCollections.Settings.findOne({}).resetFromCode === undefined ||
-    matsCollections.Settings.findOne({}).resetFromCode == true
+    matsCollections.Settings.findOne({}).resetFromCode === true
   ) {
     const params = matsCollections.CurveParamsInfo.find({
       curve_params: { $exists: true },
@@ -750,7 +750,7 @@ const doCurveParams = function () {
     console.log(err.message);
   }
 
-  if (matsCollections.label.findOne({ name: "label" }) == undefined) {
+  if (matsCollections.label.findOne({ name: "label" }) === undefined) {
     matsCollections.label.insert({
       name: "label",
       type: matsTypes.InputTypes.textInput,
@@ -791,7 +791,7 @@ const doCurveParams = function () {
   )[0];
   const defaultStatType = masterStatsValuesMap[defaultStatistic][0];
 
-  if (matsCollections.group.findOne({ name: "group" }) == undefined) {
+  if (matsCollections.group.findOne({ name: "group" }) === undefined) {
     matsCollections.group.insert({
       name: "group",
       type: matsTypes.InputTypes.select,
@@ -825,7 +825,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.database.findOne({ name: "database" }) == undefined) {
+  if (matsCollections.database.findOne({ name: "database" }) === undefined) {
     matsCollections.database.insert({
       name: "database",
       type: matsTypes.InputTypes.select,
@@ -867,7 +867,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections["data-source"].findOne({ name: "data-source" }) == undefined) {
+  if (matsCollections["data-source"].findOne({ name: "data-source" }) === undefined) {
     matsCollections["data-source"].insert({
       name: "data-source",
       type: matsTypes.InputTypes.select,
@@ -901,7 +901,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections["plot-type"].findOne({ name: "plot-type" }) == undefined) {
+  if (matsCollections["plot-type"].findOne({ name: "plot-type" }) === undefined) {
     matsCollections["plot-type"].insert({
       name: "plot-type",
       type: matsTypes.InputTypes.select,
@@ -953,7 +953,7 @@ const doCurveParams = function () {
     regionDefault = regionOptions[0];
   }
 
-  if (matsCollections.region.findOne({ name: "region" }) == undefined) {
+  if (matsCollections.region.findOne({ name: "region" }) === undefined) {
     matsCollections.region.insert({
       name: "region",
       type: matsTypes.InputTypes.select,
@@ -989,7 +989,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.statistic.findOne({ name: "statistic" }) == undefined) {
+  if (matsCollections.statistic.findOne({ name: "statistic" }) === undefined) {
     matsCollections.statistic.insert({
       name: "statistic",
       type: matsTypes.InputTypes.select,
@@ -1028,7 +1028,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.variable.findOne({ name: "variable" }) == undefined) {
+  if (matsCollections.variable.findOne({ name: "variable" }) === undefined) {
     matsCollections.variable.insert({
       name: "variable",
       type: matsTypes.InputTypes.select,
@@ -1088,7 +1088,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.threshold.findOne({ name: "threshold" }) == undefined) {
+  if (matsCollections.threshold.findOne({ name: "threshold" }) === undefined) {
     matsCollections.threshold.insert({
       name: "threshold",
       type: matsTypes.InputTypes.select,
@@ -1154,7 +1154,7 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["interp-method"].findOne({ name: "interp-method" }) == undefined
+    matsCollections["interp-method"].findOne({ name: "interp-method" }) === undefined
   ) {
     matsCollections["interp-method"].insert({
       name: "interp-method",
@@ -1216,7 +1216,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.scale.findOne({ name: "scale" }) == undefined) {
+  if (matsCollections.scale.findOne({ name: "scale" }) === undefined) {
     matsCollections.scale.insert({
       name: "scale",
       type: matsTypes.InputTypes.select,
@@ -1296,7 +1296,8 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["forecast-length"].findOne({ name: "forecast-length" }) == undefined
+    matsCollections["forecast-length"].findOne({ name: "forecast-length" }) ===
+    undefined
   ) {
     matsCollections["forecast-length"].insert({
       name: "forecast-length",
@@ -1336,7 +1337,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections["dieoff-type"].findOne({ name: "dieoff-type" }) == undefined) {
+  if (matsCollections["dieoff-type"].findOne({ name: "dieoff-type" }) === undefined) {
     const dieoffOptionsMap = {
       Dieoff: [matsTypes.ForecastTypes.dieoff],
       "Dieoff for a specified UTC cycle init hour": [matsTypes.ForecastTypes.utcCycle],
@@ -1370,7 +1371,7 @@ const doCurveParams = function () {
     });
   }
 
-  if (matsCollections["valid-time"].findOne({ name: "valid-time" }) == undefined) {
+  if (matsCollections["valid-time"].findOne({ name: "valid-time" }) === undefined) {
     matsCollections["valid-time"].insert({
       name: "valid-time",
       type: matsTypes.InputTypes.select,
@@ -1414,7 +1415,8 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["utc-cycle-start"].findOne({ name: "utc-cycle-start" }) == undefined
+    matsCollections["utc-cycle-start"].findOne({ name: "utc-cycle-start" }) ===
+    undefined
   ) {
     matsCollections["utc-cycle-start"].insert({
       name: "utc-cycle-start",
@@ -1458,7 +1460,7 @@ const doCurveParams = function () {
     });
   }
 
-  if (matsCollections.average.findOne({ name: "average" }) == undefined) {
+  if (matsCollections.average.findOne({ name: "average" }) === undefined) {
     const optionsMap = {
       None: ["unix_timestamp(ld.fcst_valid_beg)"],
       "1hr": [
@@ -1548,7 +1550,7 @@ const doCurveParams = function () {
     levelDefault = levelOptions[0];
   }
 
-  if (matsCollections.level.findOne({ name: "level" }) == undefined) {
+  if (matsCollections.level.findOne({ name: "level" }) === undefined) {
     matsCollections.level.insert({
       name: "level",
       type: matsTypes.InputTypes.select,
@@ -1584,7 +1586,7 @@ const doCurveParams = function () {
     }
   }
 
-  if (matsCollections.description.findOne({ name: "description" }) == undefined) {
+  if (matsCollections.description.findOne({ name: "description" }) === undefined) {
     matsCollections.description.insert({
       name: "description",
       type: matsTypes.InputTypes.select,
@@ -1676,7 +1678,7 @@ const doCurveParams = function () {
     .utc(maxDate)
     .format("MM/DD/YYYY HH:mm")}`;
 
-  if (matsCollections["curve-dates"].findOne({ name: "curve-dates" }) == undefined) {
+  if (matsCollections["curve-dates"].findOne({ name: "curve-dates" }) === undefined) {
     const optionsMap = {
       "1 day": ["1 day"],
       "3 days": ["3 days"],
@@ -1738,11 +1740,11 @@ const doCurveTextPatterns = function () {
   if (
     matsCollections.Settings.findOne({}) === undefined ||
     matsCollections.Settings.findOne({}).resetFromCode === undefined ||
-    matsCollections.Settings.findOne({}).resetFromCode == true
+    matsCollections.Settings.findOne({}).resetFromCode === true
   ) {
     matsCollections.CurveTextPatterns.remove({});
   }
-  if (matsCollections.CurveTextPatterns.find().count() == 0) {
+  if (matsCollections.CurveTextPatterns.find().count() === 0) {
     matsCollections.CurveTextPatterns.insert({
       plotType: matsTypes.PlotTypes.timeSeries,
       textPattern: [
@@ -1980,11 +1982,11 @@ const doSavedCurveParams = function () {
   if (
     matsCollections.Settings.findOne({}) === undefined ||
     matsCollections.Settings.findOne({}).resetFromCode === undefined ||
-    matsCollections.Settings.findOne({}).resetFromCode == true
+    matsCollections.Settings.findOne({}).resetFromCode === true
   ) {
     matsCollections.SavedCurveParams.remove({});
   }
-  if (matsCollections.SavedCurveParams.find().count() == 0) {
+  if (matsCollections.SavedCurveParams.find().count() === 0) {
     matsCollections.SavedCurveParams.insert({ clName: "changeList", changeList: [] });
   }
 };
@@ -1993,11 +1995,11 @@ const doPlotGraph = function () {
   if (
     matsCollections.Settings.findOne({}) === undefined ||
     matsCollections.Settings.findOne({}).resetFromCode === undefined ||
-    matsCollections.Settings.findOne({}).resetFromCode == true
+    matsCollections.Settings.findOne({}).resetFromCode === true
   ) {
     matsCollections.PlotGraphFunctions.remove({});
   }
-  if (matsCollections.PlotGraphFunctions.find().count() == 0) {
+  if (matsCollections.PlotGraphFunctions.find().count() === 0) {
     matsCollections.PlotGraphFunctions.insert({
       plotType: matsTypes.PlotTypes.timeSeries,
       graphFunction: "graphPlotly",
@@ -2048,9 +2050,9 @@ Meteor.startup(function () {
   if (matsCollections.Databases.find({}).count() === 0) {
     let databases;
     if (
-      Meteor.settings == undefined ||
-      Meteor.settings.private == undefined ||
-      Meteor.settings.private.databases == undefined
+      Meteor.settings === undefined ||
+      Meteor.settings.private === undefined ||
+      Meteor.settings.private.databases === undefined
     ) {
       databases = undefined;
     } else {
