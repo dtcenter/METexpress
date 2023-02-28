@@ -1584,7 +1584,7 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["object-simplicity"].findOne({ name: "object-simplicity" }) ==
+    matsCollections["object-simplicity"].findOne({ name: "object-simplicity" }) ===
     undefined
   ) {
     matsCollections["object-simplicity"].insert({
@@ -1603,7 +1603,7 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["aggregation-method"].findOne({ name: "aggregation-method" }) ==
+    matsCollections["aggregation-method"].findOne({ name: "aggregation-method" }) ===
     undefined
   ) {
     matsCollections["aggregation-method"].insert({

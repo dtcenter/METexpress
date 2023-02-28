@@ -1550,7 +1550,7 @@ const doCurveParams = function () {
   }
 
   if (
-    matsCollections["aggregation-method"].findOne({ name: "aggregation-method" }) ==
+    matsCollections["aggregation-method"].findOne({ name: "aggregation-method" }) ===
     undefined
   ) {
     matsCollections["aggregation-method"].insert({
