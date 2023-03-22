@@ -263,7 +263,7 @@ dataROC = function (plotParams, plotFunction) {
         dataFoundForCurve = false;
       } else {
         // this is an error returned by the mysql database
-        error += `Error from verification query: <br>${queryResult.error[curveIndex]}<br> query: <br>${statement}<br>`;
+        error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
         throw new Error(error);
       }
     } else {
