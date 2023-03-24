@@ -318,6 +318,7 @@ const doCurveParams = function () {
       matsTypes.PlotTypes.validtime,
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.contour,
+      matsTypes.PlotTypes.simpleScatter,
     ],
     line_data_ctc: [
       matsTypes.PlotTypes.timeSeries,
@@ -908,7 +909,7 @@ const doCurveParams = function () {
       optionsMap: plotTypeOptionsMap,
       options: plotTypeOptionsMap[defaultDB][defaultModel],
       superiorNames: ["database", "data-source"],
-      dependentNames: ["statistic"],
+      dependentNames: ["statistic", "y-statistic"],
       controlButtonCovered: false,
       default: defaultPlotType,
       unique: false,
@@ -1003,6 +1004,7 @@ const doCurveParams = function () {
       controlButtonCovered: true,
       unique: false,
       default: defaultStatistic,
+      controlButtonText: "statistic",
       controlButtonVisibility: "block",
       displayOrder: 2,
       displayPriority: 1,
@@ -1015,6 +1017,45 @@ const doCurveParams = function () {
       // have to reload region data
       matsCollections.statistic.update(
         { name: "statistic" },
+        {
+          $set: {
+            optionsMap: statisticOptionsMap,
+            options: Object.keys(
+              statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]
+            ),
+            default: defaultStatistic,
+          },
+        }
+      );
+    }
+  }
+
+  if (matsCollections["y-statistic"].findOne({ name: "y-statistic" }) === undefined) {
+    matsCollections["y-statistic"].insert({
+      name: "y-statistic",
+      type: matsTypes.InputTypes.select,
+      optionsMap: statisticOptionsMap,
+      options: Object.keys(
+        statisticOptionsMap[defaultDB][defaultModel][defaultPlotType]
+      ),
+      valuesMap: masterStatsValuesMap,
+      superiorNames: ["database", "data-source", "plot-type"],
+      dependentNames: ["y-variable"],
+      controlButtonCovered: true,
+      unique: false,
+      default: defaultStatistic,
+      controlButtonVisibility: "block",
+      displayOrder: 4,
+      displayPriority: 1,
+      displayGroup: 3,
+    });
+  } else {
+    // it is defined but check for necessary update
+    var currentParam = matsCollections["y-statistic"].findOne({ name: "y-statistic" });
+    if (!matsDataUtils.areObjectsEqual(statisticOptionsMap, currentParam.optionsMap)) {
+      // have to reload region data
+      matsCollections["y-statistic"].update(
+        { name: "y-statistic" },
         {
           $set: {
             optionsMap: statisticOptionsMap,
@@ -1054,6 +1095,7 @@ const doCurveParams = function () {
         variableOptionsMap[defaultDB][defaultModel][defaultPlotType][
           defaultStatType
         ][0],
+      controlButtonText: "variable",
       controlButtonVisibility: "block",
       gapBelow: true,
       displayOrder: 3,
@@ -1070,6 +1112,55 @@ const doCurveParams = function () {
       // have to reload variable data
       matsCollections.variable.update(
         { name: "variable" },
+        {
+          $set: {
+            optionsMap: variableOptionsMap,
+            valuesMap: variableValuesMap,
+            options:
+              variableOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ],
+            default:
+              variableOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ][0],
+          },
+        }
+      );
+    }
+  }
+
+  if (matsCollections["y-variable"].findOne({ name: "y-variable" }) === undefined) {
+    matsCollections["y-variable"].insert({
+      name: "y-variable",
+      type: matsTypes.InputTypes.select,
+      optionsMap: variableOptionsMap,
+      options:
+        variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType],
+      valuesMap: variableValuesMap,
+      superiorNames: ["database", "data-source", "plot-type", "y-statistic"],
+      controlButtonCovered: true,
+      unique: false,
+      default:
+        variableOptionsMap[defaultDB][defaultModel][defaultPlotType][
+          defaultStatType
+        ][0],
+      controlButtonVisibility: "block",
+      gapBelow: true,
+      displayOrder: 5,
+      displayPriority: 1,
+      displayGroup: 3,
+    });
+  } else {
+    // it is defined but check for necessary update
+    var currentParam = matsCollections["y-variable"].findOne({ name: "y-variable" });
+    if (
+      !matsDataUtils.areObjectsEqual(variableOptionsMap, currentParam.optionsMap) ||
+      !matsDataUtils.areObjectsEqual(variableValuesMap, currentParam.valuesMap)
+    ) {
+      // have to reload variable data
+      matsCollections["y-variable"].update(
+        { name: "y-variable" },
         {
           $set: {
             optionsMap: variableOptionsMap,
@@ -1655,6 +1746,38 @@ const doCurveParams = function () {
     });
   }
 
+  if (
+    matsCollections["bin-parameter"].findOne({ name: "bin-parameter" }) === undefined
+  ) {
+    const optionsMap = {
+      "Fcst lead time": "select m0.fcst_len as binVal, ",
+      "Valid UTC hour": "select m0.hour as binVal, ",
+      "Init UTC hour":
+        "select (m0.valid_day+3600*m0.hour-m0.fcst_len*3600)%(24*3600)/3600 as binVal, ",
+      "Valid Date": "select m0.valid_day+3600*m0.hour as binVal, ",
+      "Init Date": "select m0.valid_day+3600*m0.hour-m0.fcst_len*3600 as binVal, ",
+    };
+
+    matsCollections["bin-parameter"].insert({
+      name: "bin-parameter",
+      type: matsTypes.InputTypes.select,
+      options: Object.keys(optionsMap),
+      optionsMap,
+      hideOtherFor: {
+        "forecast-length": ["Fcst lead time"],
+        "valid-time": ["Valid UTC hour"],
+      },
+      selected: "",
+      controlButtonCovered: true,
+      unique: false,
+      default: Object.keys(optionsMap)[3],
+      controlButtonVisibility: "block",
+      displayOrder: 2,
+      displayPriority: 1,
+      displayGroup: 7,
+    });
+  }
+
   // determine date defaults for dates and curveDates
   // these defaults are app-specific and not controlled by the user
   minDate =
@@ -1761,8 +1884,7 @@ const doCurveTextPatterns = function () {
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
         ["valid-time: ", "valid-time", ", "],
-        ["avg: ", "average", ", "],
-        ["", "truth", ""],
+        ["avg: ", "average", ""],
         [", desc: ", "description", ""],
       ],
       displayParams: [
@@ -1952,8 +2074,7 @@ const doCurveTextPatterns = function () {
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
-        ["valid-time: ", "valid-time", ", "],
-        ["", "truth", ""],
+        ["valid-time: ", "valid-time", ""],
         [", desc: ", "description", ""],
       ],
       displayParams: [
@@ -1972,6 +2093,49 @@ const doCurveTextPatterns = function () {
         "level",
         "aggregation-method",
         "description",
+      ],
+      groupSize: 6,
+    });
+    matsCollections.CurveTextPatterns.insert({
+      plotType: matsTypes.PlotTypes.simpleScatter,
+      textPattern: [
+        ["", "label", ": "],
+        ["", "database", "."],
+        ["", "data-source", " in "],
+        ["", "region", ", "],
+        ["", "threshold", ", "],
+        ["", "interp-method", " "],
+        ["", "scale", ", "],
+        ["", "variable", " "],
+        ["", "statistic", " vs "],
+        ["", "y-variable", " "],
+        ["", "y-statistic", ", "],
+        ["", "aggregation-method", ", "],
+        ["level: ", "level", ", "],
+        ["fcst_len: ", "forecast-length", "h, "],
+        ["valid-time: ", "valid-time", ", "],
+        [", desc: ", "description", ""],
+      ],
+      displayParams: [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "region",
+        "statistic",
+        "variable",
+        "y-statistic",
+        "y-variable",
+        "threshold",
+        "interp-method",
+        "scale",
+        "valid-time",
+        "forecast-length",
+        "level",
+        "description",
+        "bin-parameter",
+        "curve-dates",
+        "aggregation-method",
       ],
       groupSize: 6,
     });
@@ -2034,6 +2198,12 @@ const doPlotGraph = function () {
       plotType: matsTypes.PlotTypes.contour,
       graphFunction: "graphPlotly",
       dataFunction: "dataContour",
+      checked: false,
+    });
+    matsCollections.PlotGraphFunctions.insert({
+      plotType: matsTypes.PlotTypes.simpleScatter,
+      graphFunction: "graphPlotly",
+      dataFunction: "dataSimpleScatter",
       checked: false,
     });
   }
