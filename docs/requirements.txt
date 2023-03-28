@@ -1,2 +1,4 @@
 sphinx-gallery
 sphinxcontrib-bibtex
+sphinx-design==0.3.0
+
