@@ -62,6 +62,7 @@ assistance with deploying METexpress in the cloud on Amazon Web Services.
    :numbered: 2
 
    overview
+   release-notes
    interface
    apps
    installation
