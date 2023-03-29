@@ -8,27 +8,8 @@ METexpress Release Notes
 When applicable, release notes are followed by the GitHub issue number which describes the bugfix,
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
-
-METexpress Version # beta? release notes (date)
--------------------------------------------------
-
-  .. dropdown:: Repository, build, and test
-
-     * None
      
-  .. dropdown:: Documentation 
-
-     * None
-
-  .. dropdown:: Enhancements 
-
-     * None
-     
-  .. dropdown:: Bugfixes 
-
-     * None 
-     
-METexpress Version # release notes (DATE)
+METexpress Version 5.0.1 release notes (2023MMDD)
 -------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -58,7 +39,7 @@ METexpress Version # release notes (DATE)
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version # upgrade instructions
+METexpress Version 5.0.1 upgrade instructions
 -----------------------------------------
 
 * 
