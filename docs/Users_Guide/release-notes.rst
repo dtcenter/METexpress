@@ -10,7 +10,7 @@ enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcen
 Important issues are listed **in bold** for emphasis.
      
 METexpress Version 5.0.1 release notes (2023MMDD)
--------------------------------------------
+-------------------------------------------------
 
   .. dropdown:: Repository, build, and test
 
@@ -40,6 +40,6 @@ METexpress Upgrade Instructions
 ===============================
 
 METexpress Version 5.0.1 upgrade instructions
------------------------------------------
+---------------------------------------------
 
 * 
