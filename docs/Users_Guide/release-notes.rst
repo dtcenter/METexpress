@@ -28,9 +28,9 @@ METexpress Version 5.0.1 release notes (2023MMDD)
   
      * None
 
-    .. dropdown:: Miscellaneous
+  .. dropdown:: Miscellaneous
     
-      * None
+     * None
         
 METexpress Upgrade Instructions
 ===============================
