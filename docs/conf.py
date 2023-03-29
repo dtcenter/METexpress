@@ -215,7 +215,6 @@ pdf_use_numbered_links = True
 pdf_fit_background_mode = 'scale'
 
 ##################################################################
-
                    
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
