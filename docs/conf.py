@@ -254,8 +254,7 @@ numfig = True
 numfig_format = {
     'figure': 'Figure %s',
 }
-
-    
+   
 # -- Export variables --------------------------------------------------------
 
 rst_epilog = """
