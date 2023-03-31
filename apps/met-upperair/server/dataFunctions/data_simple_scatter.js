@@ -25,6 +25,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
+  let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
   const totalProcessingStart = moment();
@@ -40,302 +41,293 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
 
-  for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
     // initialize variables specific to each curve
-    var curve = curves[curveIndex];
-    var { label } = curve;
+    const curve = curves[curveIndex];
+    const { diffFrom } = curve;
+    const { label } = curve;
     const { database } = curve;
     const binParam = curve["bin-parameter"];
     const binClause = matsCollections["bin-parameter"].findOne({
       name: "bin-parameter",
     }).optionsMap[binParam];
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
-    .optionsMap[database][curve["data-source"]][0];
-  const modelClause = `and h.model = '${model}'`;
-  const selectorPlotType = curve["plot-type"];
-  const statisticXSelect = curve["x-statistic"];
-  const statisticYSelect = curve["y-statistic"];
-  const statisticOptionsMap = matsCollections.statistic.findOne(
-    { name: "statistic" },
-    { optionsMap: 1 }
-  ).optionsMap[database][curve["data-source"]][selectorPlotType];
-  const statLineType = statisticOptionsMap[statisticXSelect][0];
-  let statisticClause = "";
-  let lineDataType = "";
-  if (statLineType === "scalar") {
-    statisticClause =
-      "count(ld.fbar) as n, " +
-      "avg(ld.fbar) as fbar, " +
-      "avg(ld.obar) as obar, " +
-      "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-      "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-    lineDataType = "line_data_sl1l2";
-  } else if (statLineType === "vector") {
-    statisticClause =
-      "count(ld.ufbar) as n, " +
-      "avg(ld.ufbar) as ufbar, " +
-      "avg(ld.vfbar) as vfbar, " +
-      "avg(ld.uobar) as uobar, " +
-      "avg(ld.vobar) as vobar, " +
-      "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
-      "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
-      "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-    lineDataType = "line_data_vl1l2";
-  }
-  const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
-  let regions =
-    curve.region === undefined || curve.region === matsTypes.InputTypes.unused
-      ? []
-      : curve.region;
-  regions = Array.isArray(regions) ? regions : [regions];
-  let regionsClause = "";
-  if (regions.length > 0) {
-    regions = regions
-      .map(function (r) {
-        return `'${r}'`;
-      })
-      .join(",");
-    regionsClause = `and h.vx_mask IN(${regions})`;
-  }
-  const { scale } = curve;
-  let scaleClause = "";
-  if (scale !== "All scales") {
-    scaleClause = `and h.interp_pnts = '${scale}'`;
-  }
-  const im = curve["interp-method"];
-  let imClause = "";
-  if (im !== "All methods") {
-    imClause = `and h.interp_mthd = '${im}'`;
-  }
-  const variableXStr = curve["x-variable"];
-  const variableYStr = curve["y-variable"];
-  const variableValuesMap = matsCollections.variable.findOne(
-    { name: "variable" },
-    { valuesMap: 1 }
-  ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
-  const variableX = variableValuesMap[variableXStr];
-  const variableY = variableValuesMap[variableYStr];
-  const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
-  const variableClauseY = `and h.fcst_var = '${variableValuesMap[variableY]}'`;
-  const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
-  const fromSecs = dateRange.fromSeconds;
-  const toSecs = dateRange.toSeconds;
-  let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
-  let validTimeClause = "";
-  if (binParam !== "Valid UTC hour") {
-    if (
-      curve["valid-time"] !== undefined &&
-      curve["valid-time"] !== matsTypes.InputTypes.unused
-    ) {
-      vts = curve["valid-time"];
-      vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
-        .map(function (vt) {
-          return `'${vt}'`;
-        })
-        .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+      .optionsMap[database][curve["data-source"]][0];
+    const modelClause = `and h.model = '${model}' and h1.model = '${model}' `;
+    const selectorPlotType = curve["plot-type"];
+    const statisticXSelect = curve.statistic;
+    const statisticYSelect = curve["y-statistic"];
+    const statisticOptionsMap = matsCollections.statistic.findOne(
+      { name: "statistic" },
+      { optionsMap: 1 }
+    ).optionsMap[database][curve["data-source"]][selectorPlotType];
+    const statLineType = statisticOptionsMap[statisticXSelect][0];
+    let statisticClauseX = "";
+    let statisticClauseY = "";
+    let lineDataType = "";
+    if (statLineType === "scalar") {
+      statisticClauseX =
+        "count(ld.fbar) as nX, " +
+        "avg(ld.fbar) as fbarX, " +
+        "avg(ld.obar) as obarX, " +
+        "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataX, ";
+      statisticClauseY =
+        "count(ld1.fbar) as nY, " +
+        "avg(ld1.fbar) as fbarY, " +
+        "avg(ld1.obar) as obarY, " +
+        "group_concat(distinct ld1.fbar, ';', ld1.obar, ';', ld1.ffbar, ';', ld1.oobar, ';', ld1.fobar, ';', " +
+        "ld1.total, ';', unix_timestamp(ld1.fcst_valid_beg), ';', h1.fcst_lev order by unix_timestamp(ld1.fcst_valid_beg), h1.fcst_lev) as sub_dataY";
+      lineDataType = "line_data_sl1l2";
     }
-  }
-  // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
-  // have been sanitized for display purposes in the forecastValueMap.
-  // now we have to go get the damn ole unsanitary ones for the database.
-  let forecastLengthsClause = "";
-  if (binParam !== "Fcst lead time") {
-    let fcsts =
-      curve["forecast-length"] === undefined ||
-      curve["forecast-length"] === matsTypes.InputTypes.unused
+    const queryTableClause = `from ${database}.stat_header h, ${database}.stat_header h1, ${database}.${lineDataType} ld, ${database}.${lineDataType} ld1`;
+    let regions =
+      curve.region === undefined || curve.region === matsTypes.InputTypes.unused
         ? []
-        : curve["forecast-length"];
-    fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-    if (fcsts.length > 0) {
-      fcsts = fcsts
-        .map(function (fl) {
-          return `'${fl}','${fl}0000'`;
+        : curve.region;
+    regions = Array.isArray(regions) ? regions : [regions];
+    let regionsClause = "";
+    if (regions.length > 0) {
+      regions = regions
+        .map(function (r) {
+          return `'${r}'`;
         })
         .join(",");
-      forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+      regionsClause = `and h.vx_mask IN(${regions}) and h1.vx_mask IN(${regions}) and h.vx_mask = h1.vx_mask`;
     }
-  }
-  let dateString = "";
-  let dateClause = "";
-  if (binParam === "Init Date" && binParam !== "Valid Date") {
-    dateString = "unix_timestamp(ld.fcst_init_beg)";
-  } else {
-    dateString = "unix_timestamp(ld.fcst_valid_beg)";
-  }
-  dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs}`;
-  let levelsClause = "";
-  let levels =
-    curve.level === undefined || curve.level === matsTypes.InputTypes.unused
-      ? []
-      : curve.level;
-  levels = Array.isArray(levels) ? levels : [levels];
-  if (
-    binParam !== "Pressure level" && levels.length > 0) {
-    levels = levels
-      .map(function (l) {
-        // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
-        return `'${l}','${l}='`;
-      })
-      .join(",");
-    levelsClause = `and h.fcst_lev IN(${levels})`;
-  } else {
-    // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-    levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
-      .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-      variable
-    ];
-    levels = levels
-      .map(function (l) {
-        return `'${l}'`;
-      })
-      .join(",");
-    levelsClause = `and h.fcst_lev IN(${levels})`;
-  }
-  let descrs =
-    curve.description === undefined || curve.description === matsTypes.InputTypes.unused
-      ? []
-      : curve.description;
-  let descrsClause = "";
-  descrs = Array.isArray(descrs) ? descrs : [descrs];
-  if (descrs.length > 0) {
-    descrs = descrs
-      .map(function (d) {
-        return `'${d}'`;
-      })
-      .join(",");
-    descrsClause = `and h.descr IN(${descrs})`;
-  }
-  appParams.aggMethod = curve["aggregation-method"];
-  const statType = `met-${statLineType}`;
-  allStatTypes.push(statType);
+    const { scale } = curve;
+    let scaleClause = "";
+    if (scale !== "All scales") {
+      scaleClause = `and h.interp_pnts = '${scale}' and h1.interp_pnts = '${scale}'`;
+    }
+    const im = curve["interp-method"];
+    let imClause = "";
+    if (im !== "All methods") {
+      imClause = `and h.interp_mthd = '${im}' and h1.interp_mthd = '${im}'`;
+    }
+    const variableXStr = curve.variable;
+    const variableYStr = curve["y-variable"];
+    const variableValuesMap = matsCollections.variable.findOne(
+      { name: "variable" },
+      { valuesMap: 1 }
+    ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
+    const variableX = variableValuesMap[variableXStr];
+    const variableY = variableValuesMap[variableYStr];
+    const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
+    const variableClauseY = `and h1.fcst_var = '${variableValuesMap[variableY]}'`;
+    const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
+    const fromSecs = dateRange.fromSeconds;
+    const toSecs = dateRange.toSeconds;
+    let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
+    let validTimeClause = "";
+    if (binParam !== "Valid UTC hour") {
+      if (
+        curve["valid-time"] !== undefined &&
+        curve["valid-time"] !== matsTypes.InputTypes.unused
+      ) {
+        vts = curve["valid-time"];
+        vts = Array.isArray(vts) ? vts : [vts];
+        vts = vts
+          .map(function (vt) {
+            return `'${vt}'`;
+          })
+          .join(",");
+        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+      }
+    }
+    // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
+    // have been sanitized for display purposes in the forecastValueMap.
+    // now we have to go get the damn ole unsanitary ones for the database.
+    let forecastLengthsClause = "";
+    if (binParam !== "Fcst lead time") {
+      let fcsts =
+        curve["forecast-length"] === undefined ||
+        curve["forecast-length"] === matsTypes.InputTypes.unused
+          ? []
+          : curve["forecast-length"];
+      fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+      if (fcsts.length > 0) {
+        fcsts = fcsts
+          .map(function (fl) {
+            return `'${fl}','${fl}0000'`;
+          })
+          .join(",");
+        forecastLengthsClause = `and ld.fcst_lead IN(${fcsts}) and ld1.fcst_lead IN(${fcsts}) and ld.fcst_lead = ld1.fcst_lead`;
+      }
+    }
+    let dateString = "";
+    let dateString2 = "";
+    let dateClause = "";
+    if (binParam === "Init Date" && binParam !== "Valid Date") {
+      dateString = "unix_timestamp(ld.fcst_init_beg)";
+      dateString2 = "unix_timestamp(ld1.fcst_init_beg)";
+    } else {
+      dateString = "unix_timestamp(ld.fcst_valid_beg)";
+      dateString2 = "unix_timestamp(ld1.fcst_valid_beg)";
+    }
+    dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs} and ${dateString2} >= ${fromSecs} and ${dateString2} <= ${toSecs} and ${dateString} = ${dateString2}`;
+    let levels =
+      curve.level === undefined || curve.level === matsTypes.InputTypes.unused
+        ? []
+        : curve.level;
+    levels = Array.isArray(levels) ? levels : [levels];
+    if (binParam !== "Pressure level" && levels.length > 0) {
+      levels = levels
+        .map(function (l) {
+          // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
+          return `'${l}','${l}='`;
+        })
+        .join(",");
+    } else {
+      // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
+      levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
+        .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+        variableX
+      ];
+      levels = levels
+        .map(function (l) {
+          return `'${l}'`;
+        })
+        .join(",");
+    }
+    const levelsClause = `and h.fcst_lev IN(${levels}) and h1.fcst_lev IN(${levels}) and h.fcst_lev = h1.fcst_lev`;
+    let descrs =
+      curve.description === undefined ||
+      curve.description === matsTypes.InputTypes.unused
+        ? []
+        : curve.description;
+    let descrsClause = "";
+    descrs = Array.isArray(descrs) ? descrs : [descrs];
+    if (descrs.length > 0) {
+      descrs = descrs
+        .map(function (d) {
+          return `'${d}'`;
+        })
+        .join(",");
+      descrsClause = `and h.descr IN(${descrs}) and h1.descr IN(${descrs}) and h.descr = h1.descr`;
+    }
+    appParams.aggMethod = curve["aggregation-method"];
+    const statType = `met-${statLineType}`;
+    allStatTypes.push(statType);
+    curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].binParam = binParam; // stash the binParam to use it later for axis options
 
-  const varUnitsX = statVarUnitMap[statisticXSelect][variableXStr];
-  const varUnitsY = statVarUnitMap[statisticYSelect][variableYStr];
+    if (!diffFrom) {
+      // this is a database driven curve, not a difference curve
+      // prepare the query from the above parameters
+      let statement =
+        "{{binClause}} " +
+        "min({{dateString}}) as min_secs, " +
+        "max({{dateString}}) as max_secs, " +
+        "{{statisticClauseX}} " +
+        "{{statisticClauseY}} " +
+        "{{queryTableClause}} " +
+        "where 1=1 " +
+        "{{dateClause}} " +
+        "{{modelClause}} " +
+        "{{regionsClause}} " +
+        "{{imClause}} " +
+        "{{scaleClause}} " +
+        "{{variableClauseX}} " +
+        "{{variableClauseY}} " +
+        "{{validTimeClause}} " +
+        "{{forecastLengthsClause}} " +
+        "{{levelsClause}} " +
+        "{{descrsClause}} " +
+        "and h.stat_header_id = ld.stat_header_id " +
+        "and h1.stat_header_id = ld1.stat_header_id " +
+        "group by binVal " +
+        "order by binVal" +
+        ";";
 
-  let d;
-  // this is a database driven curve, not a difference curve
-  // prepare the query from the above parameters
-  let statement =
-    "{{xValClause}} " +
-    "{{yValClause}} " +
-    "min({{dateString}}) as min_secs, " +
-    "max({{dateString}}) as max_secs, " +
-    "{{statisticClause}} " +
-    "{{queryTableClause}} " +
-    "where 1=1 " +
-    "{{dateClause}} " +
-    "{{modelClause}} " +
-    "{{regionsClause}} " +
-    "{{imClause}} " +
-    "{{scaleClause}} " +
-    "{{variableClause}} " +
-    "{{validTimeClause}} " +
-    "{{forecastLengthsClause}} " +
-    "{{levelsClause}} " +
-    "{{descrsClause}} " +
-    "and h.stat_header_id = ld.stat_header_id " +
-    "group by xVal,yVal " +
-    "order by xVal,yVal" +
-    ";";
+      statement = statement.replace("{{binClause}}", binClause);
+      statement = statement.replace("{{statisticClauseX}}", statisticClauseX);
+      statement = statement.replace("{{statisticClauseY}}", statisticClauseY);
+      statement = statement.replace("{{queryTableClause}}", queryTableClause);
+      statement = statement.replace("{{modelClause}}", modelClause);
+      statement = statement.replace("{{regionsClause}}", regionsClause);
+      statement = statement.replace("{{imClause}}", imClause);
+      statement = statement.replace("{{scaleClause}}", scaleClause);
+      statement = statement.replace("{{variableClauseX}}", variableClauseX);
+      statement = statement.replace("{{variableClauseY}}", variableClauseY);
+      statement = statement.replace("{{validTimeClause}}", validTimeClause);
+      statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
+      statement = statement.replace("{{levelsClause}}", levelsClause);
+      statement = statement.replace("{{descrsClause}}", descrsClause);
+      statement = statement.replace("{{dateClause}}", dateClause);
+      statement = statement.split("{{dateString}}").join(dateString);
+      dataRequests[label] = statement;
 
-  statement = statement.replace("{{xValClause}}", xValClause);
-  statement = statement.replace("{{yValClause}}", yValClause);
-  statement = statement.replace("{{statisticClause}}", statisticClause);
-  statement = statement.replace("{{queryTableClause}}", queryTableClause);
-  statement = statement.replace("{{modelClause}}", modelClause);
-  statement = statement.replace("{{regionsClause}}", regionsClause);
-  statement = statement.replace("{{imClause}}", imClause);
-  statement = statement.replace("{{scaleClause}}", scaleClause);
-  statement = statement.replace("{{variableClause}}", variableClause);
-  statement = statement.replace("{{validTimeClause}}", validTimeClause);
-  statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
-  statement = statement.replace("{{levelsClause}}", levelsClause);
-  statement = statement.replace("{{descrsClause}}", descrsClause);
-  statement = statement.replace("{{dateClause}}", dateClause);
-  statement = statement.split("{{dateString}}").join(dateString);
-  dataRequests[label] = statement;
-
-  queryArray.push({
-    statement,
-    statLineType,
-    statistic,
-    appParams: JSON.parse(JSON.stringify(appParams)),
-    fcstOffset,
-    vts,
-  });
+      queryArray.push({
+        statement,
+        statLineType,
+        statistic: `${statisticXSelect}__vs__${statisticYSelect}`,
+        appParams: JSON.parse(JSON.stringify(appParams)),
+        fcstOffset: 0,
+        vts,
+      });
+    } else {
+      // this is a difference curve -- not supported for scatter plots
+      throw new Error(
+        "INFO:  Difference curves are not supported for performance diagrams, as they do not feature consistent x or y values across all curves."
+      );
+    }
   } // end for curves
 
-  let queryResult;
-  const startMoment = moment();
-  let finishMoment;
-  try {
-    // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
-    finishMoment = moment();
-    dataRequests["data retrieval (query) time"] = {
-      begin: startMoment.format(),
-      finish: finishMoment.format(),
-      duration: `${moment
-        .duration(finishMoment.diff(startMoment))
-        .asSeconds()} seconds`,
-      recordCount: queryResult.data.length,
-    };
-    // get the data back from the query
-    dReturn = queryResult.data;
-  } catch (e) {
-    // this is an error produced by a bug in the query function, not an error returned by the mysql database
-    e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
-    throw new Error(e.message);
-  }
-
-  // parse any errors from the python code
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    if (
-      queryResult.error[curveIndex] !== undefined &&
-      queryResult.error[curveIndex] !== ""
-    ) {
-      if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
-        // this is NOT an error just a no data condition
-        dataFoundForCurve = false;
-      } else {
-        // this is an error returned by the mysql database
-        error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
-        throw new Error(error);
+      let queryResult;
+      const startMoment = moment();
+      let finishMoment;
+      try {
+        // send the query statements to the query function
+        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+        finishMoment = moment();
+        dataRequests["data retrieval (query) time"] = {
+          begin: startMoment.format(),
+          finish: finishMoment.format(),
+          duration: `${moment
+            .duration(finishMoment.diff(startMoment))
+            .asSeconds()} seconds`,
+          recordCount: queryResult.data.length,
+        };
+        // get the data back from the query
+        dReturn = queryResult.data;
+      } catch (e) {
+        // this is an error produced by a bug in the query function, not an error returned by the mysql database
+        e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
+        throw new Error(e.message);
       }
-    } else {
-      dataFoundForAnyCurve = true;
-    }
-  }
+
+      // parse any errors from the python code
+      for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+        if (
+          queryResult.error[curveIndex] !== undefined &&
+          queryResult.error[curveIndex] !== ""
+        ) {
+          if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
+            // this is NOT an error just a no data condition
+            dataFoundForCurve = false;
+          } else {
+            // this is an error returned by the mysql database
+            error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
+            throw new Error(error);
+          }
+        } else {
+          dataFoundForAnyCurve = true;
+        }
+      }
 
   if (!dataFoundForAnyCurve) {
     // we found no data for any curves so don't bother proceeding
     throw new Error("INFO:  No valid data for any curves.");
   }
-
   const postQueryStartMoment = moment();
   let d;
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    curve = curves[curveIndex];
-    if (curveIndex < dReturn.length) {
-      d = dReturn[curveIndex];
-      // set axis limits based on returned data
-      if (dataFoundForCurve) {
-        xmin = xmin < d.xmin ? xmin : d.xmin;
-        xmax = xmax > d.xmax ? xmax : d.xmax;
-        ymin = ymin < d.ymin ? ymin : d.ymin;
-        ymax = ymax > d.ymax ? ymax : d.ymax;
-      }
-    } else {
-      const diffResult = matsDataDiffUtils.getDataForDiffCurve(
-        differenceArray[curveIndex - dReturn.length].dataset,
-        differenceArray[curveIndex - dReturn.length].diffFrom,
-        differenceArray[curveIndex - dReturn.length].appParams,
-        differenceArray[curveIndex - dReturn.length].isCTC,
-        differenceArray[curveIndex - dReturn.length].isScalar
-      );
-      d = diffResult.dataset;
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+    const curve = curves[curveIndex];
+    d = dReturn[curveIndex];
+    // set axis limits based on returned data
+    if (dataFoundForCurve) {
       xmin = xmin < d.xmin ? xmin : d.xmin;
       xmax = xmax > d.xmax ? xmax : d.xmax;
       ymin = ymin < d.ymin ? ymin : d.ymin;
@@ -347,18 +339,18 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const mean = d.sum / d.x.length;
     const annotation =
       mean === undefined
-        ? `${label}- mean = NoData`
-        : `${label}- mean = ${mean.toPrecision(4)}`;
+        ? `${curve.label}- mean = NoData`
+        : `${curve.label}- mean = ${mean.toPrecision(4)}`;
     curve.annotation = annotation;
     curve.xmin = d.xmin;
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    curve.axisKey = axisKey;
-    const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
+    const cOptions = matsDataCurveOpsUtils.generateScatterCurveOptions(
       curve,
       curveIndex,
-      axisMap,
+      axisXMap,
+      axisYMap,
       d,
       appParams
     ); // generate plot with data, curve annotation, axis labels, etc.
@@ -369,10 +361,9 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   const curveInfoParams = {
     curves,
     curvesLength,
-    idealValues,
-    utcCycleStarts,
     statType: allStatTypes,
-    axisMap,
+    axisXMap,
+    axisYMap,
     xmax,
     xmin,
   };
@@ -380,7 +371,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataXYCurve(
+  const result = matsDataProcessUtils.processDataSimpleScatter(
     dataset,
     appParams,
     curveInfoParams,

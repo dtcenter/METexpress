@@ -1621,12 +1621,14 @@ const doCurveParams = function () {
     matsCollections["bin-parameter"].findOne({ name: "bin-parameter" }) === undefined
   ) {
     const optionsMap = {
-      "Fcst lead time": "select m0.fcst_len as binVal, ",
-      "Valid UTC hour": "select m0.hour as binVal, ",
+      "Fcst lead time": "select ld.fcst_lead as binVal, ",
+      "Pressure level": "select h.fcst_lev as binVal, ",
+      "Valid UTC hour":
+        "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as binVal, ",
       "Init UTC hour":
-        "select (m0.valid_day+3600*m0.hour-m0.fcst_len*3600)%(24*3600)/3600 as binVal, ",
-      "Valid Date": "select m0.valid_day+3600*m0.hour as binVal, ",
-      "Init Date": "select m0.valid_day+3600*m0.hour-m0.fcst_len*3600 as binVal, ",
+        "select unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as binVal, ",
+      "Valid Date": "select unix_timestamp(ld.fcst_valid_beg) as binVal, ",
+      "Init Date": "select unix_timestamp(ld.fcst_init_beg) as binVal, ",
     };
 
     matsCollections["bin-parameter"].insert({
@@ -1636,6 +1638,7 @@ const doCurveParams = function () {
       optionsMap,
       hideOtherFor: {
         "forecast-length": ["Fcst lead time"],
+        "level": ["Pressure level"],
         "valid-time": ["Valid UTC hour"],
       },
       selected: "",
