@@ -7,16 +7,15 @@ import {
   matsTypes,
   matsDataUtils,
   matsDataQueryUtils,
-  matsDataDiffUtils,
   matsDataCurveOpsUtils,
   matsDataProcessUtils,
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-dataDieOff = function (plotParams, plotFunction) {
+dataSimpleScatter = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
-    plotType: matsTypes.PlotTypes.dieoff,
+    plotType: matsTypes.PlotTypes.simpleScatter,
     matching: plotParams.plotAction === matsTypes.PlotActions.matched,
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
@@ -25,7 +24,6 @@ dataDieOff = function (plotParams, plotFunction) {
   };
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
-  const differenceArray = [];
   let statement;
   let dReturn;
   let dataFoundForCurve = true;
@@ -36,14 +34,12 @@ dataDieOff = function (plotParams, plotFunction) {
   const curvesLength = curves.length;
   const allStatTypes = [];
   const dataset = [];
-  const utcCycleStarts = [];
-  let axisKey;
-  const axisMap = Object.create(null);
+  const axisXMap = Object.create(null);
+  const axisYMap = Object.create(null);
   let xmax = -1 * Number.MAX_VALUE;
   let ymax = -1 * Number.MAX_VALUE;
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
-  const idealValues = [];
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
@@ -51,37 +47,40 @@ dataDieOff = function (plotParams, plotFunction) {
     const { diffFrom } = curve;
     const { label } = curve;
     const { database } = curve;
+    const binParam = curve["bin-parameter"];
+    const binClause = matsCollections["bin-parameter"].findOne({
+      name: "bin-parameter",
+    }).optionsMap[binParam];
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
       .optionsMap[database][curve["data-source"]][0];
-    const modelClause = `and h.model = '${model}'`;
+    const modelClause = `and h.model = '${model}' and h1.model = '${model}' `;
     const selectorPlotType = curve["plot-type"];
-    const { statistic } = curve;
+    const statisticXSelect = curve.statistic;
+    const statisticYSelect = curve["y-statistic"];
     const statisticOptionsMap = matsCollections.statistic.findOne(
       { name: "statistic" },
       { optionsMap: 1 }
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
-    const statLineType = statisticOptionsMap[statistic][0];
-    let statisticClause = "";
+    const statLineType = statisticOptionsMap[statisticXSelect][0];
+    let statisticClauseX = "";
+    let statisticClauseY = "";
     let lineDataType = "";
     if (statLineType === "scalar") {
-      statisticClause =
-        "avg(ld.fbar) as fbar, " +
-        "avg(ld.obar) as obar, " +
+      statisticClauseX =
+        "count(ld.fbar) as nX, " +
+        "avg(ld.fbar) as fbarX, " +
+        "avg(ld.obar) as obarX, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataX, ";
+      statisticClauseY =
+        "count(ld1.fbar) as nY, " +
+        "avg(ld1.fbar) as fbarY, " +
+        "avg(ld1.obar) as obarY, " +
+        "group_concat(distinct ld1.fbar, ';', ld1.obar, ';', ld1.ffbar, ';', ld1.oobar, ';', ld1.fobar, ';', " +
+        "ld1.total, ';', unix_timestamp(ld1.fcst_valid_beg), ';', h1.fcst_lev order by unix_timestamp(ld1.fcst_valid_beg), h1.fcst_lev) as sub_dataY";
       lineDataType = "line_data_sl1l2";
-    } else if (statLineType === "vector") {
-      statisticClause =
-        "avg(ld.ufbar) as ufbar, " +
-        "avg(ld.vfbar) as vfbar, " +
-        "avg(ld.uobar) as uobar, " +
-        "avg(ld.vobar) as vobar, " +
-        "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
-        "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
-      lineDataType = "line_data_vl1l2";
     }
-    const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
+    const queryTableClause = `from ${database}.stat_header h, ${database}.stat_header h1, ${database}.${lineDataType} ld, ${database}.${lineDataType} ld1`;
     let regions =
       curve.region === undefined || curve.region === matsTypes.InputTypes.unused
         ? []
@@ -94,41 +93,38 @@ dataDieOff = function (plotParams, plotFunction) {
           return `'${r}'`;
         })
         .join(",");
-      regionsClause = `and h.vx_mask IN(${regions})`;
+      regionsClause = `and h.vx_mask IN(${regions}) and h1.vx_mask IN(${regions}) and h.vx_mask = h1.vx_mask`;
     }
     const { scale } = curve;
     let scaleClause = "";
     if (scale !== "All scales") {
-      scaleClause = `and h.interp_pnts = '${scale}'`;
+      scaleClause = `and h.interp_pnts = '${scale}' and h1.interp_pnts = '${scale}'`;
     }
     const im = curve["interp-method"];
     let imClause = "";
     if (im !== "All methods") {
-      imClause = `and h.interp_mthd = '${im}'`;
+      imClause = `and h.interp_mthd = '${im}' and h1.interp_mthd = '${im}'`;
     }
-    const { variable } = curve;
+    const variableXStr = curve.variable;
+    const variableYStr = curve["y-variable"];
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
-    const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
-    let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
-    let validTimeClause = "";
-    let utcCycleStart;
-    let utcCycleStartClause = "";
-    const dieoffTypeStr = curve["dieoff-type"];
-    const dieoffTypeOptionsMap = matsCollections["dieoff-type"].findOne(
-      { name: "dieoff-type" },
-      { optionsMap: 1 }
-    ).optionsMap;
-    const dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
+    const variableX = variableValuesMap[variableXStr];
+    const variableY = variableValuesMap[variableYStr];
+    const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
+    const variableClauseY = `and h1.fcst_var = '${variableValuesMap[variableY]}'`;
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
-    let dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= '${fromSecs}' and unix_timestamp(ld.fcst_valid_beg) <= '${toSecs}' `;
-    if (dieoffType === matsTypes.ForecastTypes.dieoff) {
-      vts = curve["valid-time"] === undefined ? [] : curve["valid-time"];
-      if (vts.length !== 0 && vts !== matsTypes.InputTypes.unused) {
+    let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
+    let validTimeClause = "";
+    if (binParam !== "Valid UTC hour") {
+      if (
+        curve["valid-time"] !== undefined &&
+        curve["valid-time"] !== matsTypes.InputTypes.unused
+      ) {
         vts = curve["valid-time"];
         vts = Array.isArray(vts) ? vts : [vts];
         vts = vts
@@ -138,48 +134,63 @@ dataDieOff = function (plotParams, plotFunction) {
           .join(",");
         validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
       }
-    } else if (dieoffType === matsTypes.ForecastTypes.utcCycle) {
-      utcCycleStart =
-        curve["utc-cycle-start"] === undefined ? [] : curve["utc-cycle-start"];
-      if (utcCycleStart.length !== 0 && utcCycleStart !== matsTypes.InputTypes.unused) {
-        utcCycleStart = utcCycleStart
-          .map(function (u) {
-            return `'${u}'`;
+    }
+    // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
+    // have been sanitized for display purposes in the forecastValueMap.
+    // now we have to go get the damn ole unsanitary ones for the database.
+    let forecastLengthsClause = "";
+    if (binParam !== "Fcst lead time") {
+      let fcsts =
+        curve["forecast-length"] === undefined ||
+        curve["forecast-length"] === matsTypes.InputTypes.unused
+          ? []
+          : curve["forecast-length"];
+      fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+      if (fcsts.length > 0) {
+        fcsts = fcsts
+          .map(function (fl) {
+            return `'${fl}','${fl}0000'`;
           })
           .join(",");
-        utcCycleStartClause = `and unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 IN(${utcCycleStart})`;
+        forecastLengthsClause = `and ld.fcst_lead IN(${fcsts}) and ld1.fcst_lead IN(${fcsts}) and ld.fcst_lead = ld1.fcst_lead`;
       }
-      dateClause = `and unix_timestamp(ld.fcst_init_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_init_beg) <= ${toSecs}`;
-    } else {
-      dateClause = `and unix_timestamp(ld.fcst_init_beg) = ${fromSecs}`;
     }
+    let dateString = "";
+    let dateString2 = "";
+    let dateClause = "";
+    if (binParam === "Init Date" && binParam !== "Valid Date") {
+      dateString = "unix_timestamp(ld.fcst_init_beg)";
+      dateString2 = "unix_timestamp(ld1.fcst_init_beg)";
+    } else {
+      dateString = "unix_timestamp(ld.fcst_valid_beg)";
+      dateString2 = "unix_timestamp(ld1.fcst_valid_beg)";
+    }
+    dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs} and ${dateString2} >= ${fromSecs} and ${dateString2} <= ${toSecs} and ${dateString} = ${dateString2}`;
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
         : curve.level;
-    let levelsClause = "";
     levels = Array.isArray(levels) ? levels : [levels];
-    if (levels.length > 0) {
+    if (binParam !== "Pressure level" && levels.length > 0) {
       levels = levels
         .map(function (l) {
           // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
           return `'${l}','${l}='`;
         })
         .join(",");
-      levelsClause = `and h.fcst_lev IN(${levels})`;
     } else {
       // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
       levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
         .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-        variable
+        variableX
       ];
       levels = levels
         .map(function (l) {
           return `'${l}'`;
         })
         .join(",");
-      levelsClause = `and h.fcst_lev IN(${levels})`;
     }
+    const levelsClause = `and h.fcst_lev IN(${levels}) and h1.fcst_lev IN(${levels}) and h.fcst_lev = h1.fcst_lev`;
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -193,46 +204,24 @@ dataDieOff = function (plotParams, plotFunction) {
           return `'${d}'`;
         })
         .join(",");
-      descrsClause = `and h.descr IN(${descrs})`;
+      descrsClause = `and h.descr IN(${descrs}) and h1.descr IN(${descrs}) and h.descr = h1.descr`;
     }
+    appParams.aggMethod = curve["aggregation-method"];
     const statType = `met-${statLineType}`;
     allStatTypes.push(statType);
-    appParams.aggMethod = curve["aggregation-method"];
-    // axisKey is used to determine which axis a curve should use.
-    // This axisKeySet object is used like a set and if a curve has the same
-    // variable + statistic (axisKey) it will use the same axis.
-    // The axis number is assigned to the axisKeySet value, which is the axisKey.
-    if (
-      statistic.includes("vector") &&
-      (statistic.includes("speed") ||
-        statistic.includes("length") ||
-        statistic.includes("Speed") ||
-        statistic.includes("Length"))
-    ) {
-      axisKey = "Vector wind speed";
-    } else if (
-      statistic.includes("vector") &&
-      (statistic.includes("direction") ||
-        statistic.includes("angle") ||
-        statistic.includes("Direction") ||
-        statistic.includes("Angle"))
-    ) {
-      axisKey = "Vector wind direction";
-    } else {
-      axisKey = `${variable} ${statistic}`;
-    }
-    curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].binParam = binParam; // stash the binParam to use it later for axis options
 
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
       statement =
-        "select ld.fcst_lead as fcst_lead, " +
-        "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
-        "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
-        "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
-        "sum(ld.total) as N0, " +
-        "{{statisticClause}} " +
+        "{{binClause}} " +
+        "min({{dateString}}) as min_secs, " +
+        "max({{dateString}}) as max_secs, " +
+        "{{statisticClauseX}} " +
+        "{{statisticClauseY}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +
         "{{dateClause}} " +
@@ -240,47 +229,49 @@ dataDieOff = function (plotParams, plotFunction) {
         "{{regionsClause}} " +
         "{{imClause}} " +
         "{{scaleClause}} " +
-        "{{variableClause}} " +
+        "{{variableClauseX}} " +
+        "{{variableClauseY}} " +
         "{{validTimeClause}} " +
-        "{{utcCycleStartClause}} " +
+        "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
         "{{descrsClause}} " +
         "and h.stat_header_id = ld.stat_header_id " +
-        "group by fcst_lead " +
-        "order by fcst_lead" +
+        "and h1.stat_header_id = ld1.stat_header_id " +
+        "group by binVal " +
+        "order by binVal" +
         ";";
 
-      statement = statement.replace("{{statisticClause}}", statisticClause);
+      statement = statement.replace("{{binClause}}", binClause);
+      statement = statement.replace("{{statisticClauseX}}", statisticClauseX);
+      statement = statement.replace("{{statisticClauseY}}", statisticClauseY);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
       statement = statement.replace("{{modelClause}}", modelClause);
       statement = statement.replace("{{regionsClause}}", regionsClause);
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
-      statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{variableClauseX}}", variableClauseX);
+      statement = statement.replace("{{variableClauseY}}", variableClauseY);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
-      statement = statement.replace("{{utcCycleStartClause}}", utcCycleStartClause);
+      statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
       statement = statement.replace("{{dateClause}}", dateClause);
+      statement = statement.split("{{dateString}}").join(dateString);
       dataRequests[label] = statement;
 
       queryArray.push({
         statement,
         statLineType,
-        statistic,
+        statistic: `${statisticXSelect}__vs__${statisticYSelect}`,
         appParams: JSON.parse(JSON.stringify(appParams)),
         fcstOffset: 0,
         vts,
       });
     } else {
-      // this is a difference curve
-      differenceArray.push({
-        dataset,
-        diffFrom,
-        appParams: JSON.parse(JSON.stringify(appParams)),
-        isCTC: statType === "ctc",
-        isScalar: statType === "scalar",
-      });
+      // this is a difference curve -- not supported for scatter plots
+      throw new Error(
+        "INFO:  Difference curves are not supported for performance diagrams, as they do not feature consistent x or y values across all curves."
+      );
     }
   } // end for curves
 
@@ -335,24 +326,9 @@ dataDieOff = function (plotParams, plotFunction) {
   let d;
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     const curve = curves[curveIndex];
-    if (curveIndex < dReturn.length) {
-      d = dReturn[curveIndex];
-      // set axis limits based on returned data
-      if (dataFoundForCurve) {
-        xmin = xmin < d.xmin ? xmin : d.xmin;
-        xmax = xmax > d.xmax ? xmax : d.xmax;
-        ymin = ymin < d.ymin ? ymin : d.ymin;
-        ymax = ymax > d.ymax ? ymax : d.ymax;
-      }
-    } else {
-      const diffResult = matsDataDiffUtils.getDataForDiffCurve(
-        differenceArray[curveIndex - dReturn.length].dataset,
-        differenceArray[curveIndex - dReturn.length].diffFrom,
-        differenceArray[curveIndex - dReturn.length].appParams,
-        differenceArray[curveIndex - dReturn.length].isCTC,
-        differenceArray[curveIndex - dReturn.length].isScalar
-      );
-      d = diffResult.dataset;
+    d = dReturn[curveIndex];
+    // set axis limits based on returned data
+    if (dataFoundForCurve) {
       xmin = xmin < d.xmin ? xmin : d.xmin;
       xmax = xmax > d.xmax ? xmax : d.xmax;
       ymin = ymin < d.ymin ? ymin : d.ymin;
@@ -371,10 +347,11 @@ dataDieOff = function (plotParams, plotFunction) {
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
+    const cOptions = matsDataCurveOpsUtils.generateScatterCurveOptions(
       curve,
       curveIndex,
-      axisMap,
+      axisXMap,
+      axisYMap,
       d,
       appParams
     ); // generate plot with data, curve annotation, axis labels, etc.
@@ -385,10 +362,9 @@ dataDieOff = function (plotParams, plotFunction) {
   const curveInfoParams = {
     curves,
     curvesLength,
-    idealValues,
-    utcCycleStarts,
     statType: allStatTypes,
-    axisMap,
+    axisXMap,
+    axisYMap,
     xmax,
     xmin,
   };
@@ -396,7 +372,7 @@ dataDieOff = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataXYCurve(
+  const result = matsDataProcessUtils.processDataSimpleScatter(
     dataset,
     appParams,
     curveInfoParams,

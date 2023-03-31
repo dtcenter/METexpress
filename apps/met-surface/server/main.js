@@ -4,7 +4,10 @@
 
 import { Meteor } from "meteor/meteor";
 import { mysql } from "meteor/pcel:mysql";
+import { moment } from "meteor/momentjs:moment";
+import { _ } from "meteor/underscore";
 import {
+  matsMethods,
   matsTypes,
   matsCollections,
   matsDataUtils,
@@ -303,7 +306,7 @@ const doCurveParams = function () {
     const params = matsCollections.CurveParamsInfo.find({
       curve_params: { $exists: true },
     }).fetch()[0].curve_params;
-    for (let cp = 0; cp < params.length; cp++) {
+    for (let cp = 0; cp < params.length; cp += 1) {
       matsCollections[params[cp]].remove({});
     }
   }
@@ -380,7 +383,7 @@ const doCurveParams = function () {
 
   let masterStatsValuesMap = {};
   const lineTypes = Object.keys(masterStatsOptionsMap);
-  for (let si = 0; si < lineTypes.length; si++) {
+  for (let si = 0; si < lineTypes.length; si += 1) {
     masterStatsValuesMap = {
       ...masterStatsValuesMap,
       ...masterStatsOptionsMap[lineTypes[si]],
@@ -411,17 +414,17 @@ const doCurveParams = function () {
       sumPool,
       "select * from surface_database_groups order by db_group;"
     );
-    for (var i = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i += 1) {
       thisGroup = rows[i].db_group.trim();
       dbs = rows[i].dbs;
       dbArr = dbs.split(",").map(Function.prototype.call, String.prototype.trim);
-      for (var j = 0; j < dbArr.length; j++) {
+      for (let j = 0; j < dbArr.length; j += 1) {
         dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "");
       }
       dbGroupMap[thisGroup] = dbArr;
     }
   } catch (err) {
-    console.log(err.message);
+    throw new Error(err.message);
   }
 
   let thisDB;
@@ -430,16 +433,16 @@ const doCurveParams = function () {
       sumPool,
       "select distinct db from surface_metexpress_metadata;"
     );
-    for (i = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i += 1) {
       thisDB = rows[i].db.trim();
       myDBs.push(thisDB);
     }
   } catch (err) {
-    console.log(err.message);
+    throw new Error(err.message);
   }
 
   try {
-    for (let k = 0; k < myDBs.length; k++) {
+    for (let k = 0; k < myDBs.length; k += 1) {
       thisDB = myDBs[k];
       modelOptionsMap[thisDB] = {};
       dbDateRangeMap[thisDB] = {};
@@ -458,10 +461,10 @@ const doCurveParams = function () {
         sumPool,
         `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;`
       );
-      for (i = 0; i < rows.length; i++) {
-        const model_value = rows[i].model.trim();
+      for (let i = 0; i < rows.length; i += 1) {
+        const modelValue = rows[i].model.trim();
         const model = rows[i].display_text.trim();
-        modelOptionsMap[thisDB][model] = [model_value];
+        modelOptionsMap[thisDB][model] = [modelValue];
 
         const rowMinDate = moment
           .utc(rows[i].mindate * 1000)
@@ -470,20 +473,20 @@ const doCurveParams = function () {
           .utc(rows[i].maxdate * 1000)
           .format("MM/DD/YYYY HH:mm");
 
-        const line_data_table = rows[i].line_data_table.trim();
-        const validPlotTypes = masterPlotTypeOptionsMap[line_data_table];
+        const lineDataTable = rows[i].line_data_table.trim();
+        const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
         plotTypeOptionsMap[thisDB][model] =
           plotTypeOptionsMap[thisDB][model] === undefined
             ? validPlotTypes
             : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
-        const validStats = masterStatsOptionsMap[line_data_table];
+        const validStats = masterStatsOptionsMap[lineDataTable];
         const variable = rows[i].variable.trim();
 
         const { regions } = rows[i];
         const regionsArr = regions
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
-        for (var j = 0; j < regionsArr.length; j++) {
+        for (let j = 0; j < regionsArr.length; j += 1) {
           regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
         }
 
@@ -491,7 +494,7 @@ const doCurveParams = function () {
         const forecastLengthArr = forecastLengths
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
-        for (var j = 0; j < forecastLengthArr.length; j++) {
+        for (let j = 0; j < forecastLengthArr.length; j += 1) {
           forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]|0000/g, "");
         }
 
@@ -500,10 +503,10 @@ const doCurveParams = function () {
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
         const levelsArr = [];
-        var dummyLevel;
-        for (var j = 0; j < levelsArrRaw.length; j++) {
+        let dummyLevel;
+        for (let j = 0; j < levelsArrRaw.length; j += 1) {
           // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
-          dummyLevel = levelsArrRaw[j].replace(/'|\[|\]|\=/g, "");
+          dummyLevel = levelsArrRaw[j].replace(/'|\[|\]|=/g, "");
           if (levelsArr.indexOf(dummyLevel) === -1) {
             levelsArr.push(dummyLevel);
           }
@@ -513,7 +516,7 @@ const doCurveParams = function () {
         const imsArr = ims
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
-        for (var j = 0; j < imsArr.length; j++) {
+        for (let j = 0; j < imsArr.length; j += 1) {
           imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
         }
         imsArr.unshift("All methods");
@@ -522,7 +525,7 @@ const doCurveParams = function () {
         const scalesArr = scales
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
-        for (var j = 0; j < scalesArr.length; j++) {
+        for (let j = 0; j < scalesArr.length; j += 1) {
           scalesArr[j] = scalesArr[j].replace(/'|\[|\]/g, "");
         }
         scalesArr.unshift("All scales");
@@ -531,8 +534,8 @@ const doCurveParams = function () {
         const descrsArr = descrs
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
-        for (var j = 0; j < descrsArr.length; j++) {
-          descrsArr[j] = descrsArr[j].replace(/'|\[|\]|\=/g, "");
+        for (let j = 0; j < descrsArr.length; j += 1) {
+          descrsArr[j] = descrsArr[j].replace(/'|\[|\]|=/g, "");
         }
 
         statisticOptionsMap[thisDB][model] =
@@ -574,8 +577,8 @@ const doCurveParams = function () {
             ? {}
             : dbDateRangeMap[thisDB][model];
 
-        var thisPlotType;
-        for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx++) {
+        let thisPlotType;
+        for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx += 1) {
           thisPlotType = validPlotTypes[ptidx];
           if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
             // if we haven't encountered this plot type for this model yet, initialize everything
@@ -598,9 +601,9 @@ const doCurveParams = function () {
           }
           const jsonFriendlyVariable = variable.replace(/\./g, "_");
           const theseValidStats = Object.keys(validStats);
-          var thisValidStatType;
-          for (let vsidx = 0; vsidx < theseValidStats.length; vsidx++) {
-            thisValidStatType = validStats[theseValidStats[vsidx]][0];
+          let thisValidStatType;
+          for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
+            [thisValidStatType] = validStats[theseValidStats[vsidx]];
             if (
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] ===
               undefined
@@ -727,7 +730,7 @@ const doCurveParams = function () {
       }
     }
   } catch (err) {
-    console.log(err.message);
+    throw new Error(err.message);
   }
 
   if (matsCollections.label.findOne({ name: "label" }) === undefined) {
@@ -787,12 +790,9 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.group.findOne({ name: "group" });
+    const currentParam = matsCollections.group.findOne({ name: "group" });
     if (!matsDataUtils.areObjectsEqual(currentParam.options, Object.keys(dbGroupMap))) {
       // have to reload group data
-      if (process.env.NODE_ENV === "development") {
-        console.log("updating group data");
-      }
       matsCollections.group.update(
         { name: "group" },
         {
@@ -824,15 +824,12 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.database.findOne({ name: "database" });
+    const currentParam = matsCollections.database.findOne({ name: "database" });
     if (
       !matsDataUtils.areObjectsEqual(currentParam.optionsMap, dbGroupMap) ||
       !matsDataUtils.areObjectsEqual(currentParam.dates, dbDateRangeMap)
     ) {
       // have to reload database data
-      if (process.env.NODE_ENV === "development") {
-        console.log("updating database data");
-      }
       matsCollections.database.update(
         { name: "database" },
         {
@@ -865,7 +862,9 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["data-source"].findOne({ name: "data-source" });
+    const currentParam = matsCollections["data-source"].findOne({
+      name: "data-source",
+    });
     if (!matsDataUtils.areObjectsEqual(modelOptionsMap, currentParam.optionsMap)) {
       // have to reload model data
       matsCollections["data-source"].update(
@@ -899,7 +898,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["plot-type"].findOne({ name: "plot-type" });
+    const currentParam = matsCollections["plot-type"].findOne({ name: "plot-type" });
     if (!matsDataUtils.areObjectsEqual(plotTypeOptionsMap, currentParam.optionsMap)) {
       // have to reload model data
       matsCollections["plot-type"].update(
@@ -930,7 +929,7 @@ const doCurveParams = function () {
   } else if (regionOptions.indexOf("CONUS") !== -1) {
     regionDefault = "CONUS";
   } else {
-    regionDefault = regionOptions[0];
+    [regionDefault] = regionOptions;
   }
 
   if (matsCollections.region.findOne({ name: "region" }) === undefined) {
@@ -951,7 +950,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.region.findOne({ name: "region" });
+    const currentParam = matsCollections.region.findOne({ name: "region" });
     if (
       !matsDataUtils.areObjectsEqual(regionModelOptionsMap, currentParam.optionsMap)
     ) {
@@ -991,7 +990,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.statistic.findOne({ name: "statistic" });
+    const currentParam = matsCollections.statistic.findOne({ name: "statistic" });
     if (!matsDataUtils.areObjectsEqual(statisticOptionsMap, currentParam.optionsMap)) {
       // have to reload region data
       matsCollections.statistic.update(
@@ -1030,7 +1029,9 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["y-statistic"].findOne({ name: "y-statistic" });
+    const currentParam = matsCollections["y-statistic"].findOne({
+      name: "y-statistic",
+    });
     if (!matsDataUtils.areObjectsEqual(statisticOptionsMap, currentParam.optionsMap)) {
       // have to reload region data
       matsCollections["y-statistic"].update(
@@ -1055,7 +1056,7 @@ const doCurveParams = function () {
   if (variableOptions.indexOf("TMP") !== -1) {
     variableDefault = "TMP";
   } else {
-    variableDefault = variableOptions[0];
+    [variableDefault] = variableOptions;
   }
 
   if (matsCollections.variable.findOne({ name: "variable" }) === undefined) {
@@ -1088,7 +1089,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.variable.findOne({ name: "variable" });
+    const currentParam = matsCollections.variable.findOne({ name: "variable" });
     if (
       !matsDataUtils.areObjectsEqual(variableOptionsMap, currentParam.optionsMap) ||
       !matsDataUtils.areObjectsEqual(variableValuesMap, currentParam.valuesMap)
@@ -1127,7 +1128,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["y-variable"].findOne({ name: "y-variable" });
+    const currentParam = matsCollections["y-variable"].findOne({ name: "y-variable" });
     if (
       !matsDataUtils.areObjectsEqual(variableOptionsMap, currentParam.optionsMap) ||
       !matsDataUtils.areObjectsEqual(variableValuesMap, currentParam.valuesMap)
@@ -1178,7 +1179,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["interp-method"].findOne({
+    const currentParam = matsCollections["interp-method"].findOne({
       name: "interp-method",
     });
     if (!matsDataUtils.areObjectsEqual(imOptionsMap, currentParam.optionsMap)) {
@@ -1237,7 +1238,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.scale.findOne({ name: "scale" });
+    const currentParam = matsCollections.scale.findOne({ name: "scale" });
     if (!matsDataUtils.areObjectsEqual(scaleOptionsMap, currentParam.optionsMap)) {
       // have to reload scale data
       matsCollections.scale.update(
@@ -1286,7 +1287,7 @@ const doCurveParams = function () {
   } else if (fhrOptions.indexOf("12") !== -1) {
     fhrDefault = "12";
   } else {
-    fhrDefault = fhrOptions[0];
+    [fhrDefault] = fhrOptions;
   }
 
   if (
@@ -1311,7 +1312,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["forecast-length"].findOne({
+    const currentParam = matsCollections["forecast-length"].findOne({
       name: "forecast-length",
     });
     if (
@@ -1541,7 +1542,7 @@ const doCurveParams = function () {
   } else if (levelOptions.indexOf("L0") !== -1) {
     levelDefault = "L0";
   } else {
-    levelDefault = levelOptions[0];
+    [levelDefault] = levelOptions;
   }
 
   if (matsCollections.level.findOne({ name: "level" }) === undefined) {
@@ -1564,7 +1565,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.level.findOne({ name: "level" });
+    const currentParam = matsCollections.level.findOne({ name: "level" });
     if (!matsDataUtils.areObjectsEqual(levelOptionsMap, currentParam.optionsMap)) {
       // have to reload level data
       matsCollections.level.update(
@@ -1605,7 +1606,7 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections.description.findOne({ name: "description" });
+    const currentParam = matsCollections.description.findOne({ name: "description" });
     if (!matsDataUtils.areObjectsEqual(descrOptionsMap, currentParam.optionsMap)) {
       // have to reload description data
       matsCollections.description.update(
@@ -1734,7 +1735,9 @@ const doCurveParams = function () {
     });
   } else {
     // it is defined but check for necessary update
-    var currentParam = matsCollections["curve-dates"].findOne({ name: "curve-dates" });
+    const currentParam = matsCollections["curve-dates"].findOne({
+      name: "curve-dates",
+    });
     if (
       !matsDataUtils.areObjectsEqual(currentParam.startDate, minDate) ||
       !matsDataUtils.areObjectsEqual(currentParam.stopDate, maxDate) ||
@@ -1806,41 +1809,6 @@ const doCurveTextPatterns = function () {
         "level",
         "description",
         "aggregation-method",
-      ],
-      groupSize: 6,
-    });
-    matsCollections.CurveTextPatterns.insert({
-      plotType: matsTypes.PlotTypes.profile,
-      textPattern: [
-        ["", "label", ": "],
-        ["", "database", "."],
-        ["", "data-source", " in "],
-        ["", "region", ", "],
-        ["", "interp-method", " "],
-        ["", "scale", ", "],
-        ["", "variable", " "],
-        ["", "statistic", " "],
-        ["", "aggregation-method", ", "],
-        ["fcst_len: ", "forecast-length", "h, "],
-        ["valid-time: ", "valid-time", ", "],
-        ["desc: ", "description", ", "],
-        ["", "curve-dates", ""],
-      ],
-      displayParams: [
-        "label",
-        "group",
-        "database",
-        "data-source",
-        "region",
-        "statistic",
-        "variable",
-        "interp-method",
-        "scale",
-        "valid-time",
-        "forecast-length",
-        "description",
-        "aggregation-method",
-        "curve-dates",
       ],
       groupSize: 6,
     });
@@ -2096,7 +2064,7 @@ const doPlotGraph = function () {
 Meteor.startup(function () {
   matsCollections.Databases.remove({});
   if (matsCollections.Databases.find({}).count() < 0) {
-    console.log(
+    console.warn(
       "main startup: corrupted Databases collection: dropping Databases collection"
     );
     matsCollections.Databases.drop();
@@ -2113,7 +2081,7 @@ Meteor.startup(function () {
       databases = Meteor.settings.private.databases;
     }
     if (databases !== null && databases !== undefined && Array.isArray(databases)) {
-      for (let di = 0; di < databases.length; di++) {
+      for (let di = 0; di < databases.length; di += 1) {
         matsCollections.Databases.insert(databases[di]);
       }
     }
@@ -2150,7 +2118,7 @@ Meteor.startup(function () {
       appType: matsTypes.AppTypes.metexpress,
     });
   } catch (error) {
-    console.log(error.message);
+    throw new Error(error.message);
   }
 });
 
