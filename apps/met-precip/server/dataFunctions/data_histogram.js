@@ -25,6 +25,8 @@ dataHistogram = function (plotParams, plotFunction) {
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
+  let statement;
+  let dReturn;
   let dataFoundForCurve = [];
   let dataFoundForAnyCurve = false;
   const totalProcessingStart = moment();
@@ -43,9 +45,9 @@ dataHistogram = function (plotParams, plotFunction) {
   const { yAxisFormat } = binParams;
   const { binNum } = binParams;
 
-  for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
-    var curve = curves[curveIndex];
+    const curve = curves[curveIndex];
     const { diffFrom } = curve;
     dataFoundForCurve[curveIndex] = true;
     const { label } = curve;
@@ -85,7 +87,7 @@ dataHistogram = function (plotParams, plotFunction) {
       lineDataType = "line_data_nbrcnt";
     } else if (statLineType === "precalculated") {
       statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
-      lineDataType = statisticOptionsMap[statistic][1];
+      [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
@@ -221,11 +223,10 @@ dataHistogram = function (plotParams, plotFunction) {
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
     curves[curveIndex].binNum = binNum; // stash the binNum to use it later for bar chart options
 
-    var dReturn;
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      var statement =
+      statement =
         "select unix_timestamp(ld.fcst_valid_beg) as avtime, " +
         "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
@@ -311,7 +312,7 @@ dataHistogram = function (plotParams, plotFunction) {
   }
 
   // parse any errors from the python code
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (
       queryResult.error[curveIndex] !== undefined &&
       queryResult.error[curveIndex] !== ""
@@ -336,8 +337,7 @@ dataHistogram = function (plotParams, plotFunction) {
 
   const postQueryStartMoment = moment();
   let d;
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    curve = curves[curveIndex];
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (curveIndex < dReturn.length) {
       d = dReturn[curveIndex];
       allReturnedSubStats.push(d.subVals); // save returned data so that we can calculate histogram stats once all the queries are done

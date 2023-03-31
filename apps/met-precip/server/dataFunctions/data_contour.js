@@ -86,7 +86,7 @@ dataContour = function (plotParams, plotFunction) {
     statisticClause =
       `count(${statisticOptionsMap[statistic][2]}) as n, ` +
       `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
-    lineDataType = statisticOptionsMap[statistic][1];
+    [, lineDataType] = statisticOptionsMap[statistic];
   }
   const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
   let regions =
@@ -302,7 +302,7 @@ dataContour = function (plotParams, plotFunction) {
       recordCount: queryResult.data.length,
     };
     // get the data back from the query
-    d = queryResult.data[0];
+    [d] = queryResult.data;
   } catch (e) {
     // this is an error produced by a bug in the query function, not an error returned by the mysql database
     e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;

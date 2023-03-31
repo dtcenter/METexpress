@@ -26,6 +26,8 @@ dataGridScale = function (plotParams, plotFunction) {
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
+  let statement;
+  let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
   const totalProcessingStart = moment();
@@ -42,11 +44,11 @@ dataGridScale = function (plotParams, plotFunction) {
   let ymin = Number.MAX_VALUE;
   const idealValues = [];
 
-  for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
-    var curve = curves[curveIndex];
+    const curve = curves[curveIndex];
     const { diffFrom } = curve;
-    var { label } = curve;
+    const { label } = curve;
     const { database } = curve;
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
       .optionsMap[database][curve["data-source"]][0];
@@ -83,7 +85,7 @@ dataGridScale = function (plotParams, plotFunction) {
       lineDataType = "line_data_nbrcnt";
     } else if (statLineType === "precalculated") {
       statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
-      lineDataType = statisticOptionsMap[statistic][1];
+      [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
@@ -210,14 +212,13 @@ dataGridScale = function (plotParams, plotFunction) {
     // This axisKeySet object is used like a set and if a curve has the same
     // variable + statistic (axisKey) it will use the same axis.
     // The axis number is assigned to the axisKeySet value, which is the axisKey.
-    var axisKey = `${variable} ${statistic}`;
+    const axisKey = `${variable} ${statistic}`;
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
-    var dReturn;
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      var statement =
+      statement =
         "select h.interp_pnts as gridscale, " +
         "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
@@ -301,7 +302,7 @@ dataGridScale = function (plotParams, plotFunction) {
   }
 
   // parse any errors from the python code
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (
       queryResult.error[curveIndex] !== undefined &&
       queryResult.error[curveIndex] !== ""
@@ -326,8 +327,8 @@ dataGridScale = function (plotParams, plotFunction) {
 
   const postQueryStartMoment = moment();
   let d;
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    curve = curves[curveIndex];
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
+    const curve = curves[curveIndex];
     if (curveIndex < dReturn.length) {
       d = dReturn[curveIndex];
       // set axis limits based on returned data
@@ -357,14 +358,13 @@ dataGridScale = function (plotParams, plotFunction) {
     const mean = d.sum / d.x.length;
     const annotation =
       mean === undefined
-        ? `${label}- mean = NoData`
-        : `${label}- mean = ${mean.toPrecision(4)}`;
+        ? `${curve.label}- mean = NoData`
+        : `${curve.label}- mean = ${mean.toPrecision(4)}`;
     curve.annotation = annotation;
     curve.xmin = d.xmin;
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    curve.axisKey = axisKey;
     const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
       curve,
       curveIndex,
