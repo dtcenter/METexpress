@@ -24,7 +24,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   };
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
-  const differenceArray = [];
+  let statement;
   let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
@@ -41,7 +41,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
 
-  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
     const { diffFrom } = curve;
@@ -216,7 +216,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      let statement =
+      statement =
         "{{binClause}} " +
         "min({{dateString}}) as min_secs, " +
         "max({{dateString}}) as max_secs, " +
@@ -275,55 +275,56 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     }
   } // end for curves
 
-      let queryResult;
-      const startMoment = moment();
-      let finishMoment;
-      try {
-        // send the query statements to the query function
-        queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
-        finishMoment = moment();
-        dataRequests["data retrieval (query) time"] = {
-          begin: startMoment.format(),
-          finish: finishMoment.format(),
-          duration: `${moment
-            .duration(finishMoment.diff(startMoment))
-            .asSeconds()} seconds`,
-          recordCount: queryResult.data.length,
-        };
-        // get the data back from the query
-        dReturn = queryResult.data;
-      } catch (e) {
-        // this is an error produced by a bug in the query function, not an error returned by the mysql database
-        e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
-        throw new Error(e.message);
-      }
+  let queryResult;
+  const startMoment = moment();
+  let finishMoment;
+  try {
+    // send the query statements to the query function
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    finishMoment = moment();
+    dataRequests["data retrieval (query) time"] = {
+      begin: startMoment.format(),
+      finish: finishMoment.format(),
+      duration: `${moment
+        .duration(finishMoment.diff(startMoment))
+        .asSeconds()} seconds`,
+      recordCount: queryResult.data.length,
+    };
+    // get the data back from the query
+    dReturn = queryResult.data;
+  } catch (e) {
+    // this is an error produced by a bug in the query function, not an error returned by the mysql database
+    e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
+    throw new Error(e.message);
+  }
 
-      // parse any errors from the python code
-      for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-        if (
-          queryResult.error[curveIndex] !== undefined &&
-          queryResult.error[curveIndex] !== ""
-        ) {
-          if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
-            // this is NOT an error just a no data condition
-            dataFoundForCurve = false;
-          } else {
-            // this is an error returned by the mysql database
-            error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
-            throw new Error(error);
-          }
-        } else {
-          dataFoundForAnyCurve = true;
-        }
+  // parse any errors from the python code
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
+    if (
+      queryResult.error[curveIndex] !== undefined &&
+      queryResult.error[curveIndex] !== ""
+    ) {
+      if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
+        // this is NOT an error just a no data condition
+        dataFoundForCurve = false;
+      } else {
+        // this is an error returned by the mysql database
+        error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
+        throw new Error(error);
       }
+    } else {
+      dataFoundForAnyCurve = true;
+    }
+  }
 
   if (!dataFoundForAnyCurve) {
     // we found no data for any curves so don't bother proceeding
     throw new Error("INFO:  No valid data for any curves.");
   }
+
   const postQueryStartMoment = moment();
   let d;
-  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     const curve = curves[curveIndex];
     d = dReturn[curveIndex];
     // set axis limits based on returned data
