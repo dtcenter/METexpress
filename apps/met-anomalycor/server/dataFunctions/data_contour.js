@@ -283,7 +283,7 @@ dataContour = function (plotParams, plotFunction) {
       recordCount: queryResult.data.length,
     };
     // get the data back from the query
-    d = queryResult.data[0];
+    [d] = queryResult.data;
   } catch (e) {
     // this is an error produced by a bug in the query function, not an error returned by the mysql database
     e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
