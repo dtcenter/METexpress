@@ -26,6 +26,8 @@ dataValidTime = function (plotParams, plotFunction) {
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
+  let statement;
+  let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
   const totalProcessingStart = moment();
@@ -42,11 +44,11 @@ dataValidTime = function (plotParams, plotFunction) {
   let ymin = Number.MAX_VALUE;
   const idealValues = [];
 
-  for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
-    var curve = curves[curveIndex];
+    const curve = curves[curveIndex];
     const { diffFrom } = curve;
-    var { label } = curve;
+    const { label } = curve;
     const { database } = curve;
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
       .optionsMap[database][curve["data-source"]][0];
@@ -62,19 +64,18 @@ dataValidTime = function (plotParams, plotFunction) {
     let lineDataType = "";
     if (statLineType === "precalculated") {
       statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
-      lineDataType = statisticOptionsMap[statistic][1];
+      [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.tcst_header h, ${database}.${lineDataType} ld`;
     const { basin } = curve;
-    const { year } = curve;
     const { storm } = curve;
-    var stormClause;
+    let stormClause;
     if (storm === "All storms") {
       stormClause = `and h.storm_id like '${basin}%'`;
     } else {
       stormClause = `and h.storm_id = '${storm.split(" - ")[0]}'`;
     }
-    var truthStr = curve.truth;
+    const truthStr = curve.truth;
     const truth = Object.keys(
       matsCollections.truth.findOne({ name: "truth" }).valuesMap
     ).find(
@@ -109,23 +110,24 @@ dataValidTime = function (plotParams, plotFunction) {
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
         : curve.level;
-    var levelValuesMap = matsCollections.level.findOne(
+    const levelValuesMap = matsCollections.level.findOne(
       { name: "level" },
       { valuesMap: 1 }
     ).valuesMap;
-    var levelKeys = Object.keys(levelValuesMap);
-    var levelKey;
+    const levelKeys = Object.keys(levelValuesMap);
+    let levelKey;
     let levelsClause = "";
     levels = Array.isArray(levels) ? levels : [levels];
     if (levels.length > 0 && lineDataType !== "line_data_probrirw") {
       levels = levels
         .map(function (l) {
-          for (let lidx = 0; lidx < levelKeys.length; lidx++) {
+          for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
             levelKey = levelKeys[lidx];
             if (levelValuesMap[levelKey].name === l) {
               return `'${levelKey}'`;
             }
           }
+          return null;
         })
         .join(",");
       levelsClause = `and ld.level IN(${levels})`;
@@ -152,14 +154,13 @@ dataValidTime = function (plotParams, plotFunction) {
     // This axisKeySet object is used like a set and if a curve has the same
     // variable + statistic (axisKey) it will use the same axis.
     // The axis number is assigned to the axisKeySet value, which is the axisKey.
-    var axisKey = statistic;
+    const axisKey = statistic;
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
-    var dReturn;
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      var statement =
+      statement =
         "select unix_timestamp(ld.fcst_valid)%(24*3600)/3600 as hr_of_day, " +
         "count(distinct unix_timestamp(ld.fcst_valid)) as N_times, " +
         "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
@@ -234,7 +235,7 @@ dataValidTime = function (plotParams, plotFunction) {
   }
 
   // parse any errors from the python code
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (
       queryResult.error[curveIndex] !== undefined &&
       queryResult.error[curveIndex] !== ""
@@ -259,8 +260,8 @@ dataValidTime = function (plotParams, plotFunction) {
 
   const postQueryStartMoment = moment();
   let d;
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    curve = curves[curveIndex];
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
+    const curve = curves[curveIndex];
     if (curveIndex < dReturn.length) {
       d = dReturn[curveIndex];
       // set axis limits based on returned data
@@ -290,14 +291,13 @@ dataValidTime = function (plotParams, plotFunction) {
     const mean = d.sum / d.x.length;
     const annotation =
       mean === undefined
-        ? `${label}- mean = NoData`
-        : `${label}- mean = ${mean.toPrecision(4)}`;
+        ? `${curve.label}- mean = NoData`
+        : `${curve.label}- mean = ${mean.toPrecision(4)}`;
     curve.annotation = annotation;
     curve.xmin = d.xmin;
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    curve.axisKey = axisKey;
     const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
       curve,
       curveIndex,

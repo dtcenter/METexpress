@@ -25,6 +25,8 @@ dataHistogram = function (plotParams, plotFunction) {
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
+  let statement;
+  let dReturn;
   let dataFoundForCurve = [];
   let dataFoundForAnyCurve = false;
   const totalProcessingStart = moment();
@@ -43,9 +45,9 @@ dataHistogram = function (plotParams, plotFunction) {
   const { yAxisFormat } = binParams;
   const { binNum } = binParams;
 
-  for (var curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
-    var curve = curves[curveIndex];
+    const curve = curves[curveIndex];
     const { diffFrom } = curve;
     dataFoundForCurve[curveIndex] = true;
     const { label } = curve;
@@ -64,19 +66,18 @@ dataHistogram = function (plotParams, plotFunction) {
     let lineDataType = "";
     if (statLineType === "precalculated") {
       statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
-      lineDataType = statisticOptionsMap[statistic][1];
+      [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.tcst_header h, ${database}.${lineDataType} ld`;
     const { basin } = curve;
-    const { year } = curve;
     const { storm } = curve;
-    var stormClause;
+    let stormClause;
     if (storm === "All storms") {
       stormClause = `and h.storm_id like '${basin}%'`;
     } else {
       stormClause = `and h.storm_id = '${storm.split(" - ")[0]}'`;
     }
-    var truthStr = curve.truth;
+    const truthStr = curve.truth;
     const truth = Object.keys(
       matsCollections.truth.findOne({ name: "truth" }).valuesMap
     ).find(
@@ -125,23 +126,24 @@ dataHistogram = function (plotParams, plotFunction) {
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
         : curve.level;
-    var levelValuesMap = matsCollections.level.findOne(
+    const levelValuesMap = matsCollections.level.findOne(
       { name: "level" },
       { valuesMap: 1 }
     ).valuesMap;
-    var levelKeys = Object.keys(levelValuesMap);
-    var levelKey;
+    const levelKeys = Object.keys(levelValuesMap);
+    let levelKey;
     let levelsClause = "";
     levels = Array.isArray(levels) ? levels : [levels];
     if (levels.length > 0 && lineDataType !== "line_data_probrirw") {
       levels = levels
         .map(function (l) {
-          for (let lidx = 0; lidx < levelKeys.length; lidx++) {
+          for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
             levelKey = levelKeys[lidx];
             if (levelValuesMap[levelKey].name === l) {
               return `'${levelKey}'`;
             }
           }
+          return null;
         })
         .join(",");
       levelsClause = `and ld.level IN(${levels})`;
@@ -175,11 +177,10 @@ dataHistogram = function (plotParams, plotFunction) {
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
     curves[curveIndex].binNum = binNum; // stash the binNum to use it later for bar chart options
 
-    var dReturn;
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      var statement =
+      statement =
         "select unix_timestamp(ld.fcst_valid) as avtime, " +
         "count(distinct unix_timestamp(ld.fcst_valid)) as N_times, " +
         "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
@@ -256,7 +257,7 @@ dataHistogram = function (plotParams, plotFunction) {
   }
 
   // parse any errors from the python code
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (
       queryResult.error[curveIndex] !== undefined &&
       queryResult.error[curveIndex] !== ""
@@ -281,8 +282,7 @@ dataHistogram = function (plotParams, plotFunction) {
 
   const postQueryStartMoment = moment();
   let d;
-  for (curveIndex = 0; curveIndex < curvesLength; curveIndex++) {
-    curve = curves[curveIndex];
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     if (curveIndex < dReturn.length) {
       d = dReturn[curveIndex];
       allReturnedSubStats.push(d.subVals); // save returned data so that we can calculate histogram stats once all the queries are done
