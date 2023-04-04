@@ -18,27 +18,27 @@ Feature: Add Remove Two Scatters
     Scenario: addRemoveTwoScatters
         When I set the plot type to "SimpleScatter"
         Then the plot type should be "SimpleScatter"
-        When I change the "group" parameter to "NOAA NCEP"
-        Then the "group" parameter value matches "NOAA NCEP"
-        When I change the "database" parameter to "mv_ncep_meso_sl1l2"
-        Then the "database" parameter value matches "mv_ncep_meso_sl1l2"
-        When I change the "data-source" parameter to "GFS/212"
-        Then the "data-source" parameter value matches "GFS/212"
+        When I change the "group" parameter to "Test12"
+        Then the "group" parameter value matches "Test12"
+        When I change the "database" parameter to "mv_cmaq_g2o"
+        Then the "database" parameter value matches "mv_cmaq_g2o"
+        When I change the "data-source" parameter to "CMAQ5X/148"
+        Then the "data-source" parameter value matches "CMAQ5X/148"
         When I change the "statistic" parameter to "RMSE"
         Then the "statistic" parameter value matches "RMSE"
-        When I change the "variable" parameter to "U"
-        Then the "variable" parameter value matches "U"
+        When I change the "variable" parameter to "OZMX/8"
+        Then the "variable" parameter value matches "OZMX/8"
         When I change the "y-statistic" parameter to "RMSE"
         Then the "y-statistic" parameter value matches "RMSE"
-        When I change the "y-variable" parameter to "V"
-        Then the "y-variable" parameter value matches "V"
-        When I set the curve-dates to "10/01/2014 00:00 - 11/09/2014 00:00"
-        Then the curve-dates value is "10/01/2014 00:00 - 11/09/2014 00:00"
+        When I change the "y-variable" parameter to "OZMX/1"
+        Then the "y-variable" parameter value matches "OZMX/1"
+        When I set the curve-dates to "04/01/2019 00:00 - 05/09/2019 00:00"
+        Then the curve-dates value is "04/01/2019 00:00 - 05/09/2019 00:00"
         Then I click the "Add Curve" button
         Then "Curve0" is added
 
-        When I change the "data-source" parameter to "HRRR/255"
-        Then the "data-source" parameter value matches "HRRR/255"
+        When I change the "data-source" parameter to "CMAQPARA11/148"
+        Then the "data-source" parameter value matches "CMAQPARA11/148"
         When I click the "Add Curve" button
         Then "Curve1" is added
         And I should see a list of curves containing "Curve0,Curve1"
@@ -58,10 +58,6 @@ Feature: Add Remove Two Scatters
         When I click the "Back" button
         Then I should be on the main page
         And the "Plot Matched" button should be visible
-
-        When I click the "no diffs" radio button
-        Then I should see a list of curves containing "Curve0,Curve1"
-        And I should have 2 curves
 
         When I click the "Remove All" button
         And the "Remove all the curves" button should be visible

@@ -11,23 +11,19 @@ Feature: Add Remove Two Scatters
     I should have no curves.
 
     Background:
-        Given I load the app "/met-upperair"
-        Then I expect the app title to be "MET Upper Air"
+        Given I load the app "/met-surface"
+        Then I expect the app title to be "MET Surface"
 
     @watch
     Scenario: addRemoveTwoScatters
         When I set the plot type to "SimpleScatter"
         Then the plot type should be "SimpleScatter"
-        When I change the "group" parameter to "vhagerty"
-        Then the "group" parameter value matches "vhagerty"
-        When I change the "database" parameter to "mv_gsd"
-        Then the "database" parameter value matches "mv_gsd"
-        When I change the "data-source" parameter to "GFS"
-        Then the "data-source" parameter value matches "GFS"
-        When I change the "forecast-length" parameter to "120"
-        Then the "forecast-length" parameter value matches "120"
-        When I change the "level" parameter to "P500"
-        Then the "level" parameter value matches "P500"
+        When I change the "group" parameter to "NOAA NCEP"
+        Then the "group" parameter value matches "NOAA NCEP"
+        When I change the "database" parameter to "mv_ncep_meso_sl1l2"
+        Then the "database" parameter value matches "mv_ncep_meso_sl1l2"
+        When I change the "data-source" parameter to "GFS/212"
+        Then the "data-source" parameter value matches "GFS/212"
         When I change the "statistic" parameter to "RMSE"
         Then the "statistic" parameter value matches "RMSE"
         When I change the "variable" parameter to "U"
@@ -36,13 +32,13 @@ Feature: Add Remove Two Scatters
         Then the "y-statistic" parameter value matches "RMSE"
         When I change the "y-variable" parameter to "V"
         Then the "y-variable" parameter value matches "V"
-        When I set the curve-dates to "11/01/2018 00:00 - 11/11/2018 00:00"
-        Then the curve-dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
-        When I click the "Add Curve" button
+        When I set the curve-dates to "10/01/2014 00:00 - 11/09/2014 00:00"
+        Then the curve-dates value is "10/01/2014 00:00 - 11/09/2014 00:00"
+        Then I click the "Add Curve" button
         Then "Curve0" is added
 
-        When I change the "data-source" parameter to "PRFV3RT1"
-        Then the "data-source" parameter value matches "PRFV3RT1"
+        When I change the "data-source" parameter to "HRRR/255"
+        Then the "data-source" parameter value matches "HRRR/255"
         When I click the "Add Curve" button
         Then "Curve1" is added
         And I should see a list of curves containing "Curve0,Curve1"

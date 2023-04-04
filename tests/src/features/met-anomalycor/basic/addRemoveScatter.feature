@@ -8,8 +8,8 @@ Feature: Add Remove Scatter
     then delete that curve.
 
     Background:
-        Given I load the app "/met-upperair"
-        Then I expect the app title to be "MET Upper Air"
+        Given I load the app "/met-anomalycor"
+        Then I expect the app title to be "MET Anomaly Correlation"
 
     @watch
     Scenario: addRemoveScatter
@@ -25,12 +25,12 @@ Feature: Add Remove Scatter
         Then the "forecast-length" parameter value matches "120"
         When I change the "level" parameter to "P500"
         Then the "level" parameter value matches "P500"
-        When I change the "statistic" parameter to "RMSE"
-        Then the "statistic" parameter value matches "RMSE"
+        When I change the "statistic" parameter to "ACC"
+        Then the "statistic" parameter value matches "ACC"
         When I change the "variable" parameter to "U"
         Then the "variable" parameter value matches "U"
-        When I change the "y-statistic" parameter to "RMSE"
-        Then the "y-statistic" parameter value matches "RMSE"
+        When I change the "y-statistic" parameter to "ACC"
+        Then the "y-statistic" parameter value matches "ACC"
         When I change the "y-variable" parameter to "V"
         Then the "y-variable" parameter value matches "V"
         When I set the curve-dates to "11/01/2018 00:00 - 11/11/2018 00:00"

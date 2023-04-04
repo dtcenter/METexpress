@@ -8,25 +8,33 @@ Feature: Add Remove Scatter
     then delete that curve.
 
     Background:
-        Given I load the app "/upperair"
-        Then I expect the app title to be "Upper Air"
+        Given I load the app "/met-upperair"
+        Then I expect the app title to be "MET Upper Air"
 
     @watch
     Scenario: addRemoveScatter
         When I set the plot type to "SimpleScatter"
         Then the plot type should be "SimpleScatter"
-        When I change the "data-source" parameter to "RAP_GSL"
-        Then the "data-source" parameter value matches "RAP_GSL"
-        When I change the "x-statistic" parameter to "Bias (Model - Obs)"
-        Then the "x-statistic" parameter value matches "Bias (Model - Obs)"
-        When I change the "x-variable" parameter to "Temperature"
-        Then the "x-variable" parameter value matches "Temperature"
-        When I change the "y-statistic" parameter to "Obs average"
-        Then the "y-statistic" parameter value matches "Obs average"
-        When I change the "y-variable" parameter to "Temperature"
-        Then the "y-variable" parameter value matches "Temperature"
-        When I set the curve-dates to "09/21/2019 00:00 - 09/24/2019 00:00"
-        Then the curve-dates value is "09/21/2019 00:00 - 09/24/2019 00:00"
+        When I change the "group" parameter to "vhagerty"
+        Then the "group" parameter value matches "vhagerty"
+        When I change the "database" parameter to "mv_gsd"
+        Then the "database" parameter value matches "mv_gsd"
+        When I change the "data-source" parameter to "GFS"
+        Then the "data-source" parameter value matches "GFS"
+        When I change the "forecast-length" parameter to "120"
+        Then the "forecast-length" parameter value matches "120"
+        When I change the "level" parameter to "P500"
+        Then the "level" parameter value matches "P500"
+        When I change the "statistic" parameter to "RMSE"
+        Then the "statistic" parameter value matches "RMSE"
+        When I change the "variable" parameter to "U"
+        Then the "variable" parameter value matches "U"
+        When I change the "y-statistic" parameter to "RMSE"
+        Then the "y-statistic" parameter value matches "RMSE"
+        When I change the "y-variable" parameter to "V"
+        Then the "y-variable" parameter value matches "V"
+        When I set the curve-dates to "11/01/2018 00:00 - 11/11/2018 00:00"
+        Then the curve-dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
         Then I click the "Add Curve" button
         Then "Curve0" is added
         And I should see a list of curves containing "Curve0"
