@@ -53,7 +53,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     }).optionsMap[binParam];
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
       .optionsMap[database][curve["data-source"]][0];
-    const modelClause = `and h.model = '${model}' and h1.model = '${model}' `;
+    const modelClause = `and h.model = '${model}'`;
     const selectorPlotType = curve["plot-type"];
     const statisticXSelect = curve.statistic;
     const statisticYSelect = curve["y-statistic"];
@@ -71,16 +71,16 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "avg(ld.fbar) as fbarX, " +
         "avg(ld.obar) as obarX, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataX, ";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataX";
       statisticClauseY =
-        "count(ld1.fbar) as nY, " +
-        "avg(ld1.fbar) as fbarY, " +
-        "avg(ld1.obar) as obarY, " +
-        "group_concat(distinct ld1.fbar, ';', ld1.obar, ';', ld1.ffbar, ';', ld1.oobar, ';', ld1.fobar, ';', " +
-        "ld1.total, ';', unix_timestamp(ld1.fcst_valid_beg), ';', h1.fcst_lev order by unix_timestamp(ld1.fcst_valid_beg), h1.fcst_lev) as sub_dataY";
+        "count(ld.fbar) as nY, " +
+        "avg(ld.fbar) as fbarY, " +
+        "avg(ld.obar) as obarY, " +
+        "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataY";
       lineDataType = "line_data_sl1l2";
     }
-    const queryTableClause = `from ${database}.stat_header h, ${database}.stat_header h1, ${database}.${lineDataType} ld, ${database}.${lineDataType} ld1`;
+    const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
       curve.region === undefined || curve.region === matsTypes.InputTypes.unused
         ? []
@@ -93,17 +93,17 @@ dataSimpleScatter = function (plotParams, plotFunction) {
           return `'${r}'`;
         })
         .join(",");
-      regionsClause = `and h.vx_mask IN(${regions}) and h1.vx_mask IN(${regions}) and h.vx_mask = h1.vx_mask`;
+      regionsClause = `and h.vx_mask IN(${regions})`;
     }
     const { scale } = curve;
     let scaleClause = "";
     if (scale !== "All scales") {
-      scaleClause = `and h.interp_pnts = '${scale}' and h1.interp_pnts = '${scale}'`;
+      scaleClause = `and h.interp_pnts = '${scale}'`;
     }
     const im = curve["interp-method"];
     let imClause = "";
     if (im !== "All methods") {
-      imClause = `and h.interp_mthd = '${im}' and h1.interp_mthd = '${im}'`;
+      imClause = `and h.interp_mthd = '${im}'`;
     }
     const variableXStr = curve.variable;
     const variableYStr = curve["y-variable"];
@@ -114,7 +114,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const variableX = variableValuesMap[variableXStr];
     const variableY = variableValuesMap[variableYStr];
     const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
-    const variableClauseY = `and h1.fcst_var = '${variableValuesMap[variableY]}'`;
+    const variableClauseY = `and h.fcst_var = '${variableValuesMap[variableY]}'`;
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
@@ -157,20 +157,17 @@ dataSimpleScatter = function (plotParams, plotFunction) {
             return `'${fl}','${fl}0000'`;
           })
           .join(",");
-        forecastLengthsClause = `and ld.fcst_lead IN(${fcsts}) and ld1.fcst_lead IN(${fcsts}) and ld.fcst_lead = ld1.fcst_lead`;
+        forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
       }
     }
     let dateString = "";
-    let dateString2 = "";
     let dateClause = "";
     if (binParam === "Init Date" && binParam !== "Valid Date") {
       dateString = "unix_timestamp(ld.fcst_init_beg)";
-      dateString2 = "unix_timestamp(ld1.fcst_init_beg)";
     } else {
       dateString = "unix_timestamp(ld.fcst_valid_beg)";
-      dateString2 = "unix_timestamp(ld1.fcst_valid_beg)";
     }
-    dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs} and ${dateString2} >= ${fromSecs} and ${dateString2} <= ${toSecs} and ${dateString} = ${dateString2}`;
+    dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs}`;
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
@@ -195,7 +192,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         })
         .join(",");
     }
-    const levelsClause = `and h.fcst_lev IN(${levels}) and h1.fcst_lev IN(${levels}) and h.fcst_lev = h1.fcst_lev`;
+    const levelsClause = `and h.fcst_lev IN(${levels})`;
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -209,7 +206,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
           return `'${d}'`;
         })
         .join(",");
-      descrsClause = `and h.descr IN(${descrs}) and h1.descr IN(${descrs}) and h.descr = h1.descr`;
+      descrsClause = `and h.descr IN(${descrs})`;
     }
     appParams.aggMethod = curve["aggregation-method"];
     const statType =
@@ -228,8 +225,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "{{binClause}} " +
         "min({{dateString}}) as min_secs, " +
         "max({{dateString}}) as max_secs, " +
-        "{{statisticClauseX}} " +
-        "{{statisticClauseY}} " +
+        "{{statisticClause}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +
         "{{dateClause}} " +
@@ -237,29 +233,23 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "{{regionsClause}} " +
         "{{imClause}} " +
         "{{scaleClause}} " +
-        "{{variableClauseX}} " +
-        "{{variableClauseY}} " +
+        "{{variableClause}} " +
         "{{thresholdClause}} " +
         "{{validTimeClause}} " +
         "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
         "{{descrsClause}} " +
         "and h.stat_header_id = ld.stat_header_id " +
-        "and h1.stat_header_id = ld1.stat_header_id " +
         "group by binVal " +
         "order by binVal" +
         ";";
 
       statement = statement.replace("{{binClause}}", binClause);
-      statement = statement.replace("{{statisticClauseX}}", statisticClauseX);
-      statement = statement.replace("{{statisticClauseY}}", statisticClauseY);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
       statement = statement.replace("{{modelClause}}", modelClause);
       statement = statement.replace("{{regionsClause}}", regionsClause);
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
-      statement = statement.replace("{{variableClauseX}}", variableClauseX);
-      statement = statement.replace("{{variableClauseY}}", variableClauseY);
       statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
@@ -267,10 +257,16 @@ dataSimpleScatter = function (plotParams, plotFunction) {
       statement = statement.replace("{{descrsClause}}", descrsClause);
       statement = statement.replace("{{dateClause}}", dateClause);
       statement = statement.split("{{dateString}}").join(dateString);
+
+      let statement1 = statement.replace("{{statisticClause}}", statisticClauseX);
+      statement1 = statement1.replace("{{variableClause}}", variableClauseX);
+      let statement2 = statement.replace("{{statisticClause}}", statisticClauseY);
+      statement2 = statement2.replace("{{variableClause}}", variableClauseY);
+
       dataRequests[label] = statement;
 
       queryArray.push({
-        statement,
+        statement: [statement1, statement2],
         statLineType,
         statistic: `${statisticXSelect}__vs__${statisticYSelect}`,
         appParams: JSON.parse(JSON.stringify(appParams)),
