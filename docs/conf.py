@@ -74,7 +74,7 @@ release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc','sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc','sphinx.ext.intersphinx','sphinx_design' ]
 
 # To enable PDF generation, set METPLUS_DOC_PDF environment variable
 #  sphinx 2.4.2+ and rst2pdf packages are required
@@ -215,7 +215,6 @@ pdf_use_numbered_links = True
 pdf_fit_background_mode = 'scale'
 
 ##################################################################
-
                    
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -255,8 +254,7 @@ numfig = True
 numfig_format = {
     'figure': 'Figure %s',
 }
-
-    
+   
 # -- Export variables --------------------------------------------------------
 
 rst_epilog = """
