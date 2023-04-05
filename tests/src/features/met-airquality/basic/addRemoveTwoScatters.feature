@@ -11,8 +11,8 @@ Feature: Add Remove Two Scatters
     I should have no curves.
 
     Background:
-        Given I load the app "/met-surface"
-        Then I expect the app title to be "MET Surface"
+        Given I load the app "/met-airquality"
+        Then I expect the app title to be "MET Air Quality"
 
     @watch
     Scenario: addRemoveTwoScatters

@@ -78,7 +78,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "avg(ld.oabar) as obarY, " +
         "group_concat(distinct ld.fabar, ';', ld.oabar, ';', ld.ffabar, ';', ld.ooabar, ';', ld.foabar, ';', " +
         "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataY";
-      lineDataType = "line_data_sl1l2";
+      lineDataType = "line_data_sal1l2";
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
