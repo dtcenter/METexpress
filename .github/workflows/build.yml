@@ -11,6 +11,35 @@ env:
   DEV_REGISTRY: ghcr.io/dtcenter/metexpress/development
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        app: 
+          - met-airquality
+          - met-anomalycor
+          - met-cyclone
+          - met-ensemble
+          - met-precip
+          - met-object
+          - met-surface
+          - met-upperair
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'  # This needs to match the version used by our Meteor release
+      - name: Install dependencies
+        working-directory: apps/${{ matrix.app }}
+        run: npm ci
+      - name: Lint
+        working-directory: apps/${{ matrix.app }}
+        run: npm run lint
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
