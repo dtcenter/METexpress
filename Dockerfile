@@ -27,24 +27,23 @@ ARG APPNAME
 ARG BUILDVER=dev
 ARG COMMITBRANCH=development
 ARG COMMITSHA
-ARG METCALCPYVER=develop
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
-    git \
     ca-certificates \
     python3 \
-    python3-numpy \
-    python3-scipy \
-    python3-pandas \
     python3-pip \
-    python3-pymysql \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && pip3 --no-cache-dir install \
-        metcalcpy@git+https://github.com/dtcenter/METcalcpy.git@${METCALCPYVER}
+    && python3 -m pip install --upgrade --no-cache-dir pip wheel setuptools \
+    && python3 -m pip --no-cache-dir install \
+        metcalcpy \
+        numpy \
+        scipy \
+        pandas \
+        pymysql
 
 # Set Environment
 ENV APP_FOLDER=/usr/app
@@ -76,9 +75,19 @@ RUN mkdir -p ${SETTINGS_DIR} \
     && chown node:node ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache \
     && chmod 644 ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache
 
-# Install the Meteor app's NPM dependencies and update the OS in the container
-RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh
-RUN apt-get update && apt-get -y upgrade && apt-get clean && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install the Meteor app's NPM dependencies
+# g++ & build-essential are needed for Apple Silicon builds
+RUN apt-get update && apt-get install -y --no-install-recommends g++ build-essential \
+    && bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh \
+    && apt-get purge -y g++ build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Update the OS packages in the container
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE ${PORT}
 USER node
@@ -95,7 +104,7 @@ LABEL version=${BUILDVER} code.branch=${COMMITBRANCH} code.commit=${COMMITSHA}
 
 
 # Create a stage with the root user for debugging
-# Note - you'll need to override the entrypoint if you want a shell (docker run --entrypoint /bin/bash ...)
+# Note - you'll need to override the entrypoint if you want a shell (docker run -it --entrypoint /bin/bash ...)
 FROM production AS debug
 USER root
 
