@@ -541,6 +541,12 @@ const doCurveParams = function () {
     HAFS: "HAFS: Hurricane Analysis and Forecast System",
     HAFI: "HAFI: Hurricane Analysis and Forecast System",
     HAF2: "HAF2: Hurricane Analysis and Forecast System",
+    HFSA: "HFSA: Hurricane Analysis and Forecast System - A",
+    HFAI: "HFAI: Hurricane Analysis and Forecast System - A",
+    HFA2: "HFA2: Hurricane Analysis and Forecast System - A",
+    HFSB: "HFSB: Hurricane Analysis and Forecast System - B",
+    HFBI: "HFBI: Hurricane Analysis and Forecast System - B",
+    HFB2: "HFB2: Hurricane Analysis and Forecast System - B",
     HAMN: "HAMN: HAFS Ensemble Mean",
     HAMI: "HAMI: HAFS Ensemble Mean",
     HAM2: "HAM2: HAFS Ensemble Mean",
@@ -2260,7 +2266,7 @@ const doPlotGraph = function () {
     matsCollections.PlotGraphFunctions.insert({
       plotType: matsTypes.PlotTypes.dieoff,
       graphFunction: "graphPlotly",
-      dataFunction: "dataDieOff",
+      dataFunction: "dataDieoff",
       checked: false,
     });
     matsCollections.PlotGraphFunctions.insert({

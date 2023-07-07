@@ -67,7 +67,7 @@ and the mean value of the selected parameter on the x-axis.
 
 **Die-off**: Die-off plots show how skill (or the inverse, error)
 changes with increasing lead time.  :numref:`apps_interface_dieoff` shows the user
-interface page after selecting the plot type of DieOff.  Note that
+interface page after selecting the plot type of Dieoff.  Note that
 another selector is included for DIEOFF TYPE, which has the following
 possible values:
 
@@ -81,9 +81,9 @@ possible values:
 
 .. figure:: figure/apps_interface_dieoff.png
 
-        User Interface screen after selecting plot type of DieOff.
+        User Interface screen after selecting plot type of Dieoff.
 
-:numref:`apps_upper_air_dieoff_plot` shows a sample of a DieOff plot in METexpress.
+:numref:`apps_upper_air_dieoff_plot` shows a sample of a Dieoff plot in METexpress.
 This looks more
 like a familiar die-off curve when plotting skill, such as anomaly
 correlation as plotted in :numref:`apps_anom_corr_dieoff_plot` using the Anomaly Correlation
@@ -100,13 +100,13 @@ the specified date range.
 
 .. figure:: figure/apps_upper_air_dieoff_plot.png
 	    
-        Upper Air DieOff plot
+        Upper Air Dieoff plot
 
 .. _apps_anom_corr_dieoff_plot:
 
 .. figure:: figure/apps_anom_corr_dieoff_plot.png
 
-        Anomaly Correlation DieOff plot
+        Anomaly Correlation Dieoff plot
 
 **ValidTime**: The ValidTime plot type (also sometimes known as diurnal
 cycle plots) displays valid UTC hour on the x–axis and the mean value of
@@ -236,7 +236,7 @@ Plot types available include
 
 * Time Series
 * Profile
-* DieOff
+* Dieoff
 * ValidTime
 * Histogram
 * Contour
@@ -316,12 +316,12 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include:
 
 * Time Series
-* DieOff
+* Dieoff
 * ValidTime
 * Histogram
 * Contour
 
-Plots in the Surface app for Time Series, DieOff, ValidTime, Histogram, and
+Plots in the Surface app for Time Series, Dieoff, ValidTime, Histogram, and
 Contour are the same as in Upper Air. An example of a Valid Time plot
 is shown in :numref:`apps_surface_plot`.
 
@@ -381,13 +381,13 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include 
 
 * Time Series
-* DieOff
+* Dieoff
 * Threshold
 * ValidTime
 * Histogram
 * Contour
 
-Plots in the Air Quality app for Time Series, DieOff, ValidTime,
+Plots in the Air Quality app for Time Series, Dieoff, ValidTime,
 Histogram, and Contour are the same as in Upper Air. 
 
 An additional plot type, Threshold, is available in this app.
@@ -446,7 +446,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include 
 
 * Time Series
-* DieOff
+* Dieoff
 * ValidTime
 * Histogram
 * Ensemble Histogram
@@ -454,7 +454,7 @@ Plot types available include
 * ROC
 * Performance Diagram
 
-Plots in the Ensemble app for Time Series, DieOff, ValidTime, and
+Plots in the Ensemble app for Time Series, Dieoff, ValidTime, and
 Histogram are the same as in Upper Air. 
 
 Four plot types are specific to this app: Ensemble Histogram,
@@ -602,14 +602,14 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include 
 
 * Time Series
-* DieOff
+* Dieoff
 * Threshold
 * ValidTime
 * GridScale
 * Histogram
 * Contour
 
-Plots in the Precipitation app for Time Series, DieOff,
+Plots in the Precipitation app for Time Series, Dieoff,
 ValidTime, Histogram, and Contour are the same as in Upper Air. 
 
 A different plot type, Threshold, is present in this app. Threshold
@@ -707,12 +707,12 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include
 
 * Time Series
-* DieOff
+* Dieoff
 * ValidTime
 * YearToYear
 * Histogram
 
-Plots in the Cyclone app for Time Series, DieOff,
+Plots in the Cyclone app for Time Series, Dieoff,
 ValidTime, and Histogram are the same as in Upper Air.
 
 A different plot type, YearToYear, is present in this app. YearToYear
@@ -836,11 +836,11 @@ The selector for the Statistic has these possible choices (depending on availabl
 Plot types available include
 
 * Time Series
-* DieOff
+* Dieoff
 * Threshold
 * ValidTime
 
-Plots in the Objects app for Time Series, DieOff,
+Plots in the Objects app for Time Series, Dieoff,
 and ValidTime are the same as in Precipitation.
 
 :numref:`apps_interface_objects` shows an example of the user interface for the
