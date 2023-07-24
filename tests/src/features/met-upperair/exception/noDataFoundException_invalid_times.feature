@@ -19,6 +19,16 @@ Feature: No Data Found Exception: invalid_times
     Scenario: noDataFoundException_invalid_times
         When I set the plot type to "TimeSeries"
         Then the plot type should be "TimeSeries"
+        When I change the "group" parameter to "vhagerty"
+        Then the "group" parameter value matches "vhagerty"
+        When I change the "database" parameter to "mv_gsd"
+        Then the "database" parameter value matches "mv_gsd"
+        When I change the "data-source" parameter to "GFS"
+        Then the "data-source" parameter value matches "GFS"
+        When I change the "forecast-length" parameter to "120"
+        Then the "forecast-length" parameter value matches "120"
+        When I change the "level" parameter to "P500"
+        Then the "level" parameter value matches "P500"
         When I set the dates to "01/19/1995 12:00 - 06/19/1996 12:00"
         Then the dates value is "01/19/1995 12:00 - 06/19/1996 12:00"
         When I click the "Add Curve" button

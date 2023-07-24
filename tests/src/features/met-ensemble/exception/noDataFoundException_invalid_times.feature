@@ -19,6 +19,18 @@ Feature: No Data Found Exception: invalid_times
     Scenario: noDataFoundException_invalid_times
         When I set the plot type to "TimeSeries"
         Then the plot type should be "TimeSeries"
+        When I change the "group" parameter to "NO GROUP"
+        Then the "group" parameter value matches "NO GROUP"
+        When I change the "database" parameter to "mv_gsd_ensemble_test"
+        Then the "database" parameter value matches "mv_gsd_ensemble_test"
+        When I change the "data-source" parameter to "HREFv2_1"
+        Then the "data-source" parameter value matches "HREFv2_1"
+        When I change the "region" parameter to "CONUS"
+        Then the "region" parameter value matches "CONUS"
+        When I change the "variable" parameter to "REFC"
+        Then the "variable" parameter value matches "REFC"
+        When I change the "level" parameter to "L0"
+        Then the "level" parameter value matches "L0"
         When I set the dates to "01/19/1995 12:00 - 06/19/1996 12:00"
         Then the dates value is "01/19/1995 12:00 - 06/19/1996 12:00"
         When I click the "Add Curve" button

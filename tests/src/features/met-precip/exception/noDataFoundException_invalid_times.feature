@@ -19,6 +19,18 @@ Feature: No Data Found Exception: invalid_times
     Scenario: noDataFoundException_invalid_times
         When I set the plot type to "TimeSeries"
         Then the plot type should be "TimeSeries"
+        When I change the "group" parameter to "NO GROUP"
+        Then the "group" parameter value matches "NO GROUP"
+        When I change the "database" parameter to "mv_hwt_2018"
+        Then the "database" parameter value matches "mv_hwt_2018"
+        When I change the "data-source" parameter to "GFDLFV3"
+        Then the "data-source" parameter value matches "GFDLFV3"
+        When I change the "region" parameter to "FULL"
+        Then the "region" parameter value matches "FULL"
+        When I change the "statistic" parameter to "CSI (Critical Success Index)"
+        Then the "statistic" parameter value matches "CSI (Critical Success Index)"
+        When I change the "variable" parameter to "APCP_03"
+        Then the "variable" parameter value matches "APCP_03"
         When I set the dates to "01/19/1995 12:00 - 06/19/1996 12:00"
         Then the dates value is "01/19/1995 12:00 - 06/19/1996 12:00"
         When I click the "Add Curve" button

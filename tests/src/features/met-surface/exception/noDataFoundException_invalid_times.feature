@@ -19,6 +19,12 @@ Feature: No Data Found Exception: invalid_times
     Scenario: noDataFoundException_invalid_times
         When I set the plot type to "TimeSeries"
         Then the plot type should be "TimeSeries"
+        When I change the "group" parameter to "NOAA NCEP"
+        Then the "group" parameter value matches "NOAA NCEP"
+        When I change the "database" parameter to "mv_ncep_meso_sl1l2"
+        Then the "database" parameter value matches "mv_ncep_meso_sl1l2"
+        When I change the "data-source" parameter to "GFS/212"
+        Then the "data-source" parameter value matches "GFS/212"
         When I set the dates to "01/19/1995 12:00 - 06/19/1996 12:00"
         Then the dates value is "01/19/1995 12:00 - 06/19/1996 12:00"
         When I click the "Add Curve" button
