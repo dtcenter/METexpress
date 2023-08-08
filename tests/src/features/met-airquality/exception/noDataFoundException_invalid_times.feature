@@ -19,6 +19,12 @@ Feature: No Data Found Exception: invalid_times
     Scenario: noDataFoundException_invalid_times
         When I set the plot type to "TimeSeries"
         Then the plot type should be "TimeSeries"
+        When I change the "group" parameter to "Test12"
+        Then the "group" parameter value matches "Test12"
+        When I change the "database" parameter to "mv_cmaq_g2o"
+        Then the "database" parameter value matches "mv_cmaq_g2o"
+        When I change the "data-source" parameter to "CMAQ5X/148"
+        Then the "data-source" parameter value matches "CMAQ5X/148"
         When I set the dates to "01/19/1995 12:00 - 06/19/1996 12:00"
         Then the dates value is "01/19/1995 12:00 - 06/19/1996 12:00"
         When I click the "Add Curve" button

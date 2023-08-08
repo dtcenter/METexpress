@@ -1,5 +1,5 @@
 # This tag here should match the app's Meteor version, per .meteor/release
-FROM geoffreybooth/meteor-base:2.11.0 AS meteor-builder
+FROM geoffreybooth/meteor-base:2.12 AS meteor-builder
 
 ARG APPNAME
 
@@ -19,56 +19,30 @@ COPY MATScommon /MATScommon
 RUN bash ${SCRIPTS_FOLDER}/build-meteor-bundle.sh
 
 
-# Install OS build dependencies
-FROM node:14-alpine AS native-builder
-
-ENV APP_FOLDER=/usr/app
-ENV APP_BUNDLE_FOLDER=${APP_FOLDER}/bundle
-ENV SCRIPTS_FOLDER /docker
-
-# Install OS build dependencies, which stay with this intermediate image but don’t become part of the final published image
-RUN apk --no-cache add \
-    bash \
-    g++ \
-    make \
-    python3
-
-# Copy in build scripts & entrypoint
-COPY --from=meteor-builder $SCRIPTS_FOLDER $SCRIPTS_FOLDER/
-
-# Copy in app bundle
-COPY --from=meteor-builder /opt/bundle $APP_BUNDLE_FOLDER/
-
-# Build the native dependencies
-# NOTE - the randyp_mats-common atmosphere package pulls in a native npm couchbase dependency
-# so we need to force an npm rebuild in the node_modules directory there as well
-RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh
-
-
 # Use the specific version of Node expected by your Meteor release, per https://docs.meteor.com/changelog.html
-FROM node:14-alpine AS production
+FROM node:14-bullseye-slim AS production
 
 # Set Build ARGS
 ARG APPNAME
 ARG BUILDVER=dev
 ARG COMMITBRANCH=development
 ARG COMMITSHA
-ARG METCALCPYVER=develop
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies
-RUN apk --no-cache add \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
-    git \
     ca-certificates \
-    mariadb \
     python3 \
-    py3-numpy \
-    py3-scipy \
-    py3-pandas \
-    py3-pip \
-    && pip3 --no-cache-dir install \
-        pymysql \
-        metcalcpy@git+https://github.com/dtcenter/METcalcpy.git@${METCALCPYVER}
+    python3-pip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --no-cache-dir \
+        metcalcpy \
+        numpy \
+        scipy \
+        pandas \
+        pymysql
 
 # Set Environment
 ENV APP_FOLDER=/usr/app
@@ -83,11 +57,11 @@ ENV VERSION=${BUILDVER}
 ENV BRANCH=${COMMITBRANCH}
 ENV COMMIT=${COMMITSHA}
 
-# Copy in helper scripts with the built and installed dependencies from the previous image
-COPY --from=native-builder ${SCRIPTS_FOLDER} ${SCRIPTS_FOLDER}/
+# Copy in helper scripts from the previous image
+COPY --from=meteor-builder ${SCRIPTS_FOLDER} ${SCRIPTS_FOLDER}/
 
-# Copy in app bundle with the built and installed dependencies from the previous image
-COPY --from=native-builder ${APP_BUNDLE_FOLDER} ${APP_BUNDLE_FOLDER}/
+# Copy in app bundle from the previous image
+COPY --from=meteor-builder /opt/bundle ${APP_BUNDLE_FOLDER}/
 
 # We want to use our own launcher script
 COPY container-scripts/run_app.sh ${APP_FOLDER}/
@@ -99,6 +73,15 @@ RUN mkdir -p ${SETTINGS_DIR} \
     && touch ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache \
     && chown node:node ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache \
     && chmod 644 ${APP_BUNDLE_FOLDER}/bundle/programs/server/fileCache
+
+# Install the Meteor app's NPM dependencies
+# g++ & build-essential would be needed for ARM/Apple Silicon builds in order to recompile fibers
+RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh
+
+# Update the OS packages in the container
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 EXPOSE ${PORT}
 USER node
@@ -115,7 +98,7 @@ LABEL version=${BUILDVER} code.branch=${COMMITBRANCH} code.commit=${COMMITSHA}
 
 
 # Create a stage with the root user for debugging
-# Note - you'll need to override the entrypoint if you want a shell (docker run --entrypoint /bin/bash ...)
+# Note - you'll need to override the entrypoint if you want a shell (docker run -it --entrypoint /bin/bash ...)
 FROM production AS debug
 USER root
 

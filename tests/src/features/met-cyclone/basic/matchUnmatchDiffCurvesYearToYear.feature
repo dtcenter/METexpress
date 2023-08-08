@@ -36,7 +36,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Unmatched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page
@@ -44,7 +44,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Matched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page
@@ -56,7 +56,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Unmatched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page
@@ -64,7 +64,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Matched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page
@@ -77,7 +77,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Unmatched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page
@@ -85,7 +85,7 @@ Feature: Match Unmatch Diff Curves Year To Year
 
         When I click the "Plot Matched" button
         Then I should be on the graph page
-        And I should have a "Year to Year" plot
+        And I should have a "Year To Year" plot
 
         When I click the "Back" button
         Then I should be on the main page

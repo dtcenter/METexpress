@@ -36,7 +36,7 @@ Feature: Add Remove Grid Scale Curve
 
         When I click the "Plot Unmatched" button
         Then I should be on the graph page
-        And I should have a "GridScale" plot
+        And I should have a "Grid Scale" plot
 
         When I click the "Back" button
         Then I should be on the main page

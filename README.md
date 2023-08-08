@@ -4,7 +4,9 @@
 
 A METexpress app is a [Meteor](https://www.meteor.com/) app that is based on NOAA Global Systems Lab's "[MATS](https://www.github.com/NOAA-GSL/MATS)" Model Analysis Tool Suite application framework. The METexpress apps are specifically designed to be used to visualize [MET](https://dtcenter.org/community-code/model-evaluation-tools-met) data that has been loaded into a [METdatadb](https://dtcenter.org/metplus-practical-session-guide-feb-2019/session-5-trkintfeature-relative/metviewer) database.
 
-The official NWS METexpress instance can be found at [metexpress.nws.noaa.gov](https://metexpress.nws.noaa.gov/)
+The official NWS METexpress instance can be found at [metexpress.nws.noaa.gov](https://metexpress.nws.noaa.gov/).
+
+For information about the support provided for releases, see our [Release Support Policy](https://metplus.readthedocs.io/en/develop/Release_Guide/index.html#release-support-policy).
 
 ## Installing & Running METexpress
 
