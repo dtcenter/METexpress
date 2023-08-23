@@ -15,6 +15,10 @@ RUN bash ${SCRIPTS_FOLDER}/build-app-npm-dependencies.sh
 COPY apps/${APPNAME} ${APP_SOURCE_FOLDER}/
 COPY MATScommon /MATScommon
 
+# If this fails with the mention that cmake is needed to build a dependency,
+# double check the `MATScommon/meteor_packages/mats-common/.npm/package/npm-shrinkwrap.json
+# file for any OS-specific dependencies. If we allow Meteor to build the Couchbase SDK, it
+# will blow up our image size. 
 RUN bash ${SCRIPTS_FOLDER}/build-meteor-bundle.sh
 
 
