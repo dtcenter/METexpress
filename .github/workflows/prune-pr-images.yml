@@ -29,7 +29,7 @@ jobs:
           echo "APP_LOWERCASE=${APP,,}" >> $GITHUB_ENV
       - name: Cleanup images
         if: env.BRANCH != 'development' # don't prune images from the development branch
-        uses: bots-house/ghcr-delete-image-action@v1.0.1
+        uses: bots-house/ghcr-delete-image-action@v1.1.0
         with:
           owner: dtcenter 
           name: metexpress/development/${{ env.APP_LOWERCASE }}
