@@ -45,6 +45,7 @@ jobs:
     timeout-minutes: 30
     permissions:
       packages: write
+      security-events: write
     strategy:
       fail-fast: true
       matrix:
