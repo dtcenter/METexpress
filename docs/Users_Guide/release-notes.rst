@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 5.1.1 release notes (20230811)
+METexpress Version 5.1.2 release notes (20230915)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -22,20 +22,21 @@ METexpress Version 5.1.1 release notes (20230811)
      
   .. dropdown:: Bugfixes
 
-     * Plots no longer fail if one point on the graph throws an error.
+     * Fixed bug causing rainbow performance diagrams.
+     * Fixed bug causing pop-out windows to not open in apps whose names contain a slash.
      
   .. dropdown:: Enhancements
   
-     * Plot type names are more readable now.
+     * None.
 
   .. dropdown:: Miscellaneous
     
-     * Updated all apps to Meteor v2.12.0.
+     * METexpress app container size is no longer huge.
         
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 5.1.1 upgrade instructions
+METexpress Version 5.1.2 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v5.1.1 docker containers from the dtcenter repository.
+Download and deploy the new v5.1.2 docker containers from the dtcenter repository.
