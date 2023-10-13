@@ -21,6 +21,6 @@ build.sh
 LICENSE.md
 
 # Development files
-**/tmp*
+**/tmp
 cache*
 logs
