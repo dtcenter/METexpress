@@ -282,8 +282,6 @@ dataHistogram = function (plotParams, plotFunction) {
         dataset,
         diffFrom,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        isCTC: statType === "ctc",
-        isScalar: statType === "scalar",
       });
     }
   } // end for curves

@@ -238,8 +238,6 @@ dataProfile = function (plotParams, plotFunction) {
         dataset,
         diffFrom,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        isCTC: statType === "ctc",
-        isScalar: statType === "scalar",
       });
     }
   } // end for curves
@@ -309,8 +307,7 @@ dataProfile = function (plotParams, plotFunction) {
         differenceArray[curveIndex - dReturn.length].dataset,
         differenceArray[curveIndex - dReturn.length].diffFrom,
         differenceArray[curveIndex - dReturn.length].appParams,
-        differenceArray[curveIndex - dReturn.length].isCTC,
-        differenceArray[curveIndex - dReturn.length].isScalar
+        allStatTypes
       );
       d = diffResult.dataset;
       xmin = xmin < d.xmin ? xmin : d.xmin;
