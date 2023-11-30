@@ -403,6 +403,7 @@ const doCurveParams = function () {
   const levelOptionsMap = {};
   const imOptionsMap = {};
   const scaleOptionsMap = {};
+  const sourceOptionsMap = {};
   const descrOptionsMap = {};
 
   let rows;
@@ -455,11 +456,12 @@ const doCurveParams = function () {
       levelOptionsMap[thisDB] = {};
       imOptionsMap[thisDB] = {};
       scaleOptionsMap[thisDB] = {};
+      sourceOptionsMap[thisDB] = {};
       descrOptionsMap[thisDB] = {};
 
       rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
         sumPool,
-        `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,mindate,maxdate order by model,line_data_table,variable;`
+        `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
       );
       for (let i = 0; i < rows.length; i += 1) {
         const modelValue = rows[i].model.trim();
@@ -489,6 +491,15 @@ const doCurveParams = function () {
         for (let j = 0; j < regionsArr.length; j += 1) {
           regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
         }
+
+        const sources = rows[i].truths;
+        const sourceArr = sources
+          .split(",")
+          .map(Function.prototype.call, String.prototype.trim);
+        for (let j = 0; j < sourceArr.length; j += 1) {
+          sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
+        }
+        sourceArr.unshift("Any truth dataset");
 
         const forecastLengths = rows[i].fcst_orig;
         const forecastLengthArr = forecastLengths
@@ -568,6 +579,10 @@ const doCurveParams = function () {
           scaleOptionsMap[thisDB][model] === undefined
             ? {}
             : scaleOptionsMap[thisDB][model];
+        sourceOptionsMap[thisDB][model] =
+          sourceOptionsMap[thisDB][model] === undefined
+            ? {}
+            : sourceOptionsMap[thisDB][model];
         descrOptionsMap[thisDB][model] =
           descrOptionsMap[thisDB][model] === undefined
             ? {}
@@ -590,6 +605,7 @@ const doCurveParams = function () {
             levelOptionsMap[thisDB][model][thisPlotType] = {};
             imOptionsMap[thisDB][model][thisPlotType] = {};
             scaleOptionsMap[thisDB][model][thisPlotType] = {};
+            sourceOptionsMap[thisDB][model][thisPlotType] = {};
             descrOptionsMap[thisDB][model][thisPlotType] = {};
             dbDateRangeMap[thisDB][model][thisPlotType] = {};
           } else {
@@ -618,6 +634,7 @@ const doCurveParams = function () {
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               imOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
             }
@@ -648,6 +665,9 @@ const doCurveParams = function () {
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = scalesArr;
+              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = sourceArr;
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = descrsArr;
@@ -695,6 +715,14 @@ const doCurveParams = function () {
                   jsonFriendlyVariable
                 ],
                 scalesArr
+              );
+              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = _.union(
+                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ],
+                sourceArr
               );
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
@@ -1073,6 +1101,7 @@ const doCurveParams = function () {
         "level",
         "interp-method",
         "scale",
+        "truth",
         "description",
         "dates",
         "curve-dates",
@@ -1266,6 +1295,53 @@ const doCurveParams = function () {
                   ]
                 )[0]
               ][0],
+          },
+        }
+      );
+    }
+  }
+
+  // these defaults are app-specific and not controlled by the user
+  const sourceOptions =
+    sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let sourceDefault;
+  if (sourceOptions.indexOf("ANLYS") !== -1) {
+    sourceDefault = "ANLYS";
+  } else {
+    [sourceDefault] = sourceOptions;
+  }
+
+  if (matsCollections.truth.findOne({ name: "truth" }) === undefined) {
+    matsCollections.truth.insert({
+      name: "truth",
+      type: matsTypes.InputTypes.select,
+      optionsMap: sourceOptionsMap,
+      options: sourceOptions,
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
+      controlButtonCovered: true,
+      unique: false,
+      default: sourceDefault,
+      controlButtonVisibility: "block",
+      displayOrder: 4,
+      displayPriority: 1,
+      displayGroup: 4,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = matsCollections.truth.findOne({ name: "truth" });
+    if (!matsDataUtils.areObjectsEqual(sourceOptionsMap, currentParam.optionsMap)) {
+      // have to reload truth data
+      matsCollections.truth.update(
+        { name: "truth" },
+        {
+          $set: {
+            optionsMap: sourceOptionsMap,
+            options: sourceOptions,
+            default: sourceDefault,
           },
         }
       );
@@ -1790,7 +1866,8 @@ const doCurveTextPatterns = function () {
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
         ["valid-time: ", "valid-time", ", "],
-        ["avg: ", "average", ""],
+        ["avg: ", "average", ", "],
+        ["", "truth", ""],
         [", desc: ", "description", ""],
       ],
       displayParams: [
@@ -1807,6 +1884,7 @@ const doCurveTextPatterns = function () {
         "average",
         "forecast-length",
         "level",
+        "truth",
         "description",
         "aggregation-method",
       ],
@@ -1828,6 +1906,7 @@ const doCurveTextPatterns = function () {
         ["", "dieoff-type", ", "],
         ["valid-time: ", "valid-time", ", "],
         ["start utc: ", "utc-cycle-start", ", "],
+        ["", "truth", ", "],
         ["desc: ", "description", ", "],
         ["", "curve-dates", ""],
       ],
@@ -1845,6 +1924,7 @@ const doCurveTextPatterns = function () {
         "valid-time",
         "utc-cycle-start",
         "level",
+        "truth",
         "description",
         "aggregation-method",
         "curve-dates",
@@ -1865,6 +1945,7 @@ const doCurveTextPatterns = function () {
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
+        ["", "truth", ", "],
         ["desc: ", "description", ", "],
         ["", "curve-dates", ""],
       ],
@@ -1880,6 +1961,7 @@ const doCurveTextPatterns = function () {
         "scale",
         "forecast-length",
         "level",
+        "truth",
         "description",
         "aggregation-method",
         "curve-dates",
@@ -1900,6 +1982,7 @@ const doCurveTextPatterns = function () {
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
         ["valid-time: ", "valid-time", ", "],
+        ["", "truth", ", "],
         ["desc: ", "description", ", "],
         ["", "curve-dates", ""],
       ],
@@ -1916,6 +1999,7 @@ const doCurveTextPatterns = function () {
         "valid-time",
         "forecast-length",
         "level",
+        "truth",
         "description",
         "curve-dates",
       ],
@@ -1936,6 +2020,7 @@ const doCurveTextPatterns = function () {
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
         ["valid-time: ", "valid-time", ""],
+        ["", "truth", ", "],
         [", desc: ", "description", ""],
       ],
       displayParams: [
@@ -1952,6 +2037,7 @@ const doCurveTextPatterns = function () {
         "forecast-length",
         "level",
         "aggregation-method",
+        "truth",
         "description",
       ],
       groupSize: 6,
@@ -1973,6 +2059,7 @@ const doCurveTextPatterns = function () {
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
         ["valid-time: ", "valid-time", ", "],
+        ["", "truth", ""],
         [", desc: ", "description", ""],
       ],
       displayParams: [
@@ -1990,6 +2077,7 @@ const doCurveTextPatterns = function () {
         "valid-time",
         "forecast-length",
         "level",
+        "truth",
         "description",
         "bin-parameter",
         "curve-dates",

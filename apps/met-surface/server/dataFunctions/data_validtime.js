@@ -112,6 +112,11 @@ dataValidTime = function (plotParams, plotFunction) {
       { valuesMap: 1 }
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    const { truth } = curve;
+    let truthClause = "";
+    if (truth !== "Any truth dataset") {
+      truthClause = `and h.obtype = '${truth}'`;
+    }
     const vts = ""; // have an empty string that we can pass to the python script.
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.
@@ -223,6 +228,7 @@ dataValidTime = function (plotParams, plotFunction) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{truthClause}} " +
         "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
         "{{descrsClause}} " +
@@ -238,6 +244,7 @@ dataValidTime = function (plotParams, plotFunction) {
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
       statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);

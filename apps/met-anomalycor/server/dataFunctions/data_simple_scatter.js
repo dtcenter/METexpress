@@ -115,6 +115,11 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const variableY = variableValuesMap[variableYStr];
     const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
     const variableClauseY = `and h.fcst_var = '${variableValuesMap[variableY]}'`;
+    const { truth } = curve;
+    let truthClause = "";
+    if (truth !== "Any truth dataset") {
+      truthClause = `and h.obtype = '${truth}'`;
+    }
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
@@ -226,6 +231,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{truthClause}} " +
         "{{validTimeClause}} " +
         "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
@@ -241,6 +247,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
       statement = statement.replace("{{regionsClause}}", regionsClause);
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
+      statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);

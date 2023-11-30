@@ -110,6 +110,11 @@ dataContour = function (plotParams, plotFunction) {
     { valuesMap: 1 }
   ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
   const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+  const { truth } = curve;
+  let truthClause = "";
+  if (truth !== "Any truth dataset") {
+    truthClause = `and h.obtype = '${truth}'`;
+  }
   let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
   let validTimeClause = "";
   if (xAxisParam !== "Valid UTC hour" && yAxisParam !== "Valid UTC hour") {
@@ -243,6 +248,7 @@ dataContour = function (plotParams, plotFunction) {
     "{{imClause}} " +
     "{{scaleClause}} " +
     "{{variableClause}} " +
+    "{{truthClause}} " +
     "{{validTimeClause}} " +
     "{{forecastLengthsClause}} " +
     "{{levelsClause}} " +
@@ -261,6 +267,7 @@ dataContour = function (plotParams, plotFunction) {
   statement = statement.replace("{{imClause}}", imClause);
   statement = statement.replace("{{scaleClause}}", scaleClause);
   statement = statement.replace("{{variableClause}}", variableClause);
+  statement = statement.replace("{{truthClause}}", truthClause);
   statement = statement.replace("{{validTimeClause}}", validTimeClause);
   statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
   statement = statement.replace("{{levelsClause}}", levelsClause);
