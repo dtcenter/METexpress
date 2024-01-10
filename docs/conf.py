@@ -19,20 +19,20 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METexpress'
-author = 'UCAR/DTC, NOAA, CSU/CIRA, and CU/CIRES'
+author = 'UCAR/DTC, NOAA, CU/CIRES, and CSU/CIRA'
 
 # list of contributing authors currently involved with the project
 # To rotate this list of authors for each official release,
 # move the first author to the end of the list
 CURRENT_AUTHORS = [
-    'Gopa Padmanabhan',
-    'Keith Searight',
-    'Dave Turner',
     'Bonny Strong',
+    'Matthew Wandishin',
     'Molly Smith',
     'Randy Pierce'
     'Jeff Hamilton',
+    'Natalie Babij',
     'Ian McGinnis',
+    'Gopa Padmanabhan',
 ]
 
 # list of former contributors who are no longer involved with the project
@@ -40,6 +40,8 @@ CURRENT_AUTHORS = [
 FORMER_AUTHORS = [
     'Bill Moninger',
     'Venita Hagerty'
+    'Keith Searight',
+    'Dave Turner',
 ]
 
 # format citation authors list
@@ -64,8 +66,8 @@ verinfo = version
 
 # The full version, including alpha/beta/rc tags
 release = f'{version}'
-release_year = '2023'
-release_date = f'{release_year}1201'
+release_year = '2024'
+release_date = f'{release_year}0112'
 copyright = f'{release_year}, {author}'
 release_monthyear = datetime.strptime(release_date, '%Y%m%d').strftime('%B %Y')
 
