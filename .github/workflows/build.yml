@@ -1,4 +1,4 @@
-name: "Build"
+name: "Build METexpress"
 on:
   push:
     branches: [main, development]
