@@ -23,7 +23,7 @@ jobs:
           - met-upperair
     steps:
       - name: Delete image
-        uses: snok/container-retention-policy@v2.1.2
+        uses: snok/container-retention-policy@v2.2.1
         with:
           image-names: metexpress/development/${{ matrix.app }}
           cut-off: 1 week ago MST
