@@ -26,7 +26,7 @@ jobs:
         uses: snok/container-retention-policy@v2.2.1
         with:
           image-names: metexpress/development/${{ matrix.app }}
-          cut-off: 1 day ago MST
+          cut-off: 1 week ago MST
           account-type: org
           org-name: dtcenter
           untagged-only: true
