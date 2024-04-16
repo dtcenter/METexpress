@@ -444,6 +444,9 @@ const doCurveParams = function () {
     throw new Error(err.message);
   }
 
+  const regionValuesMap = matsDataUtils.readableStandardRegions();
+  const regionValueKeys = Object.keys(regionValuesMap);
+
   try {
     for (let k = 0; k < myDBs.length; k += 1) {
       thisDB = myDBs[k];
@@ -492,6 +495,12 @@ const doCurveParams = function () {
           .map(Function.prototype.call, String.prototype.trim);
         for (let j = 0; j < regionsArr.length; j += 1) {
           regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
+          if (regionValueKeys.indexOf(regionsArr[j]) !== -1) {
+            regionsArr[j] = regionValuesMap[regionsArr[j]];
+          } else {
+            regionValuesMap[regionsArr[j]] = regionsArr[j];
+            regionValueKeys.push(regionsArr[j]);
+          }
         }
 
         const sources = rows[i].truths;
@@ -952,8 +961,8 @@ const doCurveParams = function () {
       )[0]
     ];
   let regionDefault;
-  if (regionOptions.indexOf("FULL") !== -1) {
-    regionDefault = "FULL";
+  if (regionOptions.indexOf("FULL: Full Domain") !== -1) {
+    regionDefault = "FULL: Full Domain";
   } else if (regionOptions.indexOf("G002") !== -1) {
     regionDefault = "G002";
   } else if (regionOptions.indexOf("CONUS") !== -1) {
@@ -968,6 +977,7 @@ const doCurveParams = function () {
       type: matsTypes.InputTypes.select,
       optionsMap: regionModelOptionsMap,
       options: regionOptions,
+      valuesMap: regionValuesMap,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,

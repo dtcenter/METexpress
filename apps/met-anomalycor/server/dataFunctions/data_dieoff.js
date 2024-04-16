@@ -90,7 +90,12 @@ dataDieoff = function (plotParams, plotFunction) {
     if (regions.length > 0) {
       regions = regions
         .map(function (r) {
-          return `'${r}'`;
+          return `'${Object.keys(
+            matsCollections.region.findOne({ name: "region" }).valuesMap
+          ).find(
+            (key) =>
+              matsCollections.region.findOne({ name: "region" }).valuesMap[key] === r
+          )}'`;
         })
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
