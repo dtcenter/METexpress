@@ -12,6 +12,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataSimpleScatter = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -46,13 +47,14 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const curve = curves[curveIndex];
     const { diffFrom } = curve;
     const { label } = curve;
-    const { database } = curve;
+    const database = curve.database.replace(/___/g, ".");
     const binParam = curve["bin-parameter"];
     const binClause = matsCollections["bin-parameter"].findOne({
       name: "bin-parameter",
     }).optionsMap[binParam];
+    const modelDisplay = curve["data-source"].replace(/___/g, ".");
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][curve["data-source"]][0];
+      .optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
     const selectorPlotType = curve["plot-type"];
     const statisticXSelect = curve.statistic;
@@ -94,7 +96,8 @@ dataSimpleScatter = function (plotParams, plotFunction) {
             matsCollections.region.findOne({ name: "region" }).valuesMap
           ).find(
             (key) =>
-              matsCollections.region.findOne({ name: "region" }).valuesMap[key] === r
+              matsCollections.region.findOne({ name: "region" }).valuesMap[key] ===
+              r.replace(/___/g, ".")
           )}'`;
         })
         .join(",");
@@ -110,8 +113,8 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     if (im !== "All methods") {
       imClause = `and h.interp_mthd = '${im}'`;
     }
-    const variableXStr = curve.variable;
-    const variableYStr = curve["y-variable"];
+    const variableXStr = curve.variable.replace(/___/g, ".");
+    const variableYStr = curve["y-variable"].replace(/___/g, ".");
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }
@@ -298,7 +301,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
