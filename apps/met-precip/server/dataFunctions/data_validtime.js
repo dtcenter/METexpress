@@ -50,9 +50,10 @@ dataValidTime = function (plotParams, plotFunction) {
     const curve = curves[curveIndex];
     const { diffFrom } = curve;
     const { label } = curve;
-    const { database } = curve;
+    const database = curve.database.replace(/___/g, ".");
+    const modelDisplay = curve["data-source"].replace(/___/g, ".");
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][curve["data-source"]][0];
+      .optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
     const selectorPlotType = curve["plot-type"];
     const { statistic } = curve;
