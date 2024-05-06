@@ -228,6 +228,7 @@ const doPlotParams = function () {
 
     const xOptionsMap = {
       "Fcst lead time": "select ld.fcst_lead as xVal, ",
+      Threshold: "select h.fcst_thresh as xVal, ",
       "Valid UTC hour":
         "select unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as xVal, ",
       "Init UTC hour":
@@ -244,7 +245,7 @@ const doPlotParams = function () {
       selected: "",
       controlButtonCovered: true,
       unique: false,
-      default: Object.keys(xOptionsMap)[1],
+      default: Object.keys(xOptionsMap)[2],
       controlButtonVisibility: "block",
       displayOrder: 9,
       displayPriority: 1,
@@ -253,6 +254,7 @@ const doPlotParams = function () {
 
     const yOptionsMap = {
       "Fcst lead time": "ld.fcst_lead as yVal, ",
+      Threshold: "h.fcst_thresh as yVal, ",
       "Valid UTC hour": "unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 as yVal, ",
       "Init UTC hour": "unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 as yVal, ",
       "Valid Date": "unix_timestamp(ld.fcst_valid_beg) as yVal, ",
@@ -314,8 +316,8 @@ const doCurveParams = function () {
   const masterPlotTypeOptionsMap = {
     line_data_sl1l2: [
       matsTypes.PlotTypes.timeSeries,
-      matsTypes.PlotTypes.profile,
       matsTypes.PlotTypes.dieoff,
+      matsTypes.PlotTypes.threshold,
       matsTypes.PlotTypes.validtime,
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.contour,
@@ -323,8 +325,16 @@ const doCurveParams = function () {
     ],
     line_data_vl1l2: [
       matsTypes.PlotTypes.timeSeries,
-      matsTypes.PlotTypes.profile,
       matsTypes.PlotTypes.dieoff,
+      matsTypes.PlotTypes.threshold,
+      matsTypes.PlotTypes.validtime,
+      matsTypes.PlotTypes.histogram,
+      matsTypes.PlotTypes.contour,
+    ],
+    line_data_ctc: [
+      matsTypes.PlotTypes.timeSeries,
+      matsTypes.PlotTypes.dieoff,
+      matsTypes.PlotTypes.threshold,
       matsTypes.PlotTypes.validtime,
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.contour,
@@ -366,10 +376,25 @@ const doCurveParams = function () {
       "Forecast stdev of wind vector length": ["vector"],
       "Observed stdev of wind vector length": ["vector"],
     },
+    line_data_ctc: {
+      "CSI (Critical Success Index)": ["ctc"],
+      "FAR (False Alarm Ratio)": ["ctc"],
+      "FBIAS (Frequency Bias)": ["ctc"],
+      "GSS (Gilbert Skill Score)": ["ctc"],
+      "HSS (Heidke Skill Score)": ["ctc"],
+      "PODy (Probability of positive detection)": ["ctc"],
+      "PODn (Probability of negative detection)": ["ctc"],
+      "POFD (Probability of false detection)": ["ctc"],
+    },
   };
 
   const aggMethodOptionsMap = {
     scalar: {
+      "Overall statistic": ["aggStat"],
+      "Mean statistic": ["meanStat"],
+      "Median statistic": ["medStat"],
+    },
+    ctc: {
       "Overall statistic": ["aggStat"],
       "Mean statistic": ["meanStat"],
       "Median statistic": ["medStat"],
@@ -401,6 +426,7 @@ const doCurveParams = function () {
   const regionModelOptionsMap = {};
   const forecastLengthOptionsMap = {};
   const levelOptionsMap = {};
+  const thresholdOptionsMap = {};
   const imOptionsMap = {};
   const scaleOptionsMap = {};
   const sourceOptionsMap = {};
@@ -457,6 +483,7 @@ const doCurveParams = function () {
       regionModelOptionsMap[thisDB] = {};
       forecastLengthOptionsMap[thisDB] = {};
       levelOptionsMap[thisDB] = {};
+      thresholdOptionsMap[thisDB] = {};
       imOptionsMap[thisDB] = {};
       scaleOptionsMap[thisDB] = {};
       sourceOptionsMap[thisDB] = {};
@@ -464,7 +491,7 @@ const doCurveParams = function () {
 
       rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
         sumPool,
-        `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
+        `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
       );
       for (let i = 0; i < rows.length; i += 1) {
         const modelValue = rows[i].model.trim();
@@ -532,6 +559,15 @@ const doCurveParams = function () {
           }
         }
 
+        const { trshs } = rows[i];
+        const trshArr = trshs
+          .split(",")
+          .map(Function.prototype.call, String.prototype.trim);
+        for (let j = 0; j < trshArr.length; j += 1) {
+          trshArr[j] = trshArr[j].replace(/'|\[|\]/g, "");
+        }
+        trshArr.unshift("All thresholds");
+
         const ims = rows[i].interp_mthds;
         const imsArr = ims
           .split(",")
@@ -582,7 +618,11 @@ const doCurveParams = function () {
           levelOptionsMap[thisDB][model] === undefined
             ? {}
             : levelOptionsMap[thisDB][model];
-        imOptionsMap[thisDB][model] =
+            thresholdOptionsMap[thisDB][model] =
+            thresholdOptionsMap[thisDB][model] === undefined
+              ? {}
+              : thresholdOptionsMap[thisDB][model];
+          imOptionsMap[thisDB][model] =
           imOptionsMap[thisDB][model] === undefined ? {} : imOptionsMap[thisDB][model];
         scaleOptionsMap[thisDB][model] =
           scaleOptionsMap[thisDB][model] === undefined
@@ -612,6 +652,7 @@ const doCurveParams = function () {
             regionModelOptionsMap[thisDB][model][thisPlotType] = {};
             forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
             levelOptionsMap[thisDB][model][thisPlotType] = {};
+            thresholdOptionsMap[thisDB][model][thisPlotType] = {};
             imOptionsMap[thisDB][model][thisPlotType] = {};
             scaleOptionsMap[thisDB][model][thisPlotType] = {};
             sourceOptionsMap[thisDB][model][thisPlotType] = {};
@@ -641,6 +682,7 @@ const doCurveParams = function () {
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
                 {};
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+              thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               imOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
@@ -668,6 +710,9 @@ const doCurveParams = function () {
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = levelsArr;
+              thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = trshArr;
               imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = imsArr;
@@ -708,6 +753,14 @@ const doCurveParams = function () {
                   jsonFriendlyVariable
                 ],
                 levelsArr
+              );
+              thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = _.union(
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ],
+                trshArr
               );
               imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
@@ -1109,6 +1162,7 @@ const doCurveParams = function () {
         "region",
         "forecast-length",
         "level",
+        "threshold",
         "interp-method",
         "scale",
         "truth",
@@ -1181,6 +1235,71 @@ const doCurveParams = function () {
             valuesMap: variableValuesMap,
             options: variableOptions,
             default: variableDefault,
+          },
+        }
+      );
+    }
+  }
+
+  if (matsCollections.threshold.findOne({ name: "threshold" }) === undefined) {
+    matsCollections.threshold.insert({
+      name: "threshold",
+      type: matsTypes.InputTypes.select,
+      optionsMap: thresholdOptionsMap,
+      options:
+        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+          Object.keys(
+            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+              defaultStatType
+            ]
+          )[0]
+        ],
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
+      controlButtonCovered: true,
+      unique: false,
+      default:
+        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+          Object.keys(
+            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+              defaultStatType
+            ]
+          )[0]
+        ][0],
+      controlButtonVisibility: "block",
+      displayOrder: 1,
+      displayPriority: 1,
+      displayGroup: 4,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = matsCollections.threshold.findOne({ name: "threshold" });
+    if (!matsDataUtils.areObjectsEqual(thresholdOptionsMap, currentParam.optionsMap)) {
+      // have to reload threshold data
+      matsCollections.threshold.update(
+        { name: "threshold" },
+        {
+          $set: {
+            optionsMap: thresholdOptionsMap,
+            options:
+              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ][
+                Object.keys(
+                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                    defaultStatType
+                  ]
+                )[0]
+              ],
+            default:
+              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ][
+                Object.keys(
+                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                    defaultStatType
+                  ]
+                )[0]
+              ][0],
           },
         }
       );
@@ -1336,9 +1455,9 @@ const doCurveParams = function () {
       unique: false,
       default: sourceDefault,
       controlButtonVisibility: "block",
-      displayOrder: 4,
+      displayOrder: 5,
       displayPriority: 1,
-      displayGroup: 4,
+      displayGroup: 5,
     });
   } else {
     // it is defined but check for necessary update
@@ -1868,6 +1987,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -1888,6 +2008,7 @@ const doCurveTextPatterns = function () {
         "region",
         "statistic",
         "variable",
+        "threshold",
         "interp-method",
         "scale",
         "valid-time",
@@ -1907,6 +2028,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -1928,11 +2050,51 @@ const doCurveTextPatterns = function () {
         "region",
         "statistic",
         "variable",
+        "threshold",
         "interp-method",
         "scale",
         "dieoff-type",
         "valid-time",
         "utc-cycle-start",
+        "level",
+        "truth",
+        "description",
+        "aggregation-method",
+        "curve-dates",
+      ],
+      groupSize: 6,
+    });
+    matsCollections.CurveTextPatterns.insert({
+      plotType: matsTypes.PlotTypes.threshold,
+      textPattern: [
+        ["", "label", ": "],
+        ["", "database", "."],
+        ["", "data-source", " in "],
+        ["", "region", ", "],
+        ["", "interp-method", " "],
+        ["", "scale", ", "],
+        ["", "variable", " "],
+        ["", "statistic", " "],
+        ["", "aggregation-method", ", "],
+        ["level: ", "level", ", "],
+        ["fcst_len: ", "forecast-length", "h, "],
+        ["valid-time: ", "valid-time", ", "],
+        ["", "truth", ", "],
+        ["desc: ", "description", ", "],
+        ["", "curve-dates", ""],
+      ],
+      displayParams: [
+        "label",
+        "group",
+        "database",
+        "data-source",
+        "region",
+        "statistic",
+        "variable",
+        "interp-method",
+        "scale",
+        "forecast-length",
+        "valid-time",
         "level",
         "truth",
         "description",
@@ -1948,6 +2110,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -1967,6 +2130,7 @@ const doCurveTextPatterns = function () {
         "region",
         "statistic",
         "variable",
+        "threshold",
         "interp-method",
         "scale",
         "forecast-length",
@@ -1985,6 +2149,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -2004,6 +2169,7 @@ const doCurveTextPatterns = function () {
         "region",
         "statistic",
         "variable",
+        "threshold",
         "interp-method",
         "scale",
         "valid-time",
@@ -2022,6 +2188,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -2041,6 +2208,7 @@ const doCurveTextPatterns = function () {
         "region",
         "statistic",
         "variable",
+        "threshold",
         "interp-method",
         "scale",
         "valid-time",
@@ -2059,6 +2227,7 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "region", ", "],
+        ["", "threshold", ", "],
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
@@ -2082,6 +2251,7 @@ const doCurveTextPatterns = function () {
         "variable",
         "y-statistic",
         "y-variable",
+        "threshold",
         "interp-method",
         "scale",
         "valid-time",
@@ -2130,6 +2300,12 @@ const doPlotGraph = function () {
       plotType: matsTypes.PlotTypes.dieoff,
       graphFunction: "graphPlotly",
       dataFunction: "dataDieoff",
+      checked: false,
+    });
+    matsCollections.PlotGraphFunctions.insert({
+      plotType: matsTypes.PlotTypes.threshold,
+      graphFunction: "graphPlotly",
+      dataFunction: "dataThreshold",
       checked: false,
     });
     matsCollections.PlotGraphFunctions.insert({

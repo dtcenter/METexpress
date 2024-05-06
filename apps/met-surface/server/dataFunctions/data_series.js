@@ -83,6 +83,14 @@ dataSeries = function (plotParams, plotFunction) {
         "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
         "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
       lineDataType = "line_data_vl1l2";
+    } else if (statLineType === "ctc") {
+      statisticClause =
+        "sum(ld.fy_oy) as fy_oy, " +
+        "sum(ld.fy_on) as fy_on, " +
+        "sum(ld.fn_oy) as fn_oy, " +
+        "sum(ld.fn_on) as fn_on, " +
+        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+      lineDataType = "line_data_ctc";
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
@@ -120,6 +128,11 @@ dataSeries = function (plotParams, plotFunction) {
       { valuesMap: 1 }
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    const { threshold } = curve;
+    let thresholdClause = "";
+    if (threshold !== "All thresholds") {
+      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
+    }
     const { truth } = curve;
     let truthClause = "";
     if (truth !== "Any truth dataset") {
@@ -208,7 +221,10 @@ dataSeries = function (plotParams, plotFunction) {
       { optionsMap: 1 }
     ).optionsMap;
     const average = averageOptionsMap[averageStr][0];
-    const statType = `met-${statLineType}`;
+    const statType =
+      curve["aggregation-method"] === "Overall statistic" && statLineType === "ctc"
+        ? statLineType
+        : `met-${statLineType}`;
     allStatTypes.push(statType);
     appParams.aggMethod = curve["aggregation-method"];
     // axisKey is used to determine which axis a curve should use.
@@ -254,6 +270,7 @@ dataSeries = function (plotParams, plotFunction) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
         "{{forecastLengthsClause}} " +
@@ -272,6 +289,7 @@ dataSeries = function (plotParams, plotFunction) {
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
       statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);

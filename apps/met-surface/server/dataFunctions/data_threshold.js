@@ -13,10 +13,10 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-dataDieoff = function (plotParams, plotFunction) {
+dataThreshold = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
-    plotType: matsTypes.PlotTypes.dieoff,
+    plotType: matsTypes.PlotTypes.threshold,
     matching: plotParams.plotAction === matsTypes.PlotActions.matched,
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
@@ -99,7 +99,12 @@ dataDieoff = function (plotParams, plotFunction) {
     if (regions.length > 0) {
       regions = regions
         .map(function (r) {
-          return `'${r}'`;
+          return `'${Object.keys(
+            matsCollections.region.findOne({ name: "region" }).valuesMap
+          ).find(
+            (key) =>
+              matsCollections.region.findOne({ name: "region" }).valuesMap[key] === r
+          )}'`;
         })
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
@@ -120,11 +125,7 @@ dataDieoff = function (plotParams, plotFunction) {
       { valuesMap: 1 }
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
-    const { threshold } = curve;
-    let thresholdClause = "";
-    if (threshold !== "All thresholds") {
-      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
-    }
+    const thresholdClause = "and h.fcst_thresh != 'NA'";
     const { truth } = curve;
     let truthClause = "";
     if (truth !== "Any truth dataset") {
@@ -132,45 +133,41 @@ dataDieoff = function (plotParams, plotFunction) {
     }
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
-    let utcCycleStart;
-    let utcCycleStartClause = "";
-    const dieoffTypeStr = curve["dieoff-type"];
-    const dieoffTypeOptionsMap = matsCollections["dieoff-type"].findOne(
-      { name: "dieoff-type" },
-      { optionsMap: 1 }
-    ).optionsMap;
-    const dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
+    if (
+      curve["valid-time"] !== undefined &&
+      curve["valid-time"] !== matsTypes.InputTypes.unused
+    ) {
+      vts = curve["valid-time"];
+      vts = Array.isArray(vts) ? vts : [vts];
+      vts = vts
+        .map(function (vt) {
+          return `'${vt}'`;
+        })
+        .join(",");
+      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+    }
+    // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
+    // have been sanitized for display purposes in the forecastValueMap.
+    // now we have to go get the damn ole unsanitary ones for the database.
+    let forecastLengthsClause = "";
+    let fcsts =
+      curve["forecast-length"] === undefined ||
+      curve["forecast-length"] === matsTypes.InputTypes.unused
+        ? []
+        : curve["forecast-length"];
+    fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+    if (fcsts.length > 0) {
+      fcsts = fcsts
+        .map(function (fl) {
+          return `'${fl}','${fl}0000'`;
+        })
+        .join(",");
+      forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+    }
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
-    let dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= '${fromSecs}' and unix_timestamp(ld.fcst_valid_beg) <= '${toSecs}' `;
-    if (dieoffType === matsTypes.ForecastTypes.dieoff) {
-      vts = curve["valid-time"] === undefined ? [] : curve["valid-time"];
-      if (vts.length !== 0 && vts !== matsTypes.InputTypes.unused) {
-        vts = curve["valid-time"];
-        vts = Array.isArray(vts) ? vts : [vts];
-        vts = vts
-          .map(function (vt) {
-            return `'${vt}'`;
-          })
-          .join(",");
-        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
-      }
-    } else if (dieoffType === matsTypes.ForecastTypes.utcCycle) {
-      utcCycleStart =
-        curve["utc-cycle-start"] === undefined ? [] : curve["utc-cycle-start"];
-      if (utcCycleStart.length !== 0 && utcCycleStart !== matsTypes.InputTypes.unused) {
-        utcCycleStart = utcCycleStart
-          .map(function (u) {
-            return `'${u}'`;
-          })
-          .join(",");
-        utcCycleStartClause = `and unix_timestamp(ld.fcst_init_beg)%(24*3600)/3600 IN(${utcCycleStart})`;
-      }
-      dateClause = `and unix_timestamp(ld.fcst_init_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_init_beg) <= ${toSecs}`;
-    } else {
-      dateClause = `and unix_timestamp(ld.fcst_init_beg) = ${fromSecs}`;
-    }
+    const dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_valid_beg) <= ${toSecs}`;
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
@@ -248,7 +245,7 @@ dataDieoff = function (plotParams, plotFunction) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
       statement =
-        "select ld.fcst_lead as fcst_lead, " +
+        "select h.fcst_thresh as thresh, " +
         "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
@@ -265,12 +262,12 @@ dataDieoff = function (plotParams, plotFunction) {
         "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
-        "{{utcCycleStartClause}} " +
+        "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
         "{{descrsClause}} " +
         "and h.stat_header_id = ld.stat_header_id " +
-        "group by fcst_lead " +
-        "order by fcst_lead" +
+        "group by thresh " +
+        "order by thresh" +
         ";";
 
       statement = statement.replace("{{statisticClause}}", statisticClause);
@@ -283,7 +280,7 @@ dataDieoff = function (plotParams, plotFunction) {
       statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
-      statement = statement.replace("{{utcCycleStartClause}}", utcCycleStartClause);
+      statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
       statement = statement.replace("{{dateClause}}", dateClause);

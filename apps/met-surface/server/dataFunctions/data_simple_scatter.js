@@ -128,6 +128,11 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
+    const { threshold } = curve;
+    let thresholdClause = "";
+    if (threshold !== "All thresholds") {
+      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
+    }
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (binParam !== "Valid UTC hour") {
@@ -214,7 +219,10 @@ dataSimpleScatter = function (plotParams, plotFunction) {
       descrsClause = `and h.descr IN(${descrs})`;
     }
     appParams.aggMethod = curve["aggregation-method"];
-    const statType = `met-${statLineType}`;
+    const statType =
+      curve["aggregation-method"] === "Overall statistic" && statLineType === "ctc"
+        ? statLineType
+        : `met-${statLineType}`;
     allStatTypes.push(statType);
     curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
     curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
@@ -236,6 +244,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
         "{{forecastLengthsClause}} " +
@@ -252,6 +261,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
       statement = statement.replace("{{regionsClause}}", regionsClause);
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
+      statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
