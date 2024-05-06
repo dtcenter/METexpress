@@ -13,6 +13,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataValidTime = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -82,12 +83,12 @@ dataValidTime = function (plotParams, plotFunction) {
     if (regions.length > 0) {
       regions = regions
         .map(function (r) {
-          return `'${r}'`;
+          return `'${r.replace(/___/g, ".")}'`;
         })
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
-    const { variable } = curve;
+    const variable = curve.variable.replace(/___/g, ".");
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }
@@ -226,7 +227,7 @@ dataValidTime = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
