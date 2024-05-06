@@ -12,6 +12,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataContour = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -46,9 +47,10 @@ dataContour = function (plotParams, plotFunction) {
   // initialize variables specific to the curve
   const curve = curves[0];
   const { label } = curve;
-  const { database } = curve;
+  const database = curve.database.replace(/___/g, ".");
+  const modelDisplay = curve["data-source"].replace(/___/g, ".");
   const model = matsCollections["data-source"].findOne({ name: "data-source" })
-    .optionsMap[database][curve["data-source"]][0];
+    .optionsMap[database][modelDisplay][0];
   const modelClause = `and h.model = '${model}'`;
   const selectorPlotType = curve["plot-type"];
   const { statistic } = curve;
@@ -98,7 +100,7 @@ dataContour = function (plotParams, plotFunction) {
   if (regions.length > 0) {
     regions = regions
       .map(function (r) {
-        return `'${r}'`;
+        return `'${r.replace(/___/g, ".")}'`;
       })
       .join(",");
     regionsClause = `and h.vx_mask IN(${regions})`;
@@ -113,7 +115,7 @@ dataContour = function (plotParams, plotFunction) {
   if (im !== "All methods") {
     imClause = `and h.interp_mthd = '${im}'`;
   }
-  const { variable } = curve;
+  const variable = curve.variable.replace(/___/g, ".");
   const variableValuesMap = matsCollections.variable.findOne(
     { name: "variable" },
     { valuesMap: 1 }
@@ -291,7 +293,7 @@ dataContour = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statement to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
