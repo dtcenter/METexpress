@@ -414,15 +414,15 @@ const doCurveParams = function () {
   let dbArr;
   try {
     rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-      sumPool,
+      sumPool, // eslint-disable-line no-undef
       "select * from upperair_database_groups order by db_group;"
     );
     for (let i = 0; i < rows.length; i += 1) {
-      thisGroup = rows[i].db_group.trim();
+      thisGroup = rows[i].db_group.trim().replace(/\./g, "___");
       dbs = rows[i].dbs;
       dbArr = dbs.split(",").map(Function.prototype.call, String.prototype.trim);
       for (let j = 0; j < dbArr.length; j += 1) {
-        dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "");
+        dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "").replace(/\./g, "___");
       }
       dbGroupMap[thisGroup] = dbArr;
     }
@@ -433,11 +433,11 @@ const doCurveParams = function () {
   let thisDB;
   try {
     rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-      sumPool,
+      sumPool, // eslint-disable-line no-undef
       "select distinct db from upperair_metexpress_metadata;"
     );
     for (let i = 0; i < rows.length; i += 1) {
-      thisDB = rows[i].db.trim();
+      thisDB = rows[i].db.trim().replace(/\./g, "___");
       myDBs.push(thisDB);
     }
   } catch (err) {
@@ -465,12 +465,12 @@ const doCurveParams = function () {
       descrOptionsMap[thisDB] = {};
 
       rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-        sumPool,
+        sumPool, // eslint-disable-line no-undef
         `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate from upperair_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
       );
       for (let i = 0; i < rows.length; i += 1) {
         const modelValue = rows[i].model.trim();
-        const model = rows[i].display_text.trim();
+        const model = rows[i].display_text.trim().replace(/\./g, "___");
         modelOptionsMap[thisDB][model] = [modelValue];
 
         const rowMinDate = moment
@@ -487,14 +487,14 @@ const doCurveParams = function () {
             ? validPlotTypes
             : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
         const validStats = masterStatsOptionsMap[lineDataTable];
-        const variable = rows[i].variable.trim();
+        const variable = rows[i].variable.trim().replace(/\./g, "___");
 
         const { regions } = rows[i];
         const regionsArr = regions
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
         for (let j = 0; j < regionsArr.length; j += 1) {
-          regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
+          regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "").replace(/\./g, "___");
           if (regionValueKeys.indexOf(regionsArr[j]) !== -1) {
             regionsArr[j] = regionValuesMap[regionsArr[j]];
           } else {
@@ -626,7 +626,6 @@ const doCurveParams = function () {
               ...validStats,
             };
           }
-          const jsonFriendlyVariable = variable.replace(/\./g, "_");
           const theseValidStats = Object.keys(validStats);
           let thisValidStatType;
           for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
@@ -651,116 +650,111 @@ const doCurveParams = function () {
             }
             if (
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] === undefined
             ) {
               // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
               variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
-                jsonFriendlyVariable
+                variable
               );
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = variable;
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = regionsArr;
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = forecastLengthArr;
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = levelsArr;
-              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
-              ] = imsArr;
+              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
+                imsArr;
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = scalesArr;
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = sourceArr;
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = descrsArr;
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
-              ] = { minDate: rowMinDate, maxDate: rowMaxDate };
+              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
+                { minDate: rowMinDate, maxDate: rowMaxDate };
             } else {
               // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
+                  variable
                 ],
                 regionsArr
               );
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
-                ][jsonFriendlyVariable],
+                ][variable],
                 forecastLengthArr
               );
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
+                  variable
                 ],
                 levelsArr
               );
-              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
-              ] = _.union(
-                imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
-                ],
-                imsArr
-              );
+              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
+                _.union(
+                  imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    variable
+                  ],
+                  imsArr
+                );
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
+                  variable
                 ],
                 scalesArr
               );
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
+                  variable
                 ],
                 sourceArr
               );
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ] = _.union(
                 descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
+                  variable
                 ],
                 descrsArr
               );
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ].minDate =
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
-                ].minDate < rowMinDate
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable]
+                  .minDate < rowMinDate
                   ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      jsonFriendlyVariable
+                      variable
                     ].minDate
                   : rowMinDate;
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                jsonFriendlyVariable
+                variable
               ].maxDate =
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                  jsonFriendlyVariable
-                ].maxDate > rowMaxDate
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable]
+                  .maxDate > rowMaxDate
                   ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      jsonFriendlyVariable
+                      variable
                     ].maxDate
                   : rowMaxDate;
             }
@@ -2207,6 +2201,7 @@ const doPlotGraph = function () {
 Meteor.startup(function () {
   matsCollections.Databases.remove({});
   if (matsCollections.Databases.find({}).count() < 0) {
+    // eslint-disable-next-line no-console
     console.warn(
       "main startup: corrupted Databases collection: dropping Databases collection"
     );
@@ -2245,6 +2240,7 @@ Meteor.startup(function () {
   );
   // the pool is intended to be global
   if (sumSettings) {
+    // eslint-disable-next-line no-undef
     sumPool = mysql.createPool(sumSettings);
     allPools.push({ pool: "sumPool", role: matsTypes.DatabaseRoles.SUMS_DATA });
   }
@@ -2269,6 +2265,7 @@ Meteor.startup(function () {
 // These are application specific mongo data - like curve params
 // The appSpecificResetRoutines object is a special name,
 // as is doCurveParams. The refreshMetaData mechanism depends on them being named that way.
+// eslint-disable-next-line no-undef
 appSpecificResetRoutines = [
   doPlotGraph,
   doCurveParams,
