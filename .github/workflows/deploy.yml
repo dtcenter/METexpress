@@ -16,7 +16,6 @@ jobs:
       fail-fast: true
       matrix:
         deploy: # List of apps to deploy
-          - met-airquality
           - met-anomalycor
           - met-cyclone
           - met-ensemble
