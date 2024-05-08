@@ -114,7 +114,7 @@ dataThreshold = function (plotParams, plotFunction) {
     if (im !== "All methods") {
       imClause = `and h.interp_mthd = '${im}'`;
     }
-    const variable = curve.variable.replace(/___/g, ".");
+    const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }

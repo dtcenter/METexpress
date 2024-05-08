@@ -113,8 +113,8 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     if (im !== "All methods") {
       imClause = `and h.interp_mthd = '${im}'`;
     }
-    const variableXStr = curve.variable.replace(/___/g, ".");
-    const variableYStr = curve["y-variable"].replace(/___/g, ".");
+    const variableXStr = curve.variable;
+    const variableYStr = curve["y-variable"];
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }

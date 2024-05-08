@@ -493,7 +493,7 @@ const doCurveParams = function () {
             ? validPlotTypes
             : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
         const validStats = masterStatsOptionsMap[lineDataTable];
-        const variable = rows[i].variable.trim().replace(/\./g, "___");
+        const variable = rows[i].variable.trim();
 
         const { regions } = rows[i];
         const regionsArr = regions
@@ -640,6 +640,7 @@ const doCurveParams = function () {
               ...validStats,
             };
           }
+          const jsonFriendlyVariable = variable.replace(/\./g, "_");
           const theseValidStats = Object.keys(validStats);
           let thisValidStatType;
           for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
@@ -665,122 +666,127 @@ const doCurveParams = function () {
             }
             if (
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] === undefined
             ) {
               // if we haven't encountered this variable for this plot type yet, just store the variable-dependent arrays
               variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
-                variable
+                jsonFriendlyVariable
               );
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = variable;
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = regionsArr;
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = forecastLengthArr;
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = levelsArr;
               thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = trshArr;
-              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
-                imsArr;
+              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = imsArr;
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = scalesArr;
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = sourceArr;
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = descrsArr;
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
-                { minDate: rowMinDate, maxDate: rowMaxDate };
+              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = { minDate: rowMinDate, maxDate: rowMaxDate };
             } else {
               // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 regionsArr
               );
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
-                ][variable],
+                ][jsonFriendlyVariable],
                 forecastLengthArr
               );
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 levelsArr
               );
               thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 trshArr
               );
-              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][variable] =
-                _.union(
-                  imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    variable
-                  ],
-                  imsArr
-                );
+              imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = _.union(
+                imOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ],
+                imsArr
+              );
               scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 scaleOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 scalesArr
               );
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 sourceArr
               );
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ] = _.union(
                 descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  variable
+                  jsonFriendlyVariable
                 ],
                 descrsArr
               );
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ].minDate =
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable]
-                  .minDate < rowMinDate
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ].minDate < rowMinDate
                   ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      variable
+                      jsonFriendlyVariable
                     ].minDate
                   : rowMinDate;
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                variable
+                jsonFriendlyVariable
               ].maxDate =
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][variable]
-                  .maxDate > rowMaxDate
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ].maxDate > rowMaxDate
                   ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      variable
+                      jsonFriendlyVariable
                     ].maxDate
                   : rowMaxDate;
             }

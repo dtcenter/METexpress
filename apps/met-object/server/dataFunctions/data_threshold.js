@@ -113,7 +113,7 @@ dataThreshold = function (plotParams, plotFunction) {
     if (radius !== "All radii") {
       radiusClause = `and h.fcst_rad = '${radius}'`;
     }
-    const variable = curve.variable.replace(/___/g, ".");
+    const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }

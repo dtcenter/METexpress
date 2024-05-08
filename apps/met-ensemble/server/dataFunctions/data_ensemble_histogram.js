@@ -95,7 +95,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
-    const variable = curve.variable.replace(/___/g, ".");
+    const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
       { valuesMap: 1 }
