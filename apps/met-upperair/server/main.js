@@ -414,15 +414,15 @@ const doCurveParams = function () {
   let dbArr;
   try {
     rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-      sumPool,
+      sumPool, // eslint-disable-line no-undef
       "select * from upperair_database_groups order by db_group;"
     );
     for (let i = 0; i < rows.length; i += 1) {
-      thisGroup = rows[i].db_group.trim();
+      thisGroup = rows[i].db_group.trim().replace(/\./g, "___");
       dbs = rows[i].dbs;
       dbArr = dbs.split(",").map(Function.prototype.call, String.prototype.trim);
       for (let j = 0; j < dbArr.length; j += 1) {
-        dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "");
+        dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "").replace(/\./g, "___");
       }
       dbGroupMap[thisGroup] = dbArr;
     }
@@ -433,11 +433,11 @@ const doCurveParams = function () {
   let thisDB;
   try {
     rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-      sumPool,
+      sumPool, // eslint-disable-line no-undef
       "select distinct db from upperair_metexpress_metadata;"
     );
     for (let i = 0; i < rows.length; i += 1) {
-      thisDB = rows[i].db.trim();
+      thisDB = rows[i].db.trim().replace(/\./g, "___");
       myDBs.push(thisDB);
     }
   } catch (err) {
@@ -465,12 +465,12 @@ const doCurveParams = function () {
       descrOptionsMap[thisDB] = {};
 
       rows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
-        sumPool,
+        sumPool, // eslint-disable-line no-undef
         `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate from upperair_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
       );
       for (let i = 0; i < rows.length; i += 1) {
         const modelValue = rows[i].model.trim();
-        const model = rows[i].display_text.trim();
+        const model = rows[i].display_text.trim().replace(/\./g, "___");
         modelOptionsMap[thisDB][model] = [modelValue];
 
         const rowMinDate = moment
@@ -494,7 +494,7 @@ const doCurveParams = function () {
           .split(",")
           .map(Function.prototype.call, String.prototype.trim);
         for (let j = 0; j < regionsArr.length; j += 1) {
-          regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "");
+          regionsArr[j] = regionsArr[j].replace(/'|\[|\]/g, "").replace(/\./g, "___");
           if (regionValueKeys.indexOf(regionsArr[j]) !== -1) {
             regionsArr[j] = regionValuesMap[regionsArr[j]];
           } else {
@@ -2207,6 +2207,7 @@ const doPlotGraph = function () {
 Meteor.startup(function () {
   matsCollections.Databases.remove({});
   if (matsCollections.Databases.find({}).count() < 0) {
+    // eslint-disable-next-line no-console
     console.warn(
       "main startup: corrupted Databases collection: dropping Databases collection"
     );
@@ -2245,6 +2246,7 @@ Meteor.startup(function () {
   );
   // the pool is intended to be global
   if (sumSettings) {
+    // eslint-disable-next-line no-undef
     sumPool = mysql.createPool(sumSettings);
     allPools.push({ pool: "sumPool", role: matsTypes.DatabaseRoles.SUMS_DATA });
   }
@@ -2269,6 +2271,7 @@ Meteor.startup(function () {
 // These are application specific mongo data - like curve params
 // The appSpecificResetRoutines object is a special name,
 // as is doCurveParams. The refreshMetaData mechanism depends on them being named that way.
+// eslint-disable-next-line no-undef
 appSpecificResetRoutines = [
   doPlotGraph,
   doCurveParams,

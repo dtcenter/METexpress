@@ -11,6 +11,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataHistogram = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -51,9 +52,10 @@ dataHistogram = function (plotParams, plotFunction) {
     const { diffFrom } = curve;
     dataFoundForCurve[curveIndex] = true;
     const { label } = curve;
-    const { database } = curve;
+    const database = curve.database.replace(/___/g, ".");
+    const modelDisplay = curve["data-source"].replace(/___/g, ".");
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][curve["data-source"]][0];
+      .optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
     const selectorPlotType = curve["plot-type"];
     const { statistic } = curve;
@@ -81,6 +83,14 @@ dataHistogram = function (plotParams, plotFunction) {
         "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
         "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
       lineDataType = "line_data_vl1l2";
+    } else if (statLineType === "ctc") {
+      statisticClause =
+        "sum(ld.fy_oy) as fy_oy, " +
+        "sum(ld.fy_on) as fy_on, " +
+        "sum(ld.fn_oy) as fn_oy, " +
+        "sum(ld.fn_on) as fn_on, " +
+        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+      lineDataType = "line_data_ctc";
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
     let regions =
@@ -96,7 +106,8 @@ dataHistogram = function (plotParams, plotFunction) {
             matsCollections.region.findOne({ name: "region" }).valuesMap
           ).find(
             (key) =>
-              matsCollections.region.findOne({ name: "region" }).valuesMap[key] === r
+              matsCollections.region.findOne({ name: "region" }).valuesMap[key] ===
+              r.replace(/___/g, ".")
           )}'`;
         })
         .join(",");
@@ -118,6 +129,11 @@ dataHistogram = function (plotParams, plotFunction) {
       { valuesMap: 1 }
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    const { threshold } = curve;
+    let thresholdClause = "";
+    if (threshold !== "All thresholds") {
+      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
+    }
     const { truth } = curve;
     let truthClause = "";
     if (truth !== "Any truth dataset") {
@@ -234,6 +250,7 @@ dataHistogram = function (plotParams, plotFunction) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
         "{{forecastLengthsClause}} " +
@@ -251,6 +268,7 @@ dataHistogram = function (plotParams, plotFunction) {
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
       statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
@@ -282,7 +300,7 @@ dataHistogram = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

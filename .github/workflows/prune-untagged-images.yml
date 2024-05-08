@@ -13,7 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         app:
-          - met-airquality
           - met-anomalycor
           - met-cyclone
           - met-ensemble
