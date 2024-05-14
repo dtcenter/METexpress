@@ -550,7 +550,7 @@ class ParentMetadata:
                                               "' and fcst_var = '" + fvar + \
                                               "' order by stat_header_id)" + \
                                               app_specific_clause + \
-                                              " group by model, fcst_var, fcst_lev) as stat_header_id order by length(stat_header_id) limit 1;"
+                                              " group by model, fcst_var, fcst_thresh) as stat_header_id order by length(stat_header_id) limit 1;"
                         if debug:
                             print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
                         try:
