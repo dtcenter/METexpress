@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 5.2.4 release notes (20240426)
+METexpress Version 5.3.0 release notes (20240517)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -22,11 +22,12 @@ METexpress Version 5.2.4 release notes (20240426)
      
   .. dropdown:: Bugfixes
 
-     * None
+     * METexpress can now handle databases, models, and regions that have dots in the name.
      
   .. dropdown:: Enhancements
   
-     * Made common EMC and GSL regions human-readable.
+     * Combined MET Surface and Air Quality apps.
+     * Allowed MET Surface to plot contingency table statistics.
 
   .. dropdown:: Miscellaneous
     
@@ -35,7 +36,7 @@ METexpress Version 5.2.4 release notes (20240426)
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 5.2.4 upgrade instructions
+METexpress Version 5.3.0 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v5.2.4 docker containers from the dtcenter repository.
+Download and deploy the new v5.3.0 docker containers from the dtcenter repository.
