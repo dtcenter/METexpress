@@ -23,7 +23,7 @@ from metexpress.MEmetadata import ParentMetadata
 class MESurface(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
-        options['appSpecificWhereClause'] = 'fcst_lev in ("MSL", "SFC", "SFC=", "Z0", "Z2", "Z10", "H0", "H2", "H10", "L0")'
+        options['appSpecificWhereClause'] = 'fcst_lev in ("MSL", "SFC", "SFC=", "Z0", "Z2", "Z10", "H0", "H2", "H10", "L0") and fcst_var not regexp "PCP|PRECIP|precip|pcp"'
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
                                       "line_data_vl1l2",    # used for vector stats on all plot types
