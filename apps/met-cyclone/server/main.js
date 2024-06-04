@@ -278,7 +278,7 @@ const doCurveParams = function () {
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.yearToYear,
     ],
-    line_data_probrirw: [
+    line_data_ctc: [
       matsTypes.PlotTypes.timeSeries,
       matsTypes.PlotTypes.dieoff,
       matsTypes.PlotTypes.validtime,
@@ -359,35 +359,15 @@ const doCurveParams = function () {
         "ld.adir-ld.bdir",
       ],
     },
-    line_data_probrirw: {
-      "RI start hour": ["precalculated", "line_data_probrirw", "ld.rirw_beg"],
-      "RI end hour": ["precalculated", "line_data_probrirw", "ld.rirw_end"],
-      "RI time duration": ["precalculated", "line_data_probrirw", "ld.rirw_window"],
-      "RI end model max wind speed (kts)": [
-        "precalculated",
-        "line_data_probrirw",
-        "ld.awind_end",
-      ],
-      "RI start truth max wind speed (kts)": [
-        "precalculated",
-        "line_data_probrirw",
-        "ld.bwind_beg",
-      ],
-      "RI end truth max wind speed (kts)": [
-        "precalculated",
-        "line_data_probrirw",
-        "ld.bwind_end",
-      ],
-      "RI truth start to end change in max wind speed (kts)": [
-        "precalculated",
-        "line_data_probrirw",
-        "ld.bdelta",
-      ],
-      "RI truth maximum change in max wind speed (kts)": [
-        "precalculated",
-        "line_data_probrirw",
-        "ld.bdelta_max",
-      ],
+    line_data_ctc: {
+      "CSI (Critical Success Index)": ["ctc"],
+      "FAR (False Alarm Ratio)": ["ctc"],
+      "FBIAS (Frequency Bias)": ["ctc"],
+      "GSS (Gilbert Skill Score)": ["ctc"],
+      "HSS (Heidke Skill Score)": ["ctc"],
+      "PODy (Probability of positive detection)": ["ctc"],
+      "PODn (Probability of negative detection)": ["ctc"],
+      "POFD (Probability of false detection)": ["ctc"],
     },
   };
 
@@ -398,379 +378,9 @@ const doCurveParams = function () {
     },
   };
 
-  const bestTrackDefs = {
-    TD: {
-      name: "Tropical depression (wind <34kt)",
-      order: "0",
-    },
-    TS: {
-      name: "Tropical storm (wind 34–63 kt)",
-      order: "1",
-    },
-    HU: {
-      name: "Hurricane (wind ≥64 kt)",
-      order: "2",
-    },
-    EX: {
-      name: "Extratropical cyclone (any intensity)",
-      order: "3",
-    },
-    SD: {
-      name: "Subtropical depression (wind <34kt)",
-      order: "4",
-    },
-    SS: {
-      name: "Subtropical storm (wind ≥34kt)",
-      order: "5",
-    },
-    LO: {
-      name: "Low that isn't a tropical, subtropical, or extratropical cyclone",
-      order: "6",
-    },
-    WV: {
-      name: "Tropical wave (any intensity)",
-      order: "7",
-    },
-    DB: {
-      name: "Disturbance (any intensity)",
-      order: "8",
-    },
-  };
+  const bestTrackDefs = matsDataUtils.readableTCCategories();
 
-  const modelAcronymDecoder = {
-    OFCL: "OFCL: Official NHC/CPHC Forecast",
-    OFCI: "OFCI: Official NHC/CPHC Forecast",
-    OFC2: "OFC2: Official NHC/CPHC Forecast",
-    OFCP: "OFCP: Provisional NHC/CPHC Forecast",
-    OFPI: "OFPI: Provisional NHC/CPHC Forecast",
-    OFP2: "OFP2: Provisional NHC/CPHC Forecast",
-    OHPC: "OHPC: Official WPC Forecast",
-    OOPC: "OOPC: Official OPC Forecast",
-    OMPC: "OMPC: Official MPC Forecast",
-    JTWC: "JTWC: Official JTWC Forecast",
-    JTWI: "JTWI: Official JTWC Forecast",
-    AVNO: "AVNO: GFS",
-    AVNI: "AVNI: GFS",
-    AVN2: "AVN2: GFS",
-    AHNI: "AHNI: GFS No Bias Correction",
-    GFSO: "GFSO: GFS",
-    GFSI: "GFSI: GFS",
-    GFS2: "GFS2: GFS",
-    AVXO: "AVXO: GFS 10-day Tracker",
-    AVXI: "AVXI: GFS 10-day Tracker",
-    AVX2: "AVX2: GFS 10-day Tracker",
-    AC00: "AC00: GFS Ensemble Control",
-    AEMN: "AEMN: GFS Ensemble Mean",
-    AEMI: "AEMI: GFS Ensemble Mean",
-    AEM2: "AEM2: GFS Ensemble Mean",
-    AMMN: "AMMN: GFS New Ensemble Mean",
-    CMC: "CMC: Canadian Global Model",
-    CMCI: "CMCI: Canadian Global Model",
-    CMC2: "CMC2: Canadian Global Model",
-    CC00: "CC00: Canadian Ensemble Control",
-    CEMN: "CEMN: Canadian Ensemble Mean",
-    CEMI: "CEMI: Canadian Ensemble Mean",
-    CEM2: "CEM2: Canadian Ensemble Mean",
-    COTC: "COTC: US Navy COAMPS-TC",
-    COTI: "COTI: US Navy COAMPS-TC",
-    COT2: "COT2: US Navy COAMPS-TC",
-    CTMN: "CTMN: US Navy COAMPS-TC Ensemble Mean",
-    COAL: "COAL: US Navy COAMPS-TC, Atlantic Basin",
-    COAI: "COAI: US Navy COAMPS-TC, Atlantic Basin",
-    COA2: "COA2: US Navy COAMPS-TC, Atlantic Basin",
-    COCE: "COCE: US Navy COAMPS-TC, E Pacific Basin",
-    COEI: "COEI: US Navy COAMPS-TC, E Pacific Basin",
-    COE2: "COE2: US Navy COAMPS-TC, E Pacific Basin",
-    CTCX: "CTCX: Experimental US Navy COAMPS-TC",
-    CTCI: "CTCI: Experimental US Navy COAMPS-TC",
-    CTC2: "CTC2: Experimental US Navy COAMPS-TC",
-    EGRR: "EGRR: UKMET (GTS Tracker)",
-    EGRI: "EGRI: UKMET (GTS Tracker)",
-    EGR2: "EGR2: UKMET (GTS Tracker)",
-    UKX: "UKX: UKMET (NCEP Tracker)",
-    UKXI: "UKXI: UKMET (NCEP Tracker)",
-    UKX2: "UKX2: UKMET (NCEP Tracker)",
-    UKM: "UKM: UKMET (Automated Tracker)",
-    UKMI: "UKMI: UKMET (Automated Tracker)",
-    UKM2: "UKM2: UKMET (Automated Tracker)",
-    KEGR: "KEGR: UKMET (GTS Tracker; 2014)",
-    KEGI: "KEGI: UKMET (GTS Tracker; 2014)",
-    KEG2: "KEG2: UKMET (GTS Tracker; 2014)",
-    UE00: "UE00: UKMET MOGREPS Ensemble Control",
-    UEMN: "UEMN: UKMET MOGREPS Ensemble Mean",
-    UEMI: "UEMI: UKMET MOGREPS Ensemble Mean",
-    UEM2: "UEM2: UKMET MOGREPS Ensemble Mean",
-    ECM: "ECM: ECMWF",
-    ECMI: "ECMI: ECMWF",
-    ECM2: "ECM2: ECMWF",
-    ECMO: "ECMO: ECMWF (GTS Tracker)",
-    ECOI: "ECOI: ECMWF (GTS Tracker)",
-    ECO2: "ECO2: ECMWF (GTS Tracker)",
-    EMX: "EMX: ECMWF (NCEP Tracker)",
-    EMXI: "EMXI: ECMWF (NCEP Tracker)",
-    EMX2: "EMX2: ECMWF (NCEP Tracker)",
-    EHXI: "EHXI: ECMWF No Bias Correction (NCEP Tracker)",
-    ECMF: "ECMF: ECMWF",
-    ECME: "ECME: ECMWF EPS Ensemble Control (GTS Tracker)",
-    EC00: "EC00: ECMWF EPS Ensemble Control (NCEP Tracker)",
-    EEMN: "EEMN: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    EEMI: "EEMI: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    EMNI: "EMNI: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    EMN2: "EMN2: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    EMN3: "EMN3: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    EMN4: "EMN4: ECMWF EPS Ensemble Mean (NCEP Tracker)",
-    JGSM: "JGSM: Japanese Global Spectral Model",
-    JGSI: "JGSI: Japanese Global Spectral Model",
-    JGS2: "JGS2: Japanese Global Spectral Model",
-    NAM: "NAM: North American Mesoscale Model",
-    NAMI: "NAMI: North American Mesoscale Model",
-    NAM2: "NAM2: North American Mesoscale Model",
-    NGPS: "NGPS: US Navy NOGAPS",
-    NGPI: "NGPI: US Navy NOGAPS",
-    NGP2: "NGP2: US Navy NOGAPS",
-    NGX: "NGX: US Navy NOGAPS",
-    NGXI: "NGXI: US Navy NOGAPS",
-    NGX2: "NGX2: US Navy NOGAPS",
-    NVGM: "NVGM: US Navy NAVGEM",
-    NVGI: "NVGI: US Navy NAVGEM",
-    NVG2: "NVG2: US Navy NAVGEM",
-    HMON: "HMON: HMON Hurricane Model",
-    HMNI: "HMNI: HMON Hurricane Model",
-    HMN2: "HMN2: HMON Hurricane Model",
-    HMMN: "HMMN: HMON Ensemble Mean",
-    HAFS: "HAFS: Hurricane Analysis and Forecast System",
-    HAFI: "HAFI: Hurricane Analysis and Forecast System",
-    HAF2: "HAF2: Hurricane Analysis and Forecast System",
-    HFSA: "HFSA: Hurricane Analysis and Forecast System - A",
-    HFAI: "HFAI: Hurricane Analysis and Forecast System - A",
-    HFA2: "HFA2: Hurricane Analysis and Forecast System - A",
-    HFSB: "HFSB: Hurricane Analysis and Forecast System - B",
-    HFBI: "HFBI: Hurricane Analysis and Forecast System - B",
-    HFB2: "HFB2: Hurricane Analysis and Forecast System - B",
-    HAMN: "HAMN: HAFS Ensemble Mean",
-    HAMI: "HAMI: HAFS Ensemble Mean",
-    HAM2: "HAM2: HAFS Ensemble Mean",
-    HWRF: "HWRF: HWRF Hurricane Model",
-    HWFI: "HWFI: HWRF Hurricane Model",
-    HWF2: "HWF2: HWRF Hurricane Model",
-    HWFE: "HWFE: HWRF Model (ECMWF Fields)",
-    HWEI: "HWEI: HWRF Model (ECMWF Fields)",
-    HWE2: "HWE2: HWRF Model (ECMWF Fields)",
-    HW3F: "HW3F: HWRF Model v2013",
-    HW3I: "HW3I: HWRF Model v2013",
-    HW32: "HW32: HWRF Model v2013",
-    HHFI: "HHFI: HWRF Model No Bias Correction",
-    HWMN: "HWMN: HWRF Ensemble Mean",
-    HWMI: "HWMI: HWRF Ensemble Mean",
-    HWM2: "HWM2: HWRF Ensemble Mean",
-    HHYC: "HHYC: HWRF with HYCOM Ocean Model",
-    HHYI: "HHYI: HWRF with HYCOM Ocean Model",
-    HHY2: "HHY2: HWRF with HYCOM Ocean Model",
-    HWFH: "HWFH: Experimental NOAA/HRD HWRF",
-    HWHI: "HWHI: Experimental NOAA/HRD HWRF",
-    HWH2: "HWH2: Experimental NOAA/HRD HWRF",
-    GFEX: "GFEX Consensus",
-    HCCA: "HCCA Consensus",
-    HCON: "HCON Consensus",
-    ICON: "ICON Consensus",
-    IVCN: "IVCN Consensus",
-    IVCR: "IVCR Consensus",
-    IVRI: "IVRI Consensus",
-    IV15: "IV15 Consensus",
-    INT4: "INT4 Consensus",
-    GUNA: "GUNA Consensus",
-    GUNS: "GUNS Consensus",
-    CGUN: "CGUN Consensus",
-    TCON: "TCON Consensus",
-    TCOE: "TCOE Consensus",
-    TCOA: "TCOA Consensus",
-    TCCN: "TCCN Consensus",
-    TVCN: "TVCN Consensus",
-    TVCE: "TVCE Consensus",
-    TVCA: "TVCA Consensus",
-    TVCC: "TVCC Consensus",
-    TVCP: "TVCP Consensus",
-    TVCX: "TVCX Consensus",
-    TVCY: "TVCY Consensus",
-    RYOC: "RYOC Consensus",
-    MYOC: "MYOC Consensus",
-    RVCN: "RVCN Consensus",
-    GENA: "GENA Consensus",
-    CONE: "CONE Consensus",
-    CONI: "CONI Consensus",
-    CONU: "CONU Consensus",
-    CCON: "CCON: Corrected CONU Consensus",
-    BAMD: "BAMD: Deep-Layer Beta and Advection Model",
-    TABD: "TABD: Deep-Layer Trajectory and Beta Model",
-    BAMM: "BAMM: Medium-Layer Beta and Advection Model",
-    TABM: "TABM: Medium-Layer Trajectory and Beta Model",
-    BAMS: "BAMS: Shallow-Layer Beta and Advection Model",
-    TABS: "TABS: Shallow-Layer Trajectory and Beta Model",
-    KBMD: "KBMD: Parallel Deep-Layer Beta and Advection Model",
-    KBMM: "KBMM: Parallel Medium-Layer Beta and Advection Model",
-    KBMS: "KBMS: Parallel Shallow-Layer Beta and Advection Model",
-    CLIP: "CLIP: 72-hr Climatology and Persistence",
-    CLP5: "CLP5: 120-hr Climatology and Persistence",
-    KCLP: "KCLP: Parallel 72-hr Climatology and Persistence",
-    KCL5: "KCL5: Parallel 120-hr Climatology and Persistence",
-    TCLP: "TCLP: 168-hr Trajectory Climatology and Persistence",
-    LBAR: "LBAR: Limited Area Barotropic Model",
-    KLBR: "KLBR: Parallel Limited Area Barotropic Model",
-    LGEM: "LGEM: Logistical Growth Error Model",
-    KLGM: "KLGM: Parallel Logistical Growth Error Model",
-    SHFR: "SHFR: 72-hr SHIFOR Model",
-    SHF5: "SHF5: 120-hr SHIFOR Model",
-    DSHF: "DSHF: 72-hr Decay SHIFOR Model",
-    DSF5: "DSF5: 120-hr Decay SHIFOR Model",
-    KOCD: "KOCD: Parallel CLP5/Decay-SHIFOR",
-    KSFR: "KSFR: Parallel 72-hr SHIFOR Model",
-    KSF5: "KSF5: Parallel 120-hr SHIFOR Model",
-    SHIP: "SHIP: SHIPS Model",
-    DSHP: "DSHP: Decay SHIPS Model",
-    SHNS: "SHNS: SHIPS Model No IR Profile Predictors",
-    DSNS: "DSNS: Decay SHIPS Model No IR Profile Predictors",
-    KSHP: "KSHP: Parallel SHIPS Model",
-    KDSP: "KDSP: Parallel Decay SHIPS Model",
-    OCD5: "OCD5: Operational CLP5 and DSHF Blended Model",
-    DRCL: "DRCL: DeMaria Climatology and Persistence Model",
-    DRCI: "DRCI: DeMaria Climatology and Persistence Model",
-    MRCL: "MRCL: McAdie Climatology and Persistence Model",
-    MRCI: "MRCI: McAdie Climatology and Persistence Model",
-    AHQI: "AHQI: NCAR Hurricane Regional Model",
-    HURN: "HURN: HURRAN Model",
-    APSU: "APSU: PSU WRF-ARW Model",
-    APSI: "APSI: PSU WRF-ARW Model",
-    APS2: "APS2: PSU WRF-ARW Model",
-    A4PS: "A4PS: PSU WRF-ARW Doppler 2011",
-    A4PI: "A4PI: PSU WRF-ARW Doppler 2011",
-    A4P2: "A4P2: PSU WRF-ARW Doppler 2011",
-    A1PS: "A1PS: PSU WRF-ARW 1 km (Tail Doppler Radar Assimilated)",
-    A1PI: "A1PI: PSU WRF-ARW 1 km (Tail Doppler Radar Assimilated)",
-    A1P2: "A1P2: PSU WRF-ARW 1 km (Tail Doppler Radar Assimilated)",
-    A4NR: "A4NR: PSU WRF-ARW 4.5 km (No Tail Doppler Radar Assimilated)",
-    A4NI: "A4NI: PSU WRF-ARW 4.5 km (No Tail Doppler Radar Assimilated)",
-    A4N2: "A4N2: PSU WRF-ARW 4.5 km (No Tail Doppler Radar Assimilated)",
-    A4QI: "A4QI: PSU WRF-ARW 4.5 km (Tail Doppler Radar Assimilated; GFDL Interpolator)",
-    A4Q2: "A4Q2: PSU WRF-ARW 4.5 km (Tail Doppler Radar Assimilated; GFDL Interpolator)",
-    ANPS: "ANPS: PSU WRF-ARW 3 km (No Tail Doppler Radar Assimilated)",
-    AHW4: "AHW4: SUNY Advanced Hurricane WRF",
-    AHWI: "AHWI: SUNY Advanced Hurricane WRF",
-    AHW2: "AHW2: SUNY Advanced Hurricane WRF",
-    FIM9: "FIM9: Finite-Volume Icosahedral Model (FIM9)",
-    FM9I: "FM9I: Finite-Volume Icosahedral Model (FIM9)",
-    FM92: "FM92: Finite-Volume Icosahedral Model (FIM9)",
-    FIMY: "FIMY: Finite-Volume Icosahedral Model (FIMY)",
-    FIMI: "FIMI: Finite-Volume Icosahedral Model (FIMY)",
-    FIM2: "FIM2: Finite-Volume Icosahedral Model (FIMY)",
-    H3GP: "H3GP: NCEP/AOML Hires 3-Nest HWRF",
-    H3GI: "H3GI: NCEP/AOML Hires 3-Nest HWRF",
-    H3G2: "H3G2: NCEP/AOML Hires 3-Nest HWRF",
-    GFDL: "GFDL: NWS/GFDL Model",
-    GFDI: "GFDI: NWS/GFDL Model",
-    GFD2: "GFD2: NWS/GFDL Model",
-    GHTI: "GHTI: NWS/GFDL Model No Bias Correction",
-    GHMI: "GHMI: NWS/GFDL Model Variable Intensity Offset",
-    GHM2: "GHM2: NWS/GFDL Model Variable Intensity Offset",
-    GFDT: "GFDT: NWS/GFDL Model (NCEP Tracker)",
-    GFTI: "GFTI: NWS/GFDL Model (NCEP Tracker)",
-    GFT2: "GFT2: NWS/GFDL Model (NCEP Tracker)",
-    GFDN: "GFDN: NWS/GFDL Model (Navy Version)",
-    GFNI: "GFNI: NWS/GFDL Model (Navy Version)",
-    GFN2: "GFN2: NWS/GFDL Model (Navy Version)",
-    GFDU: "GFDU: NWS/GFDL Model (UKMET Version)",
-    GFUI: "GFUI: NWS/GFDL Model (UKMET Version)",
-    GFU2: "GFU2: NWS/GFDL Model (UKMET Version)",
-    GFD5: "GFD5: NWS/GFDL Model Parallel",
-    GF5I: "GF5I: NWS/GFDL Model Parallel",
-    GF52: "GF52: NWS/GFDL Model Parallel",
-    GFDE: "GFDE: NWS/GFDL Model (ECMWF Fields)",
-    GFEI: "GFEI: NWS/GFDL Model (ECMWF Fields)",
-    GFE2: "GFE2: NWS/GFDL Model (ECMWF Fields)",
-    GFDC: "GFDC: NWS/GFDL Coupled Model",
-    GFCI: "GFCI: NWS/GFDL Coupled Model",
-    GFC2: "GFC2: NWS/GFDL Coupled Model",
-    GFDA: "GFDA: NWS/GFDL Model With Aviation PBL",
-    GP00: "GP00: GFDL Ensemble Control",
-    G00I: "G00I: GFDL Ensemble Control",
-    G002: "G002: GFDL Ensemble Control",
-    GPMN: "GPMN: GFDL Ensemble Mean",
-    GPMI: "GPMI: GFDL Ensemble Mean",
-    GPM2: "GPM2: GFDL Ensemble Mean",
-    UWN4: "UWN4: UW Madison NMS Model 4km",
-    UW4I: "UW4I: UW Madison NMS Model 4km",
-    UW42: "UW42: UW Madison NMS Model 4km",
-    UWN8: "UWN8: UW NMS Model 8km",
-    UWNI: "UWNI: UW Madison NMS Model 8km",
-    UWN2: "UWN2: UW Madison NMS Model 8km",
-    UWQI: "UWQI: UW Madison NMS Model (GFDL Interpolator)",
-    UWQ2: "UWQ2: UW Madison NMS Model (GFDL Interpolator)",
-    TV15: "TV15: HFIP Stream 1_5 Model Consensus",
-    FSSE: "FSSE: FSU Superensemble",
-    FSSI: "FSSI: FSU Superensemble",
-    MMSE: "MMSE: FSU Multimodel Superensemble",
-    SPC3: "SPC3: Statistical Prediction of Intensity",
-    CARQ: "CARQ: Combined ARQ Position",
-    XTRP: "XTRP: 12-hr Extrapolation",
-    KXTR: "KXTR: Parallel 12-hr Extrapolation",
-    "90AE": "90AE: NHC-90 test",
-    "90BE": "90BE: NHC-90 test",
-    A98E: "A98E: NHC-98 Statistical-Dynamical Model",
-    A67: "A67: NHC-67 Statistical-Synoptic Model",
-    A72: "A72: NHC-72 Statistical-Dynamical Model",
-    A73: "A73: NHC-73 Statistic Model",
-    A83: "A83: NHC-83 Statistical-Dynamical Model",
-    A90E: "A90E: NHC-90 (Early) Statistical-Dynamical Model",
-    A90L: "A90L: NHC-90 (Late) Statistical-Dynamical Model",
-    A9UK: "A9UK: NHC-98 (UKMET Version)",
-    AFW1: "AFW1: US Air Force MM5 Model",
-    AF1I: "AF1I: US Air Force MM5 Model",
-    AF12: "AF12: US Air Force MM5 Model",
-    MM36: "MM36: US Air Force MM5 Model",
-    M36I: "M36I: US Air Force MM5 Model",
-    M362: "M362: US Air Force MM5 Model",
-    BAMA: "BAMA: BAM test A",
-    BAMB: "BAMB: BAM test B",
-    BAMC: "BAMC: BAM test C",
-    ETA: "ETA: ETA Model",
-    ETAI: "ETAI: ETA Model",
-    ETA2: "ETA2: ETA Model",
-    FV5: "FV5: NASA fvGCM Model",
-    FVGI: "FVGI: NASA fvGCM Model",
-    FVG2: "FVG2: NASA fvGCM Model",
-    MFM: "MFM: Medium Fine Mesh Model",
-    MRFO: "MRFO: Medium Range Forecast (MRF) Model",
-    NGM: "NGM: Nested Grid Model",
-    NGMI: "NGMI: Nested Grid Model",
-    NGM2: "NGM2: Nested Grid Model",
-    PSS: "PSS: EP Statistic-Synoptic Model",
-    PSDL: "PSDL: EP Statistic-Dynamic Model",
-    PSDE: "PSDL: EP (Early) Statistic-Dynamic Model",
-    P91L: "P91L: EP NHC-91 (Late) Statistic-Dynamic Model",
-    P91E: "P91E: EP NHC-91 (Early) Statistic-Dynamic Model",
-    P9UK: "P91E: EP NHC-91 (UKMET) Statistic-Dynamic Model",
-    QLM: "QLM: Quasi-Lagrangian Model",
-    QLMI: "QLMI: Quasi-Lagrangian Model",
-    QLM2: "QLM2: Quasi-Lagrangian Model",
-    SBAR: "SBAR: SANBAR Barotropic Model",
-    VBAR: "VBAR: VICBAR Model",
-    VBRI: "VBRI: VICBAR Model",
-    VBR2: "VBR2: VICBAR Model",
-    DTOP: "DTOP: Deterministic to Probabilistic Statistical Model",
-    DTPE: "DTPE: Deterministic to Probabilistic Statistical Model (ECMWF Version)",
-    RIOB: "RIOB: Bayesian RI Model",
-    RIOD: "RIOD: Discriminant Analysis RI Model",
-    RIOL: "RIOL: Logistic Regression RI Model",
-    RIOC: "RIOC: Consensus of RIOB, RIOD, RIOL",
-    EIOB: "EIOB: Bayesian RI Model (ECMWF Version)",
-    EIOD: "EIOD: Discriminant Analysis RI Model (ECMWF Version)",
-    EIOL: "EIOL: Logistic Regression RI Model (ECMWF Version)",
-    EIOC: "EIOC: Consensus of EIOB, EIOD, EIOL",
-    GCP0: "GCP1: GFS-CAM Physics v0 (NOAA/GSL)",
-    GCP1: "GCP1: GFS-CAM Physics v1 (NOAA/GSL)",
-    GCP2: "GCP1: GFS-CAM Physics v2 (NOAA/GSL)",
-    BEST: "BEST: Best Track",
-    BCD5: "BCD5: Best Track Decay",
-  };
+  const modelAcronymDecoder = matsDataUtils.readableAdeckModels();
 
   let masterStatsValuesMap = {};
   const lineTypes = Object.keys(masterStatsOptionsMap);
@@ -790,8 +400,10 @@ const doCurveParams = function () {
   const basinOptionsMap = {};
   const yearOptionsMap = {};
   const stormsOptionsMap = {};
+  const variableOptionsMap = {};
   const forecastLengthOptionsMap = {};
   const levelOptionsMap = {};
+  const thresholdOptionsMap = {};
   const sourceOptionsMap = {};
   const descrOptionsMap = {};
 
@@ -841,8 +453,10 @@ const doCurveParams = function () {
       basinOptionsMap[thisDB] = {};
       yearOptionsMap[thisDB] = {};
       stormsOptionsMap[thisDB] = {};
+      variableOptionsMap[thisDB] = {};
       forecastLengthOptionsMap[thisDB] = {};
       levelOptionsMap[thisDB] = {};
+      thresholdOptionsMap[thisDB] = {};
       sourceOptionsMap[thisDB] = {};
       descrOptionsMap[thisDB] = {};
 
@@ -899,13 +513,6 @@ const doCurveParams = function () {
           .utc(rows[i].maxdate * 1000)
           .format("MM/DD/YYYY HH:mm");
 
-        const lineDataTable = rows[i].line_data_table.trim();
-        const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
-        plotTypeOptionsMap[thisDB][model] =
-          plotTypeOptionsMap[thisDB][model] === undefined
-            ? validPlotTypes
-            : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
-        const validStats = masterStatsOptionsMap[lineDataTable];
         const basin = rows[i].basin.trim();
         const { year } = rows[i];
 
@@ -970,6 +577,42 @@ const doCurveParams = function () {
           descrsArr[j] = descrsArr[j].replace(/'|\[|\]|=/g, "");
         }
 
+        // get any CTC RI stats for this model
+        const riRows = matsDataQueryUtils.simplePoolQueryWrapSynchronous(
+          sumPool, // eslint-disable-line no-undef
+          `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from cyclone_ri_metexpress_metadata where db = '${thisDB}' and model = '${modelValue}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
+        );
+
+        let variablesArr;
+        let thresholdArr;
+        let lineDataTables;
+        if (riRows.length > 0) {
+          variablesArr = [];
+          thresholdArr = [];
+          lineDataTables = [rows[i].line_data_table.trim(), "line_data_ctc"];
+          for (let l = 0; l < riRows.length; l += 1) {
+            const variable = riRows[l].variable.trim();
+            variablesArr.push(variable);
+
+            const { trshs } = riRows[l];
+            const trshArr = trshs
+              .split(",")
+              .map(Function.prototype.call, String.prototype.trim);
+            for (let j = 0; j < trshArr.length; j += 1) {
+              trshArr[j] = trshArr[j].replace(/'|\[|\]/g, "");
+            }
+            thresholdArr = thresholdArr.concat(trshArr);
+          }
+
+          variablesArr = [...new Set(variablesArr)].sort(); // make sure all variables are unique, then sort
+          thresholdArr = [...new Set(thresholdArr)].sort(); // make sure all thresholds are unique, then sort
+          thresholdArr.unshift("All thresholds");
+        } else {
+          variablesArr = ["NA"];
+          thresholdArr = ["NA"];
+          lineDataTables = [rows[i].line_data_table.trim()];
+        }
+
         statisticOptionsMap[thisDB][model] =
           statisticOptionsMap[thisDB][model] === undefined
             ? {}
@@ -986,6 +629,10 @@ const doCurveParams = function () {
           stormsOptionsMap[thisDB][model] === undefined
             ? {}
             : stormsOptionsMap[thisDB][model];
+        variableOptionsMap[thisDB][model] =
+          variableOptionsMap[thisDB][model] === undefined
+            ? {}
+            : variableOptionsMap[thisDB][model];
         forecastLengthOptionsMap[thisDB][model] =
           forecastLengthOptionsMap[thisDB][model] === undefined
             ? {}
@@ -994,6 +641,10 @@ const doCurveParams = function () {
           levelOptionsMap[thisDB][model] === undefined
             ? {}
             : levelOptionsMap[thisDB][model];
+        thresholdOptionsMap[thisDB][model] =
+          thresholdOptionsMap[thisDB][model] === undefined
+            ? {}
+            : thresholdOptionsMap[thisDB][model];
         sourceOptionsMap[thisDB][model] =
           sourceOptionsMap[thisDB][model] === undefined
             ? {}
@@ -1007,157 +658,204 @@ const doCurveParams = function () {
             ? {}
             : dbDateRangeMap[thisDB][model];
 
-        let thisPlotType;
-        for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx += 1) {
-          thisPlotType = validPlotTypes[ptidx];
-          if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
-            // if we haven't encountered this plot type for this model yet, initialize everything
-            statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
-            basinOptionsMap[thisDB][model][thisPlotType] = {};
-            yearOptionsMap[thisDB][model][thisPlotType] = {};
-            stormsOptionsMap[thisDB][model][thisPlotType] = {};
-            forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
-            levelOptionsMap[thisDB][model][thisPlotType] = {};
-            sourceOptionsMap[thisDB][model][thisPlotType] = {};
-            descrOptionsMap[thisDB][model][thisPlotType] = {};
-            dbDateRangeMap[thisDB][model][thisPlotType] = {};
-          } else {
-            // if we have encountered this plot type for this model, add in any new stats
-            statisticOptionsMap[thisDB][model][thisPlotType] = {
-              ...statisticOptionsMap[thisDB][model][thisPlotType],
-              ...validStats,
-            };
-          }
-          const theseValidStats = Object.keys(validStats);
-          let thisValidStatType;
-          for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
-            [thisValidStatType] = validStats[theseValidStats[vsidx]];
-            if (
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] ===
-              undefined
-            ) {
-              // if we haven't encountered this variable for this stat yet, initialize everything
-              basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
-              yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-              forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                {};
-              levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-              descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-            }
-            if (
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                basin
-              ] === undefined
-            ) {
-              // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-              basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
-                basin
-              );
-              yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                [];
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                {};
-              forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                basin
-              ] = {};
-              levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                {};
-              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                sourceArr;
-              descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                descrsArr;
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                {};
+        for (let l = 0; l < lineDataTables.length; l += 1) {
+          const lineDataTable = lineDataTables[l];
+          const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
+          plotTypeOptionsMap[thisDB][model] =
+            plotTypeOptionsMap[thisDB][model] === undefined
+              ? validPlotTypes
+              : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
+          const validStats = masterStatsOptionsMap[lineDataTable];
+
+          let thisPlotType;
+          for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx += 1) {
+            thisPlotType = validPlotTypes[ptidx];
+            if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
+              // if we haven't encountered this plot type for this model yet, initialize everything
+              statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
+              basinOptionsMap[thisDB][model][thisPlotType] = {};
+              yearOptionsMap[thisDB][model][thisPlotType] = {};
+              stormsOptionsMap[thisDB][model][thisPlotType] = {};
+              variableOptionsMap[thisDB][model][thisPlotType] = {};
+              forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
+              levelOptionsMap[thisDB][model][thisPlotType] = {};
+              thresholdOptionsMap[thisDB][model][thisPlotType] = {};
+              sourceOptionsMap[thisDB][model][thisPlotType] = {};
+              descrOptionsMap[thisDB][model][thisPlotType] = {};
+              dbDateRangeMap[thisDB][model][thisPlotType] = {};
             } else {
-              // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-              sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                _.union(
+              // if we have encountered this plot type for this model, add in any new stats
+              statisticOptionsMap[thisDB][model][thisPlotType] = {
+                ...statisticOptionsMap[thisDB][model][thisPlotType],
+                ...validStats,
+              };
+            }
+            const theseValidStats = Object.keys(validStats);
+            let thisValidStatType;
+            for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
+              [thisValidStatType] = validStats[theseValidStats[vsidx]];
+              if (
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] ===
+                undefined
+              ) {
+                // if we haven't encountered this variable for this stat yet, initialize everything
+                basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
+                yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                  thisValidStatType
+                ] = {};
+                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                  {};
+                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+              }
+              if (
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] === undefined
+              ) {
+                // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
+                  basin
+                );
+                yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
+                  [];
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = {};
+                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = {};
+                forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                  thisValidStatType
+                ][basin] = {};
+                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
+                  {};
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = {};
+                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = sourceArr;
+                descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
+                  descrsArr;
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
+                  {};
+              } else {
+                // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = _.union(
                   sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                     basin
                   ],
                   sourceArr
                 );
-              descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                _.union(
-                  descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ],
-                  descrsArr
-                );
-            }
-            if (
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] === undefined
-            ) {
-              // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-              yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                basin
-              ].push(year);
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] = stormsArr;
-              forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                basin
-              ][year] = forecastLengthArr;
-              levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] = levelsArr;
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] = {
-                minDate: rowMinDate,
-                maxDate: rowMaxDate,
-              };
-            } else {
-              // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-              stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] = _.union(
+                descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
+                  _.union(
+                    descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ],
+                    descrsArr
+                  );
+              }
+              if (
                 stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
-                ],
-                stormsArr
-              );
-              forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                basin
-              ][year] = _.union(
+                ] === undefined
+              ) {
+                // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ].push(year);
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                  year
+                ] = stormsArr;
+                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ][year] = variablesArr;
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
-                ][basin][year],
-                forecastLengthArr
-              );
-              levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ] = _.union(
+                ][basin][year] = forecastLengthArr;
                 levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
-                ],
-                levelsArr
-              );
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ][minDate] =
+                ] = levelsArr;
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ][year] = thresholdArr;
                 dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
-                ][minDate] < rowMinDate
-                  ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      basin
-                    ][year][minDate]
-                  : rowMinDate;
-              dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                year
-              ][maxDate] =
+                ] = {
+                  minDate: rowMinDate,
+                  maxDate: rowMaxDate,
+                };
+              } else {
+                // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                  year
+                ] = _.union(
+                  stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ][year],
+                  stormsArr
+                );
+                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ][year] = _.union(
+                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ][year],
+                  variablesArr
+                );
+                forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                  thisValidStatType
+                ][basin][year] = _.union(
+                  forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                    thisValidStatType
+                  ][basin][year],
+                  forecastLengthArr
+                );
+                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                  year
+                ] = _.union(
+                  levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ][year],
+                  levelsArr
+                );
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ][year] = _.union(
+                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ][year],
+                  thresholdArr
+                );
                 dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
-                ][maxDate] > rowMaxDate
-                  ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                      basin
-                    ][year][maxDate]
-                  : rowMaxDate;
+                ][minDate] =
+                  dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                    year
+                  ][minDate] < rowMinDate
+                    ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year][minDate]
+                    : rowMinDate;
+                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                  year
+                ][maxDate] =
+                  dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
+                    year
+                  ][maxDate] > rowMaxDate
+                    ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year][maxDate]
+                    : rowMaxDate;
+              }
             }
           }
         }
@@ -1449,7 +1147,14 @@ const doCurveParams = function () {
           defaultBasin
         ],
       superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
-      dependentNames: ["storm", "forecast-length", "level", "dates", "curve-dates"],
+      dependentNames: [
+        "variable",
+        "storm",
+        "forecast-length",
+        "level",
+        "dates",
+        "curve-dates",
+      ],
       controlButtonCovered: true,
       unique: false,
       default: defaultYear,
