@@ -23,7 +23,7 @@ from metexpress.MEmetadata import ParentMetadata
 class MECyclone(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
-        options['appSpecificWhereClause'] = ''
+        options['appSpecificWhereClause'] = 'fcst_var like "%RIRW%"'
         options['statHeaderType'] = 'stat_header'
         options['line_data_table'] = ["line_data_ctc"]     # used for RI stats
         options['metadata_table'] = "cyclone_ri_metexpress_metadata"
