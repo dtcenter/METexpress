@@ -25,7 +25,7 @@ class MECyclone(ParentMetadata):
         options['name'] = __name__
         options['appSpecificWhereClause'] = ''
         options['statHeaderType'] = 'tcst_header'
-        options['line_data_table'] = ["line_data_ctc"]     # used for RI stats
+        options['line_data_table'] = ["line_data_tcmpr"]     # used for tc model-obs pair stats
         options['metadata_table'] = "cyclone_metexpress_metadata"
         options['app_reference'] = "met-cyclone"
         options['database_groups'] = "cyclone_database_groups"
