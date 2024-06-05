@@ -360,19 +360,24 @@ const doCurveParams = function () {
       ],
     },
     line_data_ctc: {
-      "CSI (Critical Success Index)": ["ctc"],
-      "FAR (False Alarm Ratio)": ["ctc"],
-      "FBIAS (Frequency Bias)": ["ctc"],
-      "GSS (Gilbert Skill Score)": ["ctc"],
-      "HSS (Heidke Skill Score)": ["ctc"],
-      "PODy (Probability of positive detection)": ["ctc"],
-      "PODn (Probability of negative detection)": ["ctc"],
-      "POFD (Probability of false detection)": ["ctc"],
+      "Rapid Intensification CSI (Critical Success Index)": ["ctc"],
+      "Rapid Intensification FAR (False Alarm Ratio)": ["ctc"],
+      "Rapid Intensification FBIAS (Frequency Bias)": ["ctc"],
+      "Rapid Intensification GSS (Gilbert Skill Score)": ["ctc"],
+      "Rapid Intensification HSS (Heidke Skill Score)": ["ctc"],
+      "Rapid Intensification PODy (Probability of positive detection)": ["ctc"],
+      "Rapid Intensification PODn (Probability of negative detection)": ["ctc"],
+      "Rapid Intensification POFD (Probability of false detection)": ["ctc"],
     },
   };
 
   const aggMethodOptionsMap = {
     precalculated: {
+      "Mean statistic": ["meanStat"],
+      "Median statistic": ["medStat"],
+    },
+    ctc: {
+      "Overall statistic": ["aggStat"],
       "Mean statistic": ["meanStat"],
       "Median statistic": ["medStat"],
     },
@@ -729,7 +734,7 @@ const doCurveParams = function () {
                 ] = {};
                 variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                   basin
-                ] = {};
+                ] = variablesArr;
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
                 ][basin] = {};
@@ -737,7 +742,7 @@ const doCurveParams = function () {
                   {};
                 thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                   basin
-                ] = {};
+                ] = thresholdArr;
                 sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                   basin
                 ] = sourceArr;
@@ -747,6 +752,22 @@ const doCurveParams = function () {
                   {};
               } else {
                 // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = _.union(
+                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ],
+                  variablesArr
+                );
+                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  basin
+                ] = _.union(
+                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ],
+                  thresholdArr
+                );
                 sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                   basin
                 ] = _.union(
@@ -775,18 +796,12 @@ const doCurveParams = function () {
                 stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
                 ] = stormsArr;
-                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ][year] = variablesArr;
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
                 ][basin][year] = forecastLengthArr;
                 levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
                 ] = levelsArr;
-                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ][year] = thresholdArr;
                 dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
                 ] = {
@@ -803,14 +818,6 @@ const doCurveParams = function () {
                   ][year],
                   stormsArr
                 );
-                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ][year] = _.union(
-                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ][year],
-                  variablesArr
-                );
                 forecastLengthOptionsMap[thisDB][model][thisPlotType][
                   thisValidStatType
                 ][basin][year] = _.union(
@@ -826,14 +833,6 @@ const doCurveParams = function () {
                     basin
                   ][year],
                   levelsArr
-                );
-                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ][year] = _.union(
-                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ][year],
-                  thresholdArr
                 );
                 dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
                   year
@@ -1063,7 +1062,7 @@ const doCurveParams = function () {
       optionsMap: basinOptionsMap,
       options: basinOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic"],
-      dependentNames: ["year", "truth", "description"],
+      dependentNames: ["year", "variable", "threshold", "truth", "description"],
       controlButtonCovered: true,
       unique: false,
       default: defaultBasin,
@@ -1101,6 +1100,13 @@ const doCurveParams = function () {
       valuesMap: masterStatsValuesMap,
       superiorNames: ["database", "data-source", "plot-type"],
       dependentNames: ["basin", "aggregation-method"],
+      hideOtherFor: {
+        variable: Object.keys(masterStatsOptionsMap.line_data_tcmpr),
+        threshold: Object.keys(masterStatsOptionsMap.line_data_tcmpr),
+        year: Object.keys(masterStatsOptionsMap.line_data_ctc),
+        storm: Object.keys(masterStatsOptionsMap.line_data_ctc),
+        level: Object.keys(masterStatsOptionsMap.line_data_ctc),
+      },
       controlButtonCovered: true,
       unique: false,
       default: defaultStatistic,
@@ -1147,14 +1153,7 @@ const doCurveParams = function () {
           defaultBasin
         ],
       superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
-      dependentNames: [
-        "variable",
-        "storm",
-        "forecast-length",
-        "level",
-        "dates",
-        "curve-dates",
-      ],
+      dependentNames: ["storm", "forecast-length", "level", "dates", "curve-dates"],
       controlButtonCovered: true,
       unique: false,
       default: defaultYear,
@@ -1284,6 +1283,92 @@ const doCurveParams = function () {
   }
 
   // these defaults are app-specific and not controlled by the user
+  const variableOptions =
+    variableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      defaultBasin
+    ];
+  const variableDefault = variableOptions[0];
+
+  if (matsCollections.variable.findOne({ name: "variable" }) === undefined) {
+    matsCollections.variable.insert({
+      name: "variable",
+      type: matsTypes.InputTypes.select,
+      optionsMap: variableOptionsMap,
+      options: variableOptions,
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
+      selected: "",
+      controlButtonCovered: true,
+      unique: false,
+      default: variableDefault,
+      controlButtonVisibility: "block",
+      displayOrder: 4,
+      displayPriority: 1,
+      displayGroup: 3,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = matsCollections.variable.findOne({
+      name: "variable",
+    });
+    if (!matsDataUtils.areObjectsEqual(currentParam.optionsMap, variableOptionsMap)) {
+      // have to reload forecast length data
+      matsCollections.variable.update(
+        { name: "variable" },
+        {
+          $set: {
+            optionsMap: variableOptionsMap,
+            options: variableOptions,
+            default: variableDefault,
+          },
+        }
+      );
+    }
+  }
+
+  // these defaults are app-specific and not controlled by the user
+  const thresholdOptions =
+    thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      defaultBasin
+    ];
+  const thresholdDefault = thresholdOptions[0];
+
+  if (matsCollections.threshold.findOne({ name: "threshold" }) === undefined) {
+    matsCollections.threshold.insert({
+      name: "threshold",
+      type: matsTypes.InputTypes.select,
+      optionsMap: thresholdOptionsMap,
+      options: thresholdOptions,
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
+      selected: "",
+      controlButtonCovered: true,
+      unique: false,
+      default: thresholdDefault,
+      controlButtonVisibility: "block",
+      displayOrder: 1,
+      displayPriority: 1,
+      displayGroup: 5,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = matsCollections.threshold.findOne({
+      name: "threshold",
+    });
+    if (!matsDataUtils.areObjectsEqual(currentParam.optionsMap, thresholdOptionsMap)) {
+      // have to reload forecast length data
+      matsCollections.threshold.update(
+        { name: "threshold" },
+        {
+          $set: {
+            optionsMap: thresholdOptionsMap,
+            options: thresholdOptions,
+            default: thresholdDefault,
+          },
+        }
+      );
+    }
+  }
+
+  // these defaults are app-specific and not controlled by the user
   const fhrOptions =
     forecastLengthOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
       defaultBasin
@@ -1321,7 +1406,7 @@ const doCurveParams = function () {
       controlButtonVisibility: "block",
       controlButtonText: "forecast lead time",
       gapAbove: true,
-      displayOrder: 1,
+      displayOrder: 2,
       displayPriority: 1,
       displayGroup: 5,
     });
@@ -1375,7 +1460,7 @@ const doCurveParams = function () {
       default: Object.keys(dieoffOptionsMap)[0],
       controlButtonVisibility: "block",
       controlButtonText: "dieoff type",
-      displayOrder: 2,
+      displayOrder: 3,
       displayPriority: 1,
       displayGroup: 5,
     });
@@ -1417,7 +1502,7 @@ const doCurveParams = function () {
       default: matsTypes.InputTypes.unused,
       controlButtonVisibility: "block",
       controlButtonText: "valid utc hour",
-      displayOrder: 3,
+      displayOrder: 4,
       displayPriority: 1,
       displayGroup: 5,
       multiple: true,
@@ -1463,7 +1548,7 @@ const doCurveParams = function () {
       default: ["12"],
       controlButtonVisibility: "block",
       controlButtonText: "utc cycle init hour",
-      displayOrder: 4,
+      displayOrder: 5,
       displayPriority: 1,
       displayGroup: 5,
       multiple: true,
@@ -1769,7 +1854,9 @@ const doCurveTextPatterns = function () {
         ["", "basin", ", "],
         ["", "year", " "],
         ["", "storm", " "],
+        ["", "threshold", " "],
         ["", "statistic", " "],
+        ["", "variable", " "],
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
@@ -1785,6 +1872,7 @@ const doCurveTextPatterns = function () {
         "data-source",
         "basin",
         "statistic",
+        "variable",
         "year",
         "storm",
         "truth",
@@ -1806,7 +1894,9 @@ const doCurveTextPatterns = function () {
         ["", "basin", ", "],
         ["", "year", " "],
         ["", "storm", " "],
+        ["", "threshold", " "],
         ["", "statistic", " "],
+        ["", "variable", " "],
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["", "dieoff-type", ", "],
@@ -1823,6 +1913,7 @@ const doCurveTextPatterns = function () {
         "data-source",
         "basin",
         "statistic",
+        "variable",
         "year",
         "storm",
         "truth",
@@ -1845,7 +1936,9 @@ const doCurveTextPatterns = function () {
         ["", "basin", ", "],
         ["", "year", " "],
         ["", "storm", " "],
+        ["", "threshold", " "],
         ["", "statistic", " "],
+        ["", "variable", " "],
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
@@ -1860,6 +1953,7 @@ const doCurveTextPatterns = function () {
         "data-source",
         "basin",
         "statistic",
+        "variable",
         "year",
         "storm",
         "truth",
@@ -1878,7 +1972,9 @@ const doCurveTextPatterns = function () {
         ["", "database", "."],
         ["", "data-source", " in "],
         ["", "basin", " "],
+        ["", "threshold", " "],
         ["", "statistic", " "],
+        ["", "variable", " "],
         ["", "aggregation-method", ", "],
         ["level: ", "level", ", "],
         ["fcst_len: ", "forecast-length", "h, "],
@@ -1893,6 +1989,7 @@ const doCurveTextPatterns = function () {
         "data-source",
         "basin",
         "statistic",
+        "variable",
         "truth",
         "valid-time",
         "forecast-length",
