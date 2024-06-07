@@ -611,7 +611,6 @@ const doCurveParams = function () {
 
           variablesArr = [...new Set(variablesArr)].sort(); // make sure all variables are unique, then sort
           thresholdArr = [...new Set(thresholdArr)].sort(); // make sure all thresholds are unique, then sort
-          thresholdArr.unshift("All thresholds");
         } else {
           variablesArr = ["NA"];
           thresholdArr = ["NA"];
