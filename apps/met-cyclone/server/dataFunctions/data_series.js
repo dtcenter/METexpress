@@ -95,12 +95,12 @@ dataSeries = function (plotParams, plotFunction) {
       lineDataType = "line_data_ctc";
       modelClause = `and h.model = '${model}'`;
       truthClause = `and h.obtype = '${truth}'`;
+      stormClause = `and h.vx_mask = '${basin}'`;
       statistic = statistic.replace("Rapid Intensification ", "");
       const { variable } = curve;
       variableClause = `and h.fcst_var = '${variable}'`;
       const { threshold } = curve;
       thresholdClause = `and h.fcst_thresh = '${threshold}'`;
-
     } else if (statLineType === "precalculated") {
       // set up fields specific to precalculated stats
       statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
@@ -207,7 +207,10 @@ dataSeries = function (plotParams, plotFunction) {
     // This axisKeySet object is used like a set and if a curve has the same
     // variable + statistic (axisKey) it will use the same axis.
     // The axis number is assigned to the axisKeySet value, which is the axisKey.
-    const axisKey = statistic;
+    const axisKey = statistic
+      .replace("Truth ", "")
+      .replace("Model ", "")
+      .replace("Model-truth ", "");
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
     if (!diffFrom) {

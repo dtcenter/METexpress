@@ -378,8 +378,6 @@ const doCurveParams = function () {
     },
     ctc: {
       "Overall statistic": ["aggStat"],
-      "Mean statistic": ["meanStat"],
-      "Median statistic": ["medStat"],
     },
   };
 
