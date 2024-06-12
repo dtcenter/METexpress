@@ -283,6 +283,7 @@ const doCurveParams = function () {
       matsTypes.PlotTypes.dieoff,
       matsTypes.PlotTypes.validtime,
       matsTypes.PlotTypes.histogram,
+      matsTypes.PlotTypes.yearToYear,
     ],
   };
 
