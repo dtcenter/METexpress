@@ -23,12 +23,12 @@ from metexpress.MEmetadata import ParentMetadata
 class MECyclone(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
-        options['appSpecificWhereClause'] = ''
-        options['statHeaderType'] = 'tcst_header'
-        options['line_data_table'] = ["line_data_tcmpr"]     # used for tc model-obs pair stats
-        options['metadata_table'] = "cyclone_metexpress_metadata"
+        options['appSpecificWhereClause'] = 'fcst_var like "%RIRW%"'
+        options['statHeaderType'] = 'stat_header'
+        options['line_data_table'] = ["line_data_ctc"]     # used for RI stats
+        options['metadata_table'] = "cyclone_ri_metexpress_metadata"
         options['app_reference'] = "met-cyclone"
-        options['database_groups'] = "cyclone_database_groups"
+        options['database_groups'] = "cyclone_ri_database_groups"
         super().__init__(options)
 
     @staticmethod
