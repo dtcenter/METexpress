@@ -225,10 +225,10 @@ dataSeries = function (plotParams, plotFunction) {
       // prepare the query from the above parameters
       statement =
         "select {{average}} as avtime, " +
-        "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
+        "count(distinct unix_timestamp(ld.fcst_valid_beg)) as nTimes, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
-        "sum(ld.total) as N0, " +
+        "sum(ld.total) as n0, " +
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +

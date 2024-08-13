@@ -225,7 +225,7 @@ dataSeries = function (plotParams, plotFunction) {
       // prepare the query from the above parameters
       statement =
         "select {{average}} as avtime, " +
-        "count(distinct unix_timestamp(h.fcst_valid)) as N_times, " +
+        "count(distinct unix_timestamp(h.fcst_valid)) as nTimes, " +
         "min(unix_timestamp(h.fcst_valid)) as min_secs, " +
         "max(unix_timestamp(h.fcst_valid)) as max_secs, " +
         "{{statisticClause}} " +

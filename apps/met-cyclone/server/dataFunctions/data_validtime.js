@@ -197,7 +197,7 @@ dataValidTime = function (plotParams, plotFunction) {
       // prepare the query from the above parameters
       statement =
         "select unix_timestamp(ld.fcst_valid)%(24*3600)/3600 as hr_of_day, " +
-        "count(distinct unix_timestamp(ld.fcst_valid)) as N_times, " +
+        "count(distinct unix_timestamp(ld.fcst_valid)) as nTimes, " +
         "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid)) as max_secs, " +
         "{{statisticClause}} " +
