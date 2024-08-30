@@ -13,6 +13,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataEnsembleHistogram = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -51,9 +52,10 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     const curve = curves[curveIndex];
     const { diffFrom } = curve;
     const { label } = curve;
-    const { database } = curve;
+    const database = curve.database.replace(/___/g, ".");
+    const modelDisplay = curve["data-source"].replace(/___/g, ".");
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][curve["data-source"]][0];
+      .optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
     const selectorPlotType = curve["plot-type"];
     let statistic;
@@ -88,7 +90,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
     if (regions.length > 0) {
       regions = regions
         .map(function (r) {
-          return `'${r}'`;
+          return `'${r.replace(/___/g, ".")}'`;
         })
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
@@ -193,10 +195,10 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
       // prepare the query from the above parameters
       statement =
         "select ldr.i_value as bin, " +
-        "count(distinct unix_timestamp(ld.fcst_valid_beg)) as N_times, " +
+        "count(distinct unix_timestamp(ld.fcst_valid_beg)) as nTimes, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
-        "sum(ld.total) as N0, " +
+        "sum(ld.total) as n0, " +
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +
@@ -249,7 +251,7 @@ dataEnsembleHistogram = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

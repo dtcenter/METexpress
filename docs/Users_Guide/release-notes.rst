@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 5.2.2 release notes (20240126)
+METexpress Version 5.3.3 release notes (20240830)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -22,20 +22,21 @@ METexpress Version 5.2.2 release notes (20240126)
      
   .. dropdown:: Bugfixes
 
-     * Improved handling of datestrings.
+     * Fixed broken CSV export.
+     * The axis merge button no longer does anything if there is only one curve.
      
   .. dropdown:: Enhancements
   
-     * Updated all apps to Meteor v2.14.
+     * Plots with all null values now display a No Data Found message.
 
   .. dropdown:: Miscellaneous
     
-     * None
+     * Linted MATScommon.
         
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 5.1.2 upgrade instructions
+METexpress Version 5.3.3 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v5.1.2 docker containers from the dtcenter repository.
+Download and deploy the new v5.3.3 docker containers from the dtcenter repository.

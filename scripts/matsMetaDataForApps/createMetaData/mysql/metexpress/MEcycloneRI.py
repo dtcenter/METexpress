@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script creates the metadata tables required for a METexpress air quality app. It parses the required fields from any
+This script creates the metadata tables required for a METexpress Cyclone app. It parses the required fields from any
 databases that begin with 'mv_' in a mysql instance.
 
 Usage: ["(c)nf_file=", "[(m)ats_metadata_database_name]",
@@ -20,29 +20,35 @@ from datetime import datetime
 from metexpress.MEmetadata import ParentMetadata
 
 
-class MEAirquality(ParentMetadata):
+class MECyclone(ParentMetadata):
     def __init__(self, options):
         options['name'] = __name__
-        options['appSpecificWhereClause'] = 'fcst_var regexp "^OZ|^PM25|^PMTF|^PDM|^PMAVE"'
+        options['appSpecificWhereClause'] = 'fcst_var like "%RIRW%"'
         options['statHeaderType'] = 'stat_header'
-        options['line_data_table'] = ["line_data_sl1l2",    # used for scalar stats on all plot types
-                                      "line_data_ctc"]      # used for ctc stats on all plot types
-        options['metadata_table'] = "airquality_metexpress_metadata"
-        options['app_reference'] = "met-airquality"
-        options['database_groups'] = "airquality_database_groups"
+        options['line_data_table'] = ["line_data_ctc"]     # used for RI stats
+        options['metadata_table'] = "cyclone_ri_metexpress_metadata"
+        options['app_reference'] = "met-cyclone"
+        options['database_groups'] = "cyclone_ri_database_groups"
         super().__init__(options)
 
     @staticmethod
     def get_app_reference():
-        return "met-airquality"
+        return "met-cyclone"
 
     def strip_level(self, elem):
         # helper function for sorting levels
-        if elem[0] in ['Z', 'H', 'L', 'A']:
-            try:
-                return int(elem[1:])
-            except ValueError:
-                return 0
+        if elem[0] in ['P', 'Z', 'H', 'L', 'A']:
+            if '-' not in elem:
+                try:
+                    return int(elem[1:])
+                except ValueError:
+                    return 0
+            else:
+                hyphen_idx = elem.find('-')
+                try:
+                    return int(elem[1:hyphen_idx])
+                except ValueError:
+                    return 0
         else:
             try:
                 return int(float(elem) + 10000)
@@ -83,10 +89,10 @@ class MEAirquality(ParentMetadata):
 
 
 if __name__ == '__main__':
-    options = MEAirquality.get_options(sys.argv)
+    options = MECyclone.get_options(sys.argv)
     start = str(datetime.now())
-    print('AIR QUALITY METEXPRESS METADATA START: ' + start)
-    me_dbcreator = MEAirquality(options)
+    print('CYCLONE METEXPRESS METADATA START: ' + start)
+    me_dbcreator = MECyclone(options)
     me_dbcreator.main()
-    print('AIR QUALITY METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
+    print('CYCLONE METEXPRESS METADATA END: ' + str(datetime.now()) + " started at: " + start)
     sys.exit(0)

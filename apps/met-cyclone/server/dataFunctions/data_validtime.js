@@ -13,6 +13,7 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
+// eslint-disable-next-line no-undef
 dataValidTime = function (plotParams, plotFunction) {
   // initialize variables common to all curves
   const appParams = {
@@ -49,32 +50,11 @@ dataValidTime = function (plotParams, plotFunction) {
     const curve = curves[curveIndex];
     const { diffFrom } = curve;
     const { label } = curve;
-    const { database } = curve;
+    const database = curve.database.replace(/___/g, ".");
     const model = matsCollections["data-source"].findOne({ name: "data-source" })
       .optionsMap[database][curve["data-source"]][0];
-    const modelClause = `and h.amodel = '${model}'`;
-    const selectorPlotType = curve["plot-type"];
-    const { statistic } = curve;
-    const statisticOptionsMap = matsCollections.statistic.findOne(
-      { name: "statistic" },
-      { optionsMap: 1 }
-    ).optionsMap[database][curve["data-source"]][selectorPlotType];
-    const statLineType = statisticOptionsMap[statistic][0];
-    let statisticClause = "";
-    let lineDataType = "";
-    if (statLineType === "precalculated") {
-      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
-      [, lineDataType] = statisticOptionsMap[statistic];
-    }
-    const queryTableClause = `from ${database}.tcst_header h, ${database}.${lineDataType} ld`;
-    const { basin } = curve;
-    const { storm } = curve;
-    let stormClause;
-    if (storm === "All storms") {
-      stormClause = `and h.storm_id like '${basin}%'`;
-    } else {
-      stormClause = `and h.storm_id = '${storm.split(" - ")[0]}'`;
-    }
+    let modelClause; // the model field in mysql is called different things for RI and non-RI stats
+
     const truthStr = curve.truth;
     const truth = Object.keys(
       matsCollections.truth.findOne({ name: "truth" }).valuesMap
@@ -82,7 +62,85 @@ dataValidTime = function (plotParams, plotFunction) {
       (key) =>
         matsCollections.truth.findOne({ name: "truth" }).valuesMap[key] === truthStr
     );
-    const truthClause = `and h.bmodel = '${truth}'`;
+    let truthClause; // the truth field in mysql is called different things for RI and non-RI stats
+
+    const selectorPlotType = curve["plot-type"];
+    let { statistic } = curve;
+    const statisticOptionsMap = matsCollections.statistic.findOne(
+      { name: "statistic" },
+      { optionsMap: 1 }
+    ).optionsMap[database][curve["data-source"]][selectorPlotType];
+    const statLineType = statisticOptionsMap[statistic][0];
+    let statisticClause = "";
+    let statHeaderType = "";
+    let lineDataType = "";
+
+    const { basin } = curve;
+    let variableClause = "";
+    let thresholdClause = "";
+    let stormClause = "";
+    let levelsClause = "";
+    if (statLineType === "ctc") {
+      // set up fields specific to ctc scores
+      statisticClause =
+        "sum(ld.fy_oy) as fy_oy, " +
+        "sum(ld.fy_on) as fy_on, " +
+        "sum(ld.fn_oy) as fn_oy, " +
+        "sum(ld.fn_on) as fn_on, " +
+        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid), h.fcst_lev) as sub_data";
+      statHeaderType = "stat_header";
+      lineDataType = "line_data_ctc";
+      modelClause = `and h.model = '${model}'`;
+      truthClause = `and h.obtype = '${truth}'`;
+      stormClause = `and h.vx_mask = '${basin}'`;
+      statistic = statistic.replace("Rapid Intensification ", "");
+      const { variable } = curve;
+      variableClause = `and h.fcst_var = '${variable}'`;
+      const { threshold } = curve;
+      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
+    } else if (statLineType === "precalculated") {
+      // set up fields specific to precalculated stats
+      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
+      statHeaderType = "tcst_header";
+      [, lineDataType] = statisticOptionsMap[statistic];
+      modelClause = `and h.amodel = '${model}'`;
+      truthClause = `and h.bmodel = '${truth}'`;
+      const { storm } = curve;
+      if (storm === "All storms") {
+        stormClause = `and h.storm_id like '${basin}%'`;
+      } else {
+        stormClause = `and h.storm_id = '${storm.split(" - ")[0]}'`;
+      }
+      let levels =
+        curve.level === undefined || curve.level === matsTypes.InputTypes.unused
+          ? []
+          : curve.level;
+      const levelValuesMap = matsCollections.level.findOne(
+        { name: "level" },
+        { valuesMap: 1 }
+      ).valuesMap;
+      const levelKeys = Object.keys(levelValuesMap);
+      let levelKey;
+      levels = Array.isArray(levels) ? levels : [levels];
+      if (levels.length > 0) {
+        levels = levels
+          .map(function (l) {
+            for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
+              levelKey = levelKeys[lidx];
+              if (levelValuesMap[levelKey].name === l) {
+                return `'${levelKey}'`;
+              }
+            }
+            return null;
+          })
+          .join(",");
+        levelsClause = `and ld.level IN(${levels})`;
+      }
+    }
+
+    const queryTableClause = `from ${database}.${statHeaderType} h, ${database}.${lineDataType} ld`;
+    const statHeaderClause = `and h.${statHeaderType}_id = ld.${statHeaderType}_id`;
+
     const vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.
@@ -106,32 +164,6 @@ dataValidTime = function (plotParams, plotFunction) {
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
     const dateClause = `and unix_timestamp(ld.fcst_valid) >= ${fromSecs} and unix_timestamp(ld.fcst_valid) <= ${toSecs}`;
-    let levels =
-      curve.level === undefined || curve.level === matsTypes.InputTypes.unused
-        ? []
-        : curve.level;
-    const levelValuesMap = matsCollections.level.findOne(
-      { name: "level" },
-      { valuesMap: 1 }
-    ).valuesMap;
-    const levelKeys = Object.keys(levelValuesMap);
-    let levelKey;
-    let levelsClause = "";
-    levels = Array.isArray(levels) ? levels : [levels];
-    if (levels.length > 0 && lineDataType !== "line_data_probrirw") {
-      levels = levels
-        .map(function (l) {
-          for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
-            levelKey = levelKeys[lidx];
-            if (levelValuesMap[levelKey].name === l) {
-              return `'${levelKey}'`;
-            }
-          }
-          return null;
-        })
-        .join(",");
-      levelsClause = `and ld.level IN(${levels})`;
-    }
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -154,7 +186,10 @@ dataValidTime = function (plotParams, plotFunction) {
     // This axisKeySet object is used like a set and if a curve has the same
     // variable + statistic (axisKey) it will use the same axis.
     // The axis number is assigned to the axisKeySet value, which is the axisKey.
-    const axisKey = statistic;
+    const axisKey = statistic
+      .replace("Truth ", "")
+      .replace("Model ", "")
+      .replace("Model-truth ", "");
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
     if (!diffFrom) {
@@ -162,7 +197,7 @@ dataValidTime = function (plotParams, plotFunction) {
       // prepare the query from the above parameters
       statement =
         "select unix_timestamp(ld.fcst_valid)%(24*3600)/3600 as hr_of_day, " +
-        "count(distinct unix_timestamp(ld.fcst_valid)) as N_times, " +
+        "count(distinct unix_timestamp(ld.fcst_valid)) as nTimes, " +
         "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid)) as max_secs, " +
         "{{statisticClause}} " +
@@ -171,11 +206,13 @@ dataValidTime = function (plotParams, plotFunction) {
         "{{dateClause}} " +
         "{{modelClause}} " +
         "{{stormClause}} " +
+        "{{variableClause}} " +
+        "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{forecastLengthsClause}} " +
         "{{levelsClause}} " +
         "{{descrsClause}} " +
-        "and h.tcst_header_id = ld.tcst_header_id " +
+        "{{statHeaderClause}} " +
         "group by hr_of_day " +
         "order by hr_of_day" +
         ";";
@@ -184,11 +221,17 @@ dataValidTime = function (plotParams, plotFunction) {
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
       statement = statement.replace("{{modelClause}}", modelClause);
       statement = statement.replace("{{stormClause}}", stormClause);
+      statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
       statement = statement.replace("{{dateClause}}", dateClause);
+      statement = statement.replace("{{statHeaderClause}}", statHeaderClause);
+      if (statLineType !== "precalculated") {
+        statement = statement.replace(/fcst_valid/g, "fcst_valid_beg");
+      }
       dataRequests[label] = statement;
 
       queryArray.push({
@@ -214,7 +257,7 @@ dataValidTime = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray);
+    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

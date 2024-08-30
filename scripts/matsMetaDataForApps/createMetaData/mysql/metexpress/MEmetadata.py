@@ -540,7 +540,7 @@ class ParentMetadata:
                         app_specific_clause = end_query[:-1]
 
                         # select the minimum length set of stat_header_ids from the line_data_table that are unique
-                        # with respect to model, variable, and vx_mask.
+                        # with respect to model, variable, and level.
                         # these will be used to qualify the distinct set of fcst_leads from the line data table.
                         get_stat_header_ids = "select stat_header_id from " + \
                                               "(select group_concat(stat_header_id) as stat_header_id " + \
@@ -550,7 +550,7 @@ class ParentMetadata:
                                               "' and fcst_var = '" + fvar + \
                                               "' order by stat_header_id)" + \
                                               app_specific_clause + \
-                                              " group by model, fcst_var, vx_mask) as stat_header_id order by length(stat_header_id) limit 1;"
+                                              " group by model, fcst_var, fcst_lev) as stat_header_id order by length(stat_header_id) desc limit 1;"
                         if debug:
                             print(self.script_name + " - Getting get_stat_header_ids lens for model " + model + " and variable " + fvar + " sql: " + get_stat_header_ids)
                         try:

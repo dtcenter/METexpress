@@ -3,7 +3,6 @@
 set -euo pipefail
 
 apps=(
-    "met-airquality"
     "met-anomalycor"
     "met-cyclone"
     "met-ensemble"
