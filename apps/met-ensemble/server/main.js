@@ -42,7 +42,6 @@ const doPlotParams = function () {
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 1,
-      help: "dateHelp.html",
     });
 
     const plotFormats = {};
@@ -681,7 +680,6 @@ const doCurveParams = function () {
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 1,
-      help: "label.html",
     });
   }
   // get the default group, db, and model that were specified in the settings file. If none exist, take
@@ -881,7 +879,6 @@ const doCurveParams = function () {
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 3,
-      help: "region.html",
     });
   } else {
     // it is defined but check for necessary update
@@ -1424,7 +1421,6 @@ const doCurveParams = function () {
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 8,
-      help: "dateHelp.html",
     });
   } else {
     // it is defined but check for necessary update
