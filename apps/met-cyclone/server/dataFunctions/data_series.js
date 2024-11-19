@@ -22,7 +22,7 @@ dataSeries = function (plotParams, plotFunction) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: false,
+    hasLevels: true,
   };
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
@@ -103,7 +103,7 @@ dataSeries = function (plotParams, plotFunction) {
       thresholdClause = `and h.fcst_thresh = '${threshold}'`;
     } else if (statLineType === "precalculated") {
       // set up fields specific to precalculated stats
-      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid) order by unix_timestamp(ld.fcst_valid)) as sub_data`;
+      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid), ';', h.storm_id order by unix_timestamp(ld.fcst_valid), h.storm_id) as sub_data`;
       statHeaderType = "tcst_header";
       [, lineDataType] = statisticOptionsMap[statistic];
       modelClause = `and h.amodel = '${model}'`;

@@ -298,14 +298,14 @@ const doCurveParams = function () {
       "Model-truth distance to land (nm)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.adland-ld.bdland",
+        "if(ld.adland != -9999 and ld.bdland != -9999,ld.adland-ld.bdland,null)",
       ],
       "Model MSLP (mb)": ["precalculated", "line_data_tcmpr", "ld.amslp"],
       "Truth MSLP (mb)": ["precalculated", "line_data_tcmpr", "ld.bmslp"],
       "Model-truth MSLP (mb)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.amslp-ld.bmslp",
+        "if(ld.amslp != -9999 and ld.bmslp != -9999,ld.amslp-ld.bmslp,null)",
       ],
       "Model maximum wind speed (kts)": [
         "precalculated",
@@ -320,7 +320,7 @@ const doCurveParams = function () {
       "Model-truth maximum wind speed (kts)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.amax_wind-ld.bmax_wind",
+        "if(ld.amax_wind != -9999 and ld.bmax_wind != -9999,ld.amax_wind-ld.bmax_wind,null)",
       ],
       "Model radius of maximum winds (nm)": [
         "precalculated",
@@ -335,28 +335,28 @@ const doCurveParams = function () {
       "Model-truth radius of maximum winds (nm)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.amrd-ld.bmrd",
+        "if(ld.amrd != -9999 and ld.bmrd != -9999,ld.amrd-ld.bmrd,null)",
       ],
       "Model eye diameter (nm)": ["precalculated", "line_data_tcmpr", "ld.aeye"],
       "Truth eye diameter (nm)": ["precalculated", "line_data_tcmpr", "ld.beye"],
       "Model-truth eye diameter (nm)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.aeye-ld.beye",
+        "if(ld.aeye != -9999 and ld.beye != -9999,ld.aeye-ld.beye,null)",
       ],
       "Model storm speed (kts)": ["precalculated", "line_data_tcmpr", "ld.aspeed"],
       "Truth storm speed (kts)": ["precalculated", "line_data_tcmpr", "ld.bspeed"],
       "Model-truth storm speed (kts)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.aspeed-ld.bspeed",
+        "if(ld.aspeed != -9999 and ld.bspeed != -9999,ld.aspeed-ld.bspeed,null)",
       ],
       "Model storm direction (deg)": ["precalculated", "line_data_tcmpr", "ld.adir"],
       "Truth storm direction (deg)": ["precalculated", "line_data_tcmpr", "ld.bdir"],
       "Model-truth storm direction (deg)": [
         "precalculated",
         "line_data_tcmpr",
-        "ld.adir-ld.bdir",
+        "if(ld.adir != -9999 and ld.bdir != -9999,ld.adir-ld.bdir,null)",
       ],
     },
     line_data_ctc: {
