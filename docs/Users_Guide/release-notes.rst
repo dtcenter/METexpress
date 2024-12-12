@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 5.3.4 release notes (20241119)
+METexpress Version 6.0.0 release notes (20241218)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -26,9 +26,7 @@ METexpress Version 5.3.4 release notes (20241119)
      
   .. dropdown:: Enhancements
   
-     * MET Cyclone now matches on storm ID as well as time.
-     * MET Cyclone correctly filters out missing values.
-     * Made error bar thickness customizable and slightly increased the default thickness.
+     * METexpress is now section 508 compliant.
 
   .. dropdown:: Miscellaneous
     
@@ -37,7 +35,7 @@ METexpress Version 5.3.4 release notes (20241119)
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 5.3.4 upgrade instructions
+METexpress Version 6.0.0 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v5.3.4 docker containers from the dtcenter repository.
+Download and deploy the new v6.0.0 docker containers from the dtcenter repository.
