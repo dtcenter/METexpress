@@ -107,15 +107,9 @@ dataSeries = function (plotParams, plotFunction) {
       simpleFlagClause = "and ld.simple_flag = 0";
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.grid_res = '${scale}'`;
-    }
+    const scaleClause = `and h.grid_res = '${scale}'`;
     const { radius } = curve;
-    let radiusClause = "";
-    if (radius !== "All radii") {
-      radiusClause = `and h.fcst_rad = '${radius}'`;
-    }
+    const radiusClause = `and h.fcst_rad = '${radius}'`;
     const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
@@ -123,10 +117,7 @@ dataSeries = function (plotParams, plotFunction) {
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
     const { threshold } = curve;
-    let thresholdClause = "";
-    if (threshold !== "All thresholds") {
-      thresholdClause = `and h.fcst_thr = '${threshold}'`;
-    }
+    const thresholdClause = `and h.fcst_thr = '${threshold}'`;
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (
