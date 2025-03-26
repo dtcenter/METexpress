@@ -1233,30 +1233,30 @@ const doCurveParams = function () {
     }
   }
 
+  // these defaults are app-specific and not controlled by the user
+  const thresholdOptions =
+    thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let thresholdDefault;
+  if (thresholdOptions.indexOf("NA") !== -1) {
+    thresholdDefault = "NA";
+  } else {
+    [thresholdDefault] = thresholdOptions;
+  }
+
   if (matsCollections.threshold.findOne({ name: "threshold" }) === undefined) {
     matsCollections.threshold.insert({
       name: "threshold",
       type: matsTypes.InputTypes.select,
       optionsMap: thresholdOptionsMap,
-      options:
-        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-              defaultStatType
-            ]
-          )[0]
-        ],
+      options: thresholdOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,
-      default:
-        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-              defaultStatType
-            ]
-          )[0]
-        ][0],
+      default: thresholdDefault,
       controlButtonVisibility: "block",
       displayOrder: 1,
       displayPriority: 1,
@@ -1272,30 +1272,26 @@ const doCurveParams = function () {
         {
           $set: {
             optionsMap: thresholdOptionsMap,
-            options:
-              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
-                Object.keys(
-                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default:
-              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
-                Object.keys(
-                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ][0],
+            options: thresholdOptions,
+            default: thresholdDefault,
           },
         }
       );
     }
+  }
+
+  // these defaults are app-specific and not controlled by the user
+  const imOptions =
+    imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let imDefault;
+  if (imOptions.indexOf("NEAREST") !== -1) {
+    imDefault = "NEAREST";
+  } else {
+    [imDefault] = imOptions;
   }
 
   if (
@@ -1305,21 +1301,11 @@ const doCurveParams = function () {
       name: "interp-method",
       type: matsTypes.InputTypes.select,
       optionsMap: imOptionsMap,
-      options:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ],
+      options: imOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,
-      default:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ][0],
+      default: imDefault,
       controlButtonVisibility: "block",
       controlButtonText: "interpolation method",
       gapAbove: true,
@@ -1339,22 +1325,8 @@ const doCurveParams = function () {
         {
           $set: {
             optionsMap: imOptionsMap,
-            options:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ][0],
+            options: imOptions,
+            default: imDefault,
           },
         }
       );

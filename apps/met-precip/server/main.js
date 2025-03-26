@@ -509,7 +509,6 @@ const doCurveParams = function () {
         for (let j = 0; j < sourceArr.length; j += 1) {
           sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
         }
-        sourceArr.unshift("Any obs type");
 
         const forecastLengths = rows[i].fcst_orig;
         const forecastLengthArr = forecastLengths
@@ -540,7 +539,6 @@ const doCurveParams = function () {
         for (let j = 0; j < trshArr.length; j += 1) {
           trshArr[j] = trshArr[j].replace(/'|\[|\]/g, "");
         }
-        trshArr.unshift("All thresholds");
 
         const ims = rows[i].interp_mthds;
         const imsArr = ims
@@ -549,7 +547,6 @@ const doCurveParams = function () {
         for (let j = 0; j < imsArr.length; j += 1) {
           imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
         }
-        imsArr.unshift("All methods");
 
         const scales = rows[i].gridpoints;
         const scalesArr = scales
@@ -558,7 +555,6 @@ const doCurveParams = function () {
         for (let j = 0; j < scalesArr.length; j += 1) {
           scalesArr[j] = scalesArr[j].replace(/'|\[|\]/g, "");
         }
-        scalesArr.unshift("All scales");
 
         const { descrs } = rows[i];
         const descrsArr = descrs
@@ -1132,30 +1128,30 @@ const doCurveParams = function () {
     }
   }
 
+  // these defaults are app-specific and not controlled by the user
+  const thresholdOptions =
+    thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let thresholdDefault;
+  if (thresholdOptions.indexOf("NA") !== -1) {
+    thresholdDefault = "NA";
+  } else {
+    [thresholdDefault] = thresholdOptions;
+  }
+
   if (matsCollections.threshold.findOne({ name: "threshold" }) === undefined) {
     matsCollections.threshold.insert({
       name: "threshold",
       type: matsTypes.InputTypes.select,
       optionsMap: thresholdOptionsMap,
-      options:
-        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-              defaultStatType
-            ]
-          )[0]
-        ],
+      options: thresholdOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,
-      default:
-        thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-              defaultStatType
-            ]
-          )[0]
-        ][0],
+      default: thresholdDefault,
       controlButtonVisibility: "block",
       displayOrder: 1,
       displayPriority: 1,
@@ -1171,30 +1167,26 @@ const doCurveParams = function () {
         {
           $set: {
             optionsMap: thresholdOptionsMap,
-            options:
-              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
-                Object.keys(
-                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default:
-              thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
-                Object.keys(
-                  thresholdOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ][0],
+            options: thresholdOptions,
+            default: thresholdDefault,
           },
         }
       );
     }
+  }
+
+  // these defaults are app-specific and not controlled by the user
+  const imOptions =
+    imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let imDefault;
+  if (imOptions.indexOf("NEAREST") !== -1) {
+    imDefault = "NEAREST";
+  } else {
+    [imDefault] = imOptions;
   }
 
   if (
@@ -1204,21 +1196,11 @@ const doCurveParams = function () {
       name: "interp-method",
       type: matsTypes.InputTypes.select,
       optionsMap: imOptionsMap,
-      options:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ],
+      options: imOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,
-      default:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ][0],
+      default: imDefault,
       controlButtonVisibility: "block",
       controlButtonText: "interpolation method",
       gapAbove: true,
@@ -1238,22 +1220,8 @@ const doCurveParams = function () {
         {
           $set: {
             optionsMap: imOptionsMap,
-            options:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ][0],
+            options: imOptions,
+            default: imDefault,
           },
         }
       );

@@ -124,10 +124,7 @@ dataThreshold = function (plotParams, plotFunction) {
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
     const thresholdClause = "and h.fcst_thresh != 'NA'";
     const { truth } = curve;
-    let truthClause = "";
-    if (truth !== "Any truth dataset") {
-      truthClause = `and h.obtype = '${truth}'`;
-    }
+    const truthClause = `and h.obtype = '${truth}'`;
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (
