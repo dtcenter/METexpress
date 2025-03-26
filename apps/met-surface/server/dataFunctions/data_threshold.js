@@ -113,15 +113,9 @@ dataThreshold = function (plotParams, plotFunction) {
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.interp_pnts = '${scale}'`;
-    }
+    const scaleClause = `and h.interp_pnts = '${scale}'`;
     const im = curve["interp-method"];
-    let imClause = "";
-    if (im !== "All methods") {
-      imClause = `and h.interp_mthd = '${im}'`;
-    }
+    const imClause = `and h.interp_mthd = '${im}'`;
     const variable = curve.variable.replace(/___/g, ".");
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },

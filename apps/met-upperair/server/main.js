@@ -509,7 +509,6 @@ const doCurveParams = function () {
         for (let j = 0; j < sourceArr.length; j += 1) {
           sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
         }
-        sourceArr.unshift("Any truth dataset");
 
         const forecastLengths = rows[i].fcst_orig;
         const forecastLengthArr = forecastLengths
@@ -540,7 +539,6 @@ const doCurveParams = function () {
         for (let j = 0; j < imsArr.length; j += 1) {
           imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
         }
-        imsArr.unshift("All methods");
 
         const scales = rows[i].gridpoints;
         const scalesArr = scales
@@ -549,7 +547,6 @@ const doCurveParams = function () {
         for (let j = 0; j < scalesArr.length; j += 1) {
           scalesArr[j] = scalesArr[j].replace(/'|\[|\]/g, "");
         }
-        scalesArr.unshift("All scales");
 
         const { descrs } = rows[i];
         const descrsArr = descrs
