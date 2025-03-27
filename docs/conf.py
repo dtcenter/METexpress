@@ -37,7 +37,7 @@ CURRENT_AUTHORS = [
 # but still deserve citation credit
 FORMER_AUTHORS = [
     'Bill Moninger',
-    'Venita Hagerty'
+    'Venita Hagerty',
     'Keith Searight',
     'Dave Turner',
     'Bonny Strong',
@@ -89,7 +89,9 @@ latex_engine = 'pdflatex'
 latex_theme = 'manual'
 latex_logo = os.path.join('_static','met_express_logo_2019_09.png')
 latex_show_pagerefs = True
-master_doc = 'Users_Guide/index'
+#master_doc = 'Users_Guide/index'
+master_doc = 'index'
+
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
