@@ -104,15 +104,9 @@ dataValidTime = function (plotParams, plotFunction) {
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.interp_pnts = '${scale}'`;
-    }
+    const scaleClause = `and h.interp_pnts = '${scale}'`;
     const im = curve["interp-method"];
-    let imClause = "";
-    if (im !== "All methods") {
-      imClause = `and h.interp_mthd = '${im}'`;
-    }
+    const imClause = `and h.interp_mthd = '${im}'`;
     const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
@@ -120,10 +114,7 @@ dataValidTime = function (plotParams, plotFunction) {
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
     const { truth } = curve;
-    let truthClause = "";
-    if (truth !== "Any truth dataset") {
-      truthClause = `and h.obtype = '${truth}'`;
-    }
+    const truthClause = `and h.obtype = '${truth}'`;
     const vts = ""; // have an empty string that we can pass to the python script.
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.

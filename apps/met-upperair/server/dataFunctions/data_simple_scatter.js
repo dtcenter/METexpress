@@ -104,15 +104,9 @@ dataSimpleScatter = function (plotParams, plotFunction) {
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.interp_pnts = '${scale}'`;
-    }
+    const scaleClause = `and h.interp_pnts = '${scale}'`;
     const im = curve["interp-method"];
-    let imClause = "";
-    if (im !== "All methods") {
-      imClause = `and h.interp_mthd = '${im}'`;
-    }
+    const imClause = `and h.interp_mthd = '${im}'`;
     const variableXStr = curve.variable;
     const variableYStr = curve["y-variable"];
     const variableValuesMap = matsCollections.variable.findOne(
@@ -124,10 +118,7 @@ dataSimpleScatter = function (plotParams, plotFunction) {
     const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
     const variableClauseY = `and h.fcst_var = '${variableValuesMap[variableY]}'`;
     const { truth } = curve;
-    let truthClause = "";
-    if (truth !== "Any truth dataset") {
-      truthClause = `and h.obtype = '${truth}'`;
-    }
+    const truthClause = `and h.obtype = '${truth}'`;
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;

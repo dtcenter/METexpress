@@ -112,15 +112,9 @@ dataContour = function (plotParams, plotFunction) {
     regionsClause = `and h.vx_mask IN(${regions})`;
   }
   const { scale } = curve;
-  let scaleClause = "";
-  if (scale !== "All scales") {
-    scaleClause = `and h.interp_pnts = '${scale}'`;
-  }
+  const scaleClause = `and h.interp_pnts = '${scale}'`;
   const im = curve["interp-method"];
-  let imClause = "";
-  if (im !== "All methods") {
-    imClause = `and h.interp_mthd = '${im}'`;
-  }
+  const imClause = `and h.interp_mthd = '${im}'`;
   const { variable } = curve;
   const variableValuesMap = matsCollections.variable.findOne(
     { name: "variable" },
@@ -128,15 +122,9 @@ dataContour = function (plotParams, plotFunction) {
   ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
   const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
   const { threshold } = curve;
-  let thresholdClause = "";
-  if (threshold !== "All thresholds") {
-    thresholdClause = `and h.fcst_thresh = '${threshold}'`;
-  }
+  const thresholdClause = `and h.fcst_thresh = '${threshold}'`;
   const { truth } = curve;
-  let truthClause = "";
-  if (truth !== "Any truth dataset") {
-    truthClause = `and h.obtype = '${truth}'`;
-  }
+  const truthClause = `and h.obtype = '${truth}'`;
   let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
   let validTimeClause = "";
   if (xAxisParam !== "Valid UTC hour" && yAxisParam !== "Valid UTC hour") {
