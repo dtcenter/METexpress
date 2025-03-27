@@ -104,15 +104,9 @@ dataValidTime = function (plotParams, plotFunction) {
       simpleFlagClause = "and ld.simple_flag = 0";
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.grid_res = '${scale}'`;
-    }
+    const scaleClause = `and h.grid_res = '${scale}'`;
     const { radius } = curve;
-    let radiusClause = "";
-    if (radius !== "All radii") {
-      radiusClause = `and h.fcst_rad = '${radius}'`;
-    }
+    const radiusClause = `and h.fcst_rad = '${radius}'`;
     const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
@@ -120,10 +114,7 @@ dataValidTime = function (plotParams, plotFunction) {
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
     const { threshold } = curve;
-    let thresholdClause = "";
-    if (threshold !== "All thresholds") {
-      thresholdClause = `and h.fcst_thr = '${threshold}'`;
-    }
+    const thresholdClause = `and h.fcst_thr = '${threshold}'`;
     const vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.

@@ -481,7 +481,6 @@ const doCurveParams = function () {
         for (let j = 0; j < sourceArr.length; j += 1) {
           sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
         }
-        sourceArr.unshift("Any truth dataset");
 
         const forecastLengths = rows[i].fcst_orig;
         const forecastLengthArr = forecastLengths
@@ -512,7 +511,6 @@ const doCurveParams = function () {
         for (let j = 0; j < imsArr.length; j += 1) {
           imsArr[j] = imsArr[j].replace(/'|\[|\]/g, "");
         }
-        imsArr.unshift("All methods");
 
         const scales = rows[i].gridpoints;
         const scalesArr = scales
@@ -521,7 +519,6 @@ const doCurveParams = function () {
         for (let j = 0; j < scalesArr.length; j += 1) {
           scalesArr[j] = scalesArr[j].replace(/'|\[|\]/g, "");
         }
-        scalesArr.unshift("All scales");
 
         const { descrs } = rows[i];
         const descrsArr = descrs
@@ -1158,6 +1155,20 @@ const doCurveParams = function () {
     }
   }
 
+  // these defaults are app-specific and not controlled by the user
+  const imOptions =
+    imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let imDefault;
+  if (imOptions.indexOf("NEAREST") !== -1) {
+    imDefault = "NEAREST";
+  } else {
+    [imDefault] = imOptions;
+  }
+
   if (
     matsCollections["interp-method"].findOne({ name: "interp-method" }) === undefined
   ) {
@@ -1165,21 +1176,11 @@ const doCurveParams = function () {
       name: "interp-method",
       type: matsTypes.InputTypes.select,
       optionsMap: imOptionsMap,
-      options:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ],
+      options: imOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       controlButtonCovered: true,
       unique: false,
-      default:
-        imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ][0],
+      default: imDefault,
       controlButtonVisibility: "block",
       controlButtonText: "interpolation method",
       gapAbove: true,
@@ -1199,22 +1200,8 @@ const doCurveParams = function () {
         {
           $set: {
             optionsMap: imOptionsMap,
-            options:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default:
-              imOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-                Object.keys(
-                  imOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ][0],
+            options: imOptions,
+            default: imDefault,
           },
         }
       );

@@ -104,15 +104,9 @@ dataThreshold = function (plotParams, plotFunction) {
       simpleFlagClause = "and ld.simple_flag = 0";
     }
     const { scale } = curve;
-    let scaleClause = "";
-    if (scale !== "All scales") {
-      scaleClause = `and h.grid_res = '${scale}'`;
-    }
+    const scaleClause = `and h.grid_res = '${scale}'`;
     const { radius } = curve;
-    let radiusClause = "";
-    if (radius !== "All radii") {
-      radiusClause = `and h.fcst_rad = '${radius}'`;
-    }
+    const radiusClause = `and h.fcst_rad = '${radius}'`;
     const { variable } = curve;
     const variableValuesMap = matsCollections.variable.findOne(
       { name: "variable" },
