@@ -3,27 +3,27 @@
  * @param  {String}   parameter Element selector label
  */
 
-export default (parameter) => {
+export default async (parameter) => {
     /**
      * The method to use for selecting the option
      * @type {String}
      */
 
     // noinspection JSJQueryEfficiency
-    $(`#controlButton-${parameter}`).waitForDisplayed();
-    $(`#controlButton-${parameter}`).scrollIntoView();
-    $(`#controlButton-${parameter}`).click();
-    if ($(`#${parameter}-select-clear`).isDisplayed()) {
-        $(`#${parameter}-select-clear`).waitForClickable();
-        $(`#${parameter}-select-clear`).click();
+    await $(`#controlButton-${parameter}`).waitForDisplayed();
+    await $(`#controlButton-${parameter}`).scrollIntoView();
+    await $(`#controlButton-${parameter}`).click();
+    if (await $(`#${parameter}-select-clear`).isDisplayed()) {
+        await $(`#${parameter}-select-clear`).waitForClickable();
+        await $(`#${parameter}-select-clear`).click();
     }
-    if ($(`#${parameter}-select-all`).isDisplayed()) {
-        $(`#${parameter}-select-all`).waitForClickable();
-        $(`#${parameter}-select-all`).click();
+    if (await $(`#${parameter}-select-all`).isDisplayed()) {
+        await $(`#${parameter}-select-all`).waitForClickable();
+        await $(`#${parameter}-select-all`).click();
     }
-    if ($(`#${parameter}-select-done`).isDisplayed()) {
+    if (await $(`#${parameter}-select-done`).isDisplayed()) {
         // if it is a multi-select selector, have to click the done button
-        $(`#${parameter}-select-done`).waitForClickable();
-        $(`#${parameter}-select-done`).click();
+        await $(`#${parameter}-select-done`).waitForClickable();
+        await $(`#${parameter}-select-done`).click();
     }
 };
