@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #example invocation
-#./run_headless_tests.sh --maxinstances 5 --spec ~/METexpress/tests/src/features/met-anomalycor
+#./debug_tests.sh  --spec MATS/METexpress/tests/src/features/met-upperair
 if [ ! -f wdio.conf.js ]; then
     echo "No wdio.conf.js file found - not in a testing directory?"
     exit 1
