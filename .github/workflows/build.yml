@@ -2,10 +2,14 @@ name: "Build METexpress"
 on:
   push:
     branches: [main, development]
+    paths-ignore:
+      - docs/**
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'
   pull_request:
+    paths-ignore:
+      - docs/**
   workflow_dispatch:
 
 env:
