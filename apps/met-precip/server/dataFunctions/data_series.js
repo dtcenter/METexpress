@@ -13,8 +13,9 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-// eslint-disable-next-line no-undef
-dataSeries = function (plotParams, plotFunction) {
+/* eslint-disable no-await-in-loop */
+
+global.dataSeries = async function (plotParams) {
   // initialize variables common to all curves
   const appParams = {
     plotType: matsTypes.PlotTypes.timeSeries,
@@ -24,45 +25,53 @@ dataSeries = function (plotParams, plotFunction) {
     hideGaps: plotParams.noGapsCheck,
     hasLevels: true,
   };
+
+  const totalProcessingStart = moment();
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
-  let statement;
   let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
-  const totalProcessingStart = moment();
-  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
-  const fromSecs = dateRange.fromSeconds;
-  const toSecs = dateRange.toSeconds;
-  let error = "";
+
   const curves = JSON.parse(JSON.stringify(plotParams.curves));
   const curvesLength = curves.length;
-  const allStatTypes = [];
-  const dataset = [];
-  const utcCycleStarts = [];
+
   const axisMap = Object.create(null);
   let xmax = -1 * Number.MAX_VALUE;
   let ymax = -1 * Number.MAX_VALUE;
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
+
+  const allStatTypes = [];
+  const utcCycleStarts = [];
   const idealValues = [];
+
+  let statement = "";
+  let error = "";
+  const dataset = [];
+
+  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
+  const fromSecs = dateRange.fromSeconds;
+  const toSecs = dateRange.toSeconds;
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
-    const { diffFrom } = curve;
     const { label } = curve;
+    const { diffFrom } = curve;
+
     const database = curve.database.replace(/___/g, ".");
     const modelDisplay = curve["data-source"].replace(/___/g, ".");
-    const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][modelDisplay][0];
+    const model = (
+      await matsCollections["data-source"].findOneAsync({ name: "data-source" })
+    ).optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
+
     const selectorPlotType = curve["plot-type"];
     const { statistic } = curve;
-    const statisticOptionsMap = matsCollections.statistic.findOne(
-      { name: "statistic" },
-      { optionsMap: 1 }
+    const statisticOptionsMap = (
+      await matsCollections.statistic.findOneAsync({ name: "statistic" })
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
     const statLineType = statisticOptionsMap[statistic][0];
     let statisticClause = "";
@@ -93,6 +102,7 @@ dataSeries = function (plotParams, plotFunction) {
       [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
+
     let regions =
       curve.region === undefined || curve.region === matsTypes.InputTypes.unused
         ? []
@@ -107,20 +117,23 @@ dataSeries = function (plotParams, plotFunction) {
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
+
     const { scale } = curve;
     const scaleClause = `and h.interp_pnts = '${scale}'`;
     const im = curve["interp-method"];
     const imClause = `and h.interp_mthd = '${im}'`;
+
     const { variable } = curve;
-    const variableValuesMap = matsCollections.variable.findOne(
-      { name: "variable" },
-      { valuesMap: 1 }
+    const variableValuesMap = (
+      await matsCollections.variable.findOneAsync({ name: "variable" })
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+
     const { threshold } = curve;
     const thresholdClause = `and h.fcst_thresh = '${threshold}'`;
     const { truth } = curve;
     const truthClause = `and h.obtype = '${truth}'`;
+
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (
@@ -136,6 +149,7 @@ dataSeries = function (plotParams, plotFunction) {
         .join(",");
       validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
     }
+
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.
     // now we have to go get the damn ole unsanitary ones for the database.
@@ -155,7 +169,9 @@ dataSeries = function (plotParams, plotFunction) {
         .join(",");
       forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
     }
+
     const dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_valid_beg) <= ${toSecs}`;
+
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
@@ -172,10 +188,9 @@ dataSeries = function (plotParams, plotFunction) {
       levelsClause = `and h.fcst_lev IN(${levels})`;
     } else {
       // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-      levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
-        .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-        variable
-      ];
+      levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+        database
+      ][curve["data-source"]][selectorPlotType][statLineType][variable];
       levels = levels
         .map(function (l) {
           return `'${l}'`;
@@ -183,6 +198,7 @@ dataSeries = function (plotParams, plotFunction) {
         .join(",");
       levelsClause = `and h.fcst_lev IN(${levels})`;
     }
+
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -198,12 +214,13 @@ dataSeries = function (plotParams, plotFunction) {
         .join(",");
       descrsClause = `and h.descr IN(${descrs})`;
     }
+
     const averageStr = curve.average;
-    const averageOptionsMap = matsCollections.average.findOne(
-      { name: "average" },
-      { optionsMap: 1 }
+    const averageOptionsMap = (
+      await matsCollections.average.findOneAsync({ name: "average" })
     ).optionsMap;
     const average = averageOptionsMap[averageStr][0];
+
     const statType =
       curve["aggregation-method"] === "Overall statistic" && statLineType === "ctc"
         ? statLineType
@@ -286,7 +303,7 @@ dataSeries = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
+    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -342,6 +359,7 @@ dataSeries = function (plotParams, plotFunction) {
         ymax = ymax > d.ymax ? ymax : d.ymax;
       }
     } else {
+      // this is a difference curve
       const diffResult = matsDataDiffUtils.getDataForDiffCurve(
         differenceArray[curveIndex - dReturn.length].dataset,
         differenceArray[curveIndex - dReturn.length].diffFrom,
@@ -367,7 +385,7 @@ dataSeries = function (plotParams, plotFunction) {
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
+    const cOptions = await matsDataCurveOpsUtils.generateSeriesCurveOptions(
       curve,
       curveIndex,
       axisMap,
@@ -392,7 +410,7 @@ dataSeries = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataXYCurve(
+  const result = await matsDataProcessUtils.processDataXYCurve(
     dataset,
     appParams,
     curveInfoParams,
@@ -407,5 +425,5 @@ dataSeries = function (plotParams, plotFunction) {
       .duration(postQueryFinishMoment.diff(postQueryStartMoment))
       .asSeconds()} seconds`,
   };
-  plotFunction(result);
+  return result;
 };
