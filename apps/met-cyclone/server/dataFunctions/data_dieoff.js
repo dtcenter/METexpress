@@ -13,8 +13,9 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-// eslint-disable-next-line no-undef
-dataDieoff = function (plotParams, plotFunction) {
+/* eslint-disable no-await-in-loop */
+
+global.dataDieoff = async function (plotParams) {
   // initialize variables common to all curves
   const appParams = {
     plotType: matsTypes.PlotTypes.dieoff,
@@ -24,57 +25,59 @@ dataDieoff = function (plotParams, plotFunction) {
     hideGaps: plotParams.noGapsCheck,
     hasLevels: true,
   };
+
+  const totalProcessingStart = moment();
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
-  let statement;
   let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
-  const totalProcessingStart = moment();
-  let error = "";
+
   const curves = JSON.parse(JSON.stringify(plotParams.curves));
   const curvesLength = curves.length;
-  const allStatTypes = [];
-  const dataset = [];
-  const utcCycleStarts = [];
+
   const axisMap = Object.create(null);
   let xmax = -1 * Number.MAX_VALUE;
   let ymax = -1 * Number.MAX_VALUE;
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
+
+  const allStatTypes = [];
+  const utcCycleStarts = [];
   const idealValues = [];
+
+  let statement = "";
+  let error = "";
+  const dataset = [];
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
-    const { diffFrom } = curve;
     const { label } = curve;
+    const { diffFrom } = curve;
+
     const database = curve.database.replace(/___/g, ".");
-    const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][curve["data-source"]][0];
+    const model = (
+      await matsCollections["data-source"].findOneAsync({ name: "data-source" })
+    ).optionsMap[database][curve["data-source"]][0];
     let modelClause; // the model field in mysql is called different things for RI and non-RI stats
 
     const truthStr = curve.truth;
-    const truth = Object.keys(
-      matsCollections.truth.findOne({ name: "truth" }).valuesMap
-    ).find(
-      (key) =>
-        matsCollections.truth.findOne({ name: "truth" }).valuesMap[key] === truthStr
-    );
+    const truthValues = (await matsCollections.truth.findOneAsync({ name: "truth" }))
+      .valuesMap;
+    const truth = Object.keys(truthValues).find((key) => truthValues[key] === truthStr);
     let truthClause; // the truth field in mysql is called different things for RI and non-RI stats
 
     const selectorPlotType = curve["plot-type"];
     let { statistic } = curve;
-    const statisticOptionsMap = matsCollections.statistic.findOne(
-      { name: "statistic" },
-      { optionsMap: 1 }
+    const statisticOptionsMap = (
+      await matsCollections.statistic.findOneAsync({ name: "statistic" })
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
     const statLineType = statisticOptionsMap[statistic][0];
     let statisticClause = "";
     let statHeaderType = "";
     let lineDataType = "";
-
     const { basin } = curve;
     let variableClause = "";
     let thresholdClause = "";
@@ -115,9 +118,8 @@ dataDieoff = function (plotParams, plotFunction) {
         curve.level === undefined || curve.level === matsTypes.InputTypes.unused
           ? []
           : curve.level;
-      const levelValuesMap = matsCollections.level.findOne(
-        { name: "level" },
-        { valuesMap: 1 }
+      const levelValuesMap = (
+        await matsCollections.level.findOneAsync({ name: "level" })
       ).valuesMap;
       const levelKeys = Object.keys(levelValuesMap);
       let levelKey;
@@ -141,20 +143,20 @@ dataDieoff = function (plotParams, plotFunction) {
     const queryTableClause = `from ${database}.${statHeaderType} h, ${database}.${lineDataType} ld`;
     const statHeaderClause = `and h.${statHeaderType}_id = ld.${statHeaderType}_id`;
 
+    const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
+    const fromSecs = dateRange.fromSeconds;
+    const toSecs = dateRange.toSeconds;
+    let dateClause = `and unix_timestamp(ld.fcst_valid) >= '${fromSecs}' and unix_timestamp(ld.fcst_valid) <= '${toSecs}' `;
+
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     let utcCycleStart;
     let utcCycleStartClause = "";
     const dieoffTypeStr = curve["dieoff-type"];
-    const dieoffTypeOptionsMap = matsCollections["dieoff-type"].findOne(
-      { name: "dieoff-type" },
-      { optionsMap: 1 }
+    const dieoffTypeOptionsMap = (
+      await matsCollections["dieoff-type"].findOneAsync({ name: "dieoff-type" })
     ).optionsMap;
     const dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
-    const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
-    const fromSecs = dateRange.fromSeconds;
-    const toSecs = dateRange.toSeconds;
-    let dateClause = `and unix_timestamp(ld.fcst_valid) >= '${fromSecs}' and unix_timestamp(ld.fcst_valid) <= '${toSecs}' `;
     if (dieoffType === matsTypes.ForecastTypes.dieoff) {
       vts = curve["valid-time"] === undefined ? [] : curve["valid-time"];
       if (vts.length !== 0 && vts !== matsTypes.InputTypes.unused) {
@@ -198,6 +200,7 @@ dataDieoff = function (plotParams, plotFunction) {
         .join(",");
       descrsClause = `and h.descr IN(${descrs})`;
     }
+
     const statType = `met-${statLineType}`;
     allStatTypes.push(statType);
     appParams.aggMethod = curve["aggregation-method"];
@@ -278,7 +281,7 @@ dataDieoff = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
+    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -334,6 +337,7 @@ dataDieoff = function (plotParams, plotFunction) {
         ymax = ymax > d.ymax ? ymax : d.ymax;
       }
     } else {
+      // this is a difference curve
       const diffResult = matsDataDiffUtils.getDataForDiffCurve(
         differenceArray[curveIndex - dReturn.length].dataset,
         differenceArray[curveIndex - dReturn.length].diffFrom,
@@ -359,7 +363,7 @@ dataDieoff = function (plotParams, plotFunction) {
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
+    const cOptions = await matsDataCurveOpsUtils.generateSeriesCurveOptions(
       curve,
       curveIndex,
       axisMap,
@@ -384,7 +388,7 @@ dataDieoff = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataXYCurve(
+  const result = await matsDataProcessUtils.processDataXYCurve(
     dataset,
     appParams,
     curveInfoParams,
@@ -399,5 +403,5 @@ dataDieoff = function (plotParams, plotFunction) {
       .duration(postQueryFinishMoment.diff(postQueryStartMoment))
       .asSeconds()} seconds`,
   };
-  plotFunction(result);
+  return result;
 };
