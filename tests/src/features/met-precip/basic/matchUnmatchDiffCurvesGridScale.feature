@@ -27,6 +27,8 @@ Feature: Match Unmatch Diff Curves Grid Scale
         Then the "statistic" parameter value matches "FSS"
         When I change the "variable" parameter to "APCP_03"
         Then the "variable" parameter value matches "APCP_03"
+        When I change the "interp-method" parameter to "NBRHD_CIRCLE"
+        Then the "interp-method" parameter value matches "NBRHD_CIRCLE"
         When I set the curve-dates to "02/03/2018 00:00 - 06/03/2019 00:00"
         Then the curve-dates value is "02/03/2018 00:00 - 06/03/2019 00:00"
         When I click the "Add Curve" button
