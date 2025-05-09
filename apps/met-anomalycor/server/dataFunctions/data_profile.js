@@ -166,9 +166,10 @@ global.dataProfile = async function (plotParams) {
     const toSecs = dateRange.toSeconds;
     const dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_valid_beg) <= ${toSecs}`;
     // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-    let levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
-      database
-    ][curve["data-source"]][selectorPlotType][statLineType][variable];
+    let levels = (await matsCollections.level.findOneAsync({ name: "level" }))
+      .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+      variable
+    ];
     levels = levels
       .map(function (l) {
         return `'${l}'`;
