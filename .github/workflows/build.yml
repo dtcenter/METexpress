@@ -24,6 +24,7 @@ jobs:
         app: 
           - met-anomalycor
           - met-cyclone
+          - met-cyclone-cb
           - met-ensemble
           - met-precip
           - met-object
@@ -56,6 +57,7 @@ jobs:
         app: 
           - met-anomalycor
           - met-cyclone
+          - met-cyclone-cb
           - met-ensemble
           - met-precip
           - met-object
