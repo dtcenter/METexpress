@@ -9,11 +9,9 @@ import {
   matsTypes,
   matsCollections,
   matsDataUtils,
-  matsDataQueryUtils,
+  matsCouchbaseUtils,
   matsParamUtils,
 } from "meteor/randyp:mats-common";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import mysql from "mysql2/promise";
 
 /* eslint-disable no-await-in-loop */
 
@@ -278,14 +276,14 @@ const doCurveParams = async function () {
   }
 
   const masterPlotTypeOptionsMap = {
-    line_data_tcmpr: [
+    TCMPR: [
       matsTypes.PlotTypes.timeSeries,
       matsTypes.PlotTypes.dieoff,
       matsTypes.PlotTypes.validtime,
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.yearToYear,
     ],
-    line_data_ctc: [
+    CTC: [
       matsTypes.PlotTypes.timeSeries,
       matsTypes.PlotTypes.dieoff,
       matsTypes.PlotTypes.validtime,
@@ -295,79 +293,79 @@ const doCurveParams = async function () {
   };
 
   const masterStatsOptionsMap = {
-    line_data_tcmpr: {
-      "Track error (nm)": ["precalculated", "line_data_tcmpr", "ld.tk_err"],
-      "X error (nm)": ["precalculated", "line_data_tcmpr", "ld.x_err"],
-      "Y error (nm)": ["precalculated", "line_data_tcmpr", "ld.y_err"],
-      "Along track error (nm)": ["precalculated", "line_data_tcmpr", "ld.altk_err"],
-      "Cross track error (nm)": ["precalculated", "line_data_tcmpr", "ld.crtk_err"],
-      "Model distance to land (nm)": ["precalculated", "line_data_tcmpr", "ld.adland"],
-      "Truth distance to land (nm)": ["precalculated", "line_data_tcmpr", "ld.bdland"],
+    TCMPR: {
+      "Track error (nm)": ["precalculated", "TCMPR", "ld.tk_err"],
+      "X error (nm)": ["precalculated", "TCMPR", "ld.x_err"],
+      "Y error (nm)": ["precalculated", "TCMPR", "ld.y_err"],
+      "Along track error (nm)": ["precalculated", "TCMPR", "ld.altk_err"],
+      "Cross track error (nm)": ["precalculated", "TCMPR", "ld.crtk_err"],
+      "Model distance to land (nm)": ["precalculated", "TCMPR", "ld.adland"],
+      "Truth distance to land (nm)": ["precalculated", "TCMPR", "ld.bdland"],
       "Model-truth distance to land (nm)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.adland != -9999 and ld.bdland != -9999,ld.adland-ld.bdland,null)",
       ],
-      "Model MSLP (mb)": ["precalculated", "line_data_tcmpr", "ld.amslp"],
-      "Truth MSLP (mb)": ["precalculated", "line_data_tcmpr", "ld.bmslp"],
+      "Model MSLP (mb)": ["precalculated", "TCMPR", "ld.amslp"],
+      "Truth MSLP (mb)": ["precalculated", "TCMPR", "ld.bmslp"],
       "Model-truth MSLP (mb)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.amslp != -9999 and ld.bmslp != -9999,ld.amslp-ld.bmslp,null)",
       ],
       "Model maximum wind speed (kts)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "ld.amax_wind",
       ],
       "Truth maximum wind speed (kts)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "ld.bmax_wind",
       ],
       "Model-truth maximum wind speed (kts)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.amax_wind != -9999 and ld.bmax_wind != -9999,ld.amax_wind-ld.bmax_wind,null)",
       ],
       "Model radius of maximum winds (nm)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "ld.amrd",
       ],
       "Truth radius of maximum winds (nm)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "ld.bmrd",
       ],
       "Model-truth radius of maximum winds (nm)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.amrd != -9999 and ld.bmrd != -9999,ld.amrd-ld.bmrd,null)",
       ],
-      "Model eye diameter (nm)": ["precalculated", "line_data_tcmpr", "ld.aeye"],
-      "Truth eye diameter (nm)": ["precalculated", "line_data_tcmpr", "ld.beye"],
+      "Model eye diameter (nm)": ["precalculated", "TCMPR", "ld.aeye"],
+      "Truth eye diameter (nm)": ["precalculated", "TCMPR", "ld.beye"],
       "Model-truth eye diameter (nm)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.aeye != -9999 and ld.beye != -9999,ld.aeye-ld.beye,null)",
       ],
-      "Model storm speed (kts)": ["precalculated", "line_data_tcmpr", "ld.aspeed"],
-      "Truth storm speed (kts)": ["precalculated", "line_data_tcmpr", "ld.bspeed"],
+      "Model storm speed (kts)": ["precalculated", "TCMPR", "ld.aspeed"],
+      "Truth storm speed (kts)": ["precalculated", "TCMPR", "ld.bspeed"],
       "Model-truth storm speed (kts)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.aspeed != -9999 and ld.bspeed != -9999,ld.aspeed-ld.bspeed,null)",
       ],
-      "Model storm direction (deg)": ["precalculated", "line_data_tcmpr", "ld.adir"],
-      "Truth storm direction (deg)": ["precalculated", "line_data_tcmpr", "ld.bdir"],
+      "Model storm direction (deg)": ["precalculated", "TCMPR", "ld.adir"],
+      "Truth storm direction (deg)": ["precalculated", "TCMPR", "ld.bdir"],
       "Model-truth storm direction (deg)": [
         "precalculated",
-        "line_data_tcmpr",
+        "TCMPR",
         "if(ld.adir != -9999 and ld.bdir != -9999,ld.adir-ld.bdir,null)",
       ],
     },
-    line_data_ctc: {
+    CTC: {
       "Rapid Intensification CSI (Critical Success Index)": ["ctc"],
       "Rapid Intensification FAR (False Alarm Ratio)": ["ctc"],
       "Rapid Intensification FBIAS (Frequency Bias)": ["ctc"],
@@ -403,7 +401,6 @@ const doCurveParams = async function () {
   }
 
   const myDBs = [];
-  const dbGroupMap = {};
   const modelOptionsMap = {};
   const dbDateRangeMap = {};
   const plotTypeOptionsMap = {};
@@ -419,257 +416,97 @@ const doCurveParams = async function () {
   const descrOptionsMap = {};
 
   let rows;
-  let thisGroup;
-  let dbs;
-  let dbArr;
   try {
-    rows = await matsDataQueryUtils.queryMySQL(
-      global.sumPool,
-      "select * from cyclone_database_groups order by db_group;"
+    const queryStr = global.cbPool.trfmSQLForDbTarget(
+      "select raw md from {{vxDBTARGET}} md " +
+        `USE KEYS "MD:matsGui:METexpressGui:met-cyclone:V10.1.1"`
     );
-    for (let i = 0; i < rows.length; i += 1) {
-      thisGroup = rows[i].db_group.trim().replace(/\./g, "___");
-      dbs = rows[i].dbs;
-      dbArr = dbs.split(",").map(Function.prototype.call, String.prototype.trim);
-      for (let j = 0; j < dbArr.length; j += 1) {
-        dbArr[j] = dbArr[j].replace(/'|\[|\]/g, "").replace(/\./g, "___");
+    [rows] = await global.cbPool.queryCB(queryStr);
+  } catch (err) {
+    throw new Error(err.message);
+  }
+
+  // try {
+  //   debugger;
+  const { datasets } = rows;
+  for (let didx = 0; didx < datasets.length; didx += 1) {
+    const thisDataset = datasets[didx];
+    const thisDB = thisDataset.dataset;
+    myDBs.push(thisDataset.dataset);
+
+    modelOptionsMap[thisDB] = {};
+    dbDateRangeMap[thisDB] = {};
+    plotTypeOptionsMap[thisDB] = {};
+    statisticOptionsMap[thisDB] = {};
+    basinOptionsMap[thisDB] = {};
+    yearOptionsMap[thisDB] = {};
+    stormsOptionsMap[thisDB] = {};
+    variableOptionsMap[thisDB] = {};
+    forecastLengthOptionsMap[thisDB] = {};
+    levelOptionsMap[thisDB] = {};
+    thresholdOptionsMap[thisDB] = {};
+    sourceOptionsMap[thisDB] = {};
+    descrOptionsMap[thisDB] = {};
+
+    const { models } = thisDataset;
+    for (let midx = 0; midx < models.length; midx += 1) {
+      const thisModel = models[midx];
+      const modelValue = thisModel.model;
+      let model;
+      if (Object.keys(modelAcronymDecoder).includes(modelValue)) {
+        model = modelAcronymDecoder[modelValue];
+      } else if (modelValue.match(/AP\d\d/)) {
+        model = `${modelValue}: GFS Ensemble Member ${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/AN\d\d/)) {
+        model = `${modelValue}: GFS Ensemble Member -${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/CP\d\d/)) {
+        model = `${modelValue}: Canadian Ensemble Member ${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/UE\d\d/)) {
+        model = `${modelValue}: UKMET MOGREPS Ensemble Member ${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/EE\d\d/)) {
+        model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
+          -2
+        )} (GTS Tracker)`;
+      } else if (modelValue.match(/EN\d\d/)) {
+        model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
+          -2
+        )} (NCEP Tracker)`;
+      } else if (modelValue.match(/EP\d\d/)) {
+        model = `${modelValue}: ECMWF EPS Ensemble Member ${(
+          Number(modelValue.slice(-2)) + 25
+        ).toString()} (NCEP Tracker)`;
+      } else if (modelValue.match(/RI\d\d/)) {
+        model = `${modelValue}: Rapid Intensification Aid ${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/GP\d\d/)) {
+        model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(-2)}`;
+      } else if (modelValue.match(/G\d\dI/)) {
+        model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
+      } else if (modelValue.match(/G\d\d2/)) {
+        model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
+      } else if (modelValue.match(/HW\d\d/)) {
+        model = `${modelValue}: HWRF Ensemble Member ${modelValue.slice(-2)}`;
+      } else {
+        model = modelValue;
       }
-      dbGroupMap[thisGroup] = dbArr;
-    }
-  } catch (err) {
-    throw new Error(err.message);
-  }
+      modelOptionsMap[thisDB][model] = [modelValue];
 
-  let thisDB;
-  try {
-    rows = await matsDataQueryUtils.queryMySQL(
-      global.sumPool,
-      "select distinct db from cyclone_metexpress_metadata;"
-    );
-    for (let i = 0; i < rows.length; i += 1) {
-      thisDB = rows[i].db.trim().replace(/\./g, "___");
-      myDBs.push(thisDB);
-    }
-  } catch (err) {
-    throw new Error(err.message);
-  }
+      statisticOptionsMap[thisDB][model] = {};
+      basinOptionsMap[thisDB][model] = {};
+      yearOptionsMap[thisDB][model] = {};
+      stormsOptionsMap[thisDB][model] = {};
+      variableOptionsMap[thisDB][model] = {};
+      forecastLengthOptionsMap[thisDB][model] = {};
+      levelOptionsMap[thisDB][model] = {};
+      thresholdOptionsMap[thisDB][model] = {};
+      sourceOptionsMap[thisDB][model] = {};
+      descrOptionsMap[thisDB][model] = {};
+      dbDateRangeMap[thisDB][model] = {};
 
-  try {
-    for (let k = 0; k < myDBs.length; k += 1) {
-      thisDB = myDBs[k];
-      modelOptionsMap[thisDB] = {};
-      dbDateRangeMap[thisDB] = {};
-      plotTypeOptionsMap[thisDB] = {};
-      statisticOptionsMap[thisDB] = {};
-      basinOptionsMap[thisDB] = {};
-      yearOptionsMap[thisDB] = {};
-      stormsOptionsMap[thisDB] = {};
-      variableOptionsMap[thisDB] = {};
-      forecastLengthOptionsMap[thisDB] = {};
-      levelOptionsMap[thisDB] = {};
-      thresholdOptionsMap[thisDB] = {};
-      sourceOptionsMap[thisDB] = {};
-      descrOptionsMap[thisDB] = {};
-
-      rows = await matsDataQueryUtils.queryMySQL(
-        global.sumPool,
-        `select model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate from cyclone_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,basin,year,storms,truths,levels,descrs,fcst_orig,mindate,maxdate order by model,line_data_table,basin,year desc;`
-      );
-      for (let i = 0; i < rows.length; i += 1) {
-        const modelValue = rows[i].model.trim();
-        let model;
-        if (Object.keys(modelAcronymDecoder).includes(modelValue)) {
-          model = modelAcronymDecoder[modelValue];
-        } else if (modelValue.match(/AP\d\d/)) {
-          model = `${modelValue}: GFS Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/AN\d\d/)) {
-          model = `${modelValue}: GFS Ensemble Member -${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/CP\d\d/)) {
-          model = `${modelValue}: Canadian Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/UE\d\d/)) {
-          model = `${modelValue}: UKMET MOGREPS Ensemble Member ${modelValue.slice(
-            -2
-          )}`;
-        } else if (modelValue.match(/EE\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
-            -2
-          )} (GTS Tracker)`;
-        } else if (modelValue.match(/EN\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
-            -2
-          )} (NCEP Tracker)`;
-        } else if (modelValue.match(/EP\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${(
-            Number(modelValue.slice(-2)) + 25
-          ).toString()} (NCEP Tracker)`;
-        } else if (modelValue.match(/RI\d\d/)) {
-          model = `${modelValue}: Rapid Intensification Aid ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/GP\d\d/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/G\d\dI/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
-        } else if (modelValue.match(/G\d\d2/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
-        } else if (modelValue.match(/HW\d\d/)) {
-          model = `${modelValue}: HWRF Ensemble Member ${modelValue.slice(-2)}`;
-        } else {
-          model = modelValue;
-        }
-        modelOptionsMap[thisDB][model] = [modelValue];
-
-        const rowMinDate = moment
-          .utc(rows[i].mindate * 1000)
-          .format("MM/DD/YYYY HH:mm");
-        const rowMaxDate = moment
-          .utc(rows[i].maxdate * 1000)
-          .format("MM/DD/YYYY HH:mm");
-
-        const basin = rows[i].basin.trim();
-        const { year } = rows[i];
-
-        const { storms } = rows[i];
-        const stormsArr = storms
-          .split(",")
-          .map(Function.prototype.call, String.prototype.trim);
-        for (let j = 0; j < stormsArr.length; j += 1) {
-          stormsArr[j] = stormsArr[j].replace(/'|\[|\]/g, "");
-        }
-        stormsArr.unshift("All storms");
-
-        const sources = rows[i].truths;
-        const sourceArr = sources
-          .split(",")
-          .map(Function.prototype.call, String.prototype.trim);
-        for (let j = 0; j < sourceArr.length; j += 1) {
-          sourceArr[j] = sourceArr[j].replace(/'|\[|\]/g, "");
-          if (Object.keys(modelAcronymDecoder).includes(sourceArr[j])) {
-            sourceArr[j] = modelAcronymDecoder[sourceArr[j]];
-          } else {
-            modelAcronymDecoder[sourceArr[j]] = sourceArr[j];
-          }
-        }
-
-        const forecastLengths = rows[i].fcst_orig;
-        const forecastLengthArr = forecastLengths
-          .split(",")
-          .map(Function.prototype.call, String.prototype.trim);
-        for (let j = 0; j < forecastLengthArr.length; j += 1) {
-          forecastLengthArr[j] = forecastLengthArr[j].replace(/'|\[|\]|0000/g, "");
-        }
-
-        const { levels } = rows[i];
-        const levelsArrRaw = levels
-          .split(",")
-          .map(Function.prototype.call, String.prototype.trim);
-        let levelsArr = [];
-        let dummyLevel;
-        let dummyObj;
-        for (let j = 0; j < levelsArrRaw.length; j += 1) {
-          // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
-          dummyLevel = levelsArrRaw[j].replace(/'|\[|\]|=/g, "");
-          if (Object.keys(bestTrackDefs).indexOf(dummyLevel) !== -1) {
-            dummyObj = bestTrackDefs[dummyLevel];
-          } else {
-            dummyObj = {
-              name: dummyLevel,
-              order: 10 + j,
-            };
-          }
-          levelsArr.push(dummyObj);
-        }
-        levelsArr = levelsArr.sort((a, b) => (a.order > b.order ? 1 : -1));
-        levelsArr = levelsArr.map((a) => a.name);
-
-        const { descrs } = rows[i];
-        const descrsArr = descrs
-          .split(",")
-          .map(Function.prototype.call, String.prototype.trim);
-        for (let j = 0; j < descrsArr.length; j += 1) {
-          descrsArr[j] = descrsArr[j].replace(/'|\[|\]|=/g, "");
-        }
-
-        // get any CTC RI stats for this model
-        const riRows = await matsDataQueryUtils.queryMySQL(
-          global.sumPool,
-          `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from cyclone_ri_metexpress_metadata where db = '${thisDB}' and model = '${modelValue}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
-        );
-
-        let variablesArr;
-        let thresholdArr;
-        let lineDataTables;
-        if (riRows.length > 0) {
-          variablesArr = [];
-          thresholdArr = [];
-          lineDataTables = [rows[i].line_data_table.trim(), "line_data_ctc"];
-          for (let l = 0; l < riRows.length; l += 1) {
-            const variable = riRows[l].variable.trim();
-            variablesArr.push(variable);
-
-            const { trshs } = riRows[l];
-            const trshArr = trshs
-              .split(",")
-              .map(Function.prototype.call, String.prototype.trim);
-            for (let j = 0; j < trshArr.length; j += 1) {
-              trshArr[j] = trshArr[j].replace(/'|\[|\]/g, "");
-            }
-            thresholdArr = thresholdArr.concat(trshArr);
-          }
-
-          variablesArr = [...new Set(variablesArr)].sort(); // make sure all variables are unique, then sort
-          thresholdArr = [...new Set(thresholdArr)].sort(); // make sure all thresholds are unique, then sort
-        } else {
-          variablesArr = ["NA"];
-          thresholdArr = ["NA"];
-          lineDataTables = [rows[i].line_data_table.trim()];
-        }
-
-        statisticOptionsMap[thisDB][model] =
-          statisticOptionsMap[thisDB][model] === undefined
-            ? {}
-            : statisticOptionsMap[thisDB][model];
-        basinOptionsMap[thisDB][model] =
-          basinOptionsMap[thisDB][model] === undefined
-            ? {}
-            : basinOptionsMap[thisDB][model];
-        yearOptionsMap[thisDB][model] =
-          yearOptionsMap[thisDB][model] === undefined
-            ? {}
-            : yearOptionsMap[thisDB][model];
-        stormsOptionsMap[thisDB][model] =
-          stormsOptionsMap[thisDB][model] === undefined
-            ? {}
-            : stormsOptionsMap[thisDB][model];
-        variableOptionsMap[thisDB][model] =
-          variableOptionsMap[thisDB][model] === undefined
-            ? {}
-            : variableOptionsMap[thisDB][model];
-        forecastLengthOptionsMap[thisDB][model] =
-          forecastLengthOptionsMap[thisDB][model] === undefined
-            ? {}
-            : forecastLengthOptionsMap[thisDB][model];
-        levelOptionsMap[thisDB][model] =
-          levelOptionsMap[thisDB][model] === undefined
-            ? {}
-            : levelOptionsMap[thisDB][model];
-        thresholdOptionsMap[thisDB][model] =
-          thresholdOptionsMap[thisDB][model] === undefined
-            ? {}
-            : thresholdOptionsMap[thisDB][model];
-        sourceOptionsMap[thisDB][model] =
-          sourceOptionsMap[thisDB][model] === undefined
-            ? {}
-            : sourceOptionsMap[thisDB][model];
-        descrOptionsMap[thisDB][model] =
-          descrOptionsMap[thisDB][model] === undefined
-            ? {}
-            : descrOptionsMap[thisDB][model];
-        dbDateRangeMap[thisDB][model] =
-          dbDateRangeMap[thisDB][model] === undefined
-            ? {}
-            : dbDateRangeMap[thisDB][model];
-
-        for (let l = 0; l < lineDataTables.length; l += 1) {
-          const lineDataTable = lineDataTables[l];
+      const lineDataTables = thisModel.linetypes;
+      for (let lidx = 0; lidx < lineDataTables.length; lidx += 1) {
+        const thisLineDataTable = lineDataTables[lidx];
+        const lineDataTable = thisLineDataTable.linetype;
+        if (lineDataTable in masterPlotTypeOptionsMap) {
           const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
           plotTypeOptionsMap[thisDB][model] =
             plotTypeOptionsMap[thisDB][model] === undefined
@@ -708,7 +545,7 @@ const doCurveParams = async function () {
                 stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] ===
                 undefined
               ) {
-                // if we haven't encountered this variable for this stat yet, initialize everything
+                // if we haven't encountered this statType for this plotType yet, initialize everything
                 basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
                 yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                 stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
@@ -723,151 +560,270 @@ const doCurveParams = async function () {
                 descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
                 dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               }
-              if (
-                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] === undefined
-              ) {
-                // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-                basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
-                  basin
-                );
-                yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                  [];
-                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = {};
-                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = variablesArr;
-                forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                  thisValidStatType
-                ][basin] = {};
-                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                  {};
-                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = thresholdArr;
-                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = sourceArr;
-                descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                  descrsArr;
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                  {};
-              } else {
-                // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = _.union(
-                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ],
-                  variablesArr
-                );
-                thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = _.union(
-                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ],
-                  thresholdArr
-                );
-                sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ] = _.union(
-                  sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                    basin
-                  ],
-                  sourceArr
-                );
-                descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] =
-                  _.union(
-                    descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                      basin
-                    ],
-                    descrsArr
-                  );
-              }
-              if (
-                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] === undefined
-              ) {
-                // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-                yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                  basin
-                ].push(year);
-                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] = stormsArr;
-                forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                  thisValidStatType
-                ][basin][year] = forecastLengthArr;
-                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] = levelsArr;
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] = {
-                  minDate: rowMinDate,
-                  maxDate: rowMaxDate,
-                };
-              } else {
-                // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] = _.union(
+
+              const { basins } = thisLineDataTable;
+              for (let bidx = 0; bidx < basins.length; bidx += 1) {
+                const thisBasin = basins[bidx];
+                const { basin } = thisBasin;
+                if (
                   stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                     basin
-                  ][year],
-                  stormsArr
-                );
-                forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                  thisValidStatType
-                ][basin][year] = _.union(
+                  ] === undefined
+                ) {
+                  // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                  basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType].push(
+                    basin
+                  );
+                  yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = [];
+                  stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = {};
+                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = ["NA"]; // dummy for when we support RI stats in this app
                   forecastLengthOptionsMap[thisDB][model][thisPlotType][
                     thisValidStatType
-                  ][basin][year],
-                  forecastLengthArr
-                );
-                levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ] = _.union(
+                  ][basin] = {};
                   levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                     basin
-                  ][year],
-                  levelsArr
-                );
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ][minDate] =
-                  dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                    year
-                  ][minDate] < rowMinDate
-                    ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                  ] = {};
+                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = ["NA"]; // dummy for when we support RI stats in this app
+                  sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = {};
+                  descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = {};
+                  dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = {};
+                } else {
+                  // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                  variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = _.union(
+                    variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ],
+                    ["NA"]
+                  ); // dummy for when we support RI stats in this app
+                  thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                    basin
+                  ] = _.union(
+                    thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ],
+                    ["NA"]
+                  ); // dummy for when we support RI stats in this app
+                }
+
+                const { years } = thisBasin;
+                for (let yidx = 0; yidx < years.length; yidx += 1) {
+                  const thisYear = years[yidx];
+                  const { year } = thisYear;
+
+                  const stormsArr =
+                    thisYear.mdcounts.storms !== undefined &&
+                    thisYear.mdcounts.storms !== null
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.storms)) // use JSON to force a deep copy
+                      : ["NA"];
+                  let forecastLengthArr =
+                    thisYear.mdcounts.fcst_lens !== undefined &&
+                    thisYear.mdcounts.fcst_lens !== null
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.fcst_lens)) // use JSON to force a deep copy
+                      : ["NA"];
+                  const levelsArrRaw =
+                    thisYear.mdcounts.levels !== undefined &&
+                    thisYear.mdcounts.levels !== null
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.levels)) // use JSON to force a deep copy
+                      : ["NA"];
+                  const sourceArr =
+                    thisYear.mdcounts.truths !== undefined &&
+                    thisYear.mdcounts.truths !== null
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.truths)) // use JSON to force a deep copy
+                      : ["NA"];
+                  const descrArr =
+                    thisYear.mdcounts.descriptions !== undefined &&
+                    thisYear.mdcounts.descriptions !== null
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.descriptions)) // use JSON to force a deep copy
+                      : ["NA"];
+                  const rowMinDate = moment
+                    .utc(thisYear.mdcounts.mindate * 1000)
+                    .format("MM/DD/YYYY HH:mm");
+                  const rowMaxDate = moment
+                    .utc(thisYear.mdcounts.maxdate * 1000)
+                    .format("MM/DD/YYYY HH:mm");
+
+                  stormsArr.unshift("All storms");
+
+                  for (let j = 0; j < forecastLengthArr.length; j += 1) {
+                    forecastLengthArr[j] = Number(
+                      forecastLengthArr[j].replace(/0000/g, "")
+                    );
+                  }
+                  forecastLengthArr = forecastLengthArr.sort();
+
+                  let levelsArr = [];
+                  let dummyLevel;
+                  let dummyObj;
+                  for (let j = 0; j < levelsArrRaw.length; j += 1) {
+                    // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
+                    dummyLevel = levelsArrRaw[j].replace(/=/g, "");
+                    if (Object.keys(bestTrackDefs).indexOf(dummyLevel) !== -1) {
+                      dummyObj = bestTrackDefs[dummyLevel];
+                    } else {
+                      dummyObj = {
+                        name: dummyLevel,
+                        order: 10 + j,
+                      };
+                    }
+                    levelsArr.push(dummyObj);
+                  }
+                  levelsArr = levelsArr.sort((a, b) => (a.order > b.order ? 1 : -1));
+                  levelsArr = levelsArr.map((a) => a.name);
+
+                  for (let j = 0; j < sourceArr.length; j += 1) {
+                    if (Object.keys(modelAcronymDecoder).includes(sourceArr[j])) {
+                      sourceArr[j] = modelAcronymDecoder[sourceArr[j]];
+                    } else {
+                      modelAcronymDecoder[sourceArr[j]] = sourceArr[j];
+                    }
+                  }
+
+                  if (
+                    stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] === undefined
+                  ) {
+                    // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                    yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ].push(year);
+                    stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = stormsArr;
+                    forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                      thisValidStatType
+                    ][basin][year] = forecastLengthArr;
+                    levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = levelsArr;
+                    sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = sourceArr;
+                    descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = descrArr;
+                    dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = {
+                      minDate: rowMinDate,
+                      maxDate: rowMaxDate,
+                    };
+                  } else {
+                    // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                    stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = _.union(
+                      stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                         basin
-                      ][year][minDate]
-                    : rowMinDate;
-                dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                  year
-                ][maxDate] =
-                  dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][basin][
-                    year
-                  ][maxDate] > rowMaxDate
-                    ? dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                      ][year],
+                      stormsArr
+                    );
+                    forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                      thisValidStatType
+                    ][basin][year] = _.union(
+                      forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ][basin][year],
+                      forecastLengthArr
+                    );
+                    levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = _.union(
+                      levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                         basin
-                      ][year][maxDate]
-                    : rowMaxDate;
+                      ][year],
+                      levelsArr
+                    );
+                    sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = _.union(
+                      sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year],
+                      sourceArr
+                    );
+                    descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year] = _.union(
+                      descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year],
+                      descrArr
+                    );
+                    dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year][minDate] =
+                      dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year][minDate] < rowMinDate
+                        ? dbDateRangeMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin][year][minDate]
+                        : rowMinDate;
+                    dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                      basin
+                    ][year][maxDate] =
+                      dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
+                        basin
+                      ][year][maxDate] > rowMaxDate
+                        ? dbDateRangeMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin][year][maxDate]
+                        : rowMaxDate;
+                  }
+                }
               }
             }
           }
         }
       }
+      if (Object.keys(statisticOptionsMap[thisDB][model]).length === 0) {
+        delete statisticOptionsMap[thisDB][model];
+        delete basinOptionsMap[thisDB][model];
+        delete yearOptionsMap[thisDB][model];
+        delete stormsOptionsMap[thisDB][model];
+        delete variableOptionsMap[thisDB][model];
+        delete forecastLengthOptionsMap[thisDB][model];
+        delete levelOptionsMap[thisDB][model];
+        delete thresholdOptionsMap[thisDB][model];
+        delete sourceOptionsMap[thisDB][model];
+        delete descrOptionsMap[thisDB][model];
+        delete dbDateRangeMap[thisDB][model];
+      }
     }
-  } catch (err) {
-    throw new Error(err.message);
+    if (Object.keys(statisticOptionsMap[thisDB]).length === 0) {
+      delete statisticOptionsMap[thisDB];
+      delete basinOptionsMap[thisDB];
+      delete yearOptionsMap[thisDB];
+      delete stormsOptionsMap[thisDB];
+      delete variableOptionsMap[thisDB];
+      delete forecastLengthOptionsMap[thisDB];
+      delete levelOptionsMap[thisDB];
+      delete thresholdOptionsMap[thisDB];
+      delete sourceOptionsMap[thisDB];
+      delete descrOptionsMap[thisDB];
+      delete dbDateRangeMap[thisDB];
+    }
   }
+  // } catch (err) {
+  //   throw new Error(err.message);
+  // }
 
   if ((await matsCollections.label.findOneAsync({ name: "label" })) === undefined) {
     await matsCollections.label.insertAsync({
@@ -886,16 +842,8 @@ const doCurveParams = async function () {
   }
   // get the default group, db, and model that were specified in the settings file. If none exist, take
   // the first available option for each in the selector.
-  const requestedGroup = settings.appDefaultGroup;
-  const defaultGroup =
-    Object.keys(dbGroupMap).indexOf(requestedGroup) !== -1
-      ? requestedGroup
-      : Object.keys(dbGroupMap)[0];
   const requestedDB = settings.appDefaultDB;
-  const defaultDB =
-    dbGroupMap[defaultGroup].indexOf(requestedDB) !== -1
-      ? requestedDB
-      : dbGroupMap[defaultGroup][0];
+  const defaultDB = myDBs.indexOf(requestedDB) !== -1 ? requestedDB : myDBs[0];
   const requestedModel = settings.appDefaultModel;
   const defaultModel =
     Object.keys(modelOptionsMap[defaultDB]).indexOf(requestedModel) !== -1
@@ -909,47 +857,14 @@ const doCurveParams = async function () {
   )[0];
   const defaultStatType = masterStatsValuesMap[defaultStatistic][0];
 
-  if ((await matsCollections.group.findOneAsync({ name: "group" })) === undefined) {
-    await matsCollections.group.insertAsync({
-      name: "group",
-      type: matsTypes.InputTypes.select,
-      options: Object.keys(dbGroupMap),
-      dependentNames: ["database"],
-      controlButtonCovered: true,
-      default: defaultGroup,
-      unique: false,
-      controlButtonVisibility: "block",
-      displayOrder: 1,
-      displayPriority: 1,
-      displayGroup: 2,
-    });
-  } else {
-    // it is defined but check for necessary update
-    const currentParam = await matsCollections.group.findOneAsync({ name: "group" });
-    if (!matsDataUtils.areObjectsEqual(currentParam.options, Object.keys(dbGroupMap))) {
-      // have to reload group data
-      await matsCollections.group.updateAsync(
-        { name: "group" },
-        {
-          $set: {
-            options: Object.keys(dbGroupMap),
-            default: defaultGroup,
-          },
-        }
-      );
-    }
-  }
-
   if (
     (await matsCollections.database.findOneAsync({ name: "database" })) === undefined
   ) {
     await matsCollections.database.insertAsync({
       name: "database",
       type: matsTypes.InputTypes.select,
-      optionsMap: dbGroupMap,
-      options: dbGroupMap[defaultGroup],
+      options: myDBs,
       dates: dbDateRangeMap,
-      superiorNames: ["group"],
       dependentNames: ["data-source"],
       controlButtonCovered: true,
       default: defaultDB,
@@ -964,18 +879,14 @@ const doCurveParams = async function () {
     const currentParam = await matsCollections.database.findOneAsync({
       name: "database",
     });
-    if (
-      !matsDataUtils.areObjectsEqual(currentParam.optionsMap, dbGroupMap) ||
-      !matsDataUtils.areObjectsEqual(currentParam.dates, dbDateRangeMap)
-    ) {
+    if (!matsDataUtils.areObjectsEqual(currentParam.dates, dbDateRangeMap)) {
       // have to reload database data
       await matsCollections.database.updateAsync(
         { name: "database" },
         {
           $set: {
-            optionsMap: dbGroupMap,
             dates: dbDateRangeMap,
-            options: dbGroupMap[defaultGroup],
+            options: myDBs,
             default: defaultDB,
           },
         }
@@ -1119,11 +1030,11 @@ const doCurveParams = async function () {
       superiorNames: ["database", "data-source", "plot-type"],
       dependentNames: ["basin", "aggregation-method"],
       hideOtherFor: {
-        variable: Object.keys(masterStatsOptionsMap.line_data_tcmpr),
-        threshold: Object.keys(masterStatsOptionsMap.line_data_tcmpr),
-        year: Object.keys(masterStatsOptionsMap.line_data_ctc),
-        storm: Object.keys(masterStatsOptionsMap.line_data_ctc),
-        level: Object.keys(masterStatsOptionsMap.line_data_ctc),
+        variable: Object.keys(masterStatsOptionsMap.TCMPR),
+        threshold: Object.keys(masterStatsOptionsMap.TCMPR),
+        year: Object.keys(masterStatsOptionsMap.CTC),
+        storm: Object.keys(masterStatsOptionsMap.CTC),
+        level: Object.keys(masterStatsOptionsMap.CTC),
       },
       controlButtonCovered: true,
       unique: false,
@@ -1735,7 +1646,7 @@ const doCurveParams = async function () {
     });
   } else {
     // it is defined but check for necessary update
-    const currentParam = matsCollections.description.findOne({ name: "description" });
+    const currentParam = matsCollections.description.findOneAsync({ name: "description" });
     if (!matsDataUtils.areObjectsEqual(descrOptionsMap, currentParam.optionsMap)) {
       // have to reload description data
       await matsCollections.description.updateAsync(
@@ -1894,7 +1805,6 @@ const doCurveTextPatterns = async function () {
       ],
       displayParams: [
         "label",
-        "group",
         "database",
         "data-source",
         "basin",
@@ -1935,7 +1845,6 @@ const doCurveTextPatterns = async function () {
       ],
       displayParams: [
         "label",
-        "group",
         "database",
         "data-source",
         "basin",
@@ -1975,7 +1884,6 @@ const doCurveTextPatterns = async function () {
       ],
       displayParams: [
         "label",
-        "group",
         "database",
         "data-source",
         "basin",
@@ -2011,7 +1919,6 @@ const doCurveTextPatterns = async function () {
       ],
       displayParams: [
         "label",
-        "group",
         "database",
         "data-source",
         "basin",
@@ -2045,7 +1952,6 @@ const doCurveTextPatterns = async function () {
       ],
       displayParams: [
         "label",
-        "group",
         "database",
         "data-source",
         "basin",
@@ -2153,43 +2059,47 @@ Meteor.startup(async function () {
 
   // create list of all pools
   const allPools = [];
-  const sumSettings = await matsCollections.Databases.findOneAsync(
+
+  // connect to the couchbase cluster
+  const cbConnection = await matsCollections.Databases.findOneAsync(
     {
-      role: matsTypes.DatabaseRoles.SUMS_DATA,
+      role: matsTypes.DatabaseRoles.COUCHBASE,
       status: "active",
     },
     {
       host: 1,
       port: 1,
+      bucket: 1,
+      scope: 1,
+      collection: 1,
       user: 1,
       password: 1,
-      database: 1,
-      connectionLimit: 1,
     }
   );
-  // the pool is intended to be global
-  if (sumSettings) {
-    global.sumPool = mysql.createPool({
-      host: sumSettings.host,
-      port: sumSettings.port,
-      user: sumSettings.user,
-      password: sumSettings.password,
-      database: sumSettings.database,
-      connectionLimit: sumSettings.connectionLimit,
-    });
-    allPools.push({ pool: "sumPool", role: matsTypes.DatabaseRoles.SUMS_DATA });
-  }
 
+  if (cbConnection) {
+    global.cbPool = new matsCouchbaseUtils.CBUtilities(
+      cbConnection.host,
+      cbConnection.bucket,
+      cbConnection.scope,
+      cbConnection.collection,
+      cbConnection.user,
+      cbConnection.password
+    );
+  }
+  allPools.push({ pool: "cbPool", role: matsTypes.DatabaseRoles.COUCHBASE });
   // create list of tables we need to monitor for update
-  const mdr = new matsTypes.MetaDataDBRecord("sumPool", "metexpress_metadata", [
-    "cyclone_metexpress_metadata",
-    "cyclone_database_groups",
-  ]);
+  const mdr = new matsTypes.MetaDataDBRecord(
+    "cbPool",
+    `${cbConnection.bucket}:${cbConnection.scope}:${cbConnection.collection}`,
+    ["MD:matsGui:METexpressGui:met-cyclone:V10.1.1"]
+  );
   try {
     matsMethods.resetApp({
       appPools: allPools,
       appMdr: mdr,
       appType: matsTypes.AppTypes.metexpress,
+      dbType: matsTypes.DbTypes.couchbase,
     });
   } catch (error) {
     throw new Error(error.message);
