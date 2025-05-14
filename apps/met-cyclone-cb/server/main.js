@@ -313,31 +313,15 @@ const doCurveParams = async function () {
         "TCMPR",
         "if(ld.amslp != -9999 and ld.bmslp != -9999,ld.amslp-ld.bmslp,null)",
       ],
-      "Model maximum wind speed (kts)": [
-        "precalculated",
-        "TCMPR",
-        "ld.amax_wind",
-      ],
-      "Truth maximum wind speed (kts)": [
-        "precalculated",
-        "TCMPR",
-        "ld.bmax_wind",
-      ],
+      "Model maximum wind speed (kts)": ["precalculated", "TCMPR", "ld.amax_wind"],
+      "Truth maximum wind speed (kts)": ["precalculated", "TCMPR", "ld.bmax_wind"],
       "Model-truth maximum wind speed (kts)": [
         "precalculated",
         "TCMPR",
         "if(ld.amax_wind != -9999 and ld.bmax_wind != -9999,ld.amax_wind-ld.bmax_wind,null)",
       ],
-      "Model radius of maximum winds (nm)": [
-        "precalculated",
-        "TCMPR",
-        "ld.amrd",
-      ],
-      "Truth radius of maximum winds (nm)": [
-        "precalculated",
-        "TCMPR",
-        "ld.bmrd",
-      ],
+      "Model radius of maximum winds (nm)": ["precalculated", "TCMPR", "ld.amrd"],
+      "Truth radius of maximum winds (nm)": ["precalculated", "TCMPR", "ld.bmrd"],
       "Model-truth radius of maximum winds (nm)": [
         "precalculated",
         "TCMPR",
@@ -629,7 +613,7 @@ const doCurveParams = async function () {
                   const stormsArr =
                     thisYear.mdcounts.storms !== undefined &&
                     thisYear.mdcounts.storms !== null
-                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.storms)) // use JSON to force a deep copy
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.storms)).sort() // use JSON to force a deep copy
                       : ["NA"];
                   let forecastLengthArr =
                     thisYear.mdcounts.fcst_lens !== undefined &&
@@ -644,12 +628,12 @@ const doCurveParams = async function () {
                   const sourceArr =
                     thisYear.mdcounts.truths !== undefined &&
                     thisYear.mdcounts.truths !== null
-                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.truths)) // use JSON to force a deep copy
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.truths)).sort() // use JSON to force a deep copy
                       : ["NA"];
                   const descrArr =
                     thisYear.mdcounts.descriptions !== undefined &&
                     thisYear.mdcounts.descriptions !== null
-                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.descriptions)) // use JSON to force a deep copy
+                      ? JSON.parse(JSON.stringify(thisYear.mdcounts.descriptions)).sort() // use JSON to force a deep copy
                       : ["NA"];
                   const rowMinDate = moment
                     .utc(thisYear.mdcounts.mindate * 1000)
@@ -661,11 +645,11 @@ const doCurveParams = async function () {
                   stormsArr.unshift("All storms");
 
                   for (let j = 0; j < forecastLengthArr.length; j += 1) {
-                    forecastLengthArr[j] = Number(
-                      forecastLengthArr[j].replace(/0000/g, "")
-                    );
+                    forecastLengthArr[j] = forecastLengthArr[j].replace(/0000/g, "");
                   }
-                  forecastLengthArr = forecastLengthArr.sort();
+                  forecastLengthArr = forecastLengthArr.sort(function (a, b) {
+                    return Number(a) - Number(b);
+                  });
 
                   let levelsArr = [];
                   let dummyLevel;
@@ -787,7 +771,13 @@ const doCurveParams = async function () {
                           ][basin][year][maxDate]
                         : rowMaxDate;
                   }
+                  yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin] = yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][basin].sort(function (a, b) {
+                    return Number(a) - Number(b);
+                  });
                 }
+                basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType].sort(function (a, b) {
+                    return Number(a) - Number(b);
+                  });
               }
             }
           }
@@ -989,7 +979,7 @@ const doCurveParams = async function () {
       optionsMap: basinOptionsMap,
       options: basinOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic"],
-      dependentNames: ["year", "variable", "threshold", "truth", "description"],
+      dependentNames: ["year", "variable", "threshold"],
       controlButtonCovered: true,
       unique: false,
       default: defaultBasin,
@@ -1084,7 +1074,7 @@ const doCurveParams = async function () {
           defaultBasin
         ],
       superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
-      dependentNames: ["storm", "forecast-length", "level", "dates", "curve-dates"],
+      dependentNames: ["storm", "forecast-length", "level", "truth", "description", "dates", "curve-dates"],
       controlButtonCovered: true,
       unique: false,
       default: defaultYear,
@@ -1172,17 +1162,13 @@ const doCurveParams = async function () {
       type: matsTypes.InputTypes.select,
       optionsMap: sourceOptionsMap,
       options:
-        sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          defaultBasin
-        ],
+        sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear],
       valuesMap: modelAcronymDecoder,
-      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin", "year"],
       controlButtonCovered: true,
       unique: false,
       default:
-        sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          defaultBasin
-        ][0],
+        sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear][0],
       controlButtonVisibility: "block",
       gapBelow: true,
       displayOrder: 4,
@@ -1200,13 +1186,9 @@ const doCurveParams = async function () {
           $set: {
             optionsMap: sourceOptionsMap,
             options:
-              sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][defaultBasin],
+              sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear],
             default:
-              sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][defaultBasin][0],
+              sourceOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear][0],
           },
         }
       );
@@ -1629,10 +1611,8 @@ const doCurveParams = async function () {
       type: matsTypes.InputTypes.select,
       optionsMap: descrOptionsMap,
       options:
-        descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          defaultBasin
-        ],
-      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin"],
+        descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear],
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "basin", "year"],
       selected: "",
       controlButtonCovered: true,
       unique: false,
@@ -1646,7 +1626,9 @@ const doCurveParams = async function () {
     });
   } else {
     // it is defined but check for necessary update
-    const currentParam = matsCollections.description.findOneAsync({ name: "description" });
+    const currentParam = matsCollections.description.findOneAsync({
+      name: "description",
+    });
     if (!matsDataUtils.areObjectsEqual(descrOptionsMap, currentParam.optionsMap)) {
       // have to reload description data
       await matsCollections.description.updateAsync(
@@ -1655,9 +1637,7 @@ const doCurveParams = async function () {
           $set: {
             optionsMap: descrOptionsMap,
             options:
-              descrOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][defaultBasin],
+              descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][defaultBasin][defaultYear],
             default: matsTypes.InputTypes.unused,
           },
         }
