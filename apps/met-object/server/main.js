@@ -1552,7 +1552,7 @@ const doCurveParams = async function () {
     });
   } else {
     // it is defined but check for necessary update
-    const currentParam = matsCollections.description.findOne({ name: "description" });
+    const currentParam = matsCollections.description.findOneAsync({ name: "description" });
     if (!matsDataUtils.areObjectsEqual(descrOptionsMap, currentParam.optionsMap)) {
       // have to reload description data
       await matsCollections.description.updateAsync(
