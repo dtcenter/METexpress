@@ -283,13 +283,6 @@ const doCurveParams = async function () {
       matsTypes.PlotTypes.histogram,
       matsTypes.PlotTypes.yearToYear,
     ],
-    CTC: [
-      matsTypes.PlotTypes.timeSeries,
-      matsTypes.PlotTypes.dieoff,
-      matsTypes.PlotTypes.validtime,
-      matsTypes.PlotTypes.histogram,
-      matsTypes.PlotTypes.yearToYear,
-    ],
   };
 
   const masterStatsOptionsMap = {
@@ -345,25 +338,12 @@ const doCurveParams = async function () {
         ["adir", "bdir", "minus"],
       ],
     },
-    CTC: {
-      "Rapid Intensification CSI (Critical Success Index)": ["ctc"],
-      "Rapid Intensification FAR (False Alarm Ratio)": ["ctc"],
-      "Rapid Intensification FBIAS (Frequency Bias)": ["ctc"],
-      "Rapid Intensification GSS (Gilbert Skill Score)": ["ctc"],
-      "Rapid Intensification HSS (Heidke Skill Score)": ["ctc"],
-      "Rapid Intensification PODy (Probability of positive detection)": ["ctc"],
-      "Rapid Intensification PODn (Probability of negative detection)": ["ctc"],
-      "Rapid Intensification POFD (Probability of false detection)": ["ctc"],
-    },
   };
 
   const aggMethodOptionsMap = {
     precalculated: {
       "Mean statistic": ["meanStat"],
       "Median statistic": ["medStat"],
-    },
-    ctc: {
-      "Overall statistic": ["aggStat"],
     },
   };
 
@@ -381,6 +361,7 @@ const doCurveParams = async function () {
   }
 
   const myDBs = [];
+  const validVersions = [];
   const modelOptionsMap = {};
   const dbDateRangeMap = {};
   const plotTypeOptionsMap = {};
@@ -398,539 +379,557 @@ const doCurveParams = async function () {
   let rows;
   try {
     const queryStr = global.cbPool.trfmSQLForDbTarget(
-      "select raw md from {{vxDBTARGET}} md " +
-        `USE KEYS "MD:METexpressGui:met-cyclone:V01"`
+      'SELECT DISTINCT m0.VERSION FROM {{vxDBTARGET}} m0 WHERE m0.subset = "MET" AND m0.subtype = "MET" AND m0.type = "DD";'
+    );
+    rows = await global.cbPool.queryCB(queryStr);
+    for (let ridx = 0; ridx < rows.length; ridx += 1) {
+      validVersions.push(rows[ridx].VERSION);
+    }
+  } catch (err) {
+    throw new Error(err.message);
+  }
+
+  try {
+    const queryStr = global.cbPool.trfmSQLForDbTarget(
+      'select raw md from {{vxDBTARGET}} md USE KEYS "MD:METexpressGui:met-cyclone:V01"'
     );
     [rows] = await global.cbPool.queryCB(queryStr);
   } catch (err) {
     throw new Error(err.message);
   }
 
-  // try {
-  //   debugger;
-  const { datasets } = rows;
-  for (let didx = 0; didx < datasets.length; didx += 1) {
-    const thisDataset = datasets[didx];
-    const thisDB = thisDataset.dataset;
-    myDBs.push(thisDataset.dataset);
+  try {
+    const { datasets } = rows;
+    for (let didx = 0; didx < datasets.length; didx += 1) {
+      const thisDataset = datasets[didx];
+      const thisDB = thisDataset.dataset;
+      myDBs.push(thisDataset.dataset);
 
-    modelOptionsMap[thisDB] = {};
-    dbDateRangeMap[thisDB] = {};
-    plotTypeOptionsMap[thisDB] = {};
-    statisticOptionsMap[thisDB] = {};
-    basinOptionsMap[thisDB] = {};
-    yearOptionsMap[thisDB] = {};
-    stormsOptionsMap[thisDB] = {};
-    variableOptionsMap[thisDB] = {};
-    forecastLengthOptionsMap[thisDB] = {};
-    levelOptionsMap[thisDB] = {};
-    thresholdOptionsMap[thisDB] = {};
-    sourceOptionsMap[thisDB] = {};
-    descrOptionsMap[thisDB] = {};
+      modelOptionsMap[thisDB] = {};
+      dbDateRangeMap[thisDB] = {};
+      plotTypeOptionsMap[thisDB] = {};
+      statisticOptionsMap[thisDB] = {};
+      basinOptionsMap[thisDB] = {};
+      yearOptionsMap[thisDB] = {};
+      stormsOptionsMap[thisDB] = {};
+      variableOptionsMap[thisDB] = {};
+      forecastLengthOptionsMap[thisDB] = {};
+      levelOptionsMap[thisDB] = {};
+      thresholdOptionsMap[thisDB] = {};
+      sourceOptionsMap[thisDB] = {};
+      descrOptionsMap[thisDB] = {};
 
-    const { models } = thisDataset;
-    if (models) {
-      for (let midx = 0; midx < models.length; midx += 1) {
-        const thisModel = models[midx];
-        const modelValue = thisModel.model;
-        let model;
-        if (Object.keys(modelAcronymDecoder).includes(modelValue)) {
-          model = modelAcronymDecoder[modelValue];
-        } else if (modelValue.match(/AP\d\d/)) {
-          model = `${modelValue}: GFS Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/AN\d\d/)) {
-          model = `${modelValue}: GFS Ensemble Member -${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/CP\d\d/)) {
-          model = `${modelValue}: Canadian Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/UE\d\d/)) {
-          model = `${modelValue}: UKMET MOGREPS Ensemble Member ${modelValue.slice(
-            -2
-          )}`;
-        } else if (modelValue.match(/EE\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
-            -2
-          )} (GTS Tracker)`;
-        } else if (modelValue.match(/EN\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
-            -2
-          )} (NCEP Tracker)`;
-        } else if (modelValue.match(/EP\d\d/)) {
-          model = `${modelValue}: ECMWF EPS Ensemble Member ${(
-            Number(modelValue.slice(-2)) + 25
-          ).toString()} (NCEP Tracker)`;
-        } else if (modelValue.match(/RI\d\d/)) {
-          model = `${modelValue}: Rapid Intensification Aid ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/GP\d\d/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(-2)}`;
-        } else if (modelValue.match(/G\d\dI/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
-        } else if (modelValue.match(/G\d\d2/)) {
-          model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
-        } else if (modelValue.match(/HW\d\d/)) {
-          model = `${modelValue}: HWRF Ensemble Member ${modelValue.slice(-2)}`;
-        } else {
-          model = modelValue;
-        }
-        modelOptionsMap[thisDB][model] = [modelValue];
+      const { models } = thisDataset;
+      if (models) {
+        for (let midx = 0; midx < models.length; midx += 1) {
+          const thisModel = models[midx];
+          const modelValue = thisModel.model;
+          let model;
+          if (Object.keys(modelAcronymDecoder).includes(modelValue)) {
+            model = modelAcronymDecoder[modelValue];
+          } else if (modelValue.match(/AP\d\d/)) {
+            model = `${modelValue}: GFS Ensemble Member ${modelValue.slice(-2)}`;
+          } else if (modelValue.match(/AN\d\d/)) {
+            model = `${modelValue}: GFS Ensemble Member -${modelValue.slice(-2)}`;
+          } else if (modelValue.match(/CP\d\d/)) {
+            model = `${modelValue}: Canadian Ensemble Member ${modelValue.slice(-2)}`;
+          } else if (modelValue.match(/UE\d\d/)) {
+            model = `${modelValue}: UKMET MOGREPS Ensemble Member ${modelValue.slice(
+              -2
+            )}`;
+          } else if (modelValue.match(/EE\d\d/)) {
+            model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
+              -2
+            )} (GTS Tracker)`;
+          } else if (modelValue.match(/EN\d\d/)) {
+            model = `${modelValue}: ECMWF EPS Ensemble Member ${modelValue.slice(
+              -2
+            )} (NCEP Tracker)`;
+          } else if (modelValue.match(/EP\d\d/)) {
+            model = `${modelValue}: ECMWF EPS Ensemble Member ${(
+              Number(modelValue.slice(-2)) + 25
+            ).toString()} (NCEP Tracker)`;
+          } else if (modelValue.match(/RI\d\d/)) {
+            model = `${modelValue}: Rapid Intensification Aid ${modelValue.slice(-2)}`;
+          } else if (modelValue.match(/GP\d\d/)) {
+            model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(-2)}`;
+          } else if (modelValue.match(/G\d\dI/)) {
+            model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
+          } else if (modelValue.match(/G\d\d2/)) {
+            model = `${modelValue}: GFDL Ensemble Member ${modelValue.slice(1, 3)}`;
+          } else if (modelValue.match(/HW\d\d/)) {
+            model = `${modelValue}: HWRF Ensemble Member ${modelValue.slice(-2)}`;
+          } else {
+            model = modelValue;
+          }
+          modelOptionsMap[thisDB][model] = [modelValue];
 
-        statisticOptionsMap[thisDB][model] = {};
-        basinOptionsMap[thisDB][model] = {};
-        yearOptionsMap[thisDB][model] = {};
-        stormsOptionsMap[thisDB][model] = {};
-        variableOptionsMap[thisDB][model] = {};
-        forecastLengthOptionsMap[thisDB][model] = {};
-        levelOptionsMap[thisDB][model] = {};
-        thresholdOptionsMap[thisDB][model] = {};
-        sourceOptionsMap[thisDB][model] = {};
-        descrOptionsMap[thisDB][model] = {};
-        dbDateRangeMap[thisDB][model] = {};
+          statisticOptionsMap[thisDB][model] = {};
+          basinOptionsMap[thisDB][model] = {};
+          yearOptionsMap[thisDB][model] = {};
+          stormsOptionsMap[thisDB][model] = {};
+          variableOptionsMap[thisDB][model] = {};
+          forecastLengthOptionsMap[thisDB][model] = {};
+          levelOptionsMap[thisDB][model] = {};
+          thresholdOptionsMap[thisDB][model] = {};
+          sourceOptionsMap[thisDB][model] = {};
+          descrOptionsMap[thisDB][model] = {};
+          dbDateRangeMap[thisDB][model] = {};
 
-        const lineDataTables = thisModel.linetypes;
-        if (lineDataTables) {
-          for (let lidx = 0; lidx < lineDataTables.length; lidx += 1) {
-            const thisLineDataTable = lineDataTables[lidx];
-            const lineDataTable = thisLineDataTable.linetype;
-            if (lineDataTable in masterPlotTypeOptionsMap) {
-              const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
-              plotTypeOptionsMap[thisDB][model] =
-                plotTypeOptionsMap[thisDB][model] === undefined
-                  ? validPlotTypes
-                  : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
-              const validStats = masterStatsOptionsMap[lineDataTable];
+          const lineDataTables = thisModel.linetypes;
+          if (lineDataTables) {
+            for (let lidx = 0; lidx < lineDataTables.length; lidx += 1) {
+              const thisLineDataTable = lineDataTables[lidx];
+              const lineDataTable = thisLineDataTable.linetype;
+              if (lineDataTable in masterPlotTypeOptionsMap) {
+                const validPlotTypes = masterPlotTypeOptionsMap[lineDataTable];
+                plotTypeOptionsMap[thisDB][model] =
+                  plotTypeOptionsMap[thisDB][model] === undefined
+                    ? validPlotTypes
+                    : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
+                const validStats = masterStatsOptionsMap[lineDataTable];
 
-              let thisPlotType;
-              for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx += 1) {
-                thisPlotType = validPlotTypes[ptidx];
-                if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
-                  // if we haven't encountered this plot type for this model yet, initialize everything
-                  statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
-                  basinOptionsMap[thisDB][model][thisPlotType] = {};
-                  yearOptionsMap[thisDB][model][thisPlotType] = {};
-                  stormsOptionsMap[thisDB][model][thisPlotType] = {};
-                  variableOptionsMap[thisDB][model][thisPlotType] = {};
-                  forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
-                  levelOptionsMap[thisDB][model][thisPlotType] = {};
-                  thresholdOptionsMap[thisDB][model][thisPlotType] = {};
-                  sourceOptionsMap[thisDB][model][thisPlotType] = {};
-                  descrOptionsMap[thisDB][model][thisPlotType] = {};
-                  dbDateRangeMap[thisDB][model][thisPlotType] = {};
-                } else {
-                  // if we have encountered this plot type for this model, add in any new stats
-                  statisticOptionsMap[thisDB][model][thisPlotType] = {
-                    ...statisticOptionsMap[thisDB][model][thisPlotType],
-                    ...validStats,
-                  };
-                }
-                const theseValidStats = Object.keys(validStats);
-                let thisValidStatType;
-                for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
-                  [thisValidStatType] = validStats[theseValidStats[vsidx]];
-                  if (
-                    stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] ===
-                    undefined
-                  ) {
-                    // if we haven't encountered this statType for this plotType yet, initialize everything
-                    basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      [];
-                    yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
-                    stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      {};
-                    variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      {};
-                    forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ] = {};
-                    levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      {};
-                    thresholdOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ] = {};
-                    sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      {};
-                    descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
-                      {};
-                    dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+                let thisPlotType;
+                for (let ptidx = 0; ptidx < validPlotTypes.length; ptidx += 1) {
+                  thisPlotType = validPlotTypes[ptidx];
+                  if (statisticOptionsMap[thisDB][model][thisPlotType] === undefined) {
+                    // if we haven't encountered this plot type for this model yet, initialize everything
+                    statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
+                    basinOptionsMap[thisDB][model][thisPlotType] = {};
+                    yearOptionsMap[thisDB][model][thisPlotType] = {};
+                    stormsOptionsMap[thisDB][model][thisPlotType] = {};
+                    variableOptionsMap[thisDB][model][thisPlotType] = {};
+                    forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
+                    levelOptionsMap[thisDB][model][thisPlotType] = {};
+                    thresholdOptionsMap[thisDB][model][thisPlotType] = {};
+                    sourceOptionsMap[thisDB][model][thisPlotType] = {};
+                    descrOptionsMap[thisDB][model][thisPlotType] = {};
+                    dbDateRangeMap[thisDB][model][thisPlotType] = {};
+                  } else {
+                    // if we have encountered this plot type for this model, add in any new stats
+                    statisticOptionsMap[thisDB][model][thisPlotType] = {
+                      ...statisticOptionsMap[thisDB][model][thisPlotType],
+                      ...validStats,
+                    };
                   }
+                  const theseValidStats = Object.keys(validStats);
+                  let thisValidStatType;
+                  for (let vsidx = 0; vsidx < theseValidStats.length; vsidx += 1) {
+                    [thisValidStatType] = validStats[theseValidStats[vsidx]];
+                    if (
+                      stormsOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ] === undefined
+                    ) {
+                      // if we haven't encountered this statType for this plotType yet, initialize everything
+                      basinOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        [];
+                      yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                      stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                      variableOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ] = {};
+                      forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ] = {};
+                      levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                      thresholdOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ] = {};
+                      sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                      descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                      dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] =
+                        {};
+                    }
 
-                  const { basins } = thisLineDataTable;
-                  if (basins) {
-                    for (let bidx = 0; bidx < basins.length; bidx += 1) {
-                      const thisBasin = basins[bidx];
-                      const { basin } = thisBasin;
-                      if (
-                        stormsOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] === undefined
-                      ) {
-                        // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-                        basinOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ].push(basin);
-                        yearOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                          basin
-                        ] = [];
-                        stormsOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = {};
-                        variableOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = ["NA"]; // dummy for when we support RI stats in this app
-                        forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = {};
-                        levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                          basin
-                        ] = {};
-                        thresholdOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = ["NA"]; // dummy for when we support RI stats in this app
-                        sourceOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = {};
-                        descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
-                          basin
-                        ] = {};
-                        dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType][
-                          basin
-                        ] = {};
-                      } else {
-                        // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                        variableOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = _.union(
-                          variableOptionsMap[thisDB][model][thisPlotType][
-                            thisValidStatType
-                          ][basin],
-                          ["NA"]
-                        ); // dummy for when we support RI stats in this app
-                        thresholdOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin] = _.union(
-                          thresholdOptionsMap[thisDB][model][thisPlotType][
-                            thisValidStatType
-                          ][basin],
-                          ["NA"]
-                        ); // dummy for when we support RI stats in this app
-                      }
-
-                      const { years } = thisBasin;
-                      if (years) {
-                        for (let yidx = 0; yidx < years.length; yidx += 1) {
-                          const thisYear = years[yidx];
-                          const { year } = thisYear;
-
-                          const stormsArr =
-                            thisYear.mdcounts.storms !== undefined &&
-                            thisYear.mdcounts.storms !== null
-                              ? JSON.parse(
-                                  JSON.stringify(thisYear.mdcounts.storms)
-                                ).sort() // use JSON to force a deep copy
-                              : ["NA"];
-                          let forecastLengthArr =
-                            thisYear.mdcounts.fcst_lens !== undefined &&
-                            thisYear.mdcounts.fcst_lens !== null
-                              ? JSON.parse(JSON.stringify(thisYear.mdcounts.fcst_lens)) // use JSON to force a deep copy
-                              : ["NA"];
-                          const levelsArrRaw =
-                            thisYear.mdcounts.levels !== undefined &&
-                            thisYear.mdcounts.levels !== null
-                              ? JSON.parse(JSON.stringify(thisYear.mdcounts.levels)) // use JSON to force a deep copy
-                              : ["NA"];
-                          const sourceArr =
-                            thisYear.mdcounts.truths !== undefined &&
-                            thisYear.mdcounts.truths !== null
-                              ? JSON.parse(
-                                  JSON.stringify(thisYear.mdcounts.truths)
-                                ).sort() // use JSON to force a deep copy
-                              : ["NA"];
-                          const descrArr =
-                            thisYear.mdcounts.descriptions !== undefined &&
-                            thisYear.mdcounts.descriptions !== null
-                              ? JSON.parse(
-                                  JSON.stringify(thisYear.mdcounts.descriptions)
-                                ).sort() // use JSON to force a deep copy
-                              : ["NA"];
-                          const rowMinDate = moment
-                            .utc(thisYear.mdcounts.mindate * 1000)
-                            .format("MM/DD/YYYY HH:mm");
-                          const rowMaxDate = moment
-                            .utc(thisYear.mdcounts.maxdate * 1000)
-                            .format("MM/DD/YYYY HH:mm");
-
-                          stormsArr.unshift("All storms");
-
-                          for (let j = 0; j < forecastLengthArr.length; j += 1) {
-                            forecastLengthArr[j] = forecastLengthArr[j].replace(
-                              /0000/g,
-                              ""
-                            );
-                          }
-                          forecastLengthArr = forecastLengthArr.sort(function (a, b) {
-                            return Number(a) - Number(b);
-                          });
-
-                          let levelsArr = [];
-                          let dummyLevel;
-                          let dummyObj;
-                          for (let j = 0; j < levelsArrRaw.length; j += 1) {
-                            // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
-                            dummyLevel = levelsArrRaw[j].replace(/=/g, "");
-                            if (Object.keys(bestTrackDefs).indexOf(dummyLevel) !== -1) {
-                              dummyObj = bestTrackDefs[dummyLevel];
-                            } else {
-                              dummyObj = {
-                                name: dummyLevel,
-                                order: 10 + j,
-                              };
-                            }
-                            levelsArr.push(dummyObj);
-                          }
-                          levelsArr = levelsArr.sort((a, b) =>
-                            a.order > b.order ? 1 : -1
-                          );
-                          levelsArr = levelsArr.map((a) => a.name);
-
-                          for (let j = 0; j < sourceArr.length; j += 1) {
-                            if (
-                              Object.keys(modelAcronymDecoder).includes(sourceArr[j])
-                            ) {
-                              sourceArr[j] = modelAcronymDecoder[sourceArr[j]];
-                            } else {
-                              modelAcronymDecoder[sourceArr[j]] = sourceArr[j];
-                            }
-                          }
-
-                          if (
-                            stormsOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] === undefined
-                          ) {
-                            // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
-                            yearOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin].push(year);
-                            stormsOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = stormsArr;
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = forecastLengthArr;
-                            levelOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = levelsArr;
-                            sourceOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = sourceArr;
-                            descrOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = descrArr;
-                            dbDateRangeMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = {
-                              minDate: rowMinDate,
-                              maxDate: rowMaxDate,
-                            };
-                          } else {
-                            // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
-                            stormsOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = _.union(
-                              stormsOptionsMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year],
-                              stormsArr
-                            );
-                            forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = _.union(
-                              forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year],
-                              forecastLengthArr
-                            );
-                            levelOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = _.union(
-                              levelOptionsMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year],
-                              levelsArr
-                            );
-                            sourceOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = _.union(
-                              sourceOptionsMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year],
-                              sourceArr
-                            );
-                            descrOptionsMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year] = _.union(
-                              descrOptionsMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year],
-                              descrArr
-                            );
-                            dbDateRangeMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year][minDate] =
-                              dbDateRangeMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year][minDate] < rowMinDate
-                                ? dbDateRangeMap[thisDB][model][thisPlotType][
-                                    thisValidStatType
-                                  ][basin][year][minDate]
-                                : rowMinDate;
-                            dbDateRangeMap[thisDB][model][thisPlotType][
-                              thisValidStatType
-                            ][basin][year][maxDate] =
-                              dbDateRangeMap[thisDB][model][thisPlotType][
-                                thisValidStatType
-                              ][basin][year][maxDate] > rowMaxDate
-                                ? dbDateRangeMap[thisDB][model][thisPlotType][
-                                    thisValidStatType
-                                  ][basin][year][maxDate]
-                                : rowMaxDate;
-                          }
-                          yearOptionsMap[thisDB][model][thisPlotType][
-                            thisValidStatType
-                          ][basin] = yearOptionsMap[thisDB][model][thisPlotType][
-                            thisValidStatType
-                          ][basin].sort(function (a, b) {
-                            return Number(a) - Number(b);
-                          });
-                        }
-                      }
-                      if (
-                        Object.keys(
+                    const { basins } = thisLineDataTable;
+                    if (basins) {
+                      for (let bidx = 0; bidx < basins.length; bidx += 1) {
+                        const thisBasin = basins[bidx];
+                        const { basin } = thisBasin;
+                        if (
                           stormsOptionsMap[thisDB][model][thisPlotType][
                             thisValidStatType
-                          ][basin]
-                        ).length === 0
-                      ) {
-                        delete yearOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete stormsOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete variableOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete levelOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete thresholdOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete sourceOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete descrOptionsMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
-                        delete dbDateRangeMap[thisDB][model][thisPlotType][
-                          thisValidStatType
-                        ][basin];
+                          ][basin] === undefined
+                        ) {
+                          // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                          basinOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ].push(basin);
+                          yearOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = [];
+                          stormsOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                          variableOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = ["NA"]; // dummy for when we support RI stats in this app
+                          forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                          levelOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                          thresholdOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = ["NA"]; // dummy for when we support RI stats in this app
+                          sourceOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                          descrOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                          dbDateRangeMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = {};
+                        } else {
+                          // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                          variableOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = _.union(
+                            variableOptionsMap[thisDB][model][thisPlotType][
+                              thisValidStatType
+                            ][basin],
+                            ["NA"]
+                          ); // dummy for when we support RI stats in this app
+                          thresholdOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin] = _.union(
+                            thresholdOptionsMap[thisDB][model][thisPlotType][
+                              thisValidStatType
+                            ][basin],
+                            ["NA"]
+                          ); // dummy for when we support RI stats in this app
+                        }
+
+                        const { years } = thisBasin;
+                        if (years) {
+                          for (let yidx = 0; yidx < years.length; yidx += 1) {
+                            const thisYear = years[yidx];
+                            const { year } = thisYear;
+
+                            const stormsArr =
+                              thisYear.mdcounts.storms !== undefined &&
+                              thisYear.mdcounts.storms !== null
+                                ? JSON.parse(
+                                    JSON.stringify(thisYear.mdcounts.storms)
+                                  ).sort() // use JSON to force a deep copy
+                                : ["NA"];
+                            let forecastLengthArr =
+                              thisYear.mdcounts.fcst_lens !== undefined &&
+                              thisYear.mdcounts.fcst_lens !== null
+                                ? JSON.parse(
+                                    JSON.stringify(thisYear.mdcounts.fcst_lens)
+                                  ) // use JSON to force a deep copy
+                                : ["NA"];
+                            const levelsArrRaw =
+                              thisYear.mdcounts.levels !== undefined &&
+                              thisYear.mdcounts.levels !== null
+                                ? JSON.parse(JSON.stringify(thisYear.mdcounts.levels)) // use JSON to force a deep copy
+                                : ["NA"];
+                            const sourceArr =
+                              thisYear.mdcounts.truths !== undefined &&
+                              thisYear.mdcounts.truths !== null
+                                ? JSON.parse(
+                                    JSON.stringify(thisYear.mdcounts.truths)
+                                  ).sort() // use JSON to force a deep copy
+                                : ["NA"];
+                            const descrArr =
+                              thisYear.mdcounts.descriptions !== undefined &&
+                              thisYear.mdcounts.descriptions !== null
+                                ? JSON.parse(
+                                    JSON.stringify(thisYear.mdcounts.descriptions)
+                                  ).sort() // use JSON to force a deep copy
+                                : ["NA"];
+                            const rowMinDate = moment
+                              .utc(thisYear.mdcounts.mindate * 1000)
+                              .format("MM/DD/YYYY HH:mm");
+                            const rowMaxDate = moment
+                              .utc(thisYear.mdcounts.maxdate * 1000)
+                              .format("MM/DD/YYYY HH:mm");
+
+                            stormsArr.unshift("All storms");
+
+                            for (let j = 0; j < forecastLengthArr.length; j += 1) {
+                              forecastLengthArr[j] = forecastLengthArr[j].replace(
+                                /0000/g,
+                                ""
+                              );
+                            }
+                            forecastLengthArr = forecastLengthArr.sort(function (a, b) {
+                              return Number(a) - Number(b);
+                            });
+
+                            let levelsArr = [];
+                            let dummyLevel;
+                            let dummyObj;
+                            for (let j = 0; j < levelsArrRaw.length; j += 1) {
+                              // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
+                              dummyLevel = levelsArrRaw[j].replace(/=/g, "");
+                              if (
+                                Object.keys(bestTrackDefs).indexOf(dummyLevel) !== -1
+                              ) {
+                                dummyObj = bestTrackDefs[dummyLevel];
+                              } else {
+                                dummyObj = {
+                                  name: dummyLevel,
+                                  order: 10 + j,
+                                };
+                              }
+                              levelsArr.push(dummyObj);
+                            }
+                            levelsArr = levelsArr.sort((a, b) =>
+                              a.order > b.order ? 1 : -1
+                            );
+                            levelsArr = levelsArr.map((a) => a.name);
+
+                            for (let j = 0; j < sourceArr.length; j += 1) {
+                              if (
+                                Object.keys(modelAcronymDecoder).includes(sourceArr[j])
+                              ) {
+                                sourceArr[j] = modelAcronymDecoder[sourceArr[j]];
+                              } else {
+                                modelAcronymDecoder[sourceArr[j]] = sourceArr[j];
+                              }
+                            }
+
+                            if (
+                              stormsOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] === undefined
+                            ) {
+                              // if we haven't encountered this basin for this plot type yet, just store the basin-dependent arrays
+                              yearOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin].push(year);
+                              stormsOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = stormsArr;
+                              forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = forecastLengthArr;
+                              levelOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = levelsArr;
+                              sourceOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = sourceArr;
+                              descrOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = descrArr;
+                              dbDateRangeMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = {
+                                minDate: rowMinDate,
+                                maxDate: rowMaxDate,
+                              };
+                            } else {
+                              // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+                              stormsOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = _.union(
+                                stormsOptionsMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year],
+                                stormsArr
+                              );
+                              forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = _.union(
+                                forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year],
+                                forecastLengthArr
+                              );
+                              levelOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = _.union(
+                                levelOptionsMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year],
+                                levelsArr
+                              );
+                              sourceOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = _.union(
+                                sourceOptionsMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year],
+                                sourceArr
+                              );
+                              descrOptionsMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year] = _.union(
+                                descrOptionsMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year],
+                                descrArr
+                              );
+                              dbDateRangeMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year][minDate] =
+                                dbDateRangeMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year][minDate] < rowMinDate
+                                  ? dbDateRangeMap[thisDB][model][thisPlotType][
+                                      thisValidStatType
+                                    ][basin][year][minDate]
+                                  : rowMinDate;
+                              dbDateRangeMap[thisDB][model][thisPlotType][
+                                thisValidStatType
+                              ][basin][year][maxDate] =
+                                dbDateRangeMap[thisDB][model][thisPlotType][
+                                  thisValidStatType
+                                ][basin][year][maxDate] > rowMaxDate
+                                  ? dbDateRangeMap[thisDB][model][thisPlotType][
+                                      thisValidStatType
+                                    ][basin][year][maxDate]
+                                  : rowMaxDate;
+                            }
+                            yearOptionsMap[thisDB][model][thisPlotType][
+                              thisValidStatType
+                            ][basin] = yearOptionsMap[thisDB][model][thisPlotType][
+                              thisValidStatType
+                            ][basin].sort(function (a, b) {
+                              return Number(a) - Number(b);
+                            });
+                          }
+                        }
+                        if (
+                          Object.keys(
+                            stormsOptionsMap[thisDB][model][thisPlotType][
+                              thisValidStatType
+                            ][basin]
+                          ).length === 0
+                        ) {
+                          delete yearOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete stormsOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete variableOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete levelOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete thresholdOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete sourceOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete descrOptionsMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                          delete dbDateRangeMap[thisDB][model][thisPlotType][
+                            thisValidStatType
+                          ][basin];
+                        }
                       }
+                    }
+                    if (
+                      Object.keys(
+                        stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType]
+                      ).length === 0
+                    ) {
+                      delete basinOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete yearOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete stormsOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete variableOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete forecastLengthOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete levelOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete thresholdOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete sourceOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete descrOptionsMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
+                      delete dbDateRangeMap[thisDB][model][thisPlotType][
+                        thisValidStatType
+                      ];
                     }
                   }
                   if (
-                    Object.keys(
-                      stormsOptionsMap[thisDB][model][thisPlotType][thisValidStatType]
-                    ).length === 0
+                    Object.keys(stormsOptionsMap[thisDB][model][thisPlotType])
+                      .length === 0
                   ) {
-                    delete basinOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete yearOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete stormsOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete variableOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete forecastLengthOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete levelOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete thresholdOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete sourceOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete descrOptionsMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
-                    delete dbDateRangeMap[thisDB][model][thisPlotType][
-                      thisValidStatType
-                    ];
+                    delete statisticOptionsMap[thisDB][model][thisPlotType];
+                    delete basinOptionsMap[thisDB][model][thisPlotType];
+                    delete yearOptionsMap[thisDB][model][thisPlotType];
+                    delete stormsOptionsMap[thisDB][model][thisPlotType];
+                    delete variableOptionsMap[thisDB][model][thisPlotType];
+                    delete forecastLengthOptionsMap[thisDB][model][thisPlotType];
+                    delete levelOptionsMap[thisDB][model][thisPlotType];
+                    delete thresholdOptionsMap[thisDB][model][thisPlotType];
+                    delete sourceOptionsMap[thisDB][model][thisPlotType];
+                    delete descrOptionsMap[thisDB][model][thisPlotType];
+                    delete dbDateRangeMap[thisDB][model][thisPlotType];
                   }
-                }
-                if (
-                  Object.keys(stormsOptionsMap[thisDB][model][thisPlotType]).length ===
-                  0
-                ) {
-                  delete statisticOptionsMap[thisDB][model][thisPlotType];
-                  delete basinOptionsMap[thisDB][model][thisPlotType];
-                  delete yearOptionsMap[thisDB][model][thisPlotType];
-                  delete stormsOptionsMap[thisDB][model][thisPlotType];
-                  delete variableOptionsMap[thisDB][model][thisPlotType];
-                  delete forecastLengthOptionsMap[thisDB][model][thisPlotType];
-                  delete levelOptionsMap[thisDB][model][thisPlotType];
-                  delete thresholdOptionsMap[thisDB][model][thisPlotType];
-                  delete sourceOptionsMap[thisDB][model][thisPlotType];
-                  delete descrOptionsMap[thisDB][model][thisPlotType];
-                  delete dbDateRangeMap[thisDB][model][thisPlotType];
                 }
               }
             }
           }
-        }
-        if (Object.keys(stormsOptionsMap[thisDB][model]).length === 0) {
-          delete modelOptionsMap[thisDB][model];
-          delete statisticOptionsMap[thisDB][model];
-          delete basinOptionsMap[thisDB][model];
-          delete yearOptionsMap[thisDB][model];
-          delete stormsOptionsMap[thisDB][model];
-          delete variableOptionsMap[thisDB][model];
-          delete forecastLengthOptionsMap[thisDB][model];
-          delete levelOptionsMap[thisDB][model];
-          delete thresholdOptionsMap[thisDB][model];
-          delete sourceOptionsMap[thisDB][model];
-          delete descrOptionsMap[thisDB][model];
-          delete dbDateRangeMap[thisDB][model];
+          if (Object.keys(stormsOptionsMap[thisDB][model]).length === 0) {
+            delete modelOptionsMap[thisDB][model];
+            delete statisticOptionsMap[thisDB][model];
+            delete basinOptionsMap[thisDB][model];
+            delete yearOptionsMap[thisDB][model];
+            delete stormsOptionsMap[thisDB][model];
+            delete variableOptionsMap[thisDB][model];
+            delete forecastLengthOptionsMap[thisDB][model];
+            delete levelOptionsMap[thisDB][model];
+            delete thresholdOptionsMap[thisDB][model];
+            delete sourceOptionsMap[thisDB][model];
+            delete descrOptionsMap[thisDB][model];
+            delete dbDateRangeMap[thisDB][model];
+          }
         }
       }
+      if (Object.keys(stormsOptionsMap[thisDB]).length === 0) {
+        myDBs.pop();
+        delete modelOptionsMap[thisDB];
+        delete statisticOptionsMap[thisDB];
+        delete basinOptionsMap[thisDB];
+        delete yearOptionsMap[thisDB];
+        delete stormsOptionsMap[thisDB];
+        delete variableOptionsMap[thisDB];
+        delete forecastLengthOptionsMap[thisDB];
+        delete levelOptionsMap[thisDB];
+        delete thresholdOptionsMap[thisDB];
+        delete sourceOptionsMap[thisDB];
+        delete descrOptionsMap[thisDB];
+        delete dbDateRangeMap[thisDB];
+      }
     }
-    if (Object.keys(stormsOptionsMap[thisDB]).length === 0) {
-      myDBs.pop();
-      delete modelOptionsMap[thisDB];
-      delete statisticOptionsMap[thisDB];
-      delete basinOptionsMap[thisDB];
-      delete yearOptionsMap[thisDB];
-      delete stormsOptionsMap[thisDB];
-      delete variableOptionsMap[thisDB];
-      delete forecastLengthOptionsMap[thisDB];
-      delete levelOptionsMap[thisDB];
-      delete thresholdOptionsMap[thisDB];
-      delete sourceOptionsMap[thisDB];
-      delete descrOptionsMap[thisDB];
-      delete dbDateRangeMap[thisDB];
-    }
+  } catch (err) {
+    throw new Error(err.message);
   }
-  // } catch (err) {
-  //   throw new Error(err.message);
-  // }
 
   if ((await matsCollections.label.findOneAsync({ name: "label" })) === undefined) {
     await matsCollections.label.insertAsync({
@@ -971,6 +970,7 @@ const doCurveParams = async function () {
       name: "database",
       type: matsTypes.InputTypes.select,
       options: myDBs,
+      valuesMap: validVersions,
       dates: dbDateRangeMap,
       dependentNames: ["data-source"],
       controlButtonCovered: true,
@@ -1139,9 +1139,6 @@ const doCurveParams = async function () {
       hideOtherFor: {
         variable: Object.keys(masterStatsOptionsMap.TCMPR),
         threshold: Object.keys(masterStatsOptionsMap.TCMPR),
-        year: Object.keys(masterStatsOptionsMap.CTC),
-        storm: Object.keys(masterStatsOptionsMap.CTC),
-        level: Object.keys(masterStatsOptionsMap.CTC),
       },
       controlButtonCovered: true,
       unique: false,
