@@ -13,8 +13,9 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-// eslint-disable-next-line no-undef
-dataThreshold = function (plotParams, plotFunction) {
+/* eslint-disable no-await-in-loop */
+
+global.dataThreshold = async function (plotParams) {
   // initialize variables common to all curves
   const appParams = {
     plotType: matsTypes.PlotTypes.threshold,
@@ -24,42 +25,49 @@ dataThreshold = function (plotParams, plotFunction) {
     hideGaps: plotParams.noGapsCheck,
     hasLevels: true,
   };
+
+  const totalProcessingStart = moment();
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
-  let statement;
   let dReturn;
   let dataFoundForCurve = true;
   let dataFoundForAnyCurve = false;
-  const totalProcessingStart = moment();
-  let error = "";
+
   const curves = JSON.parse(JSON.stringify(plotParams.curves));
   const curvesLength = curves.length;
-  const allStatTypes = [];
-  const dataset = [];
-  const utcCycleStarts = [];
+
   const axisMap = Object.create(null);
   let xmax = -1 * Number.MAX_VALUE;
   let ymax = -1 * Number.MAX_VALUE;
   let xmin = Number.MAX_VALUE;
   let ymin = Number.MAX_VALUE;
+
+  const allStatTypes = [];
+  const utcCycleStarts = [];
   const idealValues = [];
+
+  let statement = "";
+  let error = "";
+  const dataset = [];
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
-    const { diffFrom } = curve;
     const { label } = curve;
+    const { diffFrom } = curve;
+
     const database = curve.database.replace(/___/g, ".");
     const modelDisplay = curve["data-source"].replace(/___/g, ".");
-    const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][modelDisplay][0];
+    const model = (
+      await matsCollections["data-source"].findOneAsync({ name: "data-source" })
+    ).optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
+
     const selectorPlotType = curve["plot-type"];
     const { statistic } = curve;
-    const statisticOptionsMap = matsCollections.statistic.findOne(
-      { name: "statistic" },
-      { optionsMap: 1 }
+    const statisticOptionsMap = (
+      await matsCollections.statistic.findOneAsync({ name: "statistic" })
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
     const statLineType = statisticOptionsMap[statistic][0];
     let matchFlag = "";
@@ -103,16 +111,18 @@ dataThreshold = function (plotParams, plotFunction) {
     } else if (simpleFlag === "Cluster objects") {
       simpleFlagClause = "and ld.simple_flag = 0";
     }
+
     const { scale } = curve;
     const scaleClause = `and h.grid_res = '${scale}'`;
     const { radius } = curve;
     const radiusClause = `and h.fcst_rad = '${radius}'`;
+
     const { variable } = curve;
-    const variableValuesMap = matsCollections.variable.findOne(
-      { name: "variable" },
-      { valuesMap: 1 }
+    const variableValuesMap = (
+      await matsCollections.variable.findOneAsync({ name: "variable" })
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+
     const thresholdClause = "and h.fcst_thr != 'NA'";
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
@@ -147,10 +157,12 @@ dataThreshold = function (plotParams, plotFunction) {
         .join(",");
       forecastLengthsClause = `and h.fcst_lead IN(${fcsts})`;
     }
+
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
     const dateClause = `and unix_timestamp(h.fcst_valid) >= ${fromSecs} and unix_timestamp(h.fcst_valid) <= ${toSecs}`;
+
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
@@ -167,10 +179,9 @@ dataThreshold = function (plotParams, plotFunction) {
       levelsClause = `and h.fcst_lev IN(${levels})`;
     } else {
       // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-      levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
-        .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-        variable
-      ];
+      levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+        database
+      ][curve["data-source"]][selectorPlotType][statLineType][variable];
       levels = levels
         .map(function (l) {
           return `'${l}'`;
@@ -178,6 +189,7 @@ dataThreshold = function (plotParams, plotFunction) {
         .join(",");
       levelsClause = `and h.fcst_lev IN(${levels})`;
     }
+
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -271,7 +283,7 @@ dataThreshold = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
+    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -327,6 +339,7 @@ dataThreshold = function (plotParams, plotFunction) {
         ymax = ymax > d.ymax ? ymax : d.ymax;
       }
     } else {
+      // this is a difference curve
       const diffResult = matsDataDiffUtils.getDataForDiffCurve(
         differenceArray[curveIndex - dReturn.length].dataset,
         differenceArray[curveIndex - dReturn.length].diffFrom,
@@ -352,7 +365,7 @@ dataThreshold = function (plotParams, plotFunction) {
     curve.xmax = d.xmax;
     curve.ymin = d.ymin;
     curve.ymax = d.ymax;
-    const cOptions = matsDataCurveOpsUtils.generateSeriesCurveOptions(
+    const cOptions = await matsDataCurveOpsUtils.generateSeriesCurveOptions(
       curve,
       curveIndex,
       axisMap,
@@ -377,7 +390,7 @@ dataThreshold = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataXYCurve(
+  const result = await matsDataProcessUtils.processDataXYCurve(
     dataset,
     appParams,
     curveInfoParams,
@@ -392,5 +405,5 @@ dataThreshold = function (plotParams, plotFunction) {
       .duration(postQueryFinishMoment.diff(postQueryStartMoment))
       .asSeconds()} seconds`,
   };
-  plotFunction(result);
+  return result;
 };

@@ -12,8 +12,9 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-// eslint-disable-next-line no-undef
-dataContour = function (plotParams, plotFunction) {
+/* eslint-disable no-await-in-loop */
+
+global.dataContour = async function (plotParams) {
   // initialize variables common to all curves
   const appParams = {
     plotType: matsTypes.PlotTypes.contour,
@@ -23,40 +24,53 @@ dataContour = function (plotParams, plotFunction) {
     hideGaps: plotParams.noGapsCheck,
     hasLevels: true,
   };
+
+  const totalProcessingStart = moment();
   const dataRequests = {}; // used to store data queries
   let dataFoundForCurve = true;
-  const totalProcessingStart = moment();
-  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
-  const fromSecs = dateRange.fromSeconds;
-  const toSecs = dateRange.toSeconds;
-  const xAxisParam = plotParams["x-axis-parameter"];
-  const yAxisParam = plotParams["y-axis-parameter"];
-  const xValClause = matsCollections.PlotParams.findOne({ name: "x-axis-parameter" })
-    .optionsMap[xAxisParam];
-  const yValClause = matsCollections.PlotParams.findOne({ name: "y-axis-parameter" })
-    .optionsMap[yAxisParam];
-  let error = "";
+
   const curves = JSON.parse(JSON.stringify(plotParams.curves));
   if (curves.length > 1) {
     throw new Error("INFO:  There must only be one added curve.");
   }
-  const allStatTypes = [];
-  const dataset = [];
-  const axisMap = Object.create(null);
 
-  // initialize variables specific to the curve
+  const axisMap = Object.create(null);
+  const allStatTypes = [];
+
+  let error = "";
+  const dataset = [];
+
+  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
+  const fromSecs = dateRange.fromSeconds;
+  const toSecs = dateRange.toSeconds;
+
+  const xAxisParam = plotParams["x-axis-parameter"];
+  const yAxisParam = plotParams["y-axis-parameter"];
+  const xValClause = (
+    await matsCollections.PlotParams.findOneAsync({
+      name: "x-axis-parameter",
+    })
+  ).optionsMap[xAxisParam];
+  const yValClause = (
+    await matsCollections.PlotParams.findOneAsync({
+      name: "y-axis-parameter",
+    })
+  ).optionsMap[yAxisParam];
+
+  // initialize variables specific to this curve
   const curve = curves[0];
   const { label } = curve;
   const database = curve.database.replace(/___/g, ".");
   const modelDisplay = curve["data-source"].replace(/___/g, ".");
-  const model = matsCollections["data-source"].findOne({ name: "data-source" })
-    .optionsMap[database][modelDisplay][0];
+  const model = (
+    await matsCollections["data-source"].findOneAsync({ name: "data-source" })
+  ).optionsMap[database][modelDisplay][0];
   const modelClause = `and h.model = '${model}'`;
+
   const selectorPlotType = curve["plot-type"];
   const { statistic } = curve;
-  const statisticOptionsMap = matsCollections.statistic.findOne(
-    { name: "statistic" },
-    { optionsMap: 1 }
+  const statisticOptionsMap = (
+    await matsCollections.statistic.findOneAsync({ name: "statistic" })
   ).optionsMap[database][curve["data-source"]][selectorPlotType];
   const statLineType = statisticOptionsMap[statistic][0];
   let statisticClause = "";
@@ -81,7 +95,9 @@ dataContour = function (plotParams, plotFunction) {
       "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
     lineDataType = "line_data_val1l2";
   }
+
   const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
+
   let regions =
     curve.region === undefined || curve.region === matsTypes.InputTypes.unused
       ? []
@@ -89,31 +105,32 @@ dataContour = function (plotParams, plotFunction) {
   regions = Array.isArray(regions) ? regions : [regions];
   let regionsClause = "";
   if (regions.length > 0) {
+    const regionValues = (await matsCollections.region.findOneAsync({ name: "region" }))
+      .valuesMap;
     regions = regions
       .map(function (r) {
-        return `'${Object.keys(
-          matsCollections.region.findOne({ name: "region" }).valuesMap
-        ).find(
-          (key) =>
-            matsCollections.region.findOne({ name: "region" }).valuesMap[key] ===
-            r.replace(/___/g, ".")
+        return `'${Object.keys(regionValues).find(
+          (key) => regionValues[key] === r.replace(/___/g, ".")
         )}'`;
       })
       .join(",");
     regionsClause = `and h.vx_mask IN(${regions})`;
   }
+
   const { scale } = curve;
   const scaleClause = `and h.interp_pnts = '${scale}'`;
   const im = curve["interp-method"];
   const imClause = `and h.interp_mthd = '${im}'`;
+
   const { variable } = curve;
-  const variableValuesMap = matsCollections.variable.findOne(
-    { name: "variable" },
-    { valuesMap: 1 }
+  const variableValuesMap = (
+    await matsCollections.variable.findOneAsync({ name: "variable" })
   ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
   const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+
   const { truth } = curve;
   const truthClause = `and h.obtype = '${truth}'`;
+
   let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
   let validTimeClause = "";
   if (xAxisParam !== "Valid UTC hour" && yAxisParam !== "Valid UTC hour") {
@@ -131,6 +148,7 @@ dataContour = function (plotParams, plotFunction) {
       validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
     }
   }
+
   // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
   // have been sanitized for display purposes in the forecastValueMap.
   // now we have to go get the damn ole unsanitary ones for the database.
@@ -151,6 +169,7 @@ dataContour = function (plotParams, plotFunction) {
       forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
     }
   }
+
   let dateString = "";
   let dateClause = "";
   if (
@@ -163,6 +182,7 @@ dataContour = function (plotParams, plotFunction) {
     dateString = "unix_timestamp(ld.fcst_valid_beg)";
   }
   dateClause = `and ${dateString} >= ${fromSecs} and ${dateString} <= ${toSecs}`;
+
   let levelsClause = "";
   let levels =
     curve.level === undefined || curve.level === matsTypes.InputTypes.unused
@@ -183,10 +203,9 @@ dataContour = function (plotParams, plotFunction) {
     levelsClause = `and h.fcst_lev IN(${levels})`;
   } else {
     // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-    levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
-      .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-      variable
-    ];
+    levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+      database
+    ][curve["data-source"]][selectorPlotType][statLineType][variable];
     if (xAxisParam === "Pressure level" || yAxisParam === "Pressure level") {
       levels = levels.filter((lev) => lev.toString().startsWith("P")); // remove anything that isn't a pressure level for this plot.
     }
@@ -197,6 +216,7 @@ dataContour = function (plotParams, plotFunction) {
       .join(",");
     levelsClause = `and h.fcst_lev IN(${levels})`;
   }
+
   let descrs =
     curve.description === undefined || curve.description === matsTypes.InputTypes.unused
       ? []
@@ -211,6 +231,7 @@ dataContour = function (plotParams, plotFunction) {
       .join(",");
     descrsClause = `and h.descr IN(${descrs})`;
   }
+
   appParams.aggMethod = curve["aggregation-method"];
   const statType = `met-${statLineType}`;
   allStatTypes.push(statType);
@@ -278,7 +299,7 @@ dataContour = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statement to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
+    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -331,7 +352,7 @@ dataContour = function (plotParams, plotFunction) {
   curve.zmax = d.zmax;
   curve.xAxisKey = xAxisParam;
   curve.yAxisKey = yAxisParam;
-  const cOptions = matsDataCurveOpsUtils.generateContourCurveOptions(
+  const cOptions = await matsDataCurveOpsUtils.generateContourCurveOptions(
     curve,
     axisMap,
     d,
@@ -359,5 +380,5 @@ dataContour = function (plotParams, plotFunction) {
     plotParams,
     bookkeepingParams
   );
-  plotFunction(result);
+  return result;
 };

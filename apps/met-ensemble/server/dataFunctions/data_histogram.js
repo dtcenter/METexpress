@@ -11,8 +11,9 @@ import {
 } from "meteor/randyp:mats-common";
 import { moment } from "meteor/momentjs:moment";
 
-// eslint-disable-next-line no-undef
-dataHistogram = function (plotParams, plotFunction) {
+/* eslint-disable no-await-in-loop */
+
+global.dataHistogram = async function (plotParams) {
   // initialize variables common to all curves
   const appParams = {
     plotType: matsTypes.PlotTypes.histogram,
@@ -22,20 +23,25 @@ dataHistogram = function (plotParams, plotFunction) {
     hideGaps: plotParams.noGapsCheck,
     hasLevels: true,
   };
+
+  const totalProcessingStart = moment();
   const alreadyMatched = false;
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
   const differenceArray = [];
-  let statement;
   let dReturn;
   let dataFoundForCurve = [];
   let dataFoundForAnyCurve = false;
-  const totalProcessingStart = moment();
-  let error = "";
+
   const curves = JSON.parse(JSON.stringify(plotParams.curves));
   const curvesLength = curves.length;
+
   const allStatTypes = [];
+
+  let statement = "";
+  let error = "";
   const dataset = [];
+
   const allReturnedSubStats = [];
   const allReturnedSubSecs = [];
   const allReturnedSubLevs = [];
@@ -49,19 +55,21 @@ dataHistogram = function (plotParams, plotFunction) {
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
+    const { label } = curve;
     const { diffFrom } = curve;
     dataFoundForCurve[curveIndex] = true;
-    const { label } = curve;
+
     const database = curve.database.replace(/___/g, ".");
     const modelDisplay = curve["data-source"].replace(/___/g, ".");
-    const model = matsCollections["data-source"].findOne({ name: "data-source" })
-      .optionsMap[database][modelDisplay][0];
+    const model = (
+      await matsCollections["data-source"].findOneAsync({ name: "data-source" })
+    ).optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
+
     const selectorPlotType = curve["plot-type"];
     const { statistic } = curve;
-    const statisticOptionsMap = matsCollections.statistic.findOne(
-      { name: "statistic" },
-      { optionsMap: 1 }
+    const statisticOptionsMap = (
+      await matsCollections.statistic.findOneAsync({ name: "statistic" })
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
     const statLineType = statisticOptionsMap[statistic][0];
     let statisticClause = "";
@@ -77,6 +85,7 @@ dataHistogram = function (plotParams, plotFunction) {
       [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;
+
     let regions =
       curve.region === undefined || curve.region === matsTypes.InputTypes.unused
         ? []
@@ -91,12 +100,13 @@ dataHistogram = function (plotParams, plotFunction) {
         .join(",");
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
+
     const { variable } = curve;
-    const variableValuesMap = matsCollections.variable.findOne(
-      { name: "variable" },
-      { valuesMap: 1 }
+    const variableValuesMap = (
+      await matsCollections.variable.findOneAsync({ name: "variable" })
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (
@@ -112,6 +122,7 @@ dataHistogram = function (plotParams, plotFunction) {
         .join(",");
       validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
     }
+
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.
     // now we have to go get the damn ole unsanitary ones for the database.
@@ -122,6 +133,7 @@ dataHistogram = function (plotParams, plotFunction) {
         ? []
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
+
     if (fcsts.length > 0) {
       fcsts = fcsts
         .map(function (fl) {
@@ -130,10 +142,12 @@ dataHistogram = function (plotParams, plotFunction) {
         .join(",");
       forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
     }
+
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
     const dateClause = `and unix_timestamp(ld.fcst_valid_beg) >= ${fromSecs} and unix_timestamp(ld.fcst_valid_beg) <= ${toSecs}`;
+
     let levels =
       curve.level === undefined || curve.level === matsTypes.InputTypes.unused
         ? []
@@ -150,10 +164,9 @@ dataHistogram = function (plotParams, plotFunction) {
       levelsClause = `and h.fcst_lev IN(${levels})`;
     } else {
       // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
-      levels = matsCollections.level.findOne({ name: "level" }, { optionsMap: 1 })
-        .optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
-        variable
-      ];
+      levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+        database
+      ][curve["data-source"]][selectorPlotType][statLineType][variable];
       levels = levels
         .map(function (l) {
           return `'${l}'`;
@@ -161,6 +174,7 @@ dataHistogram = function (plotParams, plotFunction) {
         .join(",");
       levelsClause = `and h.fcst_lev IN(${levels})`;
     }
+
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -250,7 +264,7 @@ dataHistogram = function (plotParams, plotFunction) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = matsDataQueryUtils.queryDBPython(sumPool, queryArray); // eslint-disable-line no-undef
+    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -317,7 +331,7 @@ dataHistogram = function (plotParams, plotFunction) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = matsDataProcessUtils.processDataHistogram(
+  const result = await matsDataProcessUtils.processDataHistogram(
     allReturnedSubStats,
     allReturnedSubSecs,
     allReturnedSubLevs,
@@ -336,5 +350,5 @@ dataHistogram = function (plotParams, plotFunction) {
       .duration(postQueryFinishMoment.diff(postQueryStartMoment))
       .asSeconds()} seconds`,
   };
-  plotFunction(result);
+  return result;
 };
