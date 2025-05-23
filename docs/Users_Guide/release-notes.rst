@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 6.0.0 release notes (20241218)
+METexpress Version 6.1.0 release notes (20250530)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -26,16 +26,16 @@ METexpress Version 6.0.0 release notes (20241218)
      
   .. dropdown:: Enhancements
   
-     * METexpress is now section 508 compliant.
+     * Updated all apps to Meteor v3.2.2.
 
   .. dropdown:: Miscellaneous
     
-     * None.
+     * Removed aggregation options as defaults in METexpress selectors.
         
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 6.0.0 upgrade instructions
+METexpress Version 6.1.0 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v6.0.0 docker containers from the dtcenter repository.
+Download and deploy the new v6.1.0 docker containers from the dtcenter repository.
