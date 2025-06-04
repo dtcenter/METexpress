@@ -95,7 +95,8 @@ global.dataSeries = async function (plotParams) {
     const statLineType = statisticOptionsMap[statistic][0];
     const lineType = statisticOptionsMap[statistic][1];
     const statField = statisticOptionsMap[statistic][2];
-    const statisticClause = "m0.data data";
+    const statisticClause =
+      'ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE "NULL" END])) data';
 
     docIDTemplate = docIDTemplate.replace("{{lineType}}", lineType);
 
@@ -131,19 +132,21 @@ global.dataSeries = async function (plotParams) {
     const levelKeys = Object.keys(levelValuesMap);
     let levelKey;
     levels = Array.isArray(levels) ? levels : [levels];
-    if (levels.length > 0) {
-      levels = levels
-        .map(function (l) {
-          for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
-            levelKey = levelKeys[lidx];
-            if (levelValuesMap[levelKey].name === l) {
-              return `'${levelKey}'`;
-            }
-          }
-          return null;
-        })
-        .join(",");
+    if (levels.length === 0) {
+      // want to rope in all valid levels
+      levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+        database
+      ][curve["data-source"]][selectorPlotType][statLineType][basin][curve.year];
     }
+    levels = levels.map(function (l) {
+      for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
+        levelKey = levelKeys[lidx];
+        if (levelValuesMap[levelKey].name === l) {
+          return `${levelKey}`;
+        }
+      }
+      return null;
+    });
 
     const queryTableClause = `from {{vxDBTARGET}} m0`;
 
@@ -177,13 +180,32 @@ global.dataSeries = async function (plotParams) {
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
     const fcstOffset = fcsts[0];
-    if (fcsts.length > 0) {
-      fcsts = fcsts
-        .map(function (fl) {
-          return `'${fl}','${fl}0000'`;
+    if (fcsts.length === 0) {
+      // want to rope in all valid forecast lengths
+      fcsts = (
+        await matsCollections["forecast-length"].findOneAsync({
+          name: "forecast-length",
         })
-        .join(",");
+      ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+        basin
+      ][curve.year];
     }
+    fcsts = fcsts.map(function (fl) {
+      let numFl = Number(fl);
+      let retFl;
+      let negative = false;
+      if (numFl < 0) {
+        negative = true;
+        numFl = Math.abs(numFl);
+      }
+      if (numFl < 10) {
+        retFl = `0${numFl}0000`;
+      } else {
+        retFl = `${numFl}0000`;
+      }
+      if (negative) retFl = `-${retFl}`;
+      return retFl;
+    });
 
     let descrs =
       curve.description === undefined ||
@@ -260,9 +282,11 @@ global.dataSeries = async function (plotParams) {
         "{{queryTableClause}} " +
         "USE KEYS {{docIDTemplate}} " +
         "{{descrsClause}} " +
+        "GROUP BY {{average}} " +
+        "ORDER BY avtime " +
         ";";
 
-      statement = statement.replace("{{average}}", average);
+      statement = statement.replace(/{{average}}/g, average);
       statement = statement.replace("{{statisticClause}}", statisticClause);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
@@ -279,6 +303,7 @@ global.dataSeries = async function (plotParams) {
       queryArray.push({
         statement,
         statLineType,
+        statistic,
         statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
         fcstOffset,
@@ -290,6 +315,8 @@ global.dataSeries = async function (plotParams) {
                   return `'${vt}'`;
                 })
                 .join(","),
+        fcsts,
+        levels,
       });
     } else {
       // this is a difference curve
@@ -306,7 +333,7 @@ global.dataSeries = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryDBMetplus(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryDBMetplus(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

@@ -795,7 +795,7 @@ const doCurveParams = async function () {
                             ][basin] = yearOptionsMap[thisDB][model][thisPlotType][
                               thisValidStatType
                             ][basin].sort(function (a, b) {
-                              return Number(a) - Number(b);
+                              return Number(b) - Number(a);
                             });
                           }
                         }
