@@ -622,11 +622,9 @@ const doCurveParams = async function () {
                                   ).sort() // use JSON to force a deep copy
                                 : ["NA"];
                             let forecastLengthArr =
-                              thisYear.mdcounts.fcst_lens !== undefined &&
-                              thisYear.mdcounts.fcst_lens !== null
-                                ? JSON.parse(
-                                    JSON.stringify(thisYear.mdcounts.fcst_lens)
-                                  ) // use JSON to force a deep copy
+                              thisYear.mdcounts.fcstLens !== undefined &&
+                              thisYear.mdcounts.fcstLens !== null
+                                ? JSON.parse(JSON.stringify(thisYear.mdcounts.fcstLens)) // use JSON to force a deep copy
                                 : ["NA"];
                             const levelsArrRaw =
                               thisYear.mdcounts.levels !== undefined &&

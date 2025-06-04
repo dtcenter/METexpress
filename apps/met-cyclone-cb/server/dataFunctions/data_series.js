@@ -154,11 +154,17 @@ global.dataSeries = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
-        .map(function (vt) {
-          return `'${vt}'`;
-        })
-        .join(",");
+      for (let didx = dateArray.length - 1; didx >= 0; didx -= 1) {
+        const date = dateArray[didx];
+        let remove = true;
+        for (let vidx = 0; vidx < vts.length; vidx += 1) {
+          if ((date % (24 * 3600)) / 3600 === Number(vts[vidx])) {
+            remove = false;
+            break;
+          }
+        }
+        if (remove) dateArray.splice(didx, 1);
+      }
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -185,12 +191,14 @@ global.dataSeries = async function (plotParams) {
         ? []
         : curve.description;
     descrs = Array.isArray(descrs) ? descrs : [descrs];
-    if (descrs.length > 0) {
+    let descrsClause = "";
+    if (descrs.length > 0 && !(descrs.length === 1 && descrs[0] === "NA")) {
       descrs = descrs
         .map(function (d) {
           return `'${d}'`;
         })
         .join(",");
+      descrsClause = `WHERE DESCR IN[${descrs}]`;
     }
 
     const averageStr = curve.average;
@@ -250,13 +258,18 @@ global.dataSeries = async function (plotParams) {
         "select {{average}} as avtime, " +
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
-        "USE KEYS {{docIDTemplate}}" +
+        "USE KEYS {{docIDTemplate}} " +
+        "{{descrsClause}} " +
         ";";
 
       statement = statement.replace("{{average}}", average);
       statement = statement.replace("{{statisticClause}}", statisticClause);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
-      statement = statement.replace("{{docIDTemplate}}", `${JSON.stringify(theseDocIDs)}`);
+      statement = statement.replace("{{descrsClause}}", descrsClause);
+      statement = statement.replace(
+        "{{docIDTemplate}}",
+        `${JSON.stringify(theseDocIDs)}`
+      );
       if (statLineType !== "precalculated") {
         statement = statement.replace(/VALID/g, "FCST_VALID_BEG");
       }
@@ -266,10 +279,17 @@ global.dataSeries = async function (plotParams) {
       queryArray.push({
         statement,
         statLineType,
-        statistic,
+        statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
-        vts,
+        fcstOffset,
+        vts:
+          vts.length === 0
+            ? vts
+            : vts
+                .map(function (vt) {
+                  return `'${vt}'`;
+                })
+                .join(","),
       });
     } else {
       // this is a difference curve
@@ -286,7 +306,7 @@ global.dataSeries = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryDBMetplus(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
