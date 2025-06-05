@@ -333,7 +333,7 @@ global.dataSeries = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryDBMetplus(global.cbPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryMETplusCouchbaseDB(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

@@ -266,7 +266,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryDBPython(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryMETplusMysqlDB(global.sumPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
