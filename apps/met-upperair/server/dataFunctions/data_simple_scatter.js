@@ -146,12 +146,12 @@ global.dataSimpleScatter = async function (plotParams) {
       ) {
         vts = curve["valid-time"];
         vts = Array.isArray(vts) ? vts : [vts];
-        vts = vts
+        const queryVts = vts
           .map(function (vt) {
             return `'${vt}'`;
           })
           .join(",");
-        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${queryVts})`;
       }
     }
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -165,14 +165,22 @@ global.dataSimpleScatter = async function (plotParams) {
           ? []
           : curve["forecast-length"];
       fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-      if (fcsts.length > 0) {
-        fcsts = fcsts
-          .map(function (fl) {
-            return `'${fl}','${fl}0000'`;
+      if (fcsts.length === 0) {
+        // want to rope in all valid forecast lengths
+        fcsts = (
+          await matsCollections["forecast-length"].findOneAsync({
+            name: "forecast-length",
           })
-          .join(",");
-        forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+        ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+          variableX
+        ];
       }
+      const queryFcsts = fcsts
+        .map(function (fl) {
+          return `'${fl}','${fl}0000'`;
+        })
+        .join(",");
+      forecastLengthsClause = `and ld.fcst_lead IN(${queryFcsts})`;
     }
 
     let dateString = "";
@@ -283,7 +291,7 @@ global.dataSimpleScatter = async function (plotParams) {
         statLineType,
         statistic: `${statisticXSelect}__vs__${statisticYSelect}`,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {
@@ -299,7 +307,10 @@ global.dataSimpleScatter = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryMETplusMysqlDB(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryMETplusMysqlDB(
+      global.sumPool,
+      queryArray
+    );
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
