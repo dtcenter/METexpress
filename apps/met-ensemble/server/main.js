@@ -1035,14 +1035,6 @@ const doCurveParams = async function () {
         ]
       )[0]
     ];
-  let fhrDefault;
-  if (fhrOptions.indexOf("24") !== -1) {
-    fhrDefault = "24";
-  } else if (fhrOptions.indexOf("12") !== -1) {
-    fhrDefault = "12";
-  } else {
-    [fhrDefault] = fhrOptions;
-  }
 
   if (
     (await matsCollections["forecast-length"].findOneAsync({
@@ -1058,13 +1050,14 @@ const doCurveParams = async function () {
       selected: "",
       controlButtonCovered: true,
       unique: false,
-      default: fhrDefault,
+      default: matsTypes.InputTypes.unused,
       controlButtonVisibility: "block",
       controlButtonText: "forecast lead time",
       gapAbove: true,
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 5,
+      multiple: true,
     });
   } else {
     // it is defined but check for necessary update
@@ -1081,7 +1074,6 @@ const doCurveParams = async function () {
           $set: {
             optionsMap: forecastLengthOptionsMap,
             options: fhrOptions,
-            default: fhrDefault,
           },
         }
       );
