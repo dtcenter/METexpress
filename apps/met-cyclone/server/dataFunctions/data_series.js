@@ -277,7 +277,7 @@ global.dataSeries = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcsts: ["0"],
+        fcsts,
         vts,
       });
     } else {

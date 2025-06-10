@@ -153,12 +153,12 @@ global.dataHistogram = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
+      const queryVts = vts
         .map(function (vt) {
           return `'${vt}'`;
         })
         .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${vts})`;
+      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${queryVts})`;
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -171,14 +171,23 @@ global.dataHistogram = async function (plotParams) {
         ? []
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-    if (fcsts.length > 0) {
-      fcsts = fcsts
-        .map(function (fl) {
-          return `'${fl}','${fl}0000'`;
+    if (fcsts.length === 0) {
+      // want to rope in all valid forecast lengths
+      fcsts = (
+        await matsCollections["forecast-length"].findOneAsync({
+          name: "forecast-length",
         })
-        .join(",");
-      forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+      ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+        basin
+      ][curve.year];
     }
+    const queryFcsts = fcsts
+      .map(function (fl) {
+        return `'${fl}','${fl}0000'`;
+      })
+      .join(",");
+    forecastLengthsClause = `and ld.fcst_lead IN(${queryFcsts})`;
+
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
     const toSecs = dateRange.toSeconds;
@@ -199,7 +208,6 @@ global.dataHistogram = async function (plotParams) {
         .join(",");
       descrsClause = `and h.descr IN(${descrs})`;
     }
-
     const statType = `met-${statLineType}`;
     allStatTypes.push(statType);
     appParams.aggMethod = "Mean statistic";
@@ -263,7 +271,7 @@ global.dataHistogram = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {
@@ -281,7 +289,7 @@ global.dataHistogram = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryMETplusMysqlDB(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

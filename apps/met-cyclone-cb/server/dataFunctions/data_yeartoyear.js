@@ -145,12 +145,12 @@ global.dataYearToYear = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
+      const queryVts = vts
         .map(function (vt) {
           return `'${vt}'`;
         })
         .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${vts})`;
+      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${queryVts})`;
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -248,7 +248,7 @@ global.dataYearToYear = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {
@@ -266,7 +266,7 @@ global.dataYearToYear = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryMETplusMysqlDB(global.sumPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),

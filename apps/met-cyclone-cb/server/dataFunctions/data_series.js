@@ -179,7 +179,6 @@ global.dataSeries = async function (plotParams) {
         ? []
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-    const fcstOffset = fcsts[0];
     if (fcsts.length === 0) {
       // want to rope in all valid forecast lengths
       fcsts = (
@@ -306,7 +305,7 @@ global.dataSeries = async function (plotParams) {
         statistic,
         statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset,
+        fcsts,
         vts:
           vts.length === 0
             ? vts
@@ -315,7 +314,6 @@ global.dataSeries = async function (plotParams) {
                   return `'${vt}'`;
                 })
                 .join(","),
-        fcsts,
         levels,
       });
     } else {
@@ -333,7 +331,7 @@ global.dataSeries = async function (plotParams) {
   let finishMoment;
   try {
     // send the query statements to the query function
-    queryResult = await matsDataQueryUtils.queryMETplusCouchbaseDB(global.cbPool, queryArray);
+    queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
