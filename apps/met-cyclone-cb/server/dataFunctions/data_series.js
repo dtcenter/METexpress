@@ -56,13 +56,6 @@ global.dataSeries = async function (plotParams) {
   const dateRange = matsDataUtils.getDateRange(plotParams.dates);
   const fromSecs = dateRange.fromSeconds;
   const toSecs = dateRange.toSeconds;
-  const dateArray = matsDataUtils.range(
-    Math.floor(fromSecs / 3600) * 3600,
-    Math.ceil(toSecs / 3600) * 3600,
-    3600
-  );
-  if (dateArray[0] < fromSecs) dateArray.splice(0, 1);
-  if (dateArray[dateArray.length - 1] > toSecs) dateArray.pop();
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
@@ -96,7 +89,7 @@ global.dataSeries = async function (plotParams) {
     const lineType = statisticOptionsMap[statistic][1];
     const statField = statisticOptionsMap[statistic][2];
     const statisticClause =
-      'ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE "NULL" END])) data';
+      'ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE NULL END])) data';
 
     docIDTemplate = docIDTemplate.replace("{{lineType}}", lineType);
 
@@ -157,17 +150,6 @@ global.dataSeries = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      for (let didx = dateArray.length - 1; didx >= 0; didx -= 1) {
-        const date = dateArray[didx];
-        let remove = true;
-        for (let vidx = 0; vidx < vts.length; vidx += 1) {
-          if ((date % (24 * 3600)) / 3600 === Number(vts[vidx])) {
-            remove = false;
-            break;
-          }
-        }
-        if (remove) dateArray.splice(didx, 1);
-      }
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -244,37 +226,6 @@ global.dataSeries = async function (plotParams) {
     if (!diffFrom) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
-      const theseDocIDs = [];
-      for (let vidx = 0; vidx < versions.length; vidx += 1) {
-        let versionedDocID = JSON.parse(JSON.stringify(docIDTemplate));
-        versionedDocID = versionedDocID.replace("{{version}}", versions[vidx]);
-
-        for (let didx = 0; didx < dateArray.length; didx += 1) {
-          let datedDocID = JSON.parse(JSON.stringify(versionedDocID));
-          datedDocID = datedDocID.replace("{{date}}", dateArray[didx]);
-
-          if (storms.length > 0) {
-            for (let sidx = 1; sidx < storms.length; sidx += 1) {
-              const thisStorm = storms[sidx];
-              let stormedDocID = JSON.parse(JSON.stringify(datedDocID));
-              stormedDocID = stormedDocID.replace(
-                "{{stormID}}",
-                `${thisStorm.split("-")[0]}`
-              );
-              stormedDocID = stormedDocID.replace(
-                "{{stormNumber}}",
-                `${thisStorm.substring(2, 4)}`
-              );
-              stormedDocID = stormedDocID.replace(
-                "{{stormName}}",
-                `${thisStorm.split("-")[1]}`
-              );
-              theseDocIDs.push(stormedDocID);
-            }
-          } else theseDocIDs.push(datedDocID);
-        }
-      }
-
       statement =
         "select {{average}} as avtime, " +
         "{{statisticClause}} " +
@@ -289,10 +240,6 @@ global.dataSeries = async function (plotParams) {
       statement = statement.replace("{{statisticClause}}", statisticClause);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
-      statement = statement.replace(
-        "{{docIDTemplate}}",
-        `${JSON.stringify(theseDocIDs)}`
-      );
       if (statLineType !== "precalculated") {
         statement = statement.replace(/VALID/g, "FCST_VALID_BEG");
       }
@@ -301,10 +248,13 @@ global.dataSeries = async function (plotParams) {
 
       queryArray.push({
         statement,
+        docIDTemplate,
         statLineType,
         statistic,
         statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
+        fromSecs,
+        toSecs,
         fcsts,
         vts:
           vts.length === 0
@@ -315,6 +265,8 @@ global.dataSeries = async function (plotParams) {
                 })
                 .join(","),
         levels,
+        versions,
+        storms,
       });
     } else {
       // this is a difference curve
