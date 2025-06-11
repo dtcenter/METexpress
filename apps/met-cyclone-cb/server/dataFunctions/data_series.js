@@ -89,7 +89,7 @@ global.dataSeries = async function (plotParams) {
     const lineType = statisticOptionsMap[statistic][1];
     const statField = statisticOptionsMap[statistic][2];
     const statisticClause =
-      'ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE NULL END])) data';
+      "ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE NULL END])) data";
 
     docIDTemplate = docIDTemplate.replace("{{lineType}}", lineType);
 
