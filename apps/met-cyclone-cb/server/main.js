@@ -287,11 +287,11 @@ const doCurveParams = async function () {
 
   const masterStatsOptionsMap = {
     TCMPR: {
-      "Track error (nm)": ["precalculated", "TCMPR", "tk_err"],
-      "X error (nm)": ["precalculated", "TCMPR", "x_err"],
-      "Y error (nm)": ["precalculated", "TCMPR", "y_err"],
-      "Along track error (nm)": ["precalculated", "TCMPR", "altk_err"],
-      "Cross track error (nm)": ["precalculated", "TCMPR", "crtk_err"],
+      "Track error (nm)": ["precalculated", "TCMPR", "tkErr"],
+      "X error (nm)": ["precalculated", "TCMPR", "xErr"],
+      "Y error (nm)": ["precalculated", "TCMPR", "yErr"],
+      "Along track error (nm)": ["precalculated", "TCMPR", "altkErr"],
+      "Cross track error (nm)": ["precalculated", "TCMPR", "crtkErr"],
       "Model distance to land (nm)": ["precalculated", "TCMPR", "adland"],
       "Truth distance to land (nm)": ["precalculated", "TCMPR", "bdland"],
       "Model-truth distance to land (nm)": [
@@ -302,12 +302,12 @@ const doCurveParams = async function () {
       "Model MSLP (mb)": ["precalculated", "TCMPR", "amslp"],
       "Truth MSLP (mb)": ["precalculated", "TCMPR", "bmslp"],
       "Model-truth MSLP (mb)": ["precalculated", "TCMPR", ["amslp", "bmslp", "minus"]],
-      "Model maximum wind speed (kts)": ["precalculated", "TCMPR", "amax_wind"],
-      "Truth maximum wind speed (kts)": ["precalculated", "TCMPR", "bmax_wind"],
+      "Model maximum wind speed (kts)": ["precalculated", "TCMPR", "amaxWind"],
+      "Truth maximum wind speed (kts)": ["precalculated", "TCMPR", "bmaxWind"],
       "Model-truth maximum wind speed (kts)": [
         "precalculated",
         "TCMPR",
-        ["amax_wind", "bmax_wind", "minus"],
+        ["amaxWind", "bmaxWind", "minus"],
       ],
       "Model radius of maximum winds (nm)": ["precalculated", "TCMPR", "amrd"],
       "Truth radius of maximum winds (nm)": ["precalculated", "TCMPR", "bmrd"],
