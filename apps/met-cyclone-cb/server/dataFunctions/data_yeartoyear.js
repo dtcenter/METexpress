@@ -46,8 +46,6 @@ global.dataYearToYear = async function (plotParams) {
   const utcCycleStarts = [];
   const idealValues = [];
 
-  let docIDTemplate =
-    "MET:DD:MET:{{database}}:{{version}}:{{model}}:{{truth}}:{{stormID}}:{{basin}}:{{stormNumber}}:{{stormName}}:{{date}}:{{lineType}}";
   let statement = "";
   let error = "";
   const dataset = [];
@@ -57,6 +55,9 @@ global.dataYearToYear = async function (plotParams) {
     const curve = curves[curveIndex];
     const { label } = curve;
     const { diffFrom } = curve;
+
+    let docIDTemplate =
+      "MET:DD:MET:{{database}}:{{version}}:{{model}}:{{truth}}:{{stormID}}:{{basin}}:{{stormNumber}}:{{stormName}}:{{date}}:{{lineType}}";
 
     const database = curve.database.replace(/___/g, ".");
     const versions = (await matsCollections.database.findOneAsync({ name: "database" }))
@@ -106,8 +107,11 @@ global.dataYearToYear = async function (plotParams) {
       await matsCollections.storm.findOneAsync({ name: "storm" })
     ).optionsMap;
     for (let yidx = 0; yidx < years.length; yidx += 1) {
-      const theseStorms = stormsOptionsMap[database][curve["data-source"]][selectorPlotType][statLineType][basin][years[yidx]];
-      theseStorms.shift()
+      const theseStorms =
+        stormsOptionsMap[database][curve["data-source"]][selectorPlotType][
+          statLineType
+        ][basin][years[yidx]];
+      theseStorms.shift();
       storms = storms.concat(theseStorms);
     }
 
