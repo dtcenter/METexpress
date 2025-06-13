@@ -297,7 +297,7 @@ const doCurveParams = async function () {
       "Model-truth distance to land (nm)": [
         "precalculated",
         "TCMPR",
-        ["adland", "bdLand", "minus"],
+        ["adland", "bdland", "minus"],
       ],
       "Model MSLP (mb)": ["precalculated", "TCMPR", "amslp"],
       "Truth MSLP (mb)": ["precalculated", "TCMPR", "bmslp"],

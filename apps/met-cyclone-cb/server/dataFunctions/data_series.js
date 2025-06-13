@@ -249,10 +249,13 @@ global.dataSeries = async function (plotParams) {
       queryArray.push({
         statement,
         docIDTemplate,
+        database,
+        lineType,
         statLineType,
         statistic,
         statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
+        dateVariable: statLineType === "precalculated" ? "VALID" : "FCST_VALID_BEG",
         fromSecs,
         toSecs,
         fcsts,
