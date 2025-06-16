@@ -206,6 +206,7 @@ global.dataHistogram = async function (plotParams) {
         .join(",");
       descrsClause = `WHERE DESCR IN[${descrs}]`;
     }
+
     const statType = `met-${statLineType}`;
     allStatTypes.push(statType);
     appParams.aggMethod = "Mean statistic";

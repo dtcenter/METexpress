@@ -57,132 +57,143 @@ global.dataDieoff = async function (plotParams) {
     const { label } = curve;
     const { diffFrom } = curve;
 
+    let docIDTemplate =
+      "MET:DD:MET:{{database}}:{{version}}:{{model}}:{{truth}}:{{stormID}}:{{basin}}:{{stormNumber}}:{{stormName}}:{{date}}:{{lineType}}";
+
     const database = curve.database.replace(/___/g, ".");
+    const versions = (await matsCollections.database.findOneAsync({ name: "database" }))
+      .valuesMap;
     const model = (
       await matsCollections["data-source"].findOneAsync({ name: "data-source" })
     ).optionsMap[database][curve["data-source"]][0];
-    let modelClause; // the model field in mysql is called different things for RI and non-RI stats
+
+    docIDTemplate = docIDTemplate.replace("{{database}}", database);
+    docIDTemplate = docIDTemplate.replace("{{model}}", model);
 
     const truthStr = curve.truth;
     const truthValues = (await matsCollections.truth.findOneAsync({ name: "truth" }))
       .valuesMap;
     const truth = Object.keys(truthValues).find((key) => truthValues[key] === truthStr);
-    let truthClause; // the truth field in mysql is called different things for RI and non-RI stats
+
+    docIDTemplate = docIDTemplate.replace("{{truth}}", truth);
 
     const selectorPlotType = curve["plot-type"];
-    let { statistic } = curve;
+    const { statistic } = curve;
     const statisticOptionsMap = (
       await matsCollections.statistic.findOneAsync({ name: "statistic" })
     ).optionsMap[database][curve["data-source"]][selectorPlotType];
     const statLineType = statisticOptionsMap[statistic][0];
-    let statisticClause = "";
-    let statHeaderType = "";
-    let lineDataType = "";
+    const lineType = statisticOptionsMap[statistic][1];
+    const statField = statisticOptionsMap[statistic][2];
+    const statisticClause =
+      "ARRAY_SORT(ARRAY_AGG([m0.VALID, m0.STORM_ID, CASE WHEN m0.data IS NOT NULL THEN m0.data ELSE NULL END])) data";
+
+    docIDTemplate = docIDTemplate.replace("{{lineType}}", lineType);
+
     const { basin } = curve;
-    let variableClause = "";
-    let thresholdClause = "";
-    let stormClause = "";
-    let levelsClause = "";
-    if (statLineType === "ctc") {
-      // set up fields specific to ctc scores
-      statisticClause =
-        "sum(ld.fy_oy) as fy_oy, " +
-        "sum(ld.fy_on) as fy_on, " +
-        "sum(ld.fn_oy) as fn_oy, " +
-        "sum(ld.fn_on) as fn_on, " +
-        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid), h.fcst_lev) as sub_data";
-      statHeaderType = "stat_header";
-      lineDataType = "line_data_ctc";
-      modelClause = `and h.model = '${model}'`;
-      truthClause = `and h.obtype = '${truth}'`;
-      stormClause = `and h.vx_mask = '${basin}'`;
-      statistic = statistic.replace("Rapid Intensification ", "");
-      const { variable } = curve;
-      variableClause = `and h.fcst_var = '${variable}'`;
-      const { threshold } = curve;
-      thresholdClause = `and h.fcst_thresh = '${threshold}'`;
-    } else if (statLineType === "precalculated") {
-      // set up fields specific to precalculated stats
-      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', 9999, ';', unix_timestamp(ld.fcst_valid), ';', h.storm_id order by unix_timestamp(ld.fcst_valid), h.storm_id) as sub_data`;
-      statHeaderType = "tcst_header";
-      [, lineDataType] = statisticOptionsMap[statistic];
-      modelClause = `and h.amodel = '${model}'`;
-      truthClause = `and h.bmodel = '${truth}'`;
-      const { storm } = curve;
-      if (storm === "All storms") {
-        stormClause = `and h.storm_id like '${basin}%'`;
-      } else {
-        stormClause = `and h.storm_id = '${storm.split(" - ")[0]}'`;
-      }
-      let levels =
-        curve.level === undefined || curve.level === matsTypes.InputTypes.unused
-          ? []
-          : curve.level;
-      const levelValuesMap = (
-        await matsCollections.level.findOneAsync({ name: "level" })
-      ).valuesMap;
-      const levelKeys = Object.keys(levelValuesMap);
-      let levelKey;
-      levels = Array.isArray(levels) ? levels : [levels];
-      if (levels.length > 0) {
-        levels = levels
-          .map(function (l) {
-            for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
-              levelKey = levelKeys[lidx];
-              if (levelValuesMap[levelKey].name === l) {
-                return `'${levelKey}'`;
-              }
-            }
-            return null;
-          })
-          .join(",");
-        levelsClause = `and ld.level IN(${levels})`;
-      }
+
+    docIDTemplate = docIDTemplate.replace("{{basin}}", basin);
+
+    const { storm } = curve;
+    let storms = [];
+    if (storm === "All storms") {
+      const stormsOptionsMap = (
+        await matsCollections.storm.findOneAsync({ name: "storm" })
+      ).optionsMap;
+      storms =
+        stormsOptionsMap[database][curve["data-source"]][selectorPlotType][
+          statLineType
+        ][basin][curve.year];
+    } else {
+      docIDTemplate = docIDTemplate.replace("{{stormID}}", `${storm.split("-")[0]}`);
+      docIDTemplate = docIDTemplate.replace(
+        "{{stormNumber}}",
+        `${storm.substring(2, 4)}`
+      );
+      docIDTemplate = docIDTemplate.replace("{{stormName}}", `${storm.split("-")[1]}`);
     }
 
-    const queryTableClause = `from ${database}.${statHeaderType} h, ${database}.${lineDataType} ld`;
-    const statHeaderClause = `and h.${statHeaderType}_id = ld.${statHeaderType}_id`;
+    let levels =
+      curve.level === undefined || curve.level === matsTypes.InputTypes.unused
+        ? []
+        : curve.level;
+    const levelValuesMap = (await matsCollections.level.findOneAsync({ name: "level" }))
+      .valuesMap;
+    const levelKeys = Object.keys(levelValuesMap);
+    let levelKey;
+    levels = Array.isArray(levels) ? levels : [levels];
+    if (levels.length === 0) {
+      // want to rope in all valid levels
+      levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
+        database
+      ][curve["data-source"]][selectorPlotType][statLineType][basin][curve.year];
+    }
+    levels = levels.map(function (l) {
+      for (let lidx = 0; lidx < levelKeys.length; lidx += 1) {
+        levelKey = levelKeys[lidx];
+        if (levelValuesMap[levelKey].name === l) {
+          return `${levelKey}`;
+        }
+      }
+      return null;
+    });
+
+    const queryTableClause = `from {{vxDBTARGET}} m0`;
+
+    // want to rope in all valid forecast lengths
+    let fcsts = (
+      await matsCollections["forecast-length"].findOneAsync({
+        name: "forecast-length",
+      })
+    ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][basin][
+      curve.year
+    ];
+    fcsts = fcsts.map(function (fl) {
+      let numFl = Number(fl);
+      let retFl;
+      let negative = false;
+      if (numFl < 0) {
+        negative = true;
+        numFl = Math.abs(numFl);
+      }
+      if (numFl < 10) {
+        retFl = `0${numFl}0000`;
+      } else {
+        retFl = `${numFl}0000`;
+      }
+      if (negative) retFl = `-${retFl}`;
+      return retFl;
+    });
 
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
-    const toSecs = dateRange.toSeconds;
-    let dateClause = `and unix_timestamp(ld.fcst_valid) >= '${fromSecs}' and unix_timestamp(ld.fcst_valid) <= '${toSecs}' `;
+    let toSecs = dateRange.toSeconds;
 
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
-    let validTimeClause = "";
-    let utcCycleStart;
-    let utcCycleStartClause = "";
+    let utcs = ""; // start with an empty string that we can pass to the python script if there aren't utcs.
     const dieoffTypeStr = curve["dieoff-type"];
     const dieoffTypeOptionsMap = (
       await matsCollections["dieoff-type"].findOneAsync({ name: "dieoff-type" })
     ).optionsMap;
     const dieoffType = dieoffTypeOptionsMap[dieoffTypeStr][0];
     if (dieoffType === matsTypes.ForecastTypes.dieoff) {
-      vts = curve["valid-time"] === undefined ? [] : curve["valid-time"];
-      if (vts.length !== 0 && vts !== matsTypes.InputTypes.unused) {
+      if (
+        curve["valid-time"] !== undefined &&
+        curve["valid-time"] !== matsTypes.InputTypes.unused
+      ) {
         vts = curve["valid-time"];
         vts = Array.isArray(vts) ? vts : [vts];
-        const queryVts = vts
-          .map(function (vt) {
-            return `'${vt}'`;
-          })
-          .join(",");
-        validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${queryVts})`;
       }
     } else if (dieoffType === matsTypes.ForecastTypes.utcCycle) {
-      utcCycleStart =
-        curve["utc-cycle-start"] === undefined ? [] : curve["utc-cycle-start"];
-      if (utcCycleStart.length !== 0 && utcCycleStart !== matsTypes.InputTypes.unused) {
-        utcCycleStart = utcCycleStart
-          .map(function (u) {
-            return `'${u}'`;
-          })
-          .join(",");
-        utcCycleStartClause = `and unix_timestamp(ld.fcst_init)%(24*3600)/3600 IN(${utcCycleStart})`;
+      if (
+        curve["utc-cycle-start"] !== undefined &&
+        curve["utc-cycle-start"] !== matsTypes.InputTypes.unused
+      ) {
+        utcs = curve["utc-cycle-start"];
+        utcs = Array.isArray(utcs) ? utcs : [utcs];
       }
-      dateClause = `and unix_timestamp(ld.fcst_init) >= ${fromSecs} and unix_timestamp(ld.fcst_init) <= ${toSecs}`;
     } else {
-      dateClause = `and unix_timestamp(ld.fcst_init) = ${fromSecs}`;
+      toSecs = fromSecs;
     }
 
     let descrs =
@@ -190,15 +201,15 @@ global.dataDieoff = async function (plotParams) {
       curve.description === matsTypes.InputTypes.unused
         ? []
         : curve.description;
-    let descrsClause = "";
     descrs = Array.isArray(descrs) ? descrs : [descrs];
-    if (descrs.length > 0) {
+    let descrsClause = "";
+    if (descrs.length > 0 && !(descrs.length === 1 && descrs[0] === "NA")) {
       descrs = descrs
         .map(function (d) {
           return `'${d}'`;
         })
         .join(",");
-      descrsClause = `and h.descr IN(${descrs})`;
+      descrsClause = `WHERE DESCR IN[${descrs}]`;
     }
 
     const statType = `met-${statLineType}`;
@@ -218,53 +229,56 @@ global.dataDieoff = async function (plotParams) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
       statement =
-        "select ld.fcst_lead as fcst_lead, " +
-        "count(distinct unix_timestamp(ld.fcst_valid)) as nTimes, " +
-        "min(unix_timestamp(ld.fcst_valid)) as min_secs, " +
-        "max(unix_timestamp(ld.fcst_valid)) as max_secs, " +
+        "select m0.VALID as avtime, " +
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
-        "where 1=1 " +
-        "{{dateClause}} " +
-        "{{modelClause}} " +
-        "{{stormClause}} " +
-        "{{variableClause}} " +
-        "{{thresholdClause}} " +
-        "{{truthClause}} " +
-        "{{validTimeClause}} " +
-        "{{utcCycleStartClause}} " +
-        "{{levelsClause}} " +
+        "USE KEYS {{docIDTemplate}} " +
         "{{descrsClause}} " +
-        "{{statHeaderClause}} " +
-        "group by fcst_lead " +
-        "order by fcst_lead" +
+        "GROUP BY m0.VALID " +
+        "ORDER BY avtime " +
         ";";
 
       statement = statement.replace("{{statisticClause}}", statisticClause);
       statement = statement.replace("{{queryTableClause}}", queryTableClause);
-      statement = statement.replace("{{modelClause}}", modelClause);
-      statement = statement.replace("{{stormClause}}", stormClause);
-      statement = statement.replace("{{variableClause}}", variableClause);
-      statement = statement.replace("{{thresholdClause}}", thresholdClause);
-      statement = statement.replace("{{truthClause}}", truthClause);
-      statement = statement.replace("{{validTimeClause}}", validTimeClause);
-      statement = statement.replace("{{utcCycleStartClause}}", utcCycleStartClause);
-      statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
-      statement = statement.replace("{{dateClause}}", dateClause);
-      statement = statement.replace("{{statHeaderClause}}", statHeaderClause);
       if (statLineType !== "precalculated") {
-        statement = statement.replace(/fcst_valid/g, "fcst_valid_beg");
+        statement = statement.replace(/VALID/g, "FCST_VALID_BEG");
       }
+      statement = global.cbPool.trfmSQLForDbTarget(statement);
       dataRequests[label] = statement;
 
       queryArray.push({
         statement,
+        docIDTemplate,
+        database,
+        lineType,
         statLineType,
         statistic,
+        statField,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcsts: ["0"],
-        vts,
+        dateVariable: statLineType === "precalculated" ? "VALID" : "FCST_VALID_BEG",
+        fromSecs,
+        toSecs,
+        fcsts,
+        vts:
+          vts.length === 0
+            ? vts
+            : vts
+                .map(function (vt) {
+                  return `'${vt}'`;
+                })
+                .join(","),
+        utcs:
+          utcs.length === 0
+            ? utcs
+            : utcs
+                .map(function (utc) {
+                  return `'${utc}'`;
+                })
+                .join(","),
+        levels,
+        versions,
+        storms,
       });
     } else {
       // this is a difference curve
