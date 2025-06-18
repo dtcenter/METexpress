@@ -18,6 +18,7 @@ jobs:
         deploy: # List of apps to deploy
           - met-anomalycor
           - met-cyclone
+          - met-cyclone-cb
           - met-ensemble
           - met-precip
           - met-object

@@ -1,0 +1,241 @@
+/*
+ * Copyright (c) 2021 Colorado State University and Regents of the University of Colorado. All rights reserved.
+ */
+
+/* CSS declarations go here */
+html,
+body {
+  height: 100%;
+}
+
+@font-face {
+  font-family: "PublicSans-Regular";
+  src: url("/packages/randyp_mats-common/public/fonts/PublicSans-Regular.ttf");
+}
+
+@font-face {
+  font-family: "PublicSans-SemiBold";
+  src: url("/packages/randyp_mats-common/public/fonts/PublicSans-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "PublicSans-Medium";
+  src: url("/packages/randyp_mats-common/public/fonts/PublicSans-Medium.ttf");
+}
+
+body {
+  padding: 0;
+  background-color: grey;
+  font-family: PublicSans-Regular, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  color: black;
+}
+
+.main {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: PublicSans-Regular, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+}
+
+.well {
+  background-color: #fff;
+  border: none;
+  -webkit-box-shadow: none;
+}
+
+.modal-backdrop {
+  background-color: #ccc;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+.form-control {
+  color: #000000;
+  border-color: #000000;
+}
+
+.label-default {
+  background-color: #333333;
+}
+
+.btn-default {
+  color: #000000;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active,
+.open > .dropdown-toggle.btn-default {
+  color: #000000;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #052c65;
+  border-color: #2e6da4;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+  color: #fff;
+  background-color: #114466;
+}
+
+.btn-info {
+  color: #000000;
+  background-color: #ddeeff;
+  border-color: #2e6da4;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active,
+.open > .dropdown-toggle.btn-info {
+  color: #000000;
+  background-color: #99ccff;
+}
+
+.btn-success {
+  color: #000000;
+  background-color: #d1e7dd;
+  border-color: #336633;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active,
+.open > .dropdown-toggle.btn-success {
+  color: #000000;
+  background-color: #aaffcc;
+}
+
+.btn-danger {
+  color: #000000;
+  background-color: #f8d7da;
+  border-color: #d43f3a;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active,
+.open > .dropdown-toggle.btn-danger {
+  color: #000000;
+  background-color: #ff9999;
+}
+
+.btn-warning {
+  color: #000000;
+  background-color: #fff3cd;
+  border-color: #eebb33;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active,
+.open > .dropdown-toggle.btn-warning {
+  color: #000000;
+  background-color: #ffff99;
+}
+
+#placeholder .button {
+  position: absolute;
+  cursor: pointer;
+}
+
+#placeholder div.button {
+  font-size: smaller;
+  color: #999;
+  background-color: #eee;
+  padding: 2px;
+}
+
+.message {
+  padding-left: 50px;
+  font-size: smaller;
+}
+
+hr {
+  height: 0;
+  border-top: 1px;
+  color: #eee;
+  background-color: #eee;
+}
+
+.spacer {
+  padding-left: 1em;
+}
+
+.rule {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+}
+
+.spacebutton {
+  background: transparent;
+  border: none;
+}
+
+.input {
+  max-width: 100%;
+}
+
+.select2-selection--multiple {
+  max-height: 200px;
+  overflow: auto;
+}
+
+.boldedPublicSans {
+  font-family: PublicSans-SemiBold, Arial, Helvetica, serif;
+}
+
+.regularPublicSans {
+  font-family: PublicSans-Regular, Arial, Helvetica, sans-serif;
+}
+
+.mediumPublicSans {
+  font-family: PublicSans-Medium, Arial, Helvetica, serif;
+}
+
+.item + .tooltip > .tooltip-inner {
+  background-color: #73ad21;
+  color: #ffffff;
+  border: 1px solid green;
+  padding: 5px;
+  font-size: 15px;
+  max-width: 350px;
+  width: 350px;
+}
+
+.daterangepicker .ranges li {
+  background-color: #bfdfff;
+  font-size: 14px !important;
+  margin: 5px 2px;
+  border-radius: 10px;
+  border-color: #dddddd;
+  border-width: 1px;
+}
+
+.daterangepicker .drp-selected {
+  font-size: 18px !important;
+  color: #990000;
+}

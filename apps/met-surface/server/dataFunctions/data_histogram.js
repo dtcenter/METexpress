@@ -147,12 +147,12 @@ global.dataHistogram = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
+      const queryVts = vts
         .map(function (vt) {
           return `'${vt}'`;
         })
         .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${queryVts})`;
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -165,15 +165,22 @@ global.dataHistogram = async function (plotParams) {
         ? []
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-
-    if (fcsts.length > 0) {
-      fcsts = fcsts
-        .map(function (fl) {
-          return `'${fl}','${fl}0000'`;
+    if (fcsts.length === 0) {
+      // want to rope in all valid forecast lengths
+      fcsts = (
+        await matsCollections["forecast-length"].findOneAsync({
+          name: "forecast-length",
         })
-        .join(",");
-      forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+      ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+        variable
+      ];
     }
+    const queryFcsts = fcsts
+      .map(function (fl) {
+        return `'${fl}','${fl}0000'`;
+      })
+      .join(",");
+    forecastLengthsClause = `and ld.fcst_lead IN(${queryFcsts})`;
 
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
@@ -286,7 +293,7 @@ global.dataHistogram = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {

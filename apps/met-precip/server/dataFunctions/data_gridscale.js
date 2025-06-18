@@ -127,6 +127,7 @@ global.dataGridScale = async function (plotParams) {
     const thresholdClause = `and h.fcst_thresh = '${threshold}'`;
     const { truth } = curve;
     const truthClause = `and h.obtype = '${truth}'`;
+
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
     if (
@@ -135,13 +136,14 @@ global.dataGridScale = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
+      const queryVts = vts
         .map(function (vt) {
           return `'${vt}'`;
         })
         .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+      validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${queryVts})`;
     }
+
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
     // have been sanitized for display purposes in the forecastValueMap.
     // now we have to go get the damn ole unsanitary ones for the database.
@@ -152,14 +154,22 @@ global.dataGridScale = async function (plotParams) {
         ? []
         : curve["forecast-length"];
     fcsts = Array.isArray(fcsts) ? fcsts : [fcsts];
-    if (fcsts.length > 0) {
-      fcsts = fcsts
-        .map(function (fl) {
-          return `'${fl}','${fl}0000'`;
+    if (fcsts.length === 0) {
+      // want to rope in all valid forecast lengths
+      fcsts = (
+        await matsCollections["forecast-length"].findOneAsync({
+          name: "forecast-length",
         })
-        .join(",");
-      forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
+      ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+        variable
+      ];
     }
+    const queryFcsts = fcsts
+      .map(function (fl) {
+        return `'${fl}','${fl}0000'`;
+      })
+      .join(",");
+    forecastLengthsClause = `and ld.fcst_lead IN(${queryFcsts})`;
 
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
@@ -269,7 +279,7 @@ global.dataGridScale = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts,
         vts,
       });
     } else {
