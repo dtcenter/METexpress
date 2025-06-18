@@ -2159,6 +2159,7 @@ Meteor.startup(async function () {
       password: 1,
       database: 1,
       connectionLimit: 1,
+      maxIdle: 1,
     }
   );
   // the pool is intended to be global
@@ -2170,6 +2171,7 @@ Meteor.startup(async function () {
       password: sumSettings.password,
       database: sumSettings.database,
       connectionLimit: sumSettings.connectionLimit,
+      maxIdle: sumSettings.maxIdle,
     });
     allPools.push({ pool: "sumPool", role: matsTypes.DatabaseRoles.SUMS_DATA });
   }
