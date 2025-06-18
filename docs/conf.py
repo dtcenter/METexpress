@@ -61,7 +61,7 @@ for index, author_name in enumerate(CURRENT_AUTHORS + FORMER_AUTHORS):
 author_list = ', '.join(formatted_authors)
 
 # The stable version, displayed on the front page of the PDF
-version = '6.1.1'
+version = '6.1.2'
 verinfo = version
 
 # The full version, including alpha/beta/rc tags
