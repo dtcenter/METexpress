@@ -26,6 +26,8 @@ Feature: Add Remove Year To Year Curve
         Then the "basin" parameter value matches "AL"
         When I change the "statistic" parameter to "Track error (nm)"
         Then the "statistic" parameter value matches "Track error (nm)"
+        When I set the dates to "01/01/2023 00:00 - 12/31/2024 23:59"
+        Then the dates value is "01/01/2023 00:00 - 12/31/2024 23:59"
         Then I click the "Add Curve" button
         Then "Curve0" is added
         And I should see a list of curves containing "Curve0"
