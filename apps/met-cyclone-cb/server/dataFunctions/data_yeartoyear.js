@@ -5,6 +5,7 @@
 import {
   matsCollections,
   matsTypes,
+  matsDataUtils,
   matsDataQueryUtils,
   matsDataDiffUtils,
   matsDataCurveOpsUtils,
@@ -49,6 +50,10 @@ global.dataYearToYear = async function (plotParams) {
   let statement = "";
   let error = "";
   const dataset = [];
+
+  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
+  const fromSecs = dateRange.fromSeconds;
+  const toSecs = dateRange.toSeconds;
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
@@ -97,10 +102,6 @@ global.dataYearToYear = async function (plotParams) {
       await matsCollections.database.findOneAsync({ name: "database" })
     ).dates[database][curve["data-source"]][selectorPlotType][statLineType][basin];
     const years = Object.keys(dbDateRangeMap);
-    const minYear = years.sort((a, b) => Number(a) - Number(b))[0];
-    const maxYear = years.sort((a, b) => Number(b) - Number(a))[0];
-    const fromSecs = moment.utc(`${minYear}-01-01 00:00`, "YYYY-MM-DD HH:mm").unix();
-    const toSecs = moment.utc(`${maxYear}-12-31 11:59`, "YYYY-MM-DD HH:mm").unix();
 
     let storms = [];
     const stormsOptionsMap = (

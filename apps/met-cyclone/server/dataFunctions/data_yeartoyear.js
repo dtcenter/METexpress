@@ -5,6 +5,7 @@
 import {
   matsCollections,
   matsTypes,
+  matsDataUtils,
   matsDataQueryUtils,
   matsDataDiffUtils,
   matsDataCurveOpsUtils,
@@ -49,6 +50,10 @@ global.dataYearToYear = async function (plotParams) {
   let statement = "";
   let error = "";
   const dataset = [];
+
+  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
+  const fromSecs = dateRange.fromSeconds;
+  const toSecs = dateRange.toSeconds;
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
@@ -172,6 +177,8 @@ global.dataYearToYear = async function (plotParams) {
       forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
     }
 
+    const dateClause = `and unix_timestamp(ld.fcst_valid) >= ${fromSecs} and unix_timestamp(ld.fcst_valid) <= ${toSecs}`;
+
     let descrs =
       curve.description === undefined ||
       curve.description === matsTypes.InputTypes.unused
@@ -212,6 +219,7 @@ global.dataYearToYear = async function (plotParams) {
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +
+        "{{dateClause}} " +
         "{{modelClause}} " +
         "{{stormClause}} " +
         "{{variableClause}} " +
@@ -237,6 +245,7 @@ global.dataYearToYear = async function (plotParams) {
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
+      statement = statement.replace("{{dateClause}}", dateClause);
       statement = statement.replace("{{statHeaderClause}}", statHeaderClause);
       if (statLineType !== "precalculated") {
         statement = statement.replace(/fcst_valid/g, "fcst_valid_beg");
