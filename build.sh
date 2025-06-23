@@ -5,6 +5,7 @@ set -euo pipefail
 apps=(
     "met-anomalycor"
     "met-cyclone"
+    "met-cyclone-cb"
     "met-ensemble"
     "met-object"
     "met-precip"

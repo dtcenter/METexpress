@@ -5,6 +5,7 @@
 import {
   matsCollections,
   matsTypes,
+  matsDataUtils,
   matsDataQueryUtils,
   matsDataDiffUtils,
   matsDataCurveOpsUtils,
@@ -49,6 +50,10 @@ global.dataYearToYear = async function (plotParams) {
   let statement = "";
   let error = "";
   const dataset = [];
+
+  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
+  const fromSecs = dateRange.fromSeconds;
+  const toSecs = dateRange.toSeconds;
 
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
@@ -145,12 +150,12 @@ global.dataYearToYear = async function (plotParams) {
     ) {
       vts = curve["valid-time"];
       vts = Array.isArray(vts) ? vts : [vts];
-      vts = vts
+      const queryVts = vts
         .map(function (vt) {
           return `'${vt}'`;
         })
         .join(",");
-      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${vts})`;
+      validTimeClause = `and unix_timestamp(ld.fcst_valid)%(24*3600)/3600 IN(${queryVts})`;
     }
 
     // the forecast lengths appear to have sometimes been inconsistent (by format) in the database so they
@@ -171,6 +176,8 @@ global.dataYearToYear = async function (plotParams) {
         .join(",");
       forecastLengthsClause = `and ld.fcst_lead IN(${fcsts})`;
     }
+
+    const dateClause = `and unix_timestamp(ld.fcst_valid) >= ${fromSecs} and unix_timestamp(ld.fcst_valid) <= ${toSecs}`;
 
     let descrs =
       curve.description === undefined ||
@@ -212,6 +219,7 @@ global.dataYearToYear = async function (plotParams) {
         "{{statisticClause}} " +
         "{{queryTableClause}} " +
         "where 1=1 " +
+        "{{dateClause}} " +
         "{{modelClause}} " +
         "{{stormClause}} " +
         "{{variableClause}} " +
@@ -237,6 +245,7 @@ global.dataYearToYear = async function (plotParams) {
       statement = statement.replace("{{forecastLengthsClause}}", forecastLengthsClause);
       statement = statement.replace("{{levelsClause}}", levelsClause);
       statement = statement.replace("{{descrsClause}}", descrsClause);
+      statement = statement.replace("{{dateClause}}", dateClause);
       statement = statement.replace("{{statHeaderClause}}", statHeaderClause);
       if (statLineType !== "precalculated") {
         statement = statement.replace(/fcst_valid/g, "fcst_valid_beg");
@@ -248,7 +257,7 @@ global.dataYearToYear = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {

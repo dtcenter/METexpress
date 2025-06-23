@@ -147,12 +147,12 @@ global.dataDieoff = async function (plotParams) {
       if (vts.length !== 0 && vts !== matsTypes.InputTypes.unused) {
         vts = curve["valid-time"];
         vts = Array.isArray(vts) ? vts : [vts];
-        vts = vts
+        const queryVts = vts
           .map(function (vt) {
             return `'${vt}'`;
           })
           .join(",");
-        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${vts})`;
+        validTimeClause = `and unix_timestamp(ld.fcst_valid_beg)%(24*3600)/3600 IN(${queryVts})`;
       }
     } else if (dieoffType === matsTypes.ForecastTypes.utcCycle) {
       utcCycleStart =
@@ -288,7 +288,7 @@ global.dataDieoff = async function (plotParams) {
         statLineType,
         statistic,
         appParams: JSON.parse(JSON.stringify(appParams)),
-        fcstOffset: 0,
+        fcsts: ["0"],
         vts,
       });
     } else {
