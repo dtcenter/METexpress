@@ -9,7 +9,8 @@ ENV METEOR_PACKAGE_DIRS=/MATScommon/meteor_packages
 # Assume we're passed the repo root as build context
 COPY apps/${APPNAME}/package*.json ${APP_SOURCE_FOLDER}/
 
-RUN bash ${SCRIPTS_FOLDER}/build-app-npm-dependencies.sh
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends cmake && \
+  bash ${SCRIPTS_FOLDER}/build-app-npm-dependencies.sh
 
 # Copy app & MATScommon library source into container
 COPY apps/${APPNAME} ${APP_SOURCE_FOLDER}/
@@ -35,13 +36,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \
-    ca-certificates \
-    python3 \
-    python3-pip \
-    python3-venv \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
+  bash \
+  ca-certificates \
+  python3 \
+  python3-pip \
+  python3-venv \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create & activate a Python virtual environment
 ENV VIRTUAL_ENV=/opt/venv
@@ -57,7 +57,8 @@ RUN python3 -m pip install --no-cache-dir \
     numpy \
     scipy \
     pandas \
-    pymysql
+    pymysql \
+    couchbase
 
 # Set Environment
 ENV APP_FOLDER=/usr/app
