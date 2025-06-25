@@ -15,8 +15,8 @@ Feature: Match Unmatch Diff Curves Histogram
     Scenario: matchUnmatchDiffCurvesHistogram
         When I set the plot type to "Histogram"
         Then the plot type should be "Histogram"
-        When I change the "group" parameter to "realtime_tc_verif"
-        Then the "group" parameter value matches "realtime_tc_verif"
+        When I change the "group" parameter to "NO GROUP"
+        Then the "group" parameter value matches "NO GROUP"
         When I change the "database" parameter to "mv_nhc_tcmet_post"
         Then the "database" parameter value matches "mv_nhc_tcmet_post"
         When I change the "data-source" parameter to "GFSO: GFS"
