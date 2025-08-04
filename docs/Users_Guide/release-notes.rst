@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 6.1.3 release notes (20250627)
+METexpress Version 6.1.4 release notes (20250804)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -22,20 +22,23 @@ METexpress Version 6.1.3 release notes (20250627)
      
   .. dropdown:: Bugfixes
 
-     * None.
+     * Fixed overly bolded text in Safari.
      
   .. dropdown:: Enhancements
   
-     * Introduces a couchbase MET Cyclone app (met-cyclone-cb).
+     * Updated all apps to Meteor v3.3.
+     * Updated Plotly to version 3.0.1.
+     * Legend position is now customizable.
+     * Axis tick stride is now customizable.
 
   .. dropdown:: Miscellaneous
     
-     * METexpress apps now allow users to seect multiple forecast leads.
+     * None.
         
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 6.1.3 upgrade instructions
+METexpress Version 6.1.4 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v6.1.3 docker containers from the dtcenter repository.
+Download and deploy the new v6.1.4 docker containers from the dtcenter repository.
