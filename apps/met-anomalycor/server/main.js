@@ -1314,8 +1314,8 @@ const doCurveParams = async function () {
       )[0]
     ];
   let sourceDefault;
-  if (sourceOptions.indexOf("ANLYS") !== -1) {
-    sourceDefault = "ANLYS";
+  if (sourceOptions.indexOf("ECMWF") !== -1) {
+    sourceDefault = "ECMWF";
   } else {
     [sourceDefault] = sourceOptions;
   }
