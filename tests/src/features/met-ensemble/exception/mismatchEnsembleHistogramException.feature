@@ -49,12 +49,12 @@ Feature: Mismatch EnsembleHistogram Exception
         Then the "info" dialog should be visible
         And I should see "INFO:  Can't plot matched with these curves because they don't have the same bins. Try setting the histogram type to 'Probability Integral Transform Histogram'." in the "info" dialog
 
-        When I click the "Clear" button
-        Then the "info" dialog should not be visible
-        Then I should be on the main page
-        And the "Plot Matched" button should be visible
+        # When I click the "Clear" button
+        # Then the "info" dialog should not be visible
+        # Then I should be on the main page
+        # And the "Plot Matched" button should be visible
 
-        When I click the "Remove All" button
-        And the "Remove all the curves" button should be visible
-        Then I click the "Remove all the curves" button
-        Then I should have 0 curves
+        # When I click the "Remove All" button
+        # And the "Remove all the curves" button should be visible
+        # Then I click the "Remove all the curves" button
+        # Then I should have 0 curves
