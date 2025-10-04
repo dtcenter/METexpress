@@ -8,7 +8,7 @@ Feature: Match Unmatch Diff Curves Histogram
     I want to end by removing all of the curves.
 
     Background:
-        Given I load the app "/met-cyclone"
+        Given I load the app "/met-cyclone-cb"
         Then I expect the app title to be "MET Cyclone"
 
     @watch

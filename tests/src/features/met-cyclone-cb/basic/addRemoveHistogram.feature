@@ -9,7 +9,7 @@ Feature: Add Remove Histogram
     then delete that curve.
 
     Background:
-        Given I load the app "/met-cyclone"
+        Given I load the app "/met-cyclone-cb"
         Then I expect the app title to be "MET Cyclone"
 
     @watch
