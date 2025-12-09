@@ -2065,7 +2065,7 @@ const doSavedCurveParams = async function () {
     settings.resetFromCode === undefined ||
     settings.resetFromCode === true
   ) {
-    matsCollections.SavedCurveParams.remove({});
+    matsCollections.SavedCurveParams.removeAsync({});
   }
   if ((await matsCollections.SavedCurveParams.find().countAsync()) === 0) {
     await matsCollections.SavedCurveParams.insertAsync({
