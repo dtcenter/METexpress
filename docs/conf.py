@@ -29,8 +29,8 @@ CURRENT_AUTHORS = [
     'Gopa Padmanabhan',
     'Molly Smith',
     'Randy Pierce',
-    'Jeff Hamilton'
-    'Natalie Babij',
+    'Jeff Hamilton',
+    'Natalie Babij'
 ]
 
 # list of former contributors who are no longer involved with the project
