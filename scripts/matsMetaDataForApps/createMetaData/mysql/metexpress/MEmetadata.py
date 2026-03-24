@@ -74,13 +74,13 @@ class ParentMetadata:
         if self.cursor.rowcount == 0:
             print(self.script_name + " - Metadata dev table does not exist--creating it")
             if self.statHeaderType == "stat_header":
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(4095), levels varchar(4095), fcst_lens varchar(4095), trshs varchar(4095), interp_mthds varchar(4095), gridpoints varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), regions varchar(1023), obs_variables varchar(1023), levels varchar(1023), fcst_lens varchar(1023), trshs varchar(1023), interp_mthds varchar(1023), gridpoints varchar(1023), truths varchar(1023), descrs varchar(1023), fcst_orig varchar(1023), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             elif self.statHeaderType == "mode_header":
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), levels varchar(4095), fcst_lens varchar(4095), fcst_accums varchar(4095), trshs varchar(4095), radii varchar(4095), gridpoints varchar(4095), descrs varchar(4095), fcst_orig varchar(4095), accum_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), variable varchar(255), levels varchar(1023), fcst_lens varchar(1023), fcst_accums varchar(1023), trshs varchar(1023), radii varchar(1023), gridpoints varchar(1023), descrs varchar(1023), fcst_orig varchar(1023), accum_orig varchar(1023), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             else:
-                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(4095), truths varchar(4095), descrs varchar(4095), fcst_lens varchar(4095), levels varchar(4095), fcst_orig varchar(4095), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
+                create_table_query = 'create table {}_dev (db varchar(255), model varchar(255), display_text varchar(255), line_data_table varchar(255), basin varchar(255), year int(4), storms varchar(1023), truths varchar(1023), descrs varchar(1023), fcst_lens varchar(1023), levels varchar(1023), fcst_orig varchar(1023), mindate int(11), maxdate int(11), numrecs bigint(31), updated int(11));'.format(
                     self.metadata_table)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
@@ -98,7 +98,7 @@ class ParentMetadata:
         # see if the metadata group tables already exist - create them if they do not
         self.cursor.execute('show tables like "{}_dev";'.format(self.database_groups))
         if self.cursor.rowcount == 0:
-            create_table_query = 'create table {}_dev (db_group varchar(255), dbs varchar(32767));'.format(
+            create_table_query = 'create table {}_dev (db_group text, dbs text);'.format(
                 self.database_groups)
             self.cursor.execute(create_table_query)
             self.cnx.commit()
@@ -373,6 +373,7 @@ class ParentMetadata:
 
                 # Get the additional data in the stat header for model var pairs
                 get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
+                                'group_concat(distinct obs_var) as ovars, ' \
                                 'group_concat(distinct fcst_lev separator "$") as levels, ' \
                                 'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
                                 'group_concat(distinct interp_mthd) as interp_mthds, ' \
@@ -449,6 +450,8 @@ class ParentMetadata:
                         per_mvdb[mvdb][model][line_data_table][fvar] = {}
                         per_mvdb[mvdb][model][line_data_table][fvar]['regions'] = \
                             sorted(model_var_line['regions'].split(','))
+                        per_mvdb[mvdb][model][line_data_table][fvar]['ovars'] = \
+                            sorted(model_var_line['ovars'].split(','))
                         per_mvdb[mvdb][model][line_data_table][fvar]['levels'] = \
                             sorted(model_var_line['levels'].split('$'), key=self.strip_level)
                         per_mvdb[mvdb][model][line_data_table][fvar]['trshs'] = \
@@ -923,7 +926,7 @@ class ParentMetadata:
             mindate = raw_metadata['mindate']
             maxdate = raw_metadata['maxdate']
             display_text = model.replace('.', '_')
-            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, levels, fcst_lens, trshs, interp_mthds, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+            insert_row = "insert into {}_dev (db, model, display_text, line_data_table, variable, regions, obs_variables, levels, fcst_lens, trshs, interp_mthds, gridpoints, truths, descrs, fcst_orig, mindate, maxdate, numrecs, updated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
                 self.metadata_table)
             qd.append(mvdb)
             qd.append(model)
@@ -931,6 +934,7 @@ class ParentMetadata:
             qd.append(line_data_table)
             qd.append(variable)
             qd.append(str(raw_metadata['regions']))
+            qd.append(str(raw_metadata['ovars']))
             qd.append(str(raw_metadata['levels']))
             qd.append(str(raw_metadata['fcsts']))
             qd.append(str(raw_metadata['trshs']))
