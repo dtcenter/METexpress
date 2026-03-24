@@ -1033,7 +1033,7 @@ const doCurveParams = async function () {
   } else if (regionOptions.indexOf("CONUS") !== -1) {
     regionDefault = "CONUS";
   } else {
-    [regionDefault] = regionOptions;
+    regionDefault = matsTypes.InputTypes.unused;
   }
 
   if ((await matsCollections.region.findOneAsync({ name: "region" })) === undefined) {
@@ -1051,6 +1051,7 @@ const doCurveParams = async function () {
       displayOrder: 1,
       displayPriority: 1,
       displayGroup: 3,
+      multiple: true,
     });
   } else {
     // it is defined but check for necessary update
@@ -1792,6 +1793,20 @@ const doCurveParams = async function () {
     }
   }
 
+  // these defaults are app-specific and not controlled by the user
+  const descrOptions =
+    descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+  let descrDefault;
+  if (descrOptions.indexOf("ALL") !== -1) {
+    descrDefault = "ALL";
+  } else {
+    descrDefault = matsTypes.InputTypes.unused;
+  }
+
   if (
     (await matsCollections.description.findOneAsync({ name: "description" })) ===
     undefined
@@ -1800,17 +1815,12 @@ const doCurveParams = async function () {
       name: "description",
       type: matsTypes.InputTypes.select,
       optionsMap: descrOptionsMap,
-      options:
-        descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
-          Object.keys(
-            descrOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
-          )[0]
-        ],
+      options: descrOptions,
       superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
       selected: "",
       controlButtonCovered: true,
       unique: false,
-      default: matsTypes.InputTypes.unused,
+      default: descrDefault,
       controlButtonVisibility: "block",
       gapBelow: true,
       displayOrder: 3,
@@ -1830,17 +1840,8 @@ const doCurveParams = async function () {
         {
           $set: {
             optionsMap: descrOptionsMap,
-            options:
-              descrOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
-                Object.keys(
-                  descrOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                    defaultStatType
-                  ]
-                )[0]
-              ],
-            default: matsTypes.InputTypes.unused,
+            options: descrOptions,
+            default: descrDefault,
           },
         }
       );
