@@ -131,6 +131,11 @@ global.dataSimpleScatter = async function (plotParams) {
     const variableClauseX = `and h.fcst_var = '${variableValuesMap[variableX]}'`;
     const variableClauseY = `and h.fcst_var = '${variableValuesMap[variableY]}'`;
 
+    const obsXVar = curve["obs-variable"];
+    const obsXVarClause = `and h.obs_var = '${obsXVar}'`;
+    const obsYVar = curve["y-obs-variable"];
+    const obsYVarClause = `and h.obs_var = '${obsYVar}'`;
+
     const { truth } = curve;
     const truthClause = `and h.obtype = '${truth}'`;
 
@@ -241,8 +246,8 @@ global.dataSimpleScatter = async function (plotParams) {
         ? statLineType
         : `met-${statLineType}`;
     allStatTypes.push(statType);
-    curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
-    curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisXKey = `${obsXVar} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisYKey = `${obsYVar} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
     curves[curveIndex].binParam = binParam; // stash the binParam to use it later for axis options
 
     if (!diffFrom) {
@@ -261,6 +266,7 @@ global.dataSimpleScatter = async function (plotParams) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{obsVarClause}} " +
         "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
@@ -289,8 +295,10 @@ global.dataSimpleScatter = async function (plotParams) {
 
       let statement1 = statement.replace("{{statisticClause}}", statisticClauseX);
       statement1 = statement1.replace("{{variableClause}}", variableClauseX);
+      statement1 = statement1.replace("{{obsVarClause}}", obsXVarClause);
       let statement2 = statement.replace("{{statisticClause}}", statisticClauseY);
       statement2 = statement2.replace("{{variableClause}}", variableClauseY);
+      statement2 = statement2.replace("{{obsVarClause}}", obsYVarClause);
 
       dataRequests[label] = statement;
 

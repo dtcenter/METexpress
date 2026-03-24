@@ -137,6 +137,9 @@ global.dataSeries = async function (plotParams) {
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
     const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
 
+    const obsVar = curve["obs-variable"];
+    const obsVarClause = `and h.obs_var = '${obsVar}'`;
+
     const { threshold } = curve;
     const thresholdClause = `and h.fcst_thresh = '${threshold}'`;
     const { truth } = curve;
@@ -263,7 +266,7 @@ global.dataSeries = async function (plotParams) {
     ) {
       axisKey = "Vector wind direction";
     } else {
-      axisKey = `${variable} ${statistic}`;
+      axisKey = `${obsVar} ${statistic}`;
     }
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 
@@ -285,6 +288,7 @@ global.dataSeries = async function (plotParams) {
         "{{imClause}} " +
         "{{scaleClause}} " +
         "{{variableClause}} " +
+        "{{obsVarClause}} " +
         "{{thresholdClause}} " +
         "{{truthClause}} " +
         "{{validTimeClause}} " +
@@ -304,6 +308,7 @@ global.dataSeries = async function (plotParams) {
       statement = statement.replace("{{imClause}}", imClause);
       statement = statement.replace("{{scaleClause}}", scaleClause);
       statement = statement.replace("{{variableClause}}", variableClause);
+      statement = statement.replace("{{obsVarClause}}", obsVarClause);
       statement = statement.replace("{{thresholdClause}}", thresholdClause);
       statement = statement.replace("{{truthClause}}", truthClause);
       statement = statement.replace("{{validTimeClause}}", validTimeClause);
