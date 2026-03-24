@@ -38,64 +38,6 @@ class ParentMetadata:
         self.statHeaderType = options['statHeaderType']
         self.dbs_too_large = {}
 
-    def _create_run_stats_table(self):
-        self.cursor.execute("""create table run_stats
-        (
-          script_name   varchar(50) null,
-          run_start_time  datetime    null,
-          run_finish_time datetime    null,
-          database_name   varchar(50) null,
-          status          varchar(30)
-        ) comment 'keep track of matadata_upate stats - status one of started|waiting|succeeded|failed';""")
-        self.cnx.commit()
-
-    def _create_metadata_script_info_table(self):
-        self.cursor.execute("""create table metadata_script_info
-               (
-                 app_reference          varchar(50)  null,
-                 running                BOOLEAN        
-               ) comment 'keep track of update metadata run status';""")
-        self.cnx.commit()
-
-    def set_running(self, state):
-        # use its own cursor because the cursor may have been closed
-        runningCnx = pymysql.connect(read_default_file=self.cnf_file)
-        runningCnx.autocommit = True
-        runningCursor = runningCnx.cursor(pymysql.cursors.DictCursor)
-        runningCursor.execute("use  " + self.metadata_database + ";")
-
-        runningCursor.execute(
-            "select app_reference from metadata_script_info where app_reference = '" + self.get_app_reference() + "'")
-        if runningCursor.rowcount == 0:
-            # insert
-            insert_cmd = 'insert into metadata_script_info (app_reference,  running) values ("' + self.get_app_reference() + '", "' + str(
-                int(state)) + '");'
-            runningCursor.execute(insert_cmd)
-            runningCnx.commit()
-        else:
-            # update
-            update_cmd = 'update metadata_script_info set running = "' + str(
-                int(state)) + '" where app_reference = "' + self.get_app_reference() + '";'
-            runningCursor.execute(update_cmd)
-            runningCnx.commit()
-        runningCursor.close()
-        runningCnx.close()
-
-    def update_status(self, status, utc_start, utc_end):
-        assert status == "started" or status == "waiting" or status == "succeeded" or status == "failed", "Attempt to update run_stats where status is not one of started | waiting | succeeded | failed: " + status
-        self.cursor.execute("select database_name from run_stats where database_name = '" + self.mvdb + "'")
-        if self.cursor.rowcount == 0:
-            # insert
-            insert_cmd = 'INSERT INTO run_stats (script_name, run_start_time, run_finish_time, database_name, status) VALUES ("' + self.script_name + '", "' + utc_start + '","' + utc_end + '","' + self.mvdb + '", "' + status + '");'
-            self.cursor.execute(insert_cmd)
-            self.cnx.commit()
-        else:
-            # update
-            qd = [utc_start, utc_end, status]
-            update_cmd = 'update run_stats set run_start_time=%s, run_finish_time=%s, status=%s where database_name = "' + self.mvdb + '" and script_name = "' + self.script_name + '";'
-            self.cursor.execute(update_cmd, qd)
-            self.cnx.commit()
-
     def get_app_reference(self):
         return self.app_reference
 
@@ -168,15 +110,6 @@ class ParentMetadata:
 
         self.cursor.execute("delete from {}_dev;".format(self.database_groups))
         self.cnx.commit()
-
-        # see if the metadata_script_info tables already exist
-        self.cursor.execute('show tables like "metadata_script_info";')
-        if self.cursor.rowcount == 0:
-            self._create_metadata_script_info_table()
-        # run stats is used by MEupdate_update.py - because it has to wait for completion
-        self.cursor.execute('show tables like "run_stats";')
-        if self.cursor.rowcount == 0:
-            self._create_run_stats_table()
 
     def reconcile_groups(self, groups_table):
         gd = {'database_groups': groups_table, 'database_groups_dev': groups_table + "_dev"}
@@ -1097,27 +1030,6 @@ class ParentMetadata:
             self.cursor.execute(insert_row, qd)
             self.cnx.commit()
 
-    def wait_on_other_updates(self, timeout, period=1):
-        if debug:
-            print(self.script_name + " waiting on other process")
-        mustend = tm.time() + timeout
-        self.cursor.execute("select * from metadata_script_info")
-        if self.cursor.rowcount == 0:
-            return False
-        waiting = True
-        while tm.time() < mustend and not waiting:
-            # some sort of check for running updates
-            self.cursor.execute("select app_reference from metadata_script_info where running != 0")
-            if self.cursor.rowcount > 0:
-                tm.sleep(period)
-            else:
-                if debug:
-                    print(self.script_name + " clear to go")
-                waiting = False
-                break
-
-        return False
-
     @classmethod
     def validate_options(self, options):
         assert True, options['cnf_file'] is not None and options['metadata_database'] is not None
@@ -1172,30 +1084,13 @@ class ParentMetadata:
 
     def main(self):
         self.mysql_prep_tables()
-        self.set_running(True)
         self.utc_start = str(datetime.utcnow())
-        self.update_status("waiting", self.utc_start, str(datetime.utcnow()))
-        self.wait_on_other_updates(2 * 3600, 5)  # max three hours?
-        self.update_status("started", self.utc_start, str(datetime.utcnow()))
         try:
             self.build_stats_object()
             self.deploy_dev_table()
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-            urllib.request.urlopen(self.refresh_url, data=None, cafile=None, capath=None, cadefault=False, context=ctx)
         except Exception as ex:
-            if "urlopen error [Errno 61] Connection refused" in str(ex):
-                print("The METexpress web server is currently unreachable. "
-                      "Its metadata will be refreshed when it next starts.")
-                self.update_status("succeeded", self.utc_start, str(datetime.utcnow()))
-            else:
-                print(self.script_name + ": Exception: " + str(ex))
-                traceback.print_stack()
-                self.update_status("failed", self.utc_start, str(datetime.utcnow()))
-        finally:
-            self.set_running(False)
-            self.update_status("succeeded", self.utc_start, str(datetime.utcnow()))
+            print(self.script_name + ": Exception: " + str(ex))
+            traceback.print_stack()
         # close connection
         self.cursor.close()
         self.cnx.close()
