@@ -430,6 +430,7 @@ const doCurveParams = async function () {
   const statisticOptionsMap = {};
   const variableOptionsMap = {};
   const variableValuesMap = {};
+  const obsVariableOptionsMap = {};
   const regionModelOptionsMap = {};
   const forecastLengthOptionsMap = {};
   const levelOptionsMap = {};
@@ -487,6 +488,7 @@ const doCurveParams = async function () {
       statisticOptionsMap[thisDB] = {};
       variableOptionsMap[thisDB] = {};
       variableValuesMap[thisDB] = {};
+      obsVariableOptionsMap[thisDB] = {};
       regionModelOptionsMap[thisDB] = {};
       forecastLengthOptionsMap[thisDB] = {};
       levelOptionsMap[thisDB] = {};
@@ -498,7 +500,7 @@ const doCurveParams = async function () {
 
       rows = await matsDataQueryUtils.queryMySQL(
         global.sumPool,
-        `select model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
+        `select model,display_text,line_data_table,variable,regions,obs_variables,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate from surface_metexpress_metadata where db = '${thisDB}' group by model,display_text,line_data_table,variable,regions,obs_variables,levels,descrs,fcst_orig,trshs,interp_mthds,gridpoints,truths,mindate,maxdate order by model,line_data_table,variable;`
       );
       for (let i = 0; i < rows.length; i += 1) {
         const modelValue = rows[i].model.trim();
@@ -520,6 +522,20 @@ const doCurveParams = async function () {
             : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
         const validStats = masterStatsOptionsMap[lineDataTable];
         const variable = rows[i].variable.trim();
+
+        const obsVars = rows[i].obs_variables;
+        const obsVarsArrRaw = obsVars
+          .split(",")
+          .map(Function.prototype.call, String.prototype.trim);
+        const obsVarsArr = [];
+        let dummyObsVar;
+        for (let j = 0; j < obsVarsArrRaw.length; j += 1) {
+          // sometimes bad vsdb parsing sticks an = on the end of levels in the db, so check for that.
+          dummyObsVar = obsVarsArrRaw[j].replace(/'|\[|\]|=/g, "");
+          if (obsVarsArr.indexOf(dummyObsVar) === -1) {
+            obsVarsArr.push(dummyObsVar);
+          }
+        }
 
         const { regions } = rows[i];
         const regionsArr = regions
@@ -609,6 +625,10 @@ const doCurveParams = async function () {
           variableValuesMap[thisDB][model] === undefined
             ? {}
             : variableValuesMap[thisDB][model];
+        obsVariableOptionsMap[thisDB][model] =
+          obsVariableOptionsMap[thisDB][model] === undefined
+            ? {}
+            : obsVariableOptionsMap[thisDB][model];
         regionModelOptionsMap[thisDB][model] =
           regionModelOptionsMap[thisDB][model] === undefined
             ? {}
@@ -652,6 +672,7 @@ const doCurveParams = async function () {
             statisticOptionsMap[thisDB][model][thisPlotType] = validStats;
             variableOptionsMap[thisDB][model][thisPlotType] = {};
             variableValuesMap[thisDB][model][thisPlotType] = {};
+            obsVariableOptionsMap[thisDB][model][thisPlotType] = {};
             regionModelOptionsMap[thisDB][model][thisPlotType] = {};
             forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
             levelOptionsMap[thisDB][model][thisPlotType] = {};
@@ -680,6 +701,8 @@ const doCurveParams = async function () {
               // if we haven't encountered this variable for this stat yet, initialize everything
               variableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = [];
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+              obsVariableOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
+                {};
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
                 {};
               forecastLengthOptionsMap[thisDB][model][thisPlotType][thisValidStatType] =
@@ -704,6 +727,9 @@ const doCurveParams = async function () {
               variableValuesMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = variable;
+              obsVariableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = obsVarsArr;
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = regionsArr;
@@ -733,6 +759,14 @@ const doCurveParams = async function () {
               ] = { minDate: rowMinDate, maxDate: rowMaxDate };
             } else {
               // if we have encountered this variable for this plot type, we need to take the unions of existing and new arrays
+              obsVariableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = _.union(
+                obsVariableOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ],
+                obsVarsArr
+              );
               regionModelOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = _.union(
@@ -1135,9 +1169,9 @@ const doCurveParams = async function () {
       unique: false,
       default: defaultStatistic,
       controlButtonVisibility: "block",
-      displayOrder: 4,
+      displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 3,
+      displayGroup: 4,
     });
   } else {
     // it is defined but check for necessary update
@@ -1184,6 +1218,7 @@ const doCurveParams = async function () {
       dependentNames: [
         "region",
         "forecast-length",
+        "obs-variable",
         "level",
         "threshold",
         "interp-method",
@@ -1198,7 +1233,6 @@ const doCurveParams = async function () {
       default: variableDefault,
       controlButtonText: "variable",
       controlButtonVisibility: "block",
-      gapBelow: true,
       displayOrder: 3,
       displayPriority: 1,
       displayGroup: 3,
@@ -1238,14 +1272,15 @@ const doCurveParams = async function () {
       options: variableOptions,
       valuesMap: variableValuesMap,
       superiorNames: ["database", "data-source", "plot-type", "y-statistic"],
+      dependentNames: ["y-obs-variable"],
       controlButtonCovered: true,
       unique: false,
       default: variableDefault,
       controlButtonVisibility: "block",
       gapBelow: true,
-      displayOrder: 5,
+      displayOrder: 2,
       displayPriority: 1,
-      displayGroup: 3,
+      displayGroup: 4,
     });
   } else {
     // it is defined but check for necessary update
@@ -1265,6 +1300,103 @@ const doCurveParams = async function () {
             valuesMap: variableValuesMap,
             options: variableOptions,
             default: variableDefault,
+          },
+        }
+      );
+    }
+  }
+
+  const obsVariableOptions =
+    obsVariableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+      Object.keys(
+        obsVariableOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+      )[0]
+    ];
+
+  if (
+    (await matsCollections["obs-variable"].findOneAsync({ name: "obs-variable" })) ===
+    undefined
+  ) {
+    await matsCollections["obs-variable"].insertAsync({
+      name: "obs-variable",
+      type: matsTypes.InputTypes.select,
+      optionsMap: obsVariableOptionsMap,
+      options: obsVariableOptions,
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
+      selected: "",
+      controlButtonCovered: true,
+      unique: false,
+      default: obsVariableOptions[0],
+      controlButtonVisibility: "block",
+      displayOrder: 4,
+      displayPriority: 1,
+      displayGroup: 3,
+      multiple: false,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = await matsCollections["obs-variable"].findOneAsync({
+      name: "obs-variable",
+    });
+    if (
+      !matsDataUtils.areObjectsEqual(obsVariableOptionsMap, currentParam.optionsMap)
+    ) {
+      // have to reload obs-variable data
+      await matsCollections["obs-variable"].updateAsync(
+        { name: "obs-variable" },
+        {
+          $set: {
+            optionsMap: obsVariableOptionsMap,
+            options: obsVariableOptions,
+            default: obsVariableOptions[0],
+          },
+        }
+      );
+    }
+  }
+
+  if (
+    (await matsCollections["y-obs-variable"].findOneAsync({
+      name: "y-obs-variable",
+    })) === undefined
+  ) {
+    await matsCollections["y-obs-variable"].insertAsync({
+      name: "y-obs-variable",
+      type: matsTypes.InputTypes.select,
+      optionsMap: obsVariableOptionsMap,
+      options: obsVariableOptions,
+      superiorNames: [
+        "database",
+        "data-source",
+        "plot-type",
+        "y-statistic",
+        "y-variable",
+      ],
+      controlButtonCovered: true,
+      unique: false,
+      default: obsVariableOptions[0],
+      controlButtonVisibility: "block",
+      gapBelow: true,
+      displayOrder: 3,
+      displayPriority: 1,
+      displayGroup: 4,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = await matsCollections["y-obs-variable"].findOneAsync({
+      name: "y-obs-variable",
+    });
+    if (
+      !matsDataUtils.areObjectsEqual(obsVariableOptionsMap, currentParam.optionsMap)
+    ) {
+      // have to reload variable data
+      await matsCollections["y-obs-variable"].updateAsync(
+        { name: "y-obs-variable" },
+        {
+          $set: {
+            optionsMap: obsVariableOptionsMap,
+            options: obsVariableOptions,
+            default: obsVariableOptions[0],
           },
         }
       );
@@ -1300,7 +1432,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 4,
+      displayGroup: 5,
     });
   } else {
     // it is defined but check for necessary update
@@ -1354,7 +1486,7 @@ const doCurveParams = async function () {
       gapAbove: true,
       displayOrder: 2,
       displayPriority: 1,
-      displayGroup: 4,
+      displayGroup: 5,
     });
   } else {
     // it is defined but check for necessary update
@@ -1399,7 +1531,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 3,
       displayPriority: 1,
-      displayGroup: 4,
+      displayGroup: 5,
     });
   } else {
     // it is defined but check for necessary update
@@ -1464,7 +1596,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 5,
       displayPriority: 1,
-      displayGroup: 5,
+      displayGroup: 6,
     });
   } else {
     // it is defined but check for necessary update
@@ -1513,7 +1645,7 @@ const doCurveParams = async function () {
       controlButtonText: "forecast lead time",
       displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 5,
+      displayGroup: 6,
       multiple: true,
     });
   } else {
@@ -1570,7 +1702,7 @@ const doCurveParams = async function () {
       controlButtonText: "dieoff type",
       displayOrder: 2,
       displayPriority: 1,
-      displayGroup: 5,
+      displayGroup: 6,
     });
   }
 
@@ -1615,7 +1747,7 @@ const doCurveParams = async function () {
       controlButtonText: "valid utc hour",
       displayOrder: 3,
       displayPriority: 1,
-      displayGroup: 5,
+      displayGroup: 6,
       multiple: true,
     });
   }
@@ -1662,7 +1794,7 @@ const doCurveParams = async function () {
       controlButtonText: "utc cycle init hour",
       displayOrder: 4,
       displayPriority: 1,
-      displayGroup: 5,
+      displayGroup: 6,
       multiple: true,
     });
   }
@@ -1735,7 +1867,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 6,
+      displayGroup: 7,
     });
   }
 
@@ -1772,7 +1904,7 @@ const doCurveParams = async function () {
       controlButtonText: "Ground Level",
       displayOrder: 2,
       displayPriority: 1,
-      displayGroup: 6,
+      displayGroup: 7,
       multiple: false,
     });
   } else {
@@ -1825,7 +1957,7 @@ const doCurveParams = async function () {
       gapBelow: true,
       displayOrder: 3,
       displayPriority: 1,
-      displayGroup: 6,
+      displayGroup: 7,
       multiple: true,
     });
   } else {
@@ -1864,7 +1996,7 @@ const doCurveParams = async function () {
       gapAbove: true,
       displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 7,
+      displayGroup: 8,
     });
   }
 
@@ -1898,7 +2030,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 2,
       displayPriority: 1,
-      displayGroup: 7,
+      displayGroup: 8,
     });
   }
 
@@ -1952,7 +2084,7 @@ const doCurveParams = async function () {
       controlButtonVisibility: "block",
       displayOrder: 1,
       displayPriority: 1,
-      displayGroup: 8,
+      displayGroup: 9,
     });
   } else {
     // it is defined but check for necessary update
@@ -2009,7 +2141,8 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
-        ["", "statistic", " "],
+        [" against ", "obs-variable", " "],
+        ["", "statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", " UTC, "],
@@ -2025,6 +2158,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "threshold",
         "interp-method",
         "scale",
@@ -2050,7 +2184,8 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
-        ["", "statistic", " "],
+        [" against ", "obs-variable", " "],
+        ["", "statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
         ["", "dieoff-type", ", "],
@@ -2067,6 +2202,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "threshold",
         "interp-method",
         "scale",
@@ -2092,7 +2228,8 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
-        ["", "statistic", " "],
+        [" against ", "obs-variable", " "],
+        ["", "statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", " UTC, "],
@@ -2108,6 +2245,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "interp-method",
         "scale",
         "forecast-length",
@@ -2132,7 +2270,8 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
-        ["", "statistic", " "],
+        [" against ", "obs-variable", " "],
+        ["", "statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
         ["", "truth", ", "],
@@ -2147,6 +2286,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "threshold",
         "interp-method",
         "scale",
@@ -2171,6 +2311,7 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
+        [" against ", "obs-variable", " "],
         ["", "statistic", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", " UTC, "],
@@ -2186,6 +2327,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "threshold",
         "interp-method",
         "scale",
@@ -2210,7 +2352,8 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
-        ["", "statistic", " "],
+        [" against ", "obs-variable", " "],
+        ["", "statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", ""],
@@ -2225,6 +2368,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "threshold",
         "interp-method",
         "scale",
@@ -2249,8 +2393,10 @@ const doCurveTextPatterns = async function () {
         ["", "interp-method", " "],
         ["", "scale", ", "],
         ["", "variable", " "],
+        [" against ", "obs-variable", " "],
         ["", "statistic", " vs "],
         ["", "y-variable", " "],
+        [" against ", "y-obs-variable", " "],
         ["", "y-statistic", ", "],
         ["", "aggregation-method", ", "],
         ["", "level", ", "],
@@ -2266,8 +2412,10 @@ const doCurveTextPatterns = async function () {
         "region",
         "statistic",
         "variable",
+        "obs-variable",
         "y-statistic",
         "y-variable",
+        "y-obs-variable",
         "threshold",
         "interp-method",
         "scale",
