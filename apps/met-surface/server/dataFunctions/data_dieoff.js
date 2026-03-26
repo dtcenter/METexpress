@@ -252,7 +252,7 @@ global.dataDieoff = async function (plotParams) {
     ) {
       axisKey = "Vector wind direction";
     } else {
-      axisKey = `${obsVar} ${statistic}`;
+      axisKey = `${variable} ${statistic}`;
     }
     curves[curveIndex].axisKey = axisKey; // stash the axisKey to use it later for axis options
 

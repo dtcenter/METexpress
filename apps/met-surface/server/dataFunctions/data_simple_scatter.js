@@ -246,8 +246,8 @@ global.dataSimpleScatter = async function (plotParams) {
         ? statLineType
         : `met-${statLineType}`;
     allStatTypes.push(statType);
-    curves[curveIndex].axisXKey = `${obsXVar} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
-    curves[curveIndex].axisYKey = `${obsYVar} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
+    curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
     curves[curveIndex].binParam = binParam; // stash the binParam to use it later for axis options
 
     if (!diffFrom) {
