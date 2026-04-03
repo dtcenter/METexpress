@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 6.2.6 release notes (20260313)
+METexpress Version 6.2.7 release notes (20260402)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -18,20 +18,16 @@ METexpress Version 6.2.6 release notes (20260313)
      
   .. dropdown:: Documentation
 
-     * Added documentation link to top navigation bar.
+     * None.
      
   .. dropdown:: Bugfixes
 
-     * Fixed npm security vulnerability.
-     * Clicking Restore Settings no longer removes all added curves unless the user then clicks confirm.
-     * Clicking Restore Settings no longer changes the values on the blue curve selector buttons (although it may by necessity change plot type).
-     * Fixed bug where the default legend text wouldn't appear on the Edit Legend modal.
-
+     * Fixed npm security vulnerabilities.
      
   .. dropdown:: Enhancements
   
-     * Reordered curve legends to be more concise and display forecast lead time earlier.
-     * Made modals larger.
+     * Added Obs Variable selector to MET Surface app.
+     * Made MET Surface region selector a multiselect.
 
   .. dropdown:: Miscellaneous
     
@@ -40,7 +36,7 @@ METexpress Version 6.2.6 release notes (20260313)
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 6.2.6 upgrade instructions
+METexpress Version 6.2.7 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v6.2.6 docker containers from the dtcenter repository.
+Download and deploy the new v6.2.7 docker containers from the dtcenter repository.
