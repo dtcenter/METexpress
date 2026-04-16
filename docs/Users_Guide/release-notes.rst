@@ -28,7 +28,6 @@ METexpress Version 6.2.8 release notes (20260417)
   .. dropdown:: Enhancements
   
      * Improved curve editing experience in general.
-     * Added toolbar to edit fields in multiple curves at once.
 
   .. dropdown:: Miscellaneous
     
