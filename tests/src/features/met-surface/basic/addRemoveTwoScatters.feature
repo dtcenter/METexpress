@@ -36,6 +36,7 @@ Feature: Add Remove Two Scatters
         Then the curve-dates value is "10/01/2014 00:00 - 11/09/2014 00:00"
         Then I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "data-source" parameter to "HRRR/255"
         Then the "data-source" parameter value matches "HRRR/255"

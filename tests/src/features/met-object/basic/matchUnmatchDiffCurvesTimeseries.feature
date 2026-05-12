@@ -29,6 +29,7 @@ Feature: Match Unmatch Diff Curves Timeseries
         Then the dates value is "05/01/2020 00:00 - 05/03/2020 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "data-source" parameter to "HRRRv4"
         Then the "data-source" parameter value matches "HRRRv4"

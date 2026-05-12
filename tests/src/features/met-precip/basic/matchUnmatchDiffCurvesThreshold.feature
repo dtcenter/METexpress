@@ -31,6 +31,7 @@ Feature: Match Unmatch Diff Curves Threshold
         Then the curve-dates value is "02/03/2018 00:00 - 06/03/2019 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "data-source" parameter to "HRRR"
         Then the "data-source" parameter value matches "HRRR"

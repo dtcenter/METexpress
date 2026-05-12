@@ -29,6 +29,7 @@ Feature: Match Unmatch Diff Curves Valid Time
         Then the curve-dates value is "11/01/2018 00:00 - 11/11/2018 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "data-source" parameter to "PRFV3RT1"
         Then the "data-source" parameter value matches "PRFV3RT1"

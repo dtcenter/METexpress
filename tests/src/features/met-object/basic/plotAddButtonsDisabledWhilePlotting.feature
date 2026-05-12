@@ -29,6 +29,7 @@ Feature: Plot and Add buttons are disabled while plotting
         Then the dates value is "05/01/2020 00:00 - 05/03/2020 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I click the "Plot Unmatched" button
         Then the "Add Curve" button should not be enabled

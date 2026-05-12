@@ -27,6 +27,7 @@ Feature: Match Unmatch Diff Curves Year To Year
         Then the dates value is "01/01/2023 00:00 - 12/31/2024 23:59"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "basin" parameter to "EP"
         Then the "basin" parameter value matches "EP"

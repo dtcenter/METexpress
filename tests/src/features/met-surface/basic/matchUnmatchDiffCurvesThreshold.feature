@@ -27,6 +27,7 @@ Feature: Match Unmatch Diff Curves Threshold
         Then the curve-dates value is "04/01/2019 00:00 - 05/09/2019 00:00"
         When I click the "Add Curve" button
         Then "Curve0" is added
+        And I should see a list of curves containing "Curve0"
 
         When I change the "data-source" parameter to "CMAQPARA11/148"
         Then the "data-source" parameter value matches "CMAQPARA11/148"
