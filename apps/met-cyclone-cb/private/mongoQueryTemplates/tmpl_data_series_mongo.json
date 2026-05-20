@@ -1,0 +1,40 @@
+[
+    {
+        "$match": {
+            "id": {
+                "$in": [
+                    "docIDTemplate"
+                ]
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$VALID",
+            "arr0": {
+                "$push": {
+                    "avtime": "$VALID",
+                    "STORM_ID": "$STORM_ID",
+                    "data": "$data"
+                }
+            }
+        }
+    },
+    {
+        "$project": {
+            "avtime": "$_id",
+            "sortedArr0": {
+                "$sortArray": {
+                    "input": "$arr0",
+                    "sortBy": 1
+                }
+            },
+            "docIDTemplate": "MET:DD:MET:METDEFAULT:{{version}}:GFSO:BEST:{{stormID}}:AL:{{stormNumber}}:{{stormName}}:{{date}}:TCMPR"
+        }
+    },
+    {
+        "$sort": {
+            "avtime": 1
+        }
+    }
+]

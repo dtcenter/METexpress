@@ -1,0 +1,40 @@
+[
+    {
+        "$match": {
+            "id": {
+                "$in": [
+                    "MET:DD:MET:METDEFAULT:V11.0.1:NGX:BEST:AL102023:AL:10:IDALIA:1693677600:TCMPR",
+                    "MET:DD:MET:METDEFAULT:V11.0.1:HFSB:BEST:AL952023:AL:95:INVEST:1690070400:TCMPR"
+                ]
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$VALID",
+            "arr0": {
+                "$push": {
+                    "avtime": "$VALID",
+                    "STORM_ID": "$STORM_ID",
+                    "data": "$data"
+                }
+            }
+        }
+    },
+    {
+        "$project": {
+            "avtime": "$_id",
+            "sortedArr0": {
+                "$sortArray": {
+                    "input": "$arr0",
+                    "sortBy": 1
+                }
+            }
+        }
+    },
+    {
+        "$sort": {
+            "avtime": 1
+        }
+    }
+]
