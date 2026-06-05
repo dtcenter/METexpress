@@ -234,7 +234,7 @@ global.dataSimpleScatter = async function (plotParams) {
     }
     appParams.aggMethod = curve["aggregation-method"];
     const statType = `met-${statLineType}`;
-    allStatTypes.push(statType);
+    allStatTypes.push([statType, statType]); // for scatter plots the x and y stat types will always be the same
     curves[curveIndex].axisXKey = `${variableXStr} ${statisticXSelect}`; // stash the axisKey to use it later for axis options
     curves[curveIndex].axisYKey = `${variableYStr} ${statisticYSelect}`; // stash the axisKey to use it later for axis options
     curves[curveIndex].binParam = binParam; // stash the binParam to use it later for axis options
