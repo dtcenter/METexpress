@@ -310,10 +310,17 @@ global.dataSeries = async function (plotParams)
   let queryResult;
   const startMoment = moment();
   let finishMoment;
+
+  const fs = require('node:fs/promises');
+  const os = require('os');
+  const homeDir = os.homedir();
+
   try
   {
     // send the query statements to the query function
-    console.log("queryArray", queryArray);
+    await fs.writeFile(homeDir + "/scratch/queryArray.json", JSON.stringify(queryArray, null, 2));
+    console.log("queryArray written to ~/scratch/queryArray.json");
+
     const mongoEval = Meteor.settings.public.mongoEval;
     if (mongoEval === true)
     {
@@ -369,23 +376,18 @@ global.dataSeries = async function (plotParams)
               const dits4 = dits3.replace(/^"|"$/g, "");
               const finalDocID = dits4.replace(/^"|"$/g, "");
 
-                                                "MET:DD:MET:METDEFAULT:V10.1.1:GFSO:BEST:AL012024:AL:01:ALBERTO:1693677600:TCMPR",
-              // pipeline[0].$match.id.$in.push("MET:DD:MET:METDEFAULT:V11.0.1:NGX:BEST:AL102023:AL:10:IDALIA:1693677600:TCMPR");
-              // pipeline[0].$match.id.$in.push("MET:DD:MET:METDEFAULT:V11.0.1:HFSB:BEST:AL952023:AL:95:INVEST:1690070400:TCMPR");
               pipeline[0].$match.id.$in.push(finalDocID);
             })
           };
         //});
       });
 
-      const fs = require('node:fs/promises');
-      const os = require('os');
-      const homeDir = os.homedir();
       await fs.writeFile(homeDir + "/scratch/pipeline.json", JSON.stringify(pipeline, null, 2));
-      console.log("pipeline written to ~/scratch/pipeline.json");
+      console.log("mongo aggregation pipeline written to ~/scratch/pipeline.json");
 
       let result
       if(usePseudoQuery === true) { 
+        console.log("Using pseudo query from file:", pseudoQueryFile);``
         const pseudoQueryTxt = await Assets.getTextAsync("mongoQueries/" + pseudoQueryFile
         );
         const pseudoQuery = EJSON.parse(pseudoQueryTxt);
@@ -393,14 +395,18 @@ global.dataSeries = async function (plotParams)
       } else {
         result = await collection.aggregate(pipeline).toArray();
       }
-      await fs.writeFile(homeDir + "/scratch/pipeline_result.json", JSON.stringify(result, null, 2));
-      console.log("mongo result written to ~/scratch/pipeline_result.json");
+      await fs.writeFile(homeDir + "/scratch/mongo_result.json", JSON.stringify(result, null, 2));
+      console.log("mongo result written to ~/scratch/mongo_result.json");
+
+      // MATS/MATScommon/meteor_packages/mats-common/imports/startup/server/data_query_util.js : queryMongoPython
+      queryResult = await matsDataQueryUtils.queryMongoPython(global.cbPool, queryArray);
     }
     /*else
     {
       */
 
-    queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
+    
+    // queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
     finishMoment = moment();
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
@@ -412,9 +418,6 @@ global.dataSeries = async function (plotParams)
     };
     // get the data back from the query
     dReturn = queryResult.data;
-    const fs = require('node:fs/promises');
-    const os = require('os');
-    const homeDir = os.homedir();
     await fs.writeFile(homeDir + "/scratch/cb_result.json", JSON.stringify(dReturn, null, 2));
     console.log("cb result written to ~/scratch/cb_result.json");
     //}
