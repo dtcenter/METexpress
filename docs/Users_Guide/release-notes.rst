@@ -10,7 +10,7 @@ enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcen
 Important issues are listed **in bold** for emphasis.
      
 METexpress Version 6.2.10 release notes (20260612)
--------------------------------------------------
+--------------------------------------------------
 
   .. dropdown:: Repository, build, and test
 
@@ -38,6 +38,6 @@ METexpress Upgrade Instructions
 ===============================
 
 METexpress Version 6.2.10 upgrade instructions
----------------------------------------------
+----------------------------------------------
 
 Download and deploy the new v6.2.10 docker containers from the dtcenter repository.
