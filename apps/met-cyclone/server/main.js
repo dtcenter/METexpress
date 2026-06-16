@@ -517,15 +517,15 @@ const doCurveParams = async function () {
         }
         modelOptionsMap[thisDB][model] = [modelValue];
 
+        const basin = rows[i].basin.trim();
+        const year = rows[i].year.toString();
+
         const rowMinDate = moment
-          .utc(rows[i].mindate * 1000)
+          .utc(`01/01/${year} 00:00`, "MM/DD/YYYY HH:mm")
           .format("MM/DD/YYYY HH:mm");
         const rowMaxDate = moment
-          .utc(rows[i].maxdate * 1000)
+          .utc(`12/31/${year} 23:00`, "MM/DD/YYYY HH:mm")
           .format("MM/DD/YYYY HH:mm");
-
-        const basin = rows[i].basin.trim();
-        const { year } = rows[i];
 
         const { storms } = rows[i];
         const stormsArr = storms
