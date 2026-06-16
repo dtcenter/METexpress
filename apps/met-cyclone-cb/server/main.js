@@ -612,7 +612,7 @@ const doCurveParams = async function () {
                         if (years) {
                           for (let yidx = 0; yidx < years.length; yidx += 1) {
                             const thisYear = years[yidx];
-                            const { year } = thisYear;
+                            const year = thisYear.year.toString();
 
                             const stormsArr =
                               thisYear.mdcounts.storms !== undefined &&
@@ -646,10 +646,10 @@ const doCurveParams = async function () {
                                   ).sort() // use JSON to force a deep copy
                                 : ["NA"];
                             const rowMinDate = moment
-                              .utc(thisYear.mdcounts.mindate * 1000)
+                              .utc(`01/01/${year} 00:00`, "MM/DD/YYYY HH:mm")
                               .format("MM/DD/YYYY HH:mm");
                             const rowMaxDate = moment
-                              .utc(thisYear.mdcounts.maxdate * 1000)
+                              .utc(`12/31/${year} 23:00`, "MM/DD/YYYY HH:mm")
                               .format("MM/DD/YYYY HH:mm");
 
                             stormsArr.unshift("All storms");
