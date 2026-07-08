@@ -355,7 +355,7 @@ global.dataPerformanceDiagram = async function (plotParams) {
     dataRequests,
     totalProcessingStart,
   };
-  const result = await matsDataProcessUtils.processDataROC(
+  const result = await matsDataProcessUtils.processDataPerformanceDiagram(
     dataset,
     appParams,
     curveInfoParams,
