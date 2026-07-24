@@ -485,7 +485,9 @@ const doCurveParams = async function () {
           const varParts = variable.split("_ENS_NMEP_");
           [variable] = varParts;
           const moreVarParts = varParts[1].split("_");
-          neighborhoodSize = Math.sqrt(Number(moreVarParts[moreVarParts.length - 2].replace("NBRHD", ""))).toString();
+          neighborhoodSize = Math.sqrt(
+            Number(moreVarParts[moreVarParts.length - 2].replace("NBRHD", ""))
+          ).toString();
         }
 
         const { regions } = rows[i];
@@ -1160,7 +1162,11 @@ const doCurveParams = async function () {
     }
   }
 
-  if ((await matsCollections["neighborhood-size"].findOneAsync({ name: "neighborhood-size" })) === undefined) {
+  if (
+    (await matsCollections["neighborhood-size"].findOneAsync({
+      name: "neighborhood-size",
+    })) === undefined
+  ) {
     await matsCollections["neighborhood-size"].insertAsync({
       name: "neighborhood-size",
       type: matsTypes.InputTypes.select,
@@ -1188,7 +1194,9 @@ const doCurveParams = async function () {
     });
   } else {
     // it is defined but check for necessary update
-    const currentParam = await matsCollections["neighborhood-size"].findOneAsync({ name: "neighborhood-size" });
+    const currentParam = await matsCollections["neighborhood-size"].findOneAsync({
+      name: "neighborhood-size",
+    });
     if (!matsDataUtils.areObjectsEqual(nbOptionsMap, currentParam.optionsMap)) {
       // have to reload neighborhood data
       await matsCollections["neighborhood-size"].updateAsync(
@@ -1197,9 +1205,7 @@ const doCurveParams = async function () {
           $set: {
             optionsMap: nbOptionsMap,
             options:
-              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
+              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
                 Object.keys(
                   nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
                     defaultStatType
@@ -1207,9 +1213,7 @@ const doCurveParams = async function () {
                 )[0]
               ],
             default:
-              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
-                defaultStatType
-              ][
+              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
                 Object.keys(
                   nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
                     defaultStatType

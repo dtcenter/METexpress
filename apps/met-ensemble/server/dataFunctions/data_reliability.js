@@ -94,7 +94,11 @@ global.dataReliability = async function (plotParams) {
 
     let { threshold } = curve;
     // get the threshold into the form used for the variable query
-    threshold = threshold.replace(">=", "ge").replace("<=", "le").replace(">", "gt").replace("<", "lt");
+    threshold = threshold
+      .replace(/>=/g, "ge")
+      .replace(/<=/g, "le")
+      .replace(/>/g, "gt")
+      .replace(/</g, "lt");
 
     let neighborhoodSize = curve["neighborhood-size"];
 
