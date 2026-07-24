@@ -372,15 +372,26 @@ class ParentMetadata:
                     test_result = cursor2.fetchall()
 
                 # Get the additional data in the stat header for model var pairs
-                get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
-                                'group_concat(distinct obs_var) as ovars, ' \
-                                'group_concat(distinct fcst_lev separator "$") as levels, ' \
-                                'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
-                                'group_concat(distinct interp_mthd) as interp_mthds, ' \
-                                'group_concat(distinct interp_pnts) as gridpoints, ' \
-                                'group_concat(distinct obtype) as truths, ' \
-                                'group_concat(distinct descr) as descrs from stat_header' \
-                                + where_query + ' group by model, fcst_var;'
+                if "ensemble" in self.app_reference:
+                    get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
+                                    'group_concat(distinct obs_var) as ovars, ' \
+                                    'group_concat(distinct fcst_lev separator "$") as levels, ' \
+                                    'group_concat(distinct obs_thresh separator "$") as trshs, ' \
+                                    'group_concat(distinct interp_mthd) as interp_mthds, ' \
+                                    'group_concat(distinct interp_pnts) as gridpoints, ' \
+                                    'group_concat(distinct obtype) as truths, ' \
+                                    'group_concat(distinct descr) as descrs from stat_header' \
+                                    + where_query + ' group by model, fcst_var;'
+                else:
+                    get_val_lists = 'select model, fcst_var, group_concat(distinct vx_mask) as regions, ' \
+                                    'group_concat(distinct obs_var) as ovars, ' \
+                                    'group_concat(distinct fcst_lev separator "$") as levels, ' \
+                                    'group_concat(distinct fcst_thresh separator "$") as trshs, ' \
+                                    'group_concat(distinct interp_mthd) as interp_mthds, ' \
+                                    'group_concat(distinct interp_pnts) as gridpoints, ' \
+                                    'group_concat(distinct obtype) as truths, ' \
+                                    'group_concat(distinct descr) as descrs from stat_header' \
+                                    + where_query + ' group by model, fcst_var;'
                 cursor2.execute(get_val_lists)
                 result2 = cursor2.fetchall()
 
