@@ -92,11 +92,23 @@ global.dataReliability = async function (plotParams) {
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
 
+    let { threshold } = curve;
+    // get the threshold into the form used for the variable query
+    threshold = threshold.replace(">=", "ge").replace("<=", "le").replace(">", "gt").replace("<", "lt");
+
+    let neighborhoodSize = curve["neighborhood-size"];
+
     const { variable } = curve;
     const variableValuesMap = (
       await matsCollections.variable.findOneAsync({ name: "variable" })
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
-    const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    let variableClause = "";
+    if (neighborhoodSize && neighborhoodSize !== "NA") {
+      neighborhoodSize = Number(neighborhoodSize) * Number(neighborhoodSize);
+      variableClause = `and h.fcst_var = '${variableValuesMap[variable]}_ENS_NMEP_${threshold}_NBRHD${neighborhoodSize}_GAUSSIAN1'`;
+    } else {
+      variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    }
 
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
