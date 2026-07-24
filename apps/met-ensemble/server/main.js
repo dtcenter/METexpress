@@ -398,6 +398,7 @@ const doCurveParams = async function () {
   const forecastLengthOptionsMap = {};
   const levelOptionsMap = {};
   const thresholdOptionsMap = {};
+  const nbOptionsMap = {};
   const sourceOptionsMap = {};
   const descrOptionsMap = {};
 
@@ -450,6 +451,7 @@ const doCurveParams = async function () {
       forecastLengthOptionsMap[thisDB] = {};
       levelOptionsMap[thisDB] = {};
       thresholdOptionsMap[thisDB] = {};
+      nbOptionsMap[thisDB] = {};
       sourceOptionsMap[thisDB] = {};
       descrOptionsMap[thisDB] = {};
 
@@ -476,7 +478,15 @@ const doCurveParams = async function () {
             ? validPlotTypes
             : _.union(plotTypeOptionsMap[thisDB][model], validPlotTypes);
         const validStats = masterStatsOptionsMap[lineDataTable];
-        const variable = rows[i].variable.trim();
+
+        let variable = rows[i].variable.trim();
+        let neighborhoodSize = "NA";
+        if (variable.includes("ENS_NMEP")) {
+          const varParts = variable.split("_ENS_NMEP_");
+          [variable] = varParts;
+          const moreVarParts = varParts[1].split("_");
+          neighborhoodSize = Math.sqrt(Number(moreVarParts[moreVarParts.length - 2].replace("NBRHD", ""))).toString();
+        }
 
         const { regions } = rows[i];
         const regionsArr = regions
@@ -560,6 +570,8 @@ const doCurveParams = async function () {
           thresholdOptionsMap[thisDB][model] === undefined
             ? {}
             : thresholdOptionsMap[thisDB][model];
+        nbOptionsMap[thisDB][model] =
+          nbOptionsMap[thisDB][model] === undefined ? {} : nbOptionsMap[thisDB][model];
         sourceOptionsMap[thisDB][model] =
           sourceOptionsMap[thisDB][model] === undefined
             ? {}
@@ -585,6 +597,7 @@ const doCurveParams = async function () {
             forecastLengthOptionsMap[thisDB][model][thisPlotType] = {};
             levelOptionsMap[thisDB][model][thisPlotType] = {};
             thresholdOptionsMap[thisDB][model][thisPlotType] = {};
+            nbOptionsMap[thisDB][model][thisPlotType] = {};
             sourceOptionsMap[thisDB][model][thisPlotType] = {};
             descrOptionsMap[thisDB][model][thisPlotType] = {};
             dbDateRangeMap[thisDB][model][thisPlotType] = {};
@@ -613,6 +626,7 @@ const doCurveParams = async function () {
                 {};
               levelOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
+              nbOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               descrOptionsMap[thisDB][model][thisPlotType][thisValidStatType] = {};
               dbDateRangeMap[thisDB][model][thisPlotType][thisValidStatType] = {};
@@ -641,6 +655,9 @@ const doCurveParams = async function () {
               thresholdOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = trshArr;
+              nbOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = [neighborhoodSize];
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
               ] = sourceArr;
@@ -683,6 +700,14 @@ const doCurveParams = async function () {
                   jsonFriendlyVariable
                 ],
                 trshArr
+              );
+              nbOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                jsonFriendlyVariable
+              ] = _.union(
+                nbOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
+                  jsonFriendlyVariable
+                ],
+                [neighborhoodSize]
               );
               sourceOptionsMap[thisDB][model][thisPlotType][thisValidStatType][
                 jsonFriendlyVariable
@@ -1034,6 +1059,7 @@ const doCurveParams = async function () {
         "forecast-length",
         "level",
         "threshold",
+        "neighborhood-size",
         "truth",
         "description",
         "dates",
@@ -1128,6 +1154,68 @@ const doCurveParams = async function () {
             optionsMap: thresholdOptionsMap,
             options: thresholdOptions,
             default: thresholdDefault,
+          },
+        }
+      );
+    }
+  }
+
+  if ((await matsCollections["neighborhood-size"].findOneAsync({ name: "neighborhood-size" })) === undefined) {
+    await matsCollections["neighborhood-size"].insertAsync({
+      name: "neighborhood-size",
+      type: matsTypes.InputTypes.select,
+      optionsMap: nbOptionsMap,
+      options:
+        nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+          Object.keys(
+            nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+          )[0]
+        ],
+      superiorNames: ["database", "data-source", "plot-type", "statistic", "variable"],
+      controlButtonCovered: true,
+      unique: false,
+      default:
+        nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType][
+          Object.keys(
+            nbOptionsMap[defaultDB][defaultModel][defaultPlotType][defaultStatType]
+          )[0]
+        ][0],
+      controlButtonText: "neighborhood size (Number of grid points)",
+      controlButtonVisibility: "block",
+      displayOrder: 2,
+      displayPriority: 1,
+      displayGroup: 4,
+    });
+  } else {
+    // it is defined but check for necessary update
+    const currentParam = await matsCollections["neighborhood-size"].findOneAsync({ name: "neighborhood-size" });
+    if (!matsDataUtils.areObjectsEqual(nbOptionsMap, currentParam.optionsMap)) {
+      // have to reload neighborhood data
+      await matsCollections["neighborhood-size"].updateAsync(
+        { name: "neighborhood-size" },
+        {
+          $set: {
+            optionsMap: nbOptionsMap,
+            options:
+              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ][
+                Object.keys(
+                  nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                    defaultStatType
+                  ]
+                )[0]
+              ],
+            default:
+              nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                defaultStatType
+              ][
+                Object.keys(
+                  nbOptionsMap[defaultDB][defaultModel][defaultPlotType][
+                    defaultStatType
+                  ]
+                )[0]
+              ][0],
           },
         }
       );
@@ -1678,7 +1766,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", " "],
         ["", "statistic", " "],
         ["", "aggregation-method", ", "],
@@ -1697,6 +1786,7 @@ const doCurveTextPatterns = async function () {
         "statistic",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "average",
         "forecast-length",
@@ -1715,7 +1805,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["initialized ", "utc-cycle-start", " UTC, "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", " "],
         ["", "statistic", " "],
         ["", "aggregation-method", ", "],
@@ -1735,6 +1826,7 @@ const doCurveTextPatterns = async function () {
         "statistic",
         "variable",
         "threshold",
+        "neighborhood-size",
         "dieoff-type",
         "valid-time",
         "utc-cycle-start",
@@ -1754,7 +1846,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", " "],
         ["", "statistic", " "],
         ["", "aggregation-method", ", "],
@@ -1772,6 +1865,7 @@ const doCurveTextPatterns = async function () {
         "statistic",
         "variable",
         "threshold",
+        "neighborhood-size",
         "forecast-length",
         "level",
         "truth",
@@ -1789,7 +1883,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", " "],
         ["", "statistic", ", "],
         ["", "level", ", "],
@@ -1807,6 +1902,7 @@ const doCurveTextPatterns = async function () {
         "statistic",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "forecast-length",
         "level",
@@ -1824,7 +1920,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", " UTC, "],
@@ -1840,6 +1937,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "forecast-length",
         "level",
@@ -1857,7 +1955,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", ""],
@@ -1872,6 +1971,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "forecast-length",
         "level",
@@ -1888,7 +1988,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", ""],
@@ -1904,6 +2005,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "forecast-length",
         "level",
@@ -1921,7 +2023,8 @@ const doCurveTextPatterns = async function () {
         ["", "data-source", " in "],
         ["", "region", ", "],
         ["", "forecast-length", "h "],
-        ["", "threshold", " "],
+        ["", "threshold", ", "],
+        ["", "neighborhood-size", " gridpoint neighborhood, "],
         ["", "variable", ", "],
         ["", "level", ", "],
         ["valid at: ", "valid-time", ""],
@@ -1937,6 +2040,7 @@ const doCurveTextPatterns = async function () {
         "region",
         "variable",
         "threshold",
+        "neighborhood-size",
         "valid-time",
         "forecast-length",
         "level",
