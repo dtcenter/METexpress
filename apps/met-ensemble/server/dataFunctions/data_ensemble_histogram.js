@@ -66,7 +66,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
     ).optionsMap[database][modelDisplay][0];
     const modelClause = `and h.model = '${model}'`;
 
-    const selectorPlotType = curve["plot-type"];
+    const currentPlotType = appParams.plotType;
     let statistic;
     const statLineType = "precalculated";
     let lineDataType;
@@ -119,7 +119,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
     const { variable } = curve;
     const variableValuesMap = (
       await matsCollections.variable.findOneAsync({ name: "variable" })
-    ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
+    ).valuesMap[database][curve["data-source"]][currentPlotType][statLineType];
     let variableClause = "";
     if (neighborhoodSize && neighborhoodSize !== "NA") {
       neighborhoodSize = Number(neighborhoodSize) * Number(neighborhoodSize);
@@ -160,7 +160,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
         await matsCollections["forecast-length"].findOneAsync({
           name: "forecast-length",
         })
-      ).optionsMap[database][curve["data-source"]][selectorPlotType][statLineType][
+      ).optionsMap[database][curve["data-source"]][currentPlotType][statLineType][
         variable
       ];
     }
@@ -194,7 +194,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
       // we can't just leave the level clause out, because we might end up with some non-metadata-approved levels in the mix
       levels = (await matsCollections.level.findOneAsync({ name: "level" })).optionsMap[
         database
-      ][curve["data-source"]][selectorPlotType][statLineType][variable];
+      ][curve["data-source"]][currentPlotType][statLineType][variable];
       levels = levels
         .map(function (l) {
           return `'${l}'`;
