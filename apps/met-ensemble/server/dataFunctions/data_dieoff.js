@@ -99,11 +99,27 @@ global.dataDieoff = async function (plotParams) {
       regionsClause = `and h.vx_mask IN(${regions})`;
     }
 
+    let { threshold } = curve;
+    // get the threshold into the form used for the variable query
+    threshold = threshold
+      .replace(/>=/g, "ge")
+      .replace(/<=/g, "le")
+      .replace(/>/g, "gt")
+      .replace(/</g, "lt");
+
+    let neighborhoodSize = curve["neighborhood-size"];
+
     const { variable } = curve;
     const variableValuesMap = (
       await matsCollections.variable.findOneAsync({ name: "variable" })
     ).valuesMap[database][curve["data-source"]][selectorPlotType][statLineType];
-    const variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    let variableClause = "";
+    if (neighborhoodSize && neighborhoodSize !== "NA") {
+      neighborhoodSize = Number(neighborhoodSize) * Number(neighborhoodSize);
+      variableClause = `and h.fcst_var = '${variableValuesMap[variable]}_ENS_NMEP_${threshold}_NBRHD${neighborhoodSize}_GAUSSIAN1'`;
+    } else {
+      variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
+    }
 
     const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
     const fromSecs = dateRange.fromSeconds;
