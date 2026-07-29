@@ -34,14 +34,14 @@ installation instructions.
 
 Meteor Framework: METexpress is built on the Meteor free and
 open-source JavaScript web framework.
-`Meteor <https://www.meteor.com/install>`_  must be installed in order
+`Meteor <https://docs.meteor.com/about/install.html>`_  must be installed in order
 to build METexpress.  Meteor is not required to deploy METexpress containers.
 
 **Database requirements:**  METexpress must have access to a METdatadb
 database and must have read/write privileges. For further information
 about installation of this database please see
-https://metviewer.readthedocs.io/en/latest/Users_Guide/installation.html and
-https://metviewer.readthedocs.io/en/latest/Users_Guide/database_loading.html.
+https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/installation.html and
+https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/database_loading.html.
 
 **Configuration:** In order to install METexpress, a configuration script
 needs to be run which will give a prompt to provide information specific
@@ -59,9 +59,9 @@ to be provided:
      * The deployment might be behind a redirection proxy with
        redirection to a different path than what is actually on the host.
        For example, the METexpress server might be deployed on a
-       server with an internal URL "https://something.subnet.esrl.noaa.gov"
+       server with an internal URL :code:`https://something.subnet.esrl.noaa.gov`
        and have a landing page location of "/", while the public URL
-       is a proxy redirect like "https://www.esrl.noaa.gov/gsd/mats". 
+       is a proxy redirect like :code:`https://www.esrl.noaa.gov/gsd/mats`. 
 
      * In this case the fully qualified proxy hostname is
        www.esrl.noaa.gov and the proxy_prefix_path needs to be set
@@ -95,7 +95,7 @@ to be provided:
 **Building METexpress**:  It is only necessary to build METexpress
 if a custom build is required. Otherwise, it is recommended that METexpress
 be installed directly from the provided docker images.  See the
-`overview and build README <https://github.com/dtcenter/METexpress/blob/master/README.md>`_.
+`overview and build README <https://github.com/dtcenter/METexpress/blob/main/README.md>`_.
 
 **Installation**:  METexpress can only be installed from Docker
 images.  The most recent images are maintained by METexpress
@@ -103,6 +103,6 @@ developers and are available in the
 `dockerhub repository <https://hub.docker.com/r/dtcenter/metexpress-production>`_.
 
 For guidance on the installation see the
-`METexpress Deployment for Containers README <https://github.com/dtcenter/METexpress/blob/master/container_deployment/README-INSTALL.md>`_.
+`METexpress Deployment for Containers README <https://github.com/dtcenter/METexpress/blob/main/container_deployment/bin/README.md>`_.
 
 **Support**: For support for METexpress, please email mats.gsl@noaa.gov.

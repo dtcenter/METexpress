@@ -172,8 +172,7 @@ and :numref:`apps_histogram_plot` shows a sample plot.
         Plot generated from selections in :numref:`apps_interface_histogram`
 
 **Contour**: Contour plots can be used in many ways.  One can illustrate
-data with respect to height, as in plots seen at
-http://www.emc.ncep.noaa.gov/gmb/STATS_vsdb/,
+data with respect to height, as with plots seen in the STATS_vsdb repository,
 which have height on the y-axis and forecast hour (as in lead time) on
 the x-axis.  These VSDB stat plots can be easily replicated in METexpress
 by using the contour plot type, except that the plot in METexpress will have

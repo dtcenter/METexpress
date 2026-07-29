@@ -37,7 +37,7 @@ with a package manager.
 
 **To run the metadata scripts for the first time:**
 
-* The scripts are located in the `METexpress repo <https://github.com/dtcenter/METexpress/tree/master/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress>`_.
+* The scripts are located in the `METexpress repo <https://github.com/dtcenter/METexpress/tree/main/scripts/matsMetaDataForApps/createMetaData/mysql/metexpress>`_.
 * After cloning this repo, link the contents of the
   scripts/matsMetaDataForApps/createMetaData/mysql directory to the
   preferred run directory (e.g., something like /home/metexpress/scripts). 
