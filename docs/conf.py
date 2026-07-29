@@ -271,8 +271,7 @@ linkcheck_workers = 8
 
 linkcheck_ignore = [
     # add regex patterns for URLs that should be skipped, e.g.:
-    # r'https://dtcenter\.org/.*',   # if this site blocks automated requests
-    # r'https://.*metexpress.*\.gsl\.noaa\.gov/.*', # live demo instance; may be internal-network-only
+    r'https://www\.noaa\.gov/',
 ]
 
 linkcheck_allowed_redirects = {
