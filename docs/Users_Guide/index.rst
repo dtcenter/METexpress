@@ -67,7 +67,6 @@ assistance with deploying METexpress in the cloud on Amazon Web Services.
    apps
    installation
    metadata
-   appendixA
    
 ..
   Indices and tables
