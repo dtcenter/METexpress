@@ -72,7 +72,7 @@ within the Developmental Testbed Center (DTC).  To learn more about the
 metrics and how to interpret them, please see the
 `MET User Guide, <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/>`_
 particularly `Appendix C <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html>`_
-about Verification Measures and `additional material <https://dtcenter.org/software-tools//model-evaluation-tools-met/documentation>`_.
+about Verification Measures and `additional material <https://dtcenter.org/software-tools/model-evaluation-tools-met/documentation>`_.
 
 One of the features of METexpress is that, generally, it only presents the
 user with choices for data parameters that are valid for the data sets that

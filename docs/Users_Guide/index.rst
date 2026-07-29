@@ -11,7 +11,7 @@ defines interactively.  It was developed by NOAA/Global Systems Laboratory
 the Developmental Testbed Center (DTC) as part of the METplus suite of
 verification tools. It is also the core component of the unified METplus
 verification framework. More details about METplus can be found on the
-`METplus website <https://dtcenter.org/software-tools//metplus>`_.
+`METplus website <https://dtcenter.org/software-tools/metplus>`_.
 
 It is important to note here that METexpress is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
