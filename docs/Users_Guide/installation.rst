@@ -61,7 +61,7 @@ to be provided:
        For example, the METexpress server might be deployed on a
        server with an internal URL :code:`https://something.subnet.esrl.noaa.gov`
        and have a landing page location of "/", while the public URL
-       is a proxy redirect like :code:`https://www.esrl.noaa.gov/gsd/mats`. 
+       is a proxy redirect like :code:`https://www.gsl.noaa.gov/mats`. 
 
      * In this case the fully qualified proxy hostname is
        www.esrl.noaa.gov and the proxy_prefix_path needs to be set
