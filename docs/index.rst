@@ -140,7 +140,7 @@ To cite this documentation in publications, please refer to the METexpress User'
        <https://cires.colorado.edu/>`_
 
 .. [#NOAA] `National Oceanic and Atmospheric Administration
-       <https://noaa.gov/>`_
+       <https://www.noaa.gov/>`_
 
 .. toctree::
    :hidden:
