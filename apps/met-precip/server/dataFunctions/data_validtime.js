@@ -23,7 +23,7 @@ global.dataValidTime = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();
@@ -77,7 +77,7 @@ global.dataValidTime = async function (plotParams) {
         "avg(ld.fbar) as fbar, " +
         "avg(ld.obar) as obar, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_sl1l2";
     } else if (statLineType === "ctc") {
       statisticClause =
@@ -85,16 +85,16 @@ global.dataValidTime = async function (plotParams) {
         "sum(ld.fy_on) as fy_on, " +
         "sum(ld.fn_oy) as fn_oy, " +
         "sum(ld.fn_on) as fn_on, " +
-        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_ctc";
     } else if (statLineType === "nbrcnt") {
       statisticClause =
         "sum(ld.fss) as fss, " +
         "sum(ld.fbs) as fbs, " +
-        "group_concat(distinct ld.fss, ';', ld.fbs, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "group_concat(distinct ld.fss, ';', ld.fbs, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_nbrcnt";
     } else if (statLineType === "precalculated") {
-      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
+      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data`;
       [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;

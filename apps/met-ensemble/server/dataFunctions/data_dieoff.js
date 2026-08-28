@@ -23,7 +23,7 @@ global.dataDieoff = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();
@@ -81,10 +81,10 @@ global.dataDieoff = async function (plotParams) {
       statisticClause =
         "sum(ld.fss) as fss, " +
         "sum(ld.fbs) as fbs, " +
-        "group_concat(distinct ld.fss, ';', ld.fbs, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "group_concat(distinct ld.fss, ';', ld.fbs, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_nbrcnt";
     } else if (statLineType === "precalculated" || statLineType === "ecnt") {
-      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
+      statisticClause = `avg(${statisticOptionsMap[statistic][2]}) as stat, group_concat(distinct ${statisticOptionsMap[statistic][2]}, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data`;
       [, lineDataType] = statisticOptionsMap[statistic];
     }
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld`;

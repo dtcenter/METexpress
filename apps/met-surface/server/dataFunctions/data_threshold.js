@@ -23,7 +23,7 @@ global.dataThreshold = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();
@@ -78,7 +78,7 @@ global.dataThreshold = async function (plotParams) {
         "avg(ld.fbar) as fbar, " +
         "avg(ld.obar) as obar, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_sl1l2";
     } else if (statLineType === "vector") {
       statisticClause =
@@ -88,7 +88,7 @@ global.dataThreshold = async function (plotParams) {
         "avg(ld.vobar) as vobar, " +
         "group_concat(distinct ld.ufbar, ';', ld.vfbar, ';', ld.uobar, ';', ld.vobar, ';', " +
         "ld.uvfobar, ';', ld.uvffbar, ';', ld.uvoobar, ';', ld.f_speed_bar, ';', ld.o_speed_bar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_vl1l2";
     } else if (statLineType === "ctc") {
       statisticClause =
@@ -96,7 +96,7 @@ global.dataThreshold = async function (plotParams) {
         "sum(ld.fy_on) as fy_on, " +
         "sum(ld.fn_oy) as fn_oy, " +
         "sum(ld.fn_on) as fn_on, " +
-        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data";
+        "group_concat(distinct ld.fy_oy, ';', ld.fy_on, ';', ld.fn_oy, ';', ld.fn_on, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
       lineDataType = "line_data_ctc";
     }
 

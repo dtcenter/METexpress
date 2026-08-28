@@ -22,7 +22,7 @@ global.dataSimpleScatter = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();
@@ -84,13 +84,13 @@ global.dataSimpleScatter = async function (plotParams) {
         "avg(ld.fbar) as fbarX, " +
         "avg(ld.obar) as obarX, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataX";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_dataX";
       statisticClauseY =
         "count(ld.fbar) as nY, " +
         "avg(ld.fbar) as fbarY, " +
         "avg(ld.obar) as obarY, " +
         "group_concat(distinct ld.fbar, ';', ld.obar, ';', ld.ffbar, ';', ld.oobar, ';', ld.fobar, ';', " +
-        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_dataY";
+        "ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_dataY";
       lineDataType = "line_data_sl1l2";
     }
 

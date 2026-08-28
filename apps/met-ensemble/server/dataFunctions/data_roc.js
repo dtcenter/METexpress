@@ -22,7 +22,7 @@ global.dataROC = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();

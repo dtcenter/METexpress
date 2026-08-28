@@ -23,7 +23,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
     completeness: plotParams.completeness,
     outliers: plotParams.outliers,
     hideGaps: plotParams.noGapsCheck,
-    hasLevels: true,
+    hasLevels: false,
   };
 
   const totalProcessingStart = moment();
@@ -88,7 +88,7 @@ global.dataEnsembleHistogram = async function (plotParams) {
     }
     const statisticClause =
       `sum(ldr.${lineDataSuffix}_i) as bin_count, ` +
-      `group_concat(distinct ldr.${lineDataSuffix}_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg), ';', h.fcst_lev order by unix_timestamp(ld.fcst_valid_beg), h.fcst_lev) as sub_data`;
+      `group_concat(distinct ldr.${lineDataSuffix}_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data`;
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld, ${database}.${lineDataType}_${lineDataSuffix} ldr`;
 
     let regions =
