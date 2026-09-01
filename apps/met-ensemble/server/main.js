@@ -2199,7 +2199,7 @@ Meteor.startup(async function () {
     "ensemble_database_groups",
   ]);
   try {
-    matsMethods.resetApp({
+    await matsMethods.resetApp({
       appPools: allPools,
       appMdr: mdr,
       appType: matsTypes.AppTypes.metexpress,

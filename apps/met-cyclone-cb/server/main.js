@@ -2195,7 +2195,7 @@ Meteor.startup(async function () {
     ["MD:METexpressGui:met-cyclone:V01"]
   );
   try {
-    matsMethods.resetApp({
+    await matsMethods.resetApp({
       appPools: allPools,
       appMdr: mdr,
       appType: matsTypes.AppTypes.metexpress,

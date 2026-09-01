@@ -2274,7 +2274,7 @@ Meteor.startup(async function () {
     "anomalycor_database_groups",
   ]);
   try {
-    matsMethods.resetApp({
+    await matsMethods.resetApp({
       appPools: allPools,
       appMdr: mdr,
       appType: matsTypes.AppTypes.metexpress,

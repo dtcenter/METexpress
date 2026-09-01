@@ -2561,7 +2561,7 @@ Meteor.startup(async function () {
     "surface_database_groups",
   ]);
   try {
-    matsMethods.resetApp({
+    await matsMethods.resetApp({
       appPools: allPools,
       appMdr: mdr,
       appType: matsTypes.AppTypes.metexpress,
