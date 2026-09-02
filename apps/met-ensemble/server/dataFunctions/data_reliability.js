@@ -48,10 +48,6 @@ global.dataReliability = async function (plotParams) {
   let error = "";
   const dataset = [];
 
-  const dateRange = matsDataUtils.getDateRange(plotParams.dates);
-  const fromSecs = dateRange.fromSeconds;
-  const toSecs = dateRange.toSeconds;
-
   for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
     // initialize variables specific to each curve
     const curve = curves[curveIndex];
@@ -113,6 +109,10 @@ global.dataReliability = async function (plotParams) {
     } else {
       variableClause = `and h.fcst_var = '${variableValuesMap[variable]}'`;
     }
+
+    const dateRange = matsDataUtils.getDateRange(curve["curve-dates"]);
+    const fromSecs = dateRange.fromSeconds;
+    const toSecs = dateRange.toSeconds;
 
     let vts = ""; // start with an empty string that we can pass to the python script if there aren't vts.
     let validTimeClause = "";
