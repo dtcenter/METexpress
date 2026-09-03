@@ -1965,7 +1965,8 @@ const doCurveTextPatterns = async function () {
         ["", "level", ", "],
         ["valid at: ", "valid-time", ""],
         ["", "truth", ", "],
-        [", desc: ", "description", ""],
+        [", desc: ", "description", ", "],
+        ["", "curve-dates", ""],
       ],
       displayParams: [
         "label",
@@ -1981,6 +1982,7 @@ const doCurveTextPatterns = async function () {
         "level",
         "truth",
         "description",
+        "curve-dates"
       ],
       groupSize: 6,
     });

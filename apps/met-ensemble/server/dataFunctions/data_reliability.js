@@ -67,10 +67,10 @@ global.dataReliability = async function (plotParams) {
     const lineDataType = "line_data_pct";
     const lineDataSuffix = "thresh";
     const statisticClause =
-      "ldt.i_value as bin_number, " +
-      "ldt.thresh_i as threshold, " +
       "sum(ldt.oy_i) as oy_i, " +
-      "sum(ldt.on_i) as on_i";
+      "sum(ldt.on_i) as on_i, " +
+      "group_concat(distinct ldt.oy_i, ';', ldt.on_i, ';', ld.total, ';', unix_timestamp(ld.fcst_valid_beg) order by unix_timestamp(ld.fcst_valid_beg)) as sub_data";
+
     const queryTableClause = `from ${database}.stat_header h, ${database}.${lineDataType} ld, ${database}.${lineDataType}_${lineDataSuffix} ldt`;
 
     let regions =
@@ -216,7 +216,8 @@ global.dataReliability = async function (plotParams) {
       // this is a database driven curve, not a difference curve
       // prepare the query from the above parameters
       statement =
-        "select unix_timestamp(ld.fcst_valid_beg) as avtime, " +
+        "select ldt.i_value as bin_number, " +
+        "ldt.thresh_i as threshold, " +
         "count(distinct unix_timestamp(ld.fcst_valid_beg)) as nTimes, " +
         "min(unix_timestamp(ld.fcst_valid_beg)) as min_secs, " +
         "max(unix_timestamp(ld.fcst_valid_beg)) as max_secs, " +
@@ -234,8 +235,8 @@ global.dataReliability = async function (plotParams) {
         "{{descrsClause}} " +
         "and h.stat_header_id = ld.stat_header_id " +
         "and ld.line_data_id = ldt.line_data_id " +
-        "group by avtime, bin_number, threshold " +
-        "order by avtime" +
+        "group by bin_number, threshold " +
+        "order by bin_number" +
         ";";
 
       statement = statement.replace("{{statisticClause}}", statisticClause);
