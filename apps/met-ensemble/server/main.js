@@ -1982,7 +1982,7 @@ const doCurveTextPatterns = async function () {
         "level",
         "truth",
         "description",
-        "curve-dates"
+        "curve-dates",
       ],
       groupSize: 6,
     });
