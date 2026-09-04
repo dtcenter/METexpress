@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 6.3.4 release notes (20260904)
+METexpress Version 6.3.4 release notes (20260911)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
