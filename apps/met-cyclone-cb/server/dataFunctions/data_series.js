@@ -327,7 +327,7 @@ global.dataSeries = async function (plotParams)
       const usePseudoQuery = Meteor.settings.public.mongoArgs.usePseudoQuery;
       const pseudoQueryFile = Meteor.settings.public.mongoArgs.pseudoQueryFile;
 
-      console.log("Using mongoDB! mongoEval:", mongoEval, " usePseudoQuery:", usePseudoQuery, " pseudoQueryFile:");  
+      console.log("Using mongoDB! mongoEval:", mongoEval, " usePseudoQuery:", usePseudoQuery, " pseudoQueryFile:");
 
       let queryTemplate;
       queryTemplate = await Assets.getTextAsync(
@@ -350,9 +350,10 @@ global.dataSeries = async function (plotParams)
       let fromSecs = queryArray[0].fromSecs;
       let toSecs = queryArray[0].toSecs;
       const usePseudoTimeRange = Meteor.settings.public.mongoArgs.usePseudoTimeRange;
-      if (usePseudoTimeRange === true) {
-          fromSecs = Meteor.settings.public.mongoArgs.pseudoFromSecs;
-          toSecs = Meteor.settings.public.mongoArgs.pseudoToSecs;
+      if (usePseudoTimeRange === true)
+      {
+        fromSecs = Meteor.settings.public.mongoArgs.pseudoFromSecs;
+        toSecs = Meteor.settings.public.mongoArgs.pseudoToSecs;
       }
       console.log("usePseudoTimeRange:", usePseudoTimeRange, "fromSecs", fromSecs, "toSecs", toSecs);
 
@@ -360,67 +361,67 @@ global.dataSeries = async function (plotParams)
       {
         //queryArray[0].fcsts.forEach((fcst, fi) =>
         //{
-          for (let t = fromSecs; t <= toSecs; t += 21600)
+        for (let t = fromSecs; t <= toSecs; t += 21600)
+        {
+          queryArray[0].storms.forEach((storm, si) =>
           {
-            queryArray[0].storms.forEach((storm, si) =>
-            {
-              const stormID = storm.substring(0, 8);
-              const stormNumber = storm.substring(2, 4);
-              const stormName = storm.split("-")[1];
+            const stormID = storm.substring(0, 8);
+            const stormNumber = storm.substring(2, 4);
+            const stormName = storm.split("-")[1];
 
-              const ditv = docIDTemplate.replace(/{{version}}/g, version);
-              const dits0 = ditv.replace(/{{stormID}}/g, stormID);
-              const dits1 = dits0.replace(/{{stormNumber}}/g, stormNumber);
-              const dits2 = dits1.replace(/{{stormName}}/g, stormName);
-              const dits3 = dits2.replace(/{{date}}/g, t);
-              const dits4 = dits3.replace(/^"|"$/g, "");
-              const finalDocID = dits4.replace(/^"|"$/g, "");
+            const ditv = docIDTemplate.replace(/{{version}}/g, version);
+            const dits0 = ditv.replace(/{{stormID}}/g, stormID);
+            const dits1 = dits0.replace(/{{stormNumber}}/g, stormNumber);
+            const dits2 = dits1.replace(/{{stormName}}/g, stormName);
+            const dits3 = dits2.replace(/{{date}}/g, t);
+            const dits4 = dits3.replace(/^"|"$/g, "");
+            const finalDocID = dits4.replace(/^"|"$/g, "");
 
-              pipeline[0].$match.id.$in.push(finalDocID);
-            })
-          };
+            pipeline[0].$match.id.$in.push(finalDocID);
+          })
+        };
         //});
       });
 
       await fs.writeFile(homeDir + "/scratch/pipeline.json", JSON.stringify(pipeline, null, 2));
-      console.log("mongo aggregation pipeline written to ~/scratch/pipeline.json");
+      console.log("mongo aggregation pipeline " + JSON.stringify(pipeline, null, 2).length + " written to ~/scratch/pipeline.json");
 
       let result
-      if(usePseudoQuery === true) { 
-        console.log("Using pseudo query from file:", pseudoQueryFile);``
+      if (usePseudoQuery === true)
+      {
+        console.log("Using pseudo query from file:", pseudoQueryFile); ``
         const pseudoQueryTxt = await Assets.getTextAsync("mongoQueries/" + pseudoQueryFile
         );
         const pseudoQuery = EJSON.parse(pseudoQueryTxt);
         result = await collection.aggregate(pseudoQuery).toArray();
-      } else {
+      } else
+      {
         result = await collection.aggregate(pipeline).toArray();
       }
       await fs.writeFile(homeDir + "/scratch/mongo_result.json", JSON.stringify(result, null, 2));
-      console.log("mongo result written to ~/scratch/mongo_result.json");
+      console.log("mongo result " + JSON.stringify(result, null, 2).length + " written to ~/scratch/mongo_result.json");
 
       // MATS/MATScommon/meteor_packages/mats-common/imports/startup/server/data_query_util.js : queryMongoPython
-      queryResult = await matsDataQueryUtils.queryMongoPython(global.cbPool, queryArray);
+      queryResult = await matsDataQueryUtils.queryMongoPython(global.cbPool, queryArray, JSON.stringify(result, null, 2));
     }
-    /*else
+    else
     {
-      */
-
-    
-    // queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
-    finishMoment = moment();
-    dataRequests["data retrieval (query) time"] = {
-      begin: startMoment.format(),
-      finish: finishMoment.format(),
-      duration: `${moment
-        .duration(finishMoment.diff(startMoment))
-        .asSeconds()} seconds`,
-      recordCount: queryResult.data.length,
-    };
-    // get the data back from the query
-    dReturn = queryResult.data;
-    await fs.writeFile(homeDir + "/scratch/cb_result.json", JSON.stringify(dReturn, null, 2));
-    console.log("cb result written to ~/scratch/cb_result.json");
-    //}
+      console.log("Querying Couchbase! mongoEval:", mongoEval);
+      queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
+      finishMoment = moment();
+      dataRequests["data retrieval (query) time"] = {
+        begin: startMoment.format(),
+        finish: finishMoment.format(),
+        duration: `${moment
+          .duration(finishMoment.diff(startMoment))
+          .asSeconds()} seconds`,
+        recordCount: queryResult.data.length,
+      };
+      // get the data back from the query
+      dReturn = queryResult.data;
+      await fs.writeFile(homeDir + "/scratch/cb_result.json", JSON.stringify(dReturn, null, 2));
+      console.log("cb result written to ~/scratch/cb_result.json");
+    }
   } catch (e)
   {
     // this is an error produced by a bug in the query function, not an error returned by the mysql database
