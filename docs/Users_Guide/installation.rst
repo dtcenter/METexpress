@@ -59,7 +59,7 @@ to be provided:
      * The deployment might be behind a redirection proxy with
        redirection to a different path than what is actually on the host.
        For example, the METexpress server might be deployed on a
-       server with an internal URL :code:`https://something.subnet.esrl.noaa.gov`
+       server with an internal URL :code:`https://something.subnet.gsl.noaa.gov`
        and have a landing page location of "/", while the public URL
        is a proxy redirect like :code:`https://www.gsl.noaa.gov/mats`. 
 

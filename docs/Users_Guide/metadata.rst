@@ -105,7 +105,7 @@ The metadata scripts can also be run manually at any time.
   triggering a metadata update and causing the selectors to display the
   latest information.
 
-**Having mv_load or METdbload trigger a metadata update:**
+**Having mv_load or METdbLoad trigger a metadata update:**
 
 In addition to running the metadata scripts from the crontab at a given
 interval, it is also possible to invoke the metadata script when any new
