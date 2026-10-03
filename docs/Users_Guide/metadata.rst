@@ -8,7 +8,7 @@ ________________________________
 
 Generally, the term metadata refers to data about the data.  METexpress
 stores metadata about each data set in the database to describe parameters
-such as the model (or data source), regions, variables, levels, dates, etc
+such as the model (or data source), regions, variables, levels, dates, etc.
 that are included in that data set. 
 
 This metadata is then used to populate the selectors displayed on the
@@ -58,12 +58,12 @@ with a package manager.
 
   .. code-block:: none
 		  
-    export PYTHONPATH="/home/metexpress/scripts").
+    export PYTHONPATH="/home/metexpress/scripts"
 
 * Run the scripts from the command line. Pass in the path
   to the .my.cnf file and the URL where METexpress will be available as
   arguments. The URL <metexpress_url> is the actual access URL of the
-  metexpress installation, e.g. **https://yourdomain/metexpress**. The URL is
+  METexpress installation, e.g. **https://yourdomain/metexpress**. The URL is
   necessary so that the metadata scripts can inform METexpress that new
   metadata is available.  For example:
 
