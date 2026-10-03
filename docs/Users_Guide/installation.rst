@@ -14,7 +14,7 @@ installation instructions.
 **System requirements:**
 
 * Hardware: METexpress runs on Docker.  It can successfully run on a
-  system with four cores, 8 GB of memory and 10GB of free disk space.
+  system with four cores, 8 GB of memory and 10 GB of free disk space.
   METexpress has been tested on Linux and Mac systems.  It may run on
   Windows but this has not been tested and the configuration and
   management scripts are written in bash.
@@ -37,7 +37,7 @@ open-source JavaScript web framework.
 `Meteor <https://docs.meteor.com/about/install.html>`_  must be installed in order
 to build METexpress.  Meteor is not required to deploy METexpress containers.
 
-**Database requirements:**  METexpress must have access to a METdatadb
+**Database requirements:**  METexpress must have access to a METdataio
 database and must have read/write privileges. For further information
 about installation of this database please see
 https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/installation.html and
@@ -64,8 +64,8 @@ to be provided:
        is a proxy redirect like :code:`https://www.gsl.noaa.gov/mats`. 
 
      * In this case the fully qualified proxy hostname is
-       www.esrl.noaa.gov and the proxy_prefix_path needs to be set
-       to "/gsd/mats".
+       www.gsl.noaa.gov and the proxy_prefix_path needs to be set
+       to "/mats".
 
   * Proxy redirection path
 

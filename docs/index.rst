@@ -84,7 +84,7 @@ follows:
 * **METplotpy**  - suite of Python-based scripts to plot MET output,
   and in some cases provide additional post-processing of output prior
   to plotting
-* **METdatadb**  - database to store MET output and to be used by both
+* **METdataio**  - tools to load MET output into a database used by both
   METviewer and METexpress
 
 The umbrella repository will be brought together by using a software package

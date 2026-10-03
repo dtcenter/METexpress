@@ -36,8 +36,8 @@ and how METexpress integrates with the other tools.
 In the simplest workflow for verifying model outputs, the model output data
 and “truth” or observation data are input into the MET software package which
 outputs statistical information in an ASCII format.  That statistical
-information is then read into and stored in the METdatadb database using
-the METdbload tool.  METexpress allows the user to specify various parameters
+information is then read into and stored in a database using
+the METdbLoad module of METdataio.  METexpress allows the user to specify various parameters
 for the plot they want to create and then queries the database to get the
 relevant information and creates a plot.
 
@@ -64,7 +64,7 @@ Tool Suite, or MATS.  METexpress uses the basic framework of MATS but it
 has been modified to work with the METplus database.
 
 It is very important to understand that METexpress can only produce plots
-based on the data that has been loaded into the METdatadb database.
+based on the data that has been loaded into the METdataio database.
 
 The verification measures or statistics produced by METexpress follow
 definitions set by the MET package with input from the mathematical expertise

@@ -249,7 +249,7 @@ _____________________________
 When all parameters have been set as desired – including curve data
 parameters, plot parameters, and plot types - the user has an option to
 Save All Curve Settings.  If selected, the user will be prompted to provide
-a name for the saved settings.  In future the user has the option for
+a name for the saved settings.  Later, the user has the option to
 “Restore Settings”.  If selected, they will be prompted for the
 saved-settings name.  After selecting saved-settings, all curve definitions,
 plot parameters, and plot type will be reset from the saved-settings
