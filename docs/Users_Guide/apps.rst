@@ -62,7 +62,7 @@ The Upper Air app includes the following plot types.
 the x-axis and the mean value of the selected parameter for that date on
 the y-axis.
 
-**Profile**: The Profile plot type displays pressure level on the y–axis
+**Profile**: The Profile plot type displays pressure level on the y-axis
 and the mean value of the selected parameter on the x-axis.  
 
 **Die-off**: Die-off plots show how skill (or the inverse, error)
@@ -109,7 +109,7 @@ the specified date range.
         Anomaly Correlation Dieoff plot
 
 **ValidTime**: The ValidTime plot type (also sometimes known as diurnal
-cycle plots) displays valid UTC hour on the x–axis and the mean value of
+cycle plots) displays valid UTC hour on the x-axis and the mean value of
 the selected parameter on the y-axis. 
 
 **Histograms**: Histograms allow users to visualize the distribution of
@@ -200,7 +200,7 @@ _______________________
 The Anomaly Correlation app is designed for plotting anomaly correlations
 at different pressure levels in the atmosphere, and at different heights above the ground.
 
-An example of the Anomaly Correlation app user interface is shown in :numref:`apps_interface_anom_corr`
+An example of the Anomaly Correlation app user interface is shown in :numref:`apps_interface_anom_corr`.
 This interface is similar to the one for Upper Air but has fewer selectable parameters.
 
 .. _apps_interface_anom_corr:
@@ -231,7 +231,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Vector ACC
 
 
-Plot types available include 
+Plot types available include:
 
 * Time Series
 * Profile
@@ -377,7 +377,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Error stdev
 * Pearson Correlation
 
-Plot types available include 
+Plot types available include:
 
 * Time Series
 * Dieoff
@@ -442,7 +442,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * ROC AUC
 * FSS
 
-Plot types available include 
+Plot types available include:
 
 * Time Series
 * Dieoff
@@ -598,7 +598,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Error stdev
 * Pearson Correlation
 
-Plot types available include 
+Plot types available include:
 
 * Time Series
 * Dieoff
@@ -703,7 +703,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * RI truth start to end change in max wind speed
 * RI truth maximum change in max wind speed
 
-Plot types available include
+Plot types available include:
 
 * Time Series
 * Dieoff
@@ -832,7 +832,7 @@ The selector for the Statistic has these possible choices (depending on availabl
 * Area-weighted ratio of observed cluster objects to observed simple objects
 * Area-weighted ratio of observed simple objects to observed cluster objects
 
-Plot types available include
+Plot types available include:
 
 * Time Series
 * Dieoff
