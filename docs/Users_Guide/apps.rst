@@ -183,8 +183,8 @@ create Hovmoller diagrams, and many other combinations.
 
 Contour plots have two additional selectors, x-axis-parameter and
 y-axis-parameter. With these, a user can decide which field to place on
-the x-axis (e.g. forecast lead time), and which to place on the y-axis
-(e.g. pressure level or valid UTC hour).
+the x-axis (e.g., forecast lead time), and which to place on the y-axis
+(e.g., pressure level or valid UTC hour).
 
 :numref:`apps_upper_air_contour_plot` shows an example of an Upper Air profile plotted as a contour plot.
 
