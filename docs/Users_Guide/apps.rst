@@ -74,7 +74,7 @@ possible values:
     1. Dieoff
 
     2. Dieoff for a specific UTC cycle start time
-	
+
     3. Single cycle forecast
 
 .. _apps_interface_dieoff:
@@ -99,7 +99,7 @@ the specified date range.
 .. _apps_upper_air_dieoff_plot:
 
 .. figure:: figure/apps_upper_air_dieoff_plot.png
-	    
+
         Upper Air Dieoff plot
 
 .. _apps_anom_corr_dieoff_plot:
@@ -162,7 +162,7 @@ and :numref:`apps_histogram_plot` shows a sample plot.
 .. _apps_interface_histogram:
 
 .. figure:: figure/apps_interface_histogram.png
-	    
+
         The user interface for histogram plots.
 
 .. _apps_histogram_plot:
@@ -392,7 +392,7 @@ Histogram, and Contour are the same as in Upper Air.
 An additional plot type, Threshold, is available in this app.
 Threshold plots display threshold on the x-axis, and the mean value
 of the selected parameter on the y-axis.
-	    
+
 :numref:`apps_air_qual_thresh_plot` shows an example of an Air Quality Threshold plot. 
 
 .. _apps_air_qual_thresh_plot:

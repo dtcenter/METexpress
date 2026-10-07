@@ -269,10 +269,7 @@ linkcheck_timeout = 10
 linkcheck_retries = 2
 linkcheck_workers = 8
 
-linkcheck_ignore = [
-    # add regex patterns for URLs that should be skipped, e.g.:
-    r'https://www\.noaa\.gov/',
-]
+linkcheck_ignore = []
 
 linkcheck_allowed_redirects = {
     # map of regex -> regex for redirects that are fine to follow

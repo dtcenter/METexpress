@@ -51,7 +51,7 @@ with a package manager.
   located. For example:
 
   .. code-block:: none
-		
+
     cd /home/metexpress/scripts
 
 * Set the PYTHONPATH to the run directory. For example: 
@@ -68,7 +68,7 @@ with a package manager.
   metadata is available.  For example:
 
   .. code-block:: none
-		    
+
     /home/metexpress/scripts/metexpress/MEmetadata_update.py 
         -c /home/metexpress/.my.cnf -u <metexpress_url>
     
@@ -88,7 +88,7 @@ The metadata scripts can also be run manually at any time.
 * Set the PYTHONPATH to the run directory. For example: 
 
   .. code-block:: none
-		    
+
     export PYTHONPATH="/home/metexpress/scripts"
 
 * Run the scripts from the command line. Pass in the path
@@ -96,7 +96,7 @@ The metadata scripts can also be run manually at any time.
   arguments. For example:
 
   .. code-block:: none
-		    
+
     /home/metexpress/scripts/metexpress/MEmetadata_update.py -c /home/metexpress/.my.cnf -u <metexpress_url>
 
 * The scripts should generate the necessary metadata and store it in the
