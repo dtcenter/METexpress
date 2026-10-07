@@ -206,7 +206,7 @@ followed by Add Curve for as many curves as they wish to show on the plot.
 Each new curve will be assigned a new color.  
 
 An example of the interface screen with 2 curves defined is shown in
-:numref:`interface_upper_air_two_curves` Curve0 data parameters are shown in the red box
+:numref:`interface_upper_air_two_curves`. Curve0 data parameters are shown in the red box
 and Curve1 data parameters are shown  in the blue box.
 
 .. _interface_upper_air_two_curves:
@@ -249,7 +249,7 @@ _____________________________
 When all parameters have been set as desired – including curve data
 parameters, plot parameters, and plot types - the user has an option to
 Save All Curve Settings.  If selected, the user will be prompted to provide
-a name for the saved settings.  In future the user has the option for
+a name for the saved settings.  Later, the user has the option to
 “Restore Settings”.  If selected, they will be prompted for the
 saved-settings name.  After selecting saved-settings, all curve definitions,
 plot parameters, and plot type will be reset from the saved-settings
@@ -309,7 +309,7 @@ ____________________________
 After the plot has been produced, the user can interact with the plot in
 various ways.  For example, the user might want to focus on one particular
 area of the plot to examine more detail, or the user might want to change
-titles, line widths, etc to produce a plot suitable for publication.
+titles, line widths, etc. to produce a plot suitable for publication.
 :numref:`interface_plot_controls` highlights the tools available to interact with a plot.
 
 .. _interface_plot_controls:
@@ -322,7 +322,7 @@ The user can choose to dynamically zoom in and out on the plot.  In order
 to zoom in on a plot, the user can click and drag a box over the area of
 interest on the graph, and the zoom level will be automatically adjusted
 to reflect the bounds of the box. To zoom back out, the user should double
-click on the plot or click the blue refresh button to the far right the
+click on the plot or click the blue refresh button to the far right of the
 dark blue toolbar.
 
 METexpress plots are produced with the graphing package Plotly, and as
