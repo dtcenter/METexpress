@@ -9,7 +9,7 @@ When applicable, release notes are followed by the GitHub issue number which des
 enhancement, or new feature (`METexpress GitHub issues <https://github.com/dtcenter/METexpress/issues>`_).
 Important issues are listed **in bold** for emphasis.
      
-METexpress Version 6.3.5 release notes (20260925)
+METexpress Version 6.3.6 release notes (20261011)
 -------------------------------------------------
 
   .. dropdown:: Repository, build, and test
@@ -30,13 +30,12 @@ METexpress Version 6.3.5 release notes (20260925)
 
   .. dropdown:: Miscellaneous
     
-     * Updated all apps to Meteor v3.5.2.
      * Fixed npm security vulnerabilities.
         
 METexpress Upgrade Instructions
 ===============================
 
-METexpress Version 6.3.5 upgrade instructions
+METexpress Version 6.3.6 upgrade instructions
 ---------------------------------------------
 
-Download and deploy the new v6.3.5 docker containers from the dtcenter repository.
+Download and deploy the new v6.3.6 docker containers from the dtcenter repository.

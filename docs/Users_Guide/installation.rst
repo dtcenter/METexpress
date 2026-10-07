@@ -5,7 +5,7 @@ METexpress System Requirements, Installation and Support
 
 **Repository:**  METexpress is a community software package
 managed by the Developmental Testbed Center (DTC) and is available
-through `Github <https://github.com/dtcenter/METexpress>`_.
+through `GitHub <https://github.com/dtcenter/METexpress>`_.
 
 This repository includes a README file at the top-level that
 covers an overview and build instructions, with further links to
@@ -14,13 +14,13 @@ installation instructions.
 **System requirements:**
 
 * Hardware: METexpress runs on Docker.  It can successfully run on a
-  system with four cores, 8 GB of memory and 10GB of free disk space.
-  METexpress has been tested on Linux and MAC systems.  It may run on
+  system with four cores, 8 GB of memory and 10 GB of free disk space.
+  METexpress has been tested on Linux and Mac systems.  It may run on
   Windows but this has not been tested and the configuration and
   management scripts are written in bash.
 
 * Software:  These packages must be installed: docker, docker-compose,
-  httpaswd, and jq.  For a robust testing environment, install the
+  htpasswd, and jq.  For a robust testing environment, install the
   certificate located in /etc/ssl/certs (see SSL certificates below).
   A simple testing system can be deployed on the localhost without
   certificates for testing by answering yes to the question "Are you
@@ -37,7 +37,7 @@ open-source JavaScript web framework.
 `Meteor <https://docs.meteor.com/about/install.html>`_  must be installed in order
 to build METexpress.  Meteor is not required to deploy METexpress containers.
 
-**Database requirements:**  METexpress must have access to a METdatadb
+**Database requirements:**  METexpress must have access to a METdataio
 database and must have read/write privileges. For further information
 about installation of this database please see
 https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/installation.html and
@@ -59,13 +59,13 @@ to be provided:
      * The deployment might be behind a redirection proxy with
        redirection to a different path than what is actually on the host.
        For example, the METexpress server might be deployed on a
-       server with an internal URL :code:`https://something.subnet.esrl.noaa.gov`
+       server with an internal URL :code:`https://something.subnet.gsl.noaa.gov`
        and have a landing page location of "/", while the public URL
        is a proxy redirect like :code:`https://www.gsl.noaa.gov/mats`. 
 
      * In this case the fully qualified proxy hostname is
-       www.esrl.noaa.gov and the proxy_prefix_path needs to be set
-       to "/gsd/mats".
+       www.gsl.noaa.gov and the proxy_prefix_path needs to be set
+       to "/mats".
 
   * Proxy redirection path
 
@@ -79,11 +79,11 @@ to be provided:
   write permissions.  Write permissions are needed to create metadata entries.
   During the installation, it will be necessary to provide the
   username and password for this user. The username and password for the
-  sums_data role is required for each app.
+  sums_data role are required for each app.
     
 * SSL certificates:
   An SSL certificate is required to run METexpress. This is usually
-  an externally acquired certificate for the users domain, which users
+  an externally acquired certificate for the user's domain, which users
   will need to place in a directory as instructed by the setup script.
   Alternatively, a no-cost certificate can be used provided by traefik
   using Let's Encrypt software from within METexpress containers.
@@ -100,7 +100,7 @@ be installed directly from the provided docker images.  See the
 **Installation**:  METexpress can only be installed from Docker
 images.  The most recent images are maintained by METexpress
 developers and are available in the
-`dockerhub repository <https://hub.docker.com/r/dtcenter/metexpress-production>`_.
+`Docker Hub repository <https://hub.docker.com/r/dtcenter/metexpress-production>`_.
 
 For guidance on the installation see the
 `METexpress Deployment for Containers README <https://github.com/dtcenter/METexpress/blob/main/container_deployment/bin/README.md>`_.

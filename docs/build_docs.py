@@ -32,7 +32,7 @@ def run_command(command, dir_to_run=None):
     if command_out.returncode != 0:
         error_text = f"Could not create symbolic links by running {command}"
         if dir_to_run:
-            error_text += f"in {dir_to_run}"
+            error_text += f" in {dir_to_run}"
         print(error_text)
         sys.exit(1)
 

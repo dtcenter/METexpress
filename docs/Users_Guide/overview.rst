@@ -10,7 +10,7 @@ _________________
 
 METexpress is an easy-to-use interface that displays plots of statistical
 verification metrics for the data that a user defines interactively.
-Prior to using METexpress, these verification metrics must generated from
+Prior to using METexpress, these verification metrics must be generated from
 model output and “truth” data (usually observations or gridded model analyses)
 by the `MET verification tools <https://metplus.readthedocs.io/projects/met/en/latest/>`_,
 and the output files produced by this MET verification must be loaded into a MET database.
@@ -36,8 +36,8 @@ and how METexpress integrates with the other tools.
 In the simplest workflow for verifying model outputs, the model output data
 and “truth” or observation data are input into the MET software package which
 outputs statistical information in an ASCII format.  That statistical
-information is then read into and stored in the METdatadb database using
-the METdbload tool.  METexpress allows the user to specify various parameters
+information is then read into and stored in a database using
+the METdbLoad module of METdataio.  METexpress allows the user to specify various parameters
 for the plot they want to create and then queries the database to get the
 relevant information and creates a plot.
 
@@ -64,13 +64,13 @@ Tool Suite, or MATS.  METexpress uses the basic framework of MATS but it
 has been modified to work with the METplus database.
 
 It is very important to understand that METexpress can only produce plots
-based on the data that has been loaded into the METdatadb database.
+based on the data that has been loaded into the METdataio database.
 
 The verification measures or statistics produced by METexpress follow
 definitions set by the MET package with input from the mathematical expertise
 within the Developmental Testbed Center (DTC).  To learn more about the
 metrics and how to interpret them, please see the
-`MET User Guide, <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/>`_
+`MET User's Guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/>`_,
 particularly `Appendix C <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html>`_
 about Verification Measures and `additional material <https://dtcenter.org/software-tools/model-evaluation-tools-met/documentation>`_.
 
@@ -79,7 +79,7 @@ user with choices for data parameters that are valid for the data sets that
 the user has selected.  For example, if the user selects the model “GFS”,
 the choices available for “variable” will be only the variables that have
 been loaded into the database for the GFS model.  In this way, the user will
-not go through the process to select variables, heights, statistics, etc
+not go through the process to select variables, heights, statistics, etc.
 that don’t exist in the database and cannot be plotted.  This is achieved in
 the interface by creating metadata (data that describes the data) in the
 database that describe the available parameters for each data set.  The

@@ -41,7 +41,7 @@ and analysis tools to provide the same primary functionality as the EMC VSDB
 system, and also included a spatial verification package called MODE.
 
 Over the years, MET and VSDB packages grew in complexity.  Verification
-capability at other NOAA laboratories, such as ESRL, were also under heavy
+capability at other NOAA laboratories, such as ESRL, was also under heavy
 development.  An effort to unify verification capability was first started
 under the HIWPP project and led by NOAA ESRL.  In 2015, the NGGPS
 Program Office started working groups to focus on several aspects of the
@@ -82,16 +82,16 @@ follows:
   components of METplus tools for statistical aggregation, event
   equalization, and other analysis needs
 * **METplotpy**  - suite of Python-based scripts to plot MET output,
-  and in come cases provide additional post-processing of output prior
+  and in some cases provide additional post-processing of output prior
   to plotting
-* **METdatadb**  - database to store MET output and to be used by both
+* **METdataio**  - tools to load MET output into a database used by both
   METviewer and METexpress
 
 The umbrella repository will be brought together by using a software package
 called `manage_externals <https://github.com/ESMCI/manage_externals>`_
 developed by the Community Earth System Modeling (CESM) team, hosted at NCAR
-and NOAA Earth System's Research Laboratory.  The manage_externals paackage
-was developed because CESM is comprised of a number of different components
+and NOAA Earth System Research Laboratory.  The manage_externals package
+was developed because CESM consists of a number of different components
 that are developed and managed independently. Each component also may have
 additional "external" dependencies that need to be maintained independently.
 
@@ -106,10 +106,10 @@ Acronyms
 * **VSDB** - Verification Statistics Data Base
 * **MODE** - Method for Object-Based Diagnostic Evaluation
 * **UFS** - Unified Forecast System
-* **SIMA** -System for Integrated Modeling of the Atmosphere
-* **ESRL** - Earth Systems Research Laboratory
-* **HIWPP** - High Impact Weather Predication Project
-* **NGGPS** - Next Generation Global Predicatio System
+* **SIMA** - System for Integrated Modeling of the Atmosphere
+* **ESRL** - Earth System Research Laboratory
+* **HIWPP** - High Impact Weather Prediction Project
+* **NGGPS** - Next Generation Global Prediction System
 * **GSL** - Global Systems Laboratory
 
 
@@ -136,7 +136,7 @@ To cite this documentation in publications, please refer to the METexpress User'
        System Research Laboratory <https://www.esrl.noaa.gov/>`_
        
 .. [#CIRES] `Cooperative Institute for Research in Environmental
-       Science at the University of Colorado Boulder
+       Sciences at the University of Colorado Boulder
        <https://cires.colorado.edu/>`_
 
 .. [#NOAA] `National Oceanic and Atmospheric Administration
