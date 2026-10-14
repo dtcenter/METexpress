@@ -36,7 +36,7 @@ app they want to use.
 .. _interface_home_page:
  
 .. figure:: figure/interface_home_page.png
-	    
+
         METexpress Home Page (MET Objects not yet pictured)
 
 User Interface Layout Common to Each App
@@ -183,8 +183,8 @@ for each curve, but the default is to create labels “Curve0”, “Curve1”, 
 
 .. figure:: figure/interface_upper_air_add_curve.png
 
-	    Interface screen after defining a single curve with default
-	    values, then selecting Add Curve
+            Interface screen after defining a single curve with default
+            values, then selecting Add Curve
 
 Editing a Curve
 ^^^^^^^^^^^^^^^
@@ -213,8 +213,8 @@ and Curve1 data parameters are shown  in the blue box.
 
 .. figure:: figure/interface_upper_air_two_curves.png
 
-	    Interface screen after defining 2 curves and selecting
-	    Add Curve after each
+            Interface screen after defining 2 curves and selecting
+            Add Curve after each
 
 Plot Parameters
 _______________
@@ -284,24 +284,24 @@ in :numref:`interface_series_plot_hide_gaps`, but with Hide Gaps selected.
 
 .. figure:: figure/interface_series_plot.png
 
-	    Plot of Time Series for a single curve with default values
+            Plot of Time Series for a single curve with default values
 
 .. _interface_series_plot_hide_gaps:
 
 .. figure:: figure/interface_series_plot_hide_gaps.png
 
-	    Same plot as shown in :numref:`interface_series_plot`, but with Hide Gaps
-	    selected.
-	    
+            Same plot as shown in :numref:`interface_series_plot`, but with Hide Gaps
+            selected.
+
 :numref:`interface_series_plot_multiple` shows a sample plot with 2 curves: Curve0 and Curve1 in red and blue, and has also added a difference curve in yellow showing the difference between Curve0 and Curve1 and error bars on all curves.
 
 .. _interface_series_plot_multiple:
 
 .. figure:: figure/interface_series_plot_multiple.png
 
-	    Plot with Multiple Curves for Time Series, including Error Bars
-	    and Difference Curves.  The yellow curve shows the
-	    difference between the red and blue curves.
+            Plot with Multiple Curves for Time Series, including Error Bars
+            and Difference Curves.  The yellow curve shows the
+            difference between the red and blue curves.
 
 User controls on plot screen
 ____________________________
@@ -316,7 +316,7 @@ titles, line widths, etc. to produce a plot suitable for publication.
 
 .. figure:: figure/interface_plot_controls.png
 
-	    Detail of plot controls from figure above
+            Detail of plot controls from figure above
 
 The user can choose to dynamically zoom in and out on the plot.  In order
 to zoom in on a plot, the user can click and drag a box over the area of
@@ -442,7 +442,7 @@ option of creating their own plots from the queried data.
 
 .. figure:: figure/interface_text_screen.png
 
-	    Beginning of text screen for plot in :numref:`interface_series_plot_multiple`
+            Beginning of text screen for plot in :numref:`interface_series_plot_multiple`
     
 The **blue refresh** button to the right of the text button will reset the
 graph to its original pan and zoom settings, as well as reverting
