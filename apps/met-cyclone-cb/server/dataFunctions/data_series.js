@@ -13,6 +13,10 @@ import {
 } from "meteor/randyp:mats-common";
 import moment from "moment";
 
+const { MongoClient } = require('mongodb');
+const url = "mongodb://localhost:27017/";
+const client = new MongoClient(url);
+
 /* eslint-disable no-await-in-loop */
 
 global.dataSeries = async function (plotParams) {
@@ -26,6 +30,11 @@ global.dataSeries = async function (plotParams) {
     hasLevels: true,
   };
 
+  const fs = require('node:fs/promises');
+  const os = require('os');
+  const homeDir = os.homedir();
+  let queryResult;
+  
   const totalProcessingStart = moment();
   const dataRequests = {}; // used to store data queries
   const queryArray = [];
@@ -282,13 +291,105 @@ global.dataSeries = async function (plotParams) {
     }
   } // end for curves
 
-  let queryResult;
   const startMoment = moment();
   let finishMoment;
-  try {
-    // send the query statements to the query function
+
+  // send the query statements to the query function
+  await fs.writeFile(homeDir + "/scratch/queryArray.json", JSON.stringify(queryArray, null, 2));
+  console.log("queryArray written to ~/scratch/queryArray.json");
+  debugger;
+  const mongoEval = Meteor.settings.public.mongoEval;
+  if (mongoEval === true)
+  {
+    const usePseudoQuery = Meteor.settings.public.mongoArgs.usePseudoQuery;
+    const pseudoQueryFile = Meteor.settings.public.mongoArgs.pseudoQueryFile;
+
+    console.log("Using mongoDB! mongoEval:", mongoEval, " usePseudoQuery:", usePseudoQuery, " pseudoQueryFile:");
+
+    let queryTemplate;
+    queryTemplate = await Assets.getTextAsync(
+      "mongoQueryTemplates/tmpl_data_series_mongo.json"
+    );
+
+    const database = client.db("vxdata");
+    const collection = database.collection("MET_default");
+
+    const { EJSON } = require('bson');
+
+    // console.log("Query Template:", queryTemplate);
+    const pipeline = EJSON.parse(queryTemplate);
+    const docIDTemplate = JSON.stringify(pipeline[2].$project.docIDTemplate, null, 2)
+    console.log("docIDTemplate", docIDTemplate);
+    // assemple docIDTemplate
+    pipeline[0].$match.id.$in.length = 0;
+    console.log("pipeline:", JSON.stringify(pipeline, null, 2));
+
+    let fromSecs = queryArray[0].fromSecs;
+    let toSecs = queryArray[0].toSecs;
+    const usePseudoTimeRange = Meteor.settings.public.mongoArgs.usePseudoTimeRange;
+    if (usePseudoTimeRange === true)
+    {
+      fromSecs = Meteor.settings.public.mongoArgs.pseudoFromSecs;
+      toSecs = Meteor.settings.public.mongoArgs.pseudoToSecs;
+    }
+    console.log("usePseudoTimeRange:", usePseudoTimeRange, "fromSecs", fromSecs, "toSecs", toSecs);
+
+    queryArray[0].versions.forEach((version, vi) =>
+    {
+      //queryArray[0].fcsts.forEach((fcst, fi) =>
+      //{
+      for (let t = fromSecs; t <= toSecs; t += 21600)
+      {
+        queryArray[0].storms.forEach((storm, si) =>
+        {
+          const stormID = storm.substring(0, 8);
+          const stormNumber = storm.substring(2, 4);
+          const stormName = storm.split("-")[1];
+
+          const ditv = docIDTemplate.replace(/{{version}}/g, version);
+          const dits0 = ditv.replace(/{{stormID}}/g, stormID);
+          const dits1 = dits0.replace(/{{stormNumber}}/g, stormNumber);
+          const dits2 = dits1.replace(/{{stormName}}/g, stormName);
+          const dits3 = dits2.replace(/{{date}}/g, t);
+          const dits4 = dits3.replace(/^"|"$/g, "");
+          const finalDocID = dits4.replace(/^"|"$/g, "");
+
+          pipeline[0].$match.id.$in.push(finalDocID);
+        })
+      };
+      //});
+    });
+
+    await fs.writeFile(homeDir + "/scratch/pipeline.json", JSON.stringify(pipeline, null, 2));
+    console.log("mongo aggregation pipeline " + JSON.stringify(pipeline, null, 2).length + " written to ~/scratch/pipeline.json");
+
+    let result
+    if (usePseudoQuery === true)
+    {
+      console.log("Using pseudo query from file:", pseudoQueryFile); ``
+      const pseudoQueryTxt = await Assets.getTextAsync("mongoQueries/" + pseudoQueryFile
+      );
+      const pseudoQuery = EJSON.parse(pseudoQueryTxt);
+      result = await collection.aggregate(pseudoQuery).toArray();
+    } else
+    {
+      result = await collection.aggregate(pipeline).toArray();
+    }
+    await fs.writeFile(homeDir + "/scratch/mongo_result.json", JSON.stringify(result, null, 2));
+    console.log("mongo result " + JSON.stringify(result, null, 2).length + " written to ~/scratch/mongo_result.json");
+
+    // MATS/MATScommon/meteor_packages/mats-common/imports/startup/server/data_query_util.js : queryMongoPython
+    queryResult = await matsDataQueryUtils.queryMongoPython(global.cbPool, queryArray, JSON.stringify(result, null, 2));
+    // get the data back from the query
+    dReturn = queryResult.data;
+  }
+  else
+  {
+    console.log("Querying Couchbase! mongoEval:", mongoEval);
     queryResult = await matsDataQueryUtils.queryCBPython(global.cbPool, queryArray);
     finishMoment = moment();
+
+
     dataRequests["data retrieval (query) time"] = {
       begin: startMoment.format(),
       finish: finishMoment.format(),
@@ -299,50 +400,58 @@ global.dataSeries = async function (plotParams) {
     };
     // get the data back from the query
     dReturn = queryResult.data;
-  } catch (e) {
-    // this is an error produced by a bug in the query function, not an error returned by the mysql database
-    e.message = `Error in queryDB: ${e.message} for statement: ${statement}`;
-    throw new Error(e.message);
+    await fs.writeFile(homeDir + "/scratch/cb_result.json", JSON.stringify(dReturn, null, 2));
+    console.log("cb result written to ~/scratch/cb_result.json");
   }
 
   // parse any errors from the python code
-  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1)
+  {
     if (
       queryResult.error[curveIndex] !== undefined &&
       queryResult.error[curveIndex] !== ""
-    ) {
-      if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND) {
+    )
+    {
+      if (queryResult.error[curveIndex] === matsTypes.Messages.NO_DATA_FOUND)
+      {
         // this is NOT an error just a no data condition
         dataFoundForCurve = false;
-      } else {
+      } else
+      {
         // this is an error returned by the mysql database
         error += `Error from verification query: <br>${queryResult.error}<br> query: <br>${statement}<br>`;
         throw new Error(error);
       }
-    } else {
+    } else
+    {
       dataFoundForAnyCurve = true;
     }
   }
 
-  if (!dataFoundForAnyCurve) {
+  if (!dataFoundForAnyCurve)
+  {
     // we found no data for any curves so don't bother proceeding
     throw new Error("INFO:  No valid data for any curves.");
   }
 
   const postQueryStartMoment = moment();
   let d;
-  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1) {
+  for (let curveIndex = 0; curveIndex < curvesLength; curveIndex += 1)
+  {
     const curve = curves[curveIndex];
-    if (curveIndex < dReturn.length) {
+    if (curveIndex < dReturn.length)
+    {
       d = dReturn[curveIndex];
       // set axis limits based on returned data
-      if (dataFoundForCurve) {
+      if (dataFoundForCurve)
+      {
         xmin = xmin < d.xmin ? xmin : d.xmin;
         xmax = xmax > d.xmax ? xmax : d.xmax;
         ymin = ymin < d.ymin ? ymin : d.ymin;
         ymax = ymax > d.ymax ? ymax : d.ymax;
       }
-    } else {
+    } else
+    {
       // this is a difference curve
       const diffResult = matsDataDiffUtils.getDataForDiffCurve(
         differenceArray[curveIndex - dReturn.length].dataset,

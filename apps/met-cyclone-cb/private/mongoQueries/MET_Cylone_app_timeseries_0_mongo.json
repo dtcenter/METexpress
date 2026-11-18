@@ -1,0 +1,41 @@
+[
+    {
+        "$match": {
+            "id": {
+                "$in": [
+                    "MET:DD:MET:gopa01:V10.1.1:CMC:BEST:AL022023:AL:02:ARLENE:1685577600:TCMPR",
+                    "MET:DD:MET:gopa01:V10.1.1:CMC:BEST:AL912023:AL:91:INVEST:1685642400:TCMPR"
+                ]
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$VALID",
+            "arr0": {
+                "$push": {
+                    "avtime": "$VALID",
+                    "STORM_ID": "$STORM_ID",
+                    "data": "$data"
+                }
+            }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "avtime": "$_id",
+            "sortedArr0": {
+                "$sortArray": {
+                    "input": "$arr0",
+                    "sortBy": 1
+                }
+            }
+        }
+    },
+    {
+        "$sort": {
+            "avtime": 1
+        }
+    }
+]
